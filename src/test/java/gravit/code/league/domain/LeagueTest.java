@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 
 class LeagueTest {
 
-    @DisplayName("유효한 데이터로 리그를 생성할 수 있다.")
+    @DisplayName("유효한 데이터로 리그를 생성할 수 있다")
     @Test
     void createLeagueWithAvailableData(){
         assertThatNoException().isThrownBy(() ->
