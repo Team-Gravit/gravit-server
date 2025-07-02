@@ -13,8 +13,8 @@ class UserLeagueTest {
     void createUserLeagueWithAvailableData() {
 
         // given
-        Long level = 1L;
-        Long xp = 0L;
+        Integer level = 1;
+        Integer xp = 0;
         Long userId = 1L;
         Long leagueId = 1L;
 
