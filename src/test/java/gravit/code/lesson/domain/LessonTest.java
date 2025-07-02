@@ -11,6 +11,6 @@ class LessonTest {
     @Test
     void createLessonWithAvailableData(){
         assertThatNoException().isThrownBy(() ->
-                Lesson.create("우선순위 큐", 2L, 1L));
+                Lesson.create("의사코드 학습하기", 2L, 1L));
     }
 }
