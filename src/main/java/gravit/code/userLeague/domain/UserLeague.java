@@ -16,11 +16,11 @@ public class UserLeague {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "bigint", nullable = false)
-    private Long level;
+    @Column(columnDefinition = "integer", nullable = false)
+    private Integer level;
 
-    @Column(columnDefinition = "bigint", nullable = false)
-    private Long xp;
+    @Column(columnDefinition = "integer", nullable = false)
+    private Integer xp;
 
     @Column(name = "user_id", columnDefinition = "bigint", nullable = false)
     private Long userId;
@@ -29,14 +29,14 @@ public class UserLeague {
     private Long leagueId;
 
     @Builder
-    private UserLeague(Long level, Long xp, Long userId, Long leagueId) {
+    private UserLeague(Integer level, Integer xp, Long userId, Long leagueId) {
         this.level = level;
         this.xp = xp;
         this.userId = userId;
         this.leagueId = leagueId;
     }
 
-    public static UserLeague create(Long level, Long xp, Long userId, Long leagueId) {
+    public static UserLeague create(Integer level, Integer xp, Long userId, Long leagueId) {
         return UserLeague.builder()
                 .level(level)
                 .xp(xp)
