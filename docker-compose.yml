@@ -1,0 +1,14 @@
+services:
+  gravit-server:
+    container_name: gravit-server
+    image: ${DOCKER_HUB_USERNAME}/gravit-server:latest
+    ports:
+      - "8520:8080"
+    environment:
+      - TZ=Asia/Seoul
+    networks:
+      - js-bridge
+
+networks:
+  js-bridge:
+    external: true
