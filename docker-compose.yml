@@ -7,8 +7,8 @@ services:
     environment:
       - TZ=Asia/Seoul
     networks:
-      - js-bridge
+      - mogaktae_js-bridge
 
 networks:
-  js-bridge:
+  mogaktae_js-bridge:
     external: true
