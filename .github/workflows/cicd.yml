@@ -76,7 +76,8 @@ jobs:
             cd /home/serverking/gravit
 
             echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
-
+            echo "LOGSTASH_COMMAND=${{ secrets.LOGSTASH_COMMAND }}" >> .env
+            
             docker-compose down
 
             docker-compose pull
