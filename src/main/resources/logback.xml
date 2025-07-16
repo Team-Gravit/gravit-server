@@ -4,7 +4,7 @@
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>server1.inuappcenter.kr:5000</destination>
+        <destination>js-logstash:5000</destination>
 
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>

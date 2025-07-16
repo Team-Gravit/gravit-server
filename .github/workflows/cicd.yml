@@ -77,9 +77,6 @@ jobs:
 
             echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
             
-            sed "s/ELASTICSEARCH_HOST_PLACEHOLDER/${{ secrets.ELASTICSEARCH_HOST }}/g" \
-              logstash.conf > logstash_final.conf && mv logstash_final.conf logstash.conf
-            
             docker-compose down
             docker-compose pull
             docker-compose up -d
