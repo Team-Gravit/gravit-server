@@ -2,6 +2,8 @@ services:
   gravit-server:
     container_name: gravit-server
     image: ${DOCKER_HUB_USERNAME}/gravit-server:latest
+    depends_on:
+      - js-logstash
     ports:
       - "8520:8080"
     environment:
