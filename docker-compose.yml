@@ -13,12 +13,12 @@ services:
     image: docker.elastic.co/logstash/logstash:8.11.0
     container_name: js-logstash
     volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
       - ./logs:/var/log/logstash
     ports:
       - "5000:5000"
     environment:
       - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
-    command: ${LOGSTASH_COMMAND}
     networks:
       - mogaktae_js-bridge
 
