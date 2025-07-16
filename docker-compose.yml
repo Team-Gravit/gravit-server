@@ -3,13 +3,15 @@ services:
     container_name: gravit-server
     image: ${DOCKER_HUB_USERNAME}/gravit-server:latest
     depends_on:
-      - js-logstash
+      js-logstash:
+        condition: service_healthy
     ports:
       - "8520:8080"
     environment:
       - TZ=Asia/Seoul
     networks:
       - mogaktae_js-bridge
+    restart: unless-stopped
 
   js-logstash:
     image: docker.elastic.co/logstash/logstash:8.11.0
@@ -23,6 +25,12 @@ services:
       - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
     networks:
       - mogaktae_js-bridge
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 5000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 networks:
   mogaktae_js-bridge:
