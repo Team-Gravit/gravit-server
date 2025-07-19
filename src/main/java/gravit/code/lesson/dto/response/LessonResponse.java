@@ -22,4 +22,14 @@ public record LessonResponse(
 
         @Schema(description = "답안지", example = "1")
         String answer
-) {}
+) {
+        public static LessonResponse create(Long problemId, ProblemType problemType, String question, String options, String answer) {
+                return LessonResponse.builder()
+                        .problemId(problemId)
+                        .problemType(problemType)
+                        .question(question)
+                        .options(options)
+                        .answer(answer)
+                        .build();
+        }
+}
