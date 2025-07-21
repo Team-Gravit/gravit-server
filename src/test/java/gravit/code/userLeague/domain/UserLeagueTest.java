@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class UserLeagueTest {
 
@@ -19,11 +18,9 @@ class UserLeagueTest {
         Long leagueId = 1L;
 
         // when
-        UserLeague userLeague = UserLeague.create(level, xp, userId, leagueId);
+        UserLeague userLeague = UserLeague.create(userId, leagueId);
 
         // then
-        assertThat(userLeague.getLevel()).isEqualTo(level);
-        assertThat(userLeague.getXp()).isEqualTo(xp);
         assertThat(userLeague.getUserId()).isEqualTo(userId);
         assertThat(userLeague.getLeagueId()).isEqualTo(leagueId);
 

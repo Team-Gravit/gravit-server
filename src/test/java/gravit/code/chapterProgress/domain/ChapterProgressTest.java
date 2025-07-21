@@ -12,13 +12,15 @@ class ChapterProgressTest {
     void createUserChapterProgressWithAvailableData() {
 
         // given
+        Long totalUnits = 20L;
         Long userId = 1L;
         Long chapterId = 1L;
 
         // when
-        ChapterProgress chapterProgress = ChapterProgress.create(userId, chapterId);
+        ChapterProgress chapterProgress = ChapterProgress.create(totalUnits, userId, chapterId);
 
         // then
+        assertThat(chapterProgress.getTotalUnits()).isEqualTo(totalUnits);
         assertThat(chapterProgress.getCompletedUnits()).isEqualTo(0L);
         assertThat(chapterProgress.getUserId()).isEqualTo(userId);
         assertThat(chapterProgress.getChapterId()).isEqualTo(chapterId);

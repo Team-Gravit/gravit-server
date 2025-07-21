@@ -19,11 +19,8 @@ class LessonProgressTest {
         LessonProgress lessonProgress = LessonProgress.create(userId, lessonId);
 
         // then
-        assertThat(lessonProgress.getCompletedProblems()).isEqualTo(0L);
         assertThat(lessonProgress.getUserId()).isEqualTo(userId);
         assertThat(lessonProgress.getLessonId()).isEqualTo(lessonId);
-
-
     }
 
 }

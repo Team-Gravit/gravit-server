@@ -24,13 +24,6 @@ public record LearningResultSaveRequest(
         Long unitId,
 
         @Schema(
-                description = "레슨 아이디",
-                example = "3"
-        )
-        @NotNull(message = "레슨 아이디가 비어있습니다.")
-        Long lessonId,
-
-        @Schema(
                 description = "각 문제의 풀이 결과"
         )
         @Valid
