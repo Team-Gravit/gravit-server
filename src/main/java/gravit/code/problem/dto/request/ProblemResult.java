@@ -16,6 +16,7 @@ public record ProblemResult(
                 description = "최초 정/오답 여부",
                 example = "true"
         )
+        @NotNull(message = "최초 정/오답 여부가 비어있습니다.")
         Boolean isCorrect,
 
         @Schema(
