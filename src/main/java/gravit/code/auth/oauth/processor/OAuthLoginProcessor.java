@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -29,16 +30,18 @@ public class OAuthLoginProcessor {
 
     private User findOrCreateUser(OAuthUserInfo oAuthUserInfo) {
         String providerId = oAuthUserInfo.getProvider() + " " + oAuthUserInfo.getProviderId();
+        log.info("providerId : {}", providerId);
+
         Optional<User> oldUser = userRepository.findByProviderId(providerId);
         User user;
         if (oldUser.isEmpty()) {
             log.info("첫 로그인, 회원가입 시작");
-            user = User.builder()
-                    .email(oAuthUserInfo.getEmail())
-                    .nickname(null)
-                    .profileImgUrl("notyet")
-                    .handle(null)
-                    .build();
+            user = User.create(oAuthUserInfo.getEmail(),
+                    providerId,
+                    oAuthUserInfo.getName(),
+                    "test",
+                    "test",
+                    LocalDateTime.now());
 
             userRepository.save(user);
             log.info("회원 가입 완료");

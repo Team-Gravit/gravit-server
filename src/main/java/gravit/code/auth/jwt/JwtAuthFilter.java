@@ -1,92 +1,41 @@
 package gravit.code.auth.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import gravit.code.auth.oauth.LoginUser;
-import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Log4j2
-@Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try{
-            String token = findToken(request);
-            if (!verifyToken(request, token)) {
-                filterChain.doFilter(request, response);
-                return;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String token = request.getHeader("Authorization");
+
+        if (token != null) {
+            String jwtToken = token.substring(7);
+
+            if(!jwtProvider.isValidToken(jwtToken)){
+                throw new RuntimeException();
             }
 
-            User user = getUser(token);
-            setSecuritySession(user);
-            filterChain.doFilter(request, response);
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs") || path.startsWith("/swagger-resources/");
-    }
-
-    private static void setSecuritySession(User user){
-        LoginUser loginUser = new LoginUser(user.getId(), user.getProviderId(),null);
-        log.info("LoginUserId: {}", loginUser.getId());
-        Authentication authToken = new UsernamePasswordAuthenticationToken(loginUser,null, null);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-    }
-
-    private User getUser(String token){
-        Long userId = jwtProvider.getUserId(token);
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException());
-
-        log.info("getUser nickname = {} ", user.getNickname());
-        return user;
-    }
-
-    private boolean verifyToken(HttpServletRequest request,String token) {
-        Boolean isValid = (Boolean) request.getAttribute("isTokenValid");
-        if(isValid != null) return isValid;
-
-        if (token == null || jwtProvider.validateToken(token)) {
-            log.debug("token null");
-            request.setAttribute("isTokenValid",false);
-            return false;
+            Authentication authentication = jwtProvider.getAuthUser(jwtToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("[doFilterInternal] 토큰 값 검증 완료");
         }
 
-        request.setAttribute("isTokenValid", true);
-        return true;
-    }
-
-    private static String findToken(HttpServletRequest request){
-        String token = null;
-        Cookie[] cookies = request.getCookies();
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals("Authorization")){
-                token = cookie.getValue();
-            }
-        }
-        return token;
+        filterChain.doFilter(request, response);
     }
 }

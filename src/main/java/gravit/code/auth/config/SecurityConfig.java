@@ -39,6 +39,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Swagger 관련 경로 허용
+                .requestMatchers("/api/v1/**").permitAll()
                 .anyRequest().authenticated());
 
         //세션 설정 : STATELESS
@@ -46,7 +47,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // JwtFilter 추가
-        http.addFilterBefore(new JwtAuthFilter(jwtProvider, userRepository), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

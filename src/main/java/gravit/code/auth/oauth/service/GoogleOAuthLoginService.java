@@ -1,6 +1,6 @@
 package gravit.code.auth.oauth.service;
 
-import gravit.code.auth.oauth.dto.KakaoUserInfo;
+import gravit.code.auth.oauth.dto.GoogleUserInfo;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,41 +20,42 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoOAuthLoginService implements OAuthLoginService {
+public class GoogleOAuthLoginService implements OAuthLoginService {
 
     private final WebClient webClient;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String redirectUri;
 
-    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
+    @Value("${spring.security.oauth2.client.provider.google.token-uri}")
     private String tokenUri;
 
-    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
+    @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
     private String userInfoUri;
 
     @Override
     public boolean supports(String provider) {
-        return "kakao".equalsIgnoreCase(provider);
+        return "google".equalsIgnoreCase(provider);
     }
 
     @Override
     public OAuthUserInfo getUserInfo(String code) {
         String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
 
-        // 토큰 요청
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
         tokenRequest.add("grant_type", "authorization_code");
         tokenRequest.add("client_id", clientId);
         tokenRequest.add("client_secret", clientSecret);
         tokenRequest.add("redirect_uri", redirectUri);
         tokenRequest.add("code", decodedCode);
+
+        log.info("Token Request = {}", tokenRequest);
 
         Map tokenResponse = webClient.post()
                 .uri(tokenUri)
@@ -65,8 +66,9 @@ public class KakaoOAuthLoginService implements OAuthLoginService {
                 .block();
 
         String accessToken = (String) tokenResponse.get("access_token");
+        log.info("accessToken = {}", accessToken);
 
-        // 사용자 정보 요청
+        // 🔍 사용자 정보 요청
         Map userInfo = webClient.get()
                 .uri(userInfoUri)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -74,6 +76,8 @@ public class KakaoOAuthLoginService implements OAuthLoginService {
                 .bodyToMono(Map.class)
                 .block();
 
-        return new KakaoUserInfo(userInfo);
+        log.info("userInfo = {}", userInfo);
+
+        return new GoogleUserInfo(userInfo);
     }
 }

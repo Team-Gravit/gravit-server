@@ -1,8 +1,14 @@
 package gravit.code.auth.jwt;
 
+import gravit.code.auth.oauth.LoginUser;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserRepository;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -13,12 +19,15 @@ import java.util.Date;
 @Component
 @Slf4j
 public class JwtProvider {
+    private final UserRepository userRepository;
+
     private SecretKey secretKey;
 
     @Value("${jwt.valid-time}")
     public Long VALID_TIME;
 
-    private JwtProvider(@Value("${jwt.secret}") String secret){
+    private JwtProvider(UserRepository userRepository, @Value("${jwt.secret}") String secret){
+        this.userRepository = userRepository;
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
@@ -34,16 +43,23 @@ public class JwtProvider {
                 .compact();
     }
 
+    public Authentication getAuthUser(String token){
+        Long userId = getUserId(token);
+        User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
+        LoginUser loginUser = new LoginUser(user.getId(),user.getProviderId(),null);
+        return new UsernamePasswordAuthenticationToken(loginUser, "",
+                loginUser.getAuthorities());
+    }
+
     public Long getUserId(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
 
     public String getRole(String token) {
-
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
-    public boolean validateToken(String token){
+    public boolean isValidToken(String token){
         //log.info("토큰 유효성 검증 시작");
         return valid(secretKey, token);
     }
@@ -51,7 +67,8 @@ public class JwtProvider {
     private boolean valid(SecretKey secretKey, String token){
         try{
             Jws<Claims> claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            return claims.getBody().getExpiration().before(new Date());
+            Date expiration = claims.getBody().getExpiration();
+            return expiration.after(new Date());
         }catch (SignatureException ex){
             throw new RuntimeException();
         }catch (MalformedJwtException ex){
