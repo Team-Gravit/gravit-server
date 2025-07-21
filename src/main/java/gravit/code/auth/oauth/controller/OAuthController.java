@@ -4,9 +4,8 @@ import gravit.code.auth.oauth.dto.AuthCodeRequest;
 import gravit.code.auth.oauth.dto.LoginResponse;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.oauth.processor.OAuthLoginProcessor;
-import gravit.code.auth.oauth.service.OAuthLoginService;
+import gravit.code.auth.oauth.service.OAuthClientService;
 import gravit.code.auth.oauth.service.OAuthLoginUrlService;
-import gravit.code.auth.oauth.service.OAuthServiceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
 public class OAuthController {
-    private final OAuthServiceFactory oAuthServiceFactory;
+    private final OAuthClientService oAuthClientService;
     private final OAuthLoginProcessor oAuthLoginProcessor;
     private final OAuthLoginUrlService oAuthLoginUrlService;
 
@@ -44,8 +43,7 @@ public class OAuthController {
             return  ResponseEntity.badRequest().build();
         }
 
-        OAuthLoginService loginService = oAuthServiceFactory.getService(provider);
-        OAuthUserInfo userInfo = loginService.getUserInfo(code);
+        OAuthUserInfo userInfo = oAuthClientService.getUserInfo(code, provider);
 
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
 
