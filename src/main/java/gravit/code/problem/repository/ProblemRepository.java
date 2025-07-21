@@ -4,6 +4,7 @@ import gravit.code.lesson.dto.response.LessonResponse;
 import gravit.code.problem.domain.Problem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface ProblemRepository extends JpaRepository<Problem,Long> {
         WHERE p.lessonId = :lessonId
         ORDER BY p.id ASC
     """)
-    List<LessonResponse> findByLessonId(Long lessonId);
+    List<LessonResponse> findByLessonId(@Param("lessonId") Long lessonId);
 }

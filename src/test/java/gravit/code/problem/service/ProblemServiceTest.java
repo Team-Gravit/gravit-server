@@ -59,6 +59,4 @@ class ProblemServiceTest {
                 .isInstanceOf(RestApiException.class)
                 .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.LESSON_NOT_FOUND);
     }
-
-
 }
