@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface LessonProgressRepository extends JpaRepository<LessonProgress,Long> {
     Optional<LessonProgress> findByLessonIdAndUserId(Long lessonId, Long userId);
+
+    boolean existsByLessonIdAndUserId(Long lessonId, Long userId);
 }

@@ -41,6 +41,7 @@ class LearningFacadeTest {
     void saveLearningProgressAndUpdateChapterProgressIfUnitCompletedAndReturnUserLevelInfo(){
         //given
         Long userId = 1L;
+        Long lessonId = 1L;
         Long unitId = 1L;
         Long chapterId = 1L;
         List<ProblemResult> problemResults = List.of(
@@ -55,7 +56,7 @@ class LearningFacadeTest {
                 new ProblemResult(9L, true, 0L),
                 new ProblemResult(10L, true, 0L)
                 );
-        LearningResultSaveRequest request = new LearningResultSaveRequest(chapterId, unitId, problemResults);
+        LearningResultSaveRequest request = new LearningResultSaveRequest(chapterId, unitId, lessonId, problemResults);
         UserLevelResponse expectedUserLevelResponse = UserLevelResponse.create(1, 20);
 
 
@@ -78,6 +79,7 @@ class LearningFacadeTest {
     void saveLearningProgressAndNotUpdateChapterProgressIfUnitNotCompletedAndReturnUserLevelInfo(){
         //given
         Long userId = 1L;
+        Long lessonId = 1L;
         Long unitId = 1L;
         Long chapterId = 1L;
         List<ProblemResult> problemResults = List.of(
@@ -92,7 +94,7 @@ class LearningFacadeTest {
                 new ProblemResult(9L, true, 0L),
                 new ProblemResult(10L, true, 0L)
         );
-        LearningResultSaveRequest request = new LearningResultSaveRequest(chapterId, unitId, problemResults);
+        LearningResultSaveRequest request = new LearningResultSaveRequest(chapterId, unitId, lessonId, problemResults);
         UserLevelResponse expectedUserLevelResponse = UserLevelResponse.create(1, 20);
 
 

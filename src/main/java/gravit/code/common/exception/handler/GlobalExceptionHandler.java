@@ -1,6 +1,6 @@
 package gravit.code.common.exception.handler;
 
-import gravit.code.common.exception.ErrorResponse;
+import gravit.code.common.exception.domain.ErrorResponse;
 import gravit.code.common.exception.domain.CustomErrorCode;
 import gravit.code.common.exception.domain.ErrorCode;
 import gravit.code.common.exception.domain.RestApiException;

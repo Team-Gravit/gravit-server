@@ -19,4 +19,12 @@ public class ChapterProgressService {
 
         chapterProgress.updateCompletedUnits();
     }
+
+    public void createChapterProgress(Long userId, Long chapterId){
+        if (!chapterProgressRepository.existsByChapterIdAndUserId(chapterId,userId)){
+            Long totalUnits = chapterProgressRepository.getTotalUnitsByChapterId(chapterId);
+            ChapterProgress chapterProgress = ChapterProgress.create(totalUnits, userId, chapterId);
+            chapterProgressRepository.save(chapterProgress);
+        }
+    }
 }

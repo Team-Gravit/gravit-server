@@ -2,6 +2,7 @@ package gravit.code.learning.facade;
 
 import gravit.code.chapterProgress.service.ChapterProgressService;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.learning.service.LearningService;
 import gravit.code.problemProgress.service.ProblemProgressService;
 import gravit.code.unitProgress.service.UnitProgressService;
 import gravit.code.user.dto.response.UserLevelResponse;
@@ -15,12 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class LearningFacade {
 
     private final UserService userService;
-    private final ProblemProgressService problemProgressService;
-    private final UnitProgressService unitProgressService;
+    private final LearningService learningService;
     private final ChapterProgressService chapterProgressService;
+    private final UnitProgressService unitProgressService;
+    private final ProblemProgressService problemProgressService;
 
     @Transactional
     public UserLevelResponse saveLearningProgress(Long userId, LearningResultSaveRequest request){
+
+        learningService.initLearningProgress(userId, request.chapterId(), request.unitId(), request.lessonId());
 
         problemProgressService.saveProblemResults(userId, request.problemResults());
 

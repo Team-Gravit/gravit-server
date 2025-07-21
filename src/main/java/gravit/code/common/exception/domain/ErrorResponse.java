@@ -1,4 +1,4 @@
-package gravit.code.common.exception;
+package gravit.code.common.exception.domain;
 
 import lombok.Builder;
 

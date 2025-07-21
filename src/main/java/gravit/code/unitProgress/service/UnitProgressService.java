@@ -22,4 +22,15 @@ public class UnitProgressService {
 
         return unitProgress.isUnitCompleted();
     }
+
+    public Boolean createUnitProgress(Long userId, Long unitId){
+        if (unitProgressRepository.existsByUnitIdAndUserId(unitId,userId)) {
+            return false;
+        }else{
+            Long totalLessons = unitProgressRepository.getTotalLessonsByUnitId(unitId);
+            UnitProgress unitProgress = UnitProgress.create(totalLessons, userId, unitId);
+            unitProgressRepository.save(unitProgress);
+            return true;
+        }
+    }
 }
