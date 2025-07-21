@@ -22,13 +22,12 @@ public class JwtProvider {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String createAccessToken(Long userId, String role){
+    public String createAccessToken(Long userId){
         Date timeNow = new Date(System.currentTimeMillis());
         Date expirationTime = new Date(timeNow.getTime() + VALID_TIME);
 
         return Jwts.builder()
                 .claim("userId", userId)
-                .claim("role",role)
                 .setIssuedAt(timeNow)
                 .setExpiration(expirationTime)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
