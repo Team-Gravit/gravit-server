@@ -8,6 +8,7 @@ import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -20,12 +21,14 @@ public class OAuthLoginProcessor {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public LoginResponse process(OAuthUserInfo oAuthUserInfo) {
         User user = findOrCreateUser(oAuthUserInfo);
+        boolean isOnboarded = user.isOnboarded();
 
         String accessToken = jwtProvider.createAccessToken(user.getId());
 
-        return new LoginResponse(accessToken);
+        return new LoginResponse(accessToken, isOnboarded);
     }
 
     private User findOrCreateUser(OAuthUserInfo oAuthUserInfo) {
@@ -40,7 +43,7 @@ public class OAuthLoginProcessor {
                     providerId,
                     oAuthUserInfo.getName(),
                     "test",
-                    "test",
+                    1,
                     LocalDateTime.now());
 
             userRepository.save(user);

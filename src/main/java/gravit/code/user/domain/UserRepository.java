@@ -6,5 +6,6 @@ public interface UserRepository {
     Optional<User> findById(Long id);
     Optional<User> findByProviderId(String providerId);
     void save(User user);
+    boolean existsByNickname(String nickname);
 
 }

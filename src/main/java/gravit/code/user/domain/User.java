@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -35,27 +33,40 @@ public class User {
     @Column(name = "created_at",  nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "profile_img_url", columnDefinition = "varchar(150)", nullable = false)
-    private String profileImgUrl;
+    @Column(name = "profile_img_number", nullable = false)
+    private int profileImgNumber;
+
+    @Column(name = "is_onboarded")
+    private boolean isOnboarded;
 
     @Builder
-    private User(String email, String providerId, String nickname, String handle, String profileImgUrl, LocalDateTime createdAt) {
+    private User(String email, String providerId, String nickname, String handle, int profileImgNumber, LocalDateTime createdAt) {
         this.email = email;
         this.providerId = providerId;
         this.nickname = nickname;
         this.handle = handle;
-        this.profileImgUrl = profileImgUrl;
+        this.profileImgNumber = profileImgNumber;
         this.createdAt = createdAt;
+        this.isOnboarded = false;
     }
 
-    public static User create(String email, String providerId, String nickname, String handle, String profileImgUrl, LocalDateTime createdAt) {
+    public static User create(String email, String providerId, String nickname, String handle, int profileImgNumber, LocalDateTime createdAt) {
         return User.builder()
                 .email(email)
                 .providerId(providerId)
                 .nickname(nickname)
                 .handle(handle)
-                .profileImgUrl(profileImgUrl)
+                .profileImgNumber(profileImgNumber)
                 .createdAt(createdAt)
                 .build();
+    }
+
+    public void checkOnboarded(){
+        this.isOnboarded = true;
+    }
+
+    public void onboard(String nickname, int profileImgNumber){
+        this.nickname = nickname;
+        this.profileImgNumber = profileImgNumber;
     }
 }
