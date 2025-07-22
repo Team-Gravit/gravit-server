@@ -19,6 +19,10 @@ public record UserLevelResponse(
         )
         Integer nextLevel,
 
+        @Schema(
+                description = "경험치",
+                example = "100"
+        )
         Integer xp
 ){
     public static UserLevelResponse create(Integer level, Integer xp){

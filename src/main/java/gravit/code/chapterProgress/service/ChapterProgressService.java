@@ -17,7 +17,7 @@ public class ChapterProgressService {
     private final ChapterProgressRepository chapterProgressRepository;
 
     public void createChapterProgress(Long userId, Long chapterId){
-        if (!chapterProgressRepository.existsByChapterIdAndUserId(chapterId,userId)){
+        if (!chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)){
             Long totalUnits = chapterProgressRepository.getTotalUnitsByChapterId(chapterId);
             ChapterProgress chapterProgress = ChapterProgress.create(totalUnits, userId, chapterId);
             chapterProgressRepository.save(chapterProgress);

@@ -1,4 +1,4 @@
-package gravit.code.auth.oauth;
+package gravit.code.common.auth.oauth;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

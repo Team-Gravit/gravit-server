@@ -32,6 +32,7 @@ public class LearningFacade {
     @Transactional
     public UserLevelResponse saveLearningProgress(Long userId, LearningResultSaveRequest request){
 
+        // 챕터, 유닛, 레슨 중간테이블 초기화
         learningService.initLearningProgress(userId, request.chapterId(), request.unitId(), request.lessonId());
 
         problemProgressService.saveProblemResults(userId, request.problemResults());

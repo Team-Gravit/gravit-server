@@ -1,6 +1,6 @@
-package gravit.code.auth.jwt;
+package gravit.code.common.auth.jwt;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.common.auth.oauth.LoginUser;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import io.jsonwebtoken.*;
@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;

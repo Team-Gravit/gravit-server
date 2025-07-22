@@ -1,7 +1,7 @@
-package gravit.code.auth.oauth.startegy;
+package gravit.code.common.auth.oauth.startegy;
 
-import gravit.code.auth.oauth.dto.KakaoUserInfo;
-import gravit.code.auth.oauth.dto.OAuthUserInfo;
+import gravit.code.common.auth.oauth.dto.KakaoUserInfo;
+import gravit.code.common.auth.oauth.dto.OAuthUserInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
