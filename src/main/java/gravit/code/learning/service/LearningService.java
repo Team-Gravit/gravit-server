@@ -17,8 +17,8 @@ public class LearningService {
 
     @Async("learningAsync")
     public void initLearningProgress(Long userId, Long chapterId, Long unitId, Long lessonId){
-        if (lessonProgressService.createLessonProgress(userId, lessonId))
-            if(unitProgressService.createUnitProgress(userId, unitId))
+        if (Boolean.TRUE.equals(lessonProgressService.createLessonProgress(userId, lessonId)))
+            if(Boolean.TRUE.equals(unitProgressService.createUnitProgress(userId, unitId)))
                 chapterProgressService.createChapterProgress(userId, chapterId);
     }
 }
