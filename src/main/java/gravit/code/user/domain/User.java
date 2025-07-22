@@ -30,6 +30,12 @@ public class User {
     @Column(columnDefinition = "varchar(50)", nullable = false, unique = true)
     private String handle;
 
+    @Column(columnDefinition = "integer", nullable = false)
+    private Integer level;
+
+    @Column(columnDefinition = "integer", nullable = false)
+    private Integer xp;
+
     @Column(name = "created_at",  nullable = false)
     private LocalDateTime createdAt;
 
@@ -46,6 +52,8 @@ public class User {
         this.nickname = nickname;
         this.handle = handle;
         this.profileImgNumber = profileImgNumber;
+        this.level = 1;
+        this.xp = 0;
         this.createdAt = createdAt;
         this.isOnboarded = false;
     }
@@ -68,5 +76,27 @@ public class User {
     public void onboard(String nickname, int profileImgNumber){
         this.nickname = nickname;
         this.profileImgNumber = profileImgNumber;
+    }
+
+    public void updateXp(Integer xp){
+        this.xp = xp;
+        updateLevel(this.xp);
+    }
+
+    private void updateLevel(Integer totalXp){
+        this.level = calculateLevel(totalXp);
+    }
+
+    private Integer calculateLevel(Integer totalXp){
+        if(totalXp < 100) return 1;
+        if(totalXp < 200) return 2;
+        if(totalXp < 400) return 3;
+        if(totalXp < 700) return 4;
+        if(totalXp < 1100) return 5;
+        if(totalXp < 1600) return 6;
+        if(totalXp < 2200) return 7;
+        if(totalXp < 2900) return 8;
+        if(totalXp < 3700) return 9;
+        else return 10;
     }
 }
