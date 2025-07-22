@@ -1,6 +1,6 @@
 package gravit.code.user.presentation;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.common.auth.oauth.LoginUser;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;

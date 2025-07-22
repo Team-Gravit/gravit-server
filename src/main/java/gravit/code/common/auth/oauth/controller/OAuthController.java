@@ -1,11 +1,11 @@
-package gravit.code.auth.oauth.controller;
+package gravit.code.common.auth.oauth.controller;
 
-import gravit.code.auth.oauth.dto.AuthCodeRequest;
-import gravit.code.auth.oauth.dto.LoginResponse;
-import gravit.code.auth.oauth.dto.OAuthUserInfo;
-import gravit.code.auth.oauth.processor.OAuthLoginProcessor;
-import gravit.code.auth.oauth.service.OAuthClientService;
-import gravit.code.auth.oauth.service.OAuthLoginUrlService;
+import gravit.code.common.auth.oauth.dto.AuthCodeRequest;
+import gravit.code.common.auth.oauth.dto.LoginResponse;
+import gravit.code.common.auth.oauth.dto.OAuthUserInfo;
+import gravit.code.common.auth.oauth.processor.OAuthLoginProcessor;
+import gravit.code.common.auth.oauth.service.OAuthClientService;
+import gravit.code.common.auth.oauth.service.OAuthLoginUrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

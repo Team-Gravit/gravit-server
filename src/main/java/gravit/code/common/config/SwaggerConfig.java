@@ -1,4 +1,4 @@
-package gravit.code.auth.config;
+package gravit.code.common.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
