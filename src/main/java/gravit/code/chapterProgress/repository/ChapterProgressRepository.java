@@ -1,6 +1,6 @@
 package gravit.code.chapterProgress.repository;
 
-import gravit.code.chapterProgress.ChapterInfoResponse;
+import gravit.code.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.chapterProgress.domain.ChapterProgress;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +22,7 @@ public interface ChapterProgressRepository extends JpaRepository<ChapterProgress
     Long getTotalUnitsByChapterId(Long chapterId);
 
     @Query("""
-        SELECT new gravit.code.chapter.dto.response.ChapterInfoResponse(c.id, c.name, c.description, c.totalUnits, COALESCE(CAST(cp.completedUnits as long), 0L))
+        SELECT new gravit.code.chapterProgress.dto.response.ChapterInfoResponse(c.id, c.name, c.description, c.totalUnits, COALESCE(CAST(cp.completedUnits as long), 0L))
         FROM Chapter c
         LEFT JOIN ChapterProgress cp ON c.id = cp.chapterId AND cp.userId = :userId
         ORDER BY c.id

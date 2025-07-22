@@ -1,6 +1,6 @@
 package gravit.code.chapterProgress.service;
 
-import gravit.code.chapterProgress.ChapterInfoResponse;
+import gravit.code.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.chapterProgress.domain.ChapterProgress;
 import gravit.code.chapterProgress.repository.ChapterProgressRepository;
 import gravit.code.common.exception.domain.CustomErrorCode;
