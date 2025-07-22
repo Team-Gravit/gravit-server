@@ -1,8 +1,8 @@
-package gravit.code.auth.oauth.processor;
+package gravit.code.common.auth.oauth.processor;
 
-import gravit.code.auth.jwt.JwtProvider;
-import gravit.code.auth.oauth.dto.LoginResponse;
-import gravit.code.auth.oauth.dto.OAuthUserInfo;
+import gravit.code.common.auth.jwt.JwtProvider;
+import gravit.code.common.auth.oauth.dto.LoginResponse;
+import gravit.code.common.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;

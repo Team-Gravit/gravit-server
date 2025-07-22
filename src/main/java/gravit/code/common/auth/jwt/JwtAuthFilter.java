@@ -1,4 +1,4 @@
-package gravit.code.auth.jwt;
+package gravit.code.common.auth.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

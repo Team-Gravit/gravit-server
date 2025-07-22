@@ -1,4 +1,4 @@
-package gravit.code.auth.oauth.service;
+package gravit.code.common.auth.oauth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

@@ -1,6 +1,5 @@
 package gravit.code.user.application;
 
-import gravit.code.auth.oauth.LoginUser;
 import gravit.code.user.application.dto.request.OnboardingRequest;
 import gravit.code.user.application.dto.response.UserResponse;
 import gravit.code.user.domain.User;

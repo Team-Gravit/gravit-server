@@ -1,8 +1,8 @@
-package gravit.code.auth.config;
+package gravit.code.common.config;
 
 
-import gravit.code.auth.jwt.JwtAuthFilter;
-import gravit.code.auth.jwt.JwtProvider;
+import gravit.code.common.auth.jwt.JwtAuthFilter;
+import gravit.code.common.auth.jwt.JwtProvider;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

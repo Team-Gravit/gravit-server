@@ -1,11 +1,9 @@
 package gravit.code.user.presentation;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.common.auth.oauth.LoginUser;
 import gravit.code.user.application.UserService;
 import gravit.code.user.application.dto.request.OnboardingRequest;
 import gravit.code.user.application.dto.response.UserResponse;
-import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -1,7 +1,7 @@
-package gravit.code.auth.oauth.service;
+package gravit.code.common.auth.oauth.service;
 
-import gravit.code.auth.oauth.dto.OAuthUserInfo;
-import gravit.code.auth.oauth.startegy.OAuthResponseFactory;
+import gravit.code.common.auth.oauth.dto.OAuthUserInfo;
+import gravit.code.common.auth.oauth.startegy.OAuthResponseFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
