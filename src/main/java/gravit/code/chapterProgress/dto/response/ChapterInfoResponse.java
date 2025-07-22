@@ -1,4 +1,4 @@
-package gravit.code.chapterProgress;
+package gravit.code.chapterProgress.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

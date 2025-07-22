@@ -1,6 +1,6 @@
 package gravit.code.learning.facade;
 
-import gravit.code.chapterProgress.ChapterInfoResponse;
+import gravit.code.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.chapterProgress.service.ChapterProgressService;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.service.LearningService;
