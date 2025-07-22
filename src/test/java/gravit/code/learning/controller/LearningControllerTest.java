@@ -59,7 +59,7 @@ class LearningControllerTest {
         LearningResultSaveRequest request = new LearningResultSaveRequest(
                 chapterId, unitId, lessonId, problemResults
         );
-        UserLevelResponse expectedResponse = new UserLevelResponse(1, 20);
+        UserLevelResponse expectedResponse = new UserLevelResponse(1, 2, 20);
 
         when(learningFacade.saveLearningProgress(userId, request)).thenReturn(expectedResponse);
 
@@ -98,7 +98,7 @@ class LearningControllerTest {
         LearningResultSaveRequest request = new LearningResultSaveRequest(
                 chapterId, unitId, lessonId, problemResults
         );
-        UserLevelResponse expectedResponse = new UserLevelResponse(1, 20);
+        UserLevelResponse expectedResponse = new UserLevelResponse(1, 2, 20);
 
         when(learningFacade.saveLearningProgress(userId, request)).thenReturn(expectedResponse);
 
@@ -135,7 +135,7 @@ class LearningControllerTest {
         LearningResultSaveRequest request = new LearningResultSaveRequest(
                 chapterId, unitId, lessonId, problemResults
         );
-        UserLevelResponse expectedResponse = new UserLevelResponse(1, 20);
+        UserLevelResponse expectedResponse = new UserLevelResponse(1,2, 20);
 
         when(learningFacade.saveLearningProgress(userId, request)).thenReturn(expectedResponse);
 

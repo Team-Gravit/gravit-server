@@ -22,16 +22,25 @@ public class LessonProgress {
     @Column(name = "lesson_id",columnDefinition = "bigint", nullable = false)
     private Long lessonId;
 
+    @Column(name = "is_completed", columnDefinition = "boolean", nullable = false)
+    private boolean isCompleted;
+
     @Builder
-    private LessonProgress(Long userId, Long lessonId) {
+    private LessonProgress(Long userId, Long lessonId, boolean isCompleted) {
         this.userId = userId;
         this.lessonId = lessonId;
+        this.isCompleted = isCompleted;
     }
 
-    public static LessonProgress create(Long userId, Long lessonId) {
+    public static LessonProgress create(Long userId, Long lessonId, boolean isCompleted) {
         return LessonProgress.builder()
                 .userId(userId)
                 .lessonId(lessonId)
+                .isCompleted(isCompleted)
                 .build();
+    }
+
+    public void updateProgressStatus(){
+        this.isCompleted = true;
     }
 }

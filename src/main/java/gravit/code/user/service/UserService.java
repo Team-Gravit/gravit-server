@@ -4,6 +4,7 @@ import gravit.code.common.exception.domain.CustomErrorCode;
 import gravit.code.common.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
 import gravit.code.user.dto.response.UserLevelResponse;
+import gravit.code.user.dto.response.UserMainPageInfo;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,10 @@ public class UserService {
         user.updateXp(20);
 
         return UserLevelResponse.create(user.getLevel(), user.getXp());
+    }
+
+    public UserMainPageInfo getUserMainPageInfo(Long userId){
+        return userRepository.findUserMainPageInfoById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
     }
 }

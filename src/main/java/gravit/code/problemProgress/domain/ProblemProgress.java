@@ -5,10 +5,15 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Table(name = "problem_progress")
 @Entity
 @Getter
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProblemProgress {
     @Id
@@ -26,6 +31,10 @@ public class ProblemProgress {
 
     @Column(name = "problem_id",columnDefinition = "bigint", nullable = false)
     private Long problemId;
+
+    @Column(name = "created_at",  nullable = false)
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     @Builder
     private ProblemProgress(Boolean isCorrect, Long incorrectCounts, Long userId, Long problemId) {
