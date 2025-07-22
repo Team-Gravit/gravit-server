@@ -1,5 +1,6 @@
 package gravit.code.user.application;
 
+import gravit.code.auth.oauth.LoginUser;
 import gravit.code.user.application.dto.request.OnboardingRequest;
 import gravit.code.user.application.dto.response.UserResponse;
 import gravit.code.user.domain.User;
@@ -12,9 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
+
+    public UserResponse findById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
+        return UserResponse.from(user);
+    }
 
     @Transactional
     public UserResponse onboarding(Long userId, OnboardingRequest request) {

@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    private final UserRepository userRepository;
     private final UserService userService;
 
     @GetMapping()
-    public ResponseEntity<String> getUser(@AuthenticationPrincipal LoginUser loginUser) {
-        User user = userRepository.findById(loginUser.getId()).orElseThrow(RuntimeException::new);
-        return ResponseEntity.ok("유저 조회 성공 : " + user.getNickname());
+    public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal LoginUser loginUser) {
+        UserResponse userResponse = userService.findById(loginUser.getId());
+        return ResponseEntity.ok(userResponse);
     }
 
     @PatchMapping("/onboarding")
