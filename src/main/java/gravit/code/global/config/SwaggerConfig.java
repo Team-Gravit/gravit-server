@@ -39,14 +39,15 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("Gravit 명세서")
-                .description("api 명세서")
+                .title("Gravit API Docs")
+                .description("앱센터 16.5기 동계 프로젝트 Gravit API Docs")
                 .version("1.0.0");
     }
 
     private List<Server> servers() {
         List<Server> servers = new ArrayList<>();
-        servers.add(new Server().url("http://localhost:8080").description("Local URL"));
+        servers.add(new Server().url("https://grav-it.inuappcenter.kr").description("Appcenter env"));
+        servers.add(new Server().url("http://localhost:8080").description("Dev env"));
         return servers;
     }
 }

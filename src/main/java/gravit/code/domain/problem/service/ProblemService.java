@@ -17,7 +17,7 @@ public class ProblemService {
     private final ProblemRepository problemRepository;
 
     @Transactional(readOnly = true)
-    public List<LessonResponse> getLesson(Long lessonsId){
+    public List<LessonResponse> getAllProblemsInLesson(Long lessonsId){
         List<LessonResponse> lessons = problemRepository.findByLessonId(lessonsId);
 
         if(lessons.isEmpty())
