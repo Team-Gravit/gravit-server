@@ -1,6 +1,7 @@
-package gravit.code.domain.mainPage.controller;
+package gravit.code.domain.mainPage.controller.api;
 
 import gravit.code.auth.oauth.LoginUser;
+import gravit.code.domain.mainPage.controller.docs.MainPageControllerSpecification;
 import gravit.code.domain.mainPage.dto.response.MainPageResponse;
 import gravit.code.domain.mainPage.facade.MainPageFacade;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/main")
 @RequiredArgsConstructor
-public class MainPageController {
+public class MainPageController implements MainPageControllerSpecification {
 
     private final MainPageFacade mainPageFacade;
 

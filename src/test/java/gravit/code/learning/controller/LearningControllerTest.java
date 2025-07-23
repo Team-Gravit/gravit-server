@@ -1,7 +1,7 @@
 package gravit.code.learning.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gravit.code.domain.learning.controller.LearningController;
+import gravit.code.domain.learning.controller.api.LearningController;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.facade.LearningFacade;
 import gravit.code.domain.problem.dto.request.ProblemResult;

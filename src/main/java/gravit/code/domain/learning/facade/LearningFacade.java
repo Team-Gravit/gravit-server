@@ -4,8 +4,10 @@ import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.service.LearningService;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
 import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
+import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.domain.problemProgress.service.ProblemProgressService;
 import gravit.code.domain.unitProgress.dto.response.UnitInfo;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
@@ -24,13 +26,19 @@ public class LearningFacade {
 
     private final UserService userService;
     private final LearningService learningService;
+    private final ProblemService problemService;
     private final ChapterProgressService chapterProgressService;
     private final UnitProgressService unitProgressService;
     private final LessonProgressService lessonProgressService;
     private final ProblemProgressService problemProgressService;
 
+    @Transactional(readOnly = true)
+    public List<LessonResponse> getAllProblemsInLesson(Long lessonId){
+        return problemService.getAllProblemsInLesson(lessonId);
+    }
+
     @Transactional
-    public UserLevelResponse saveLearningProgress(Long userId, LearningResultSaveRequest request){
+    public UserLevelResponse saveLearningResult(Long userId, LearningResultSaveRequest request){
 
         // 챕터, 유닛, 레슨 중간테이블 초기화
         learningService.initLearningProgress(userId, request.chapterId(), request.unitId(), request.lessonId());
@@ -51,7 +59,7 @@ public class LearningFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<UnitPageResponse> getAllUnits(Long userId, Long chapterId){
+    public List<UnitPageResponse> getAllUnitsInChapter(Long userId, Long chapterId){
         List<UnitInfo> unitInfos = unitProgressService.getUnitInfosByChapterId(userId, chapterId);
 
         return unitInfos.stream()
