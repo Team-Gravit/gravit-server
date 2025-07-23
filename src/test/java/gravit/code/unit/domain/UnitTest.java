@@ -1,5 +1,6 @@
 package gravit.code.unit.domain;
 
+import gravit.code.domain.unit.domain.Unit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

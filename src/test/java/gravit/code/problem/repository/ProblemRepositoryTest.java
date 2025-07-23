@@ -1,8 +1,9 @@
 package gravit.code.problem.repository;
 
-import gravit.code.lesson.dto.response.LessonResponse;
-import gravit.code.problem.domain.Problem;
-import gravit.code.problem.domain.ProblemType;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.domain.Problem;
+import gravit.code.domain.problem.domain.ProblemType;
+import gravit.code.domain.problem.domain.ProblemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

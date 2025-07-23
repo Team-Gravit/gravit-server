@@ -28,6 +28,7 @@ jobs:
           spring.datasource.url: ${{secrets.POSTGRESQL_URL}}
           spring.datasource.username: ${{secrets.POSTGRESQL_USERNAME}}
           spring.datasource.password: ${{secrets.POSTGRESQL_PASSWORD}}
+          jwt.secret: ${{secrets.JWT_SECRET}}
 
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}

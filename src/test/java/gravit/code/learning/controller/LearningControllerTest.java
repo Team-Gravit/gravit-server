@@ -1,10 +1,11 @@
 package gravit.code.learning.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.facade.LearningFacade;
-import gravit.code.problem.dto.request.ProblemResult;
-import gravit.code.user.dto.response.UserLevelResponse;
+import gravit.code.domain.learning.controller.LearningController;
+import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.domain.learning.facade.LearningFacade;
+import gravit.code.domain.problem.dto.request.ProblemResult;
+import gravit.code.domain.user.dto.response.UserLevelResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

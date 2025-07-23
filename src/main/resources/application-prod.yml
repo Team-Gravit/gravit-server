@@ -63,5 +63,5 @@ spring:
             scope: name,email
 
 jwt:
-  secret: qwdhui83jvnllw133qkjbcaw712jnfe982329H#p219qnf43yj90j32
+  secret: ${JWT_SECRET}
   valid-time: 7200000

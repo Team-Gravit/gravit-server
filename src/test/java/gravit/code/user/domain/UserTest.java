@@ -1,5 +1,6 @@
 package gravit.code.user.domain;
 
+import gravit.code.domain.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

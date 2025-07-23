@@ -1,5 +1,6 @@
 package gravit.code.friend.domain;
 
+import gravit.code.domain.friend.domain.Friend;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

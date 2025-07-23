@@ -1,6 +1,7 @@
 package gravit.code.lessonProgress.repository;
 
-import gravit.code.lessonProgress.domain.LessonProgress;
+import gravit.code.domain.lessonProgress.domain.LessonProgress;
+import gravit.code.domain.lessonProgress.domain.LessonProgressRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

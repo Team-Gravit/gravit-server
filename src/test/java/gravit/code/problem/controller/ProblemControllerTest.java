@@ -1,10 +1,11 @@
 package gravit.code.problem.controller;
 
-import gravit.code.common.exception.domain.CustomErrorCode;
-import gravit.code.common.exception.domain.RestApiException;
-import gravit.code.lesson.dto.response.LessonResponse;
-import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.service.ProblemService;
+import gravit.code.domain.problem.controller.ProblemController;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.domain.ProblemType;
+import gravit.code.domain.problem.service.ProblemService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

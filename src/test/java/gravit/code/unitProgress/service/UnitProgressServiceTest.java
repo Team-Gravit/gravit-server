@@ -1,7 +1,8 @@
 package gravit.code.unitProgress.service;
 
-import gravit.code.unitProgress.domain.UnitProgress;
-import gravit.code.unitProgress.repository.UnitProgressRepository;
+import gravit.code.domain.unitProgress.domain.UnitProgress;
+import gravit.code.domain.unitProgress.domain.UnitProgressRepository;
+import gravit.code.domain.unitProgress.service.UnitProgressService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

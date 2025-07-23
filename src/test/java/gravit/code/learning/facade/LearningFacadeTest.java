@@ -1,12 +1,13 @@
 package gravit.code.learning.facade;
 
-import gravit.code.chapterProgress.service.ChapterProgressService;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.problem.dto.request.ProblemResult;
-import gravit.code.problemProgress.service.ProblemProgressService;
-import gravit.code.unitProgress.service.UnitProgressService;
-import gravit.code.user.dto.response.UserLevelResponse;
-import gravit.code.user.service.UserService;
+import gravit.code.domain.chapterProgress.service.ChapterProgressService;
+import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.domain.learning.facade.LearningFacade;
+import gravit.code.domain.problem.dto.request.ProblemResult;
+import gravit.code.domain.problemProgress.service.ProblemProgressService;
+import gravit.code.domain.unitProgress.service.UnitProgressService;
+import gravit.code.domain.user.dto.response.UserLevelResponse;
+import gravit.code.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
