@@ -12,7 +12,7 @@ public interface LessonProgressRepository {
 
     boolean existsByLessonIdAndUserId(Long lessonId, Long userId);
 
-    List<LessonInfo> findLessonsWithProgressByUnitId(@Param("userId") Long userId, @Param("unitId") Long unitId);
+    List<LessonInfo> findAllLessonsWithProgress(@Param("userId") Long userId, @Param("unitId") Long unitId);
 
     LessonProgress save(LessonProgress lessonProgress);
 }

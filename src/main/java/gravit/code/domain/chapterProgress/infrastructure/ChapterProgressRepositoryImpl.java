@@ -32,7 +32,7 @@ public class ChapterProgressRepositoryImpl implements ChapterProgressRepository 
     }
 
     @Override
-    public List<ChapterInfoResponse> findAllChapterInfoByUserId(@Param("userId") Long userId){
+    public List<ChapterInfoResponse> findAllChaptersWithProgress(@Param("userId") Long userId){
         return chapterProgressJpaRepository.findAllChapterInfoByUserId(userId);
     }
 

@@ -6,5 +6,5 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProblemRepository {
-    List<LessonResponse> findByLessonId(@Param("lessonId") Long lessonId);
+    List<LessonResponse> findAllProblemsByLessonId(@Param("lessonId") Long lessonId);
 }

@@ -37,7 +37,7 @@ public class UnitProgressService {
         }
     }
 
-    public List<UnitInfo> getUnitInfosByChapterId(Long userId, Long chapterId){
-        return unitProgressRepository.findUnitsWithProgressByChapterId(userId, chapterId);
+    public List<UnitInfo> getAllUnitsWithProgress(Long userId, Long chapterId){
+        return unitProgressRepository.findAllUnitsWithProgress(userId, chapterId);
     }
 }

@@ -15,5 +15,5 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
         WHERE p.lessonId = :lessonId
         ORDER BY p.id ASC
     """)
-    List<LessonResponse> findByLessonId(@Param("lessonId") Long lessonId);
+    List<LessonResponse> findAllProblemsByLessonId(@Param("lessonId") Long lessonId);
 }

@@ -34,7 +34,7 @@ public class LessonProgressService {
         lessonProgress.updateProgressStatus();
     }
 
-    public List<LessonInfo> getLessonInfosByUnitId(Long userId, Long unitId){
-        return lessonProgressRepository.findLessonsWithProgressByUnitId(userId, unitId);
+    public List<LessonInfo> getAllLessonsWithProgress(Long userId, Long unitId){
+        return lessonProgressRepository.findAllLessonsWithProgress(userId, unitId);
     }
 }

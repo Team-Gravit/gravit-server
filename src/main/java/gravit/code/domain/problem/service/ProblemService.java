@@ -17,8 +17,8 @@ public class ProblemService {
     private final ProblemRepository problemRepository;
 
     @Transactional(readOnly = true)
-    public List<LessonResponse> getAllProblemsInLesson(Long lessonsId){
-        List<LessonResponse> lessons = problemRepository.findByLessonId(lessonsId);
+    public List<LessonResponse> getAllProblems(Long lessonsId){
+        List<LessonResponse> lessons = problemRepository.findAllProblemsByLessonId(lessonsId);
 
         if(lessons.isEmpty())
             throw new RestApiException(CustomErrorCode.LESSON_NOT_FOUND);

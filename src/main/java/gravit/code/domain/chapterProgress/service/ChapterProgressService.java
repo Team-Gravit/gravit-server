@@ -31,7 +31,7 @@ public class ChapterProgressService {
         chapterProgress.updateCompletedUnits();
     }
 
-    public List<ChapterInfoResponse> findChaptersWithProgressByUserId(Long userId){
-        return chapterProgressRepository.findAllChapterInfoByUserId(userId);
+    public List<ChapterInfoResponse> getAllChaptersWithProgress(Long userId){
+        return chapterProgressRepository.findAllChaptersWithProgress(userId);
     }
 }

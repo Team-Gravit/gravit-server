@@ -32,7 +32,7 @@ public class UnitProgressRepositoryImpl implements UnitProgressRepository {
     }
 
     @Override
-    public List<UnitInfo> findUnitsWithProgressByChapterId(@Param("userId") Long userId, @Param("chapterId") Long chapterId){
+    public List<UnitInfo> findAllUnitsWithProgress(@Param("userId") Long userId, @Param("chapterId") Long chapterId){
         return  unitProgressJpaRepository.findUnitsWithProgressByChapterId(chapterId, userId);
     }
 

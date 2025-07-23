@@ -15,7 +15,7 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     private final ProblemJpaRepository problemJpaRepository;
 
     @Override
-    public List<LessonResponse> findByLessonId(@Param("lessonId") Long lessonId){
-        return problemJpaRepository.findByLessonId(lessonId);
+    public List<LessonResponse> findAllProblemsByLessonId(@Param("lessonId") Long lessonId){
+        return problemJpaRepository.findAllProblemsByLessonId(lessonId);
     }
 }

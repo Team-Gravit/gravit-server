@@ -13,7 +13,7 @@ public interface ChapterProgressRepository {
 
     Long getTotalUnitsByChapterId(Long chapterId);
 
-    List<ChapterInfoResponse> findAllChapterInfoByUserId(@Param("userId") Long userId);
+    List<ChapterInfoResponse> findAllChaptersWithProgress(@Param("userId") Long userId);
 
     ChapterProgress save(ChapterProgress chapterProgress);
 }
