@@ -1,4 +1,4 @@
-package gravit.code.domain.lesson.dto.response;
+package gravit.code.domain.problem.dto.response;
 
 import gravit.code.domain.problem.domain.ProblemType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 @Schema(description = "문제 정보 Response")
-public record LessonResponse(
+public record ProblemInfo(
 
         @Schema(
                 description = "문제 아이디",
@@ -38,8 +38,8 @@ public record LessonResponse(
         )
         String answer
 ) {
-        public static LessonResponse create(Long problemId, ProblemType problemType, String question, String options, String answer) {
-                return LessonResponse.builder()
+        public static ProblemInfo create(Long problemId, ProblemType problemType, String question, String options, String answer) {
+                return ProblemInfo.builder()
                         .problemId(problemId)
                         .problemType(problemType)
                         .question(question)

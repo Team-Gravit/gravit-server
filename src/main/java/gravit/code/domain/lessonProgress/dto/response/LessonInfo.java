@@ -1,7 +1,9 @@
 package gravit.code.domain.lessonProgress.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
+@Builder
 @Schema(description = "레슨 정보 DTO")
 public record LessonInfo(
         @Schema(
@@ -22,4 +24,11 @@ public record LessonInfo(
         )
         boolean isCompleted
 ) {
+        public static LessonInfo create(Long lessonId, String lessonName, boolean isCompleted) {
+                return LessonInfo.builder()
+                        .lessonId(lessonId)
+                        .lessonName(lessonName)
+                        .isCompleted(isCompleted)
+                        .build();
+        }
 }

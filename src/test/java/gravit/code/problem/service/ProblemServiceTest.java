@@ -3,7 +3,7 @@ package gravit.code.problem.service;
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.problem.domain.ProblemType;
 import gravit.code.domain.problem.domain.ProblemRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -33,15 +33,15 @@ class ProblemServiceTest {
     void getLessonProblemsByExistLessonId(){
         // given
         Long lessonId = 1L;
-        List<LessonResponse> expectedResponse = List.of(
-                new LessonResponse(1L, ProblemType.FILL_BLANK, "문제1", "-", "정답1"),
-                new LessonResponse(2L, ProblemType.SELECT_DESCRIPTION, "문제2", "선택지", "정답2")
+        List<ProblemInfo> expectedResponse = List.of(
+                new ProblemInfo(1L, ProblemType.FILL_BLANK, "문제1", "-", "정답1"),
+                new ProblemInfo(2L, ProblemType.SELECT_DESCRIPTION, "문제2", "선택지", "정답2")
         );
 
         when(problemRepository.findByLessonId(lessonId)).thenReturn(expectedResponse);
 
         // when
-        List<LessonResponse> actualResponse = problemService.getLesson(lessonId);
+        List<ProblemInfo> actualResponse = problemService.getLesson(lessonId);
 
         // then
         assertThat(actualResponse).hasSize(expectedResponse.size());

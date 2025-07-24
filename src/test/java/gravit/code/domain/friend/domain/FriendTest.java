@@ -1,4 +1,4 @@
-package gravit.code.friend.domain;
+package gravit.code.domain.friend.domain;
 
 import gravit.code.domain.friend.domain.Friend;
 import org.junit.jupiter.api.DisplayName;

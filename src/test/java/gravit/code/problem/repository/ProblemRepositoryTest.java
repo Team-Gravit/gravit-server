@@ -1,6 +1,6 @@
 package gravit.code.problem.repository;
 
-import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.problem.domain.Problem;
 import gravit.code.domain.problem.domain.ProblemType;
 import gravit.code.domain.problem.domain.ProblemRepository;
@@ -68,12 +68,12 @@ class ProblemRepositoryTest {
         Long lessonId = 1L;
 
         // when
-        List<LessonResponse>  lessonProblems = problemRepository.findByLessonId(lessonId);
+        List<ProblemInfo>  lessonProblems = problemRepository.findByLessonId(lessonId);
 
         // then
         assertThat(lessonProblems).hasSize(4);
         assertThat(lessonProblems.get(0).problemId()).isLessThan(lessonProblems.get(1).problemId());
         assertThat(lessonProblems).isInstanceOf(List.class);
-        assertThat(lessonProblems.get(0)).isInstanceOf(LessonResponse.class);
+        assertThat(lessonProblems.get(0)).isInstanceOf(ProblemInfo.class);
     }
 }

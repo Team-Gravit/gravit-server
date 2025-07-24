@@ -1,4 +1,4 @@
-package gravit.code.learning.controller;
+package gravit.code.domain.learning.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.domain.learning.controller.api.LearningController;

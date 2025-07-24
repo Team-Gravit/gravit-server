@@ -4,7 +4,7 @@ import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.service.LearningService;
-import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
 import gravit.code.domain.problem.service.ProblemService;
@@ -33,7 +33,7 @@ public class LearningFacade {
     private final ProblemProgressService problemProgressService;
 
     @Transactional(readOnly = true)
-    public List<LessonResponse> getAllProblemsInLesson(Long lessonId){
+    public List<ProblemInfo> getAllProblemsInLesson(Long lessonId){
         return problemService.getAllProblems(lessonId);
     }
 

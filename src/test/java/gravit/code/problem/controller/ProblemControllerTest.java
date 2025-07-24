@@ -3,7 +3,7 @@ package gravit.code.problem.controller;
 import gravit.code.domain.problem.controller.ProblemController;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.problem.domain.ProblemType;
 import gravit.code.domain.problem.service.ProblemService;
 import org.junit.jupiter.api.DisplayName;
@@ -38,11 +38,11 @@ class ProblemControllerTest {
     void getProblemWithValidLessonId() throws Exception {
         // given
         Long lessonId = 1L;
-        List<LessonResponse> expectedResponse = Arrays.asList(
-                LessonResponse.create(1L, ProblemType.FILL_BLANK, "문제1", "선택지1", "정답1"),
-                LessonResponse.create(2L, ProblemType.FILL_BLANK, "문제2", "-", "정답2"),
-                LessonResponse.create(3L, ProblemType.SELECT_DESCRIPTION, "문제3", "선택지3", "정답3"),
-                LessonResponse.create(4L, ProblemType.FILL_BLANK, "문제4", "-", "정답4")
+        List<ProblemInfo> expectedResponse = Arrays.asList(
+                ProblemInfo.create(1L, ProblemType.FILL_BLANK, "문제1", "선택지1", "정답1"),
+                ProblemInfo.create(2L, ProblemType.FILL_BLANK, "문제2", "-", "정답2"),
+                ProblemInfo.create(3L, ProblemType.SELECT_DESCRIPTION, "문제3", "선택지3", "정답3"),
+                ProblemInfo.create(4L, ProblemType.FILL_BLANK, "문제4", "-", "정답4")
                 );
         when(problemService.getLesson(lessonId)).thenReturn(expectedResponse);
 
