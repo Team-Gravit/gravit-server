@@ -11,8 +11,6 @@ public interface ChapterProgressRepository {
 
     boolean existsByChapterIdAndUserId(Long chapterId, Long userId);
 
-    Long getTotalUnitsByChapterId(Long chapterId);
-
     List<ChapterInfoResponse> findAllChaptersWithProgress(@Param("userId") Long userId);
 
     ChapterProgress save(ChapterProgress chapterProgress);

@@ -27,11 +27,6 @@ public class ChapterProgressRepositoryImpl implements ChapterProgressRepository 
     }
 
     @Override
-    public Long getTotalUnitsByChapterId(Long chapterId){
-        return chapterProgressJpaRepository.getTotalUnitsByChapterId(chapterId);
-    }
-
-    @Override
     public List<ChapterInfoResponse> findAllChaptersWithProgress(@Param("userId") Long userId){
         return chapterProgressJpaRepository.findAllChapterInfoByUserId(userId);
     }

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ProblemRepository {
     List<LessonResponse> findAllProblemsByLessonId(@Param("lessonId") Long lessonId);
+    Problem save(Problem problem);
 }

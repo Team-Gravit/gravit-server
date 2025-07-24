@@ -14,6 +14,6 @@ public class ChapterService {
     private final ChapterRepository chapterRepository;
 
     public Optional<RecentLearningInfo> getRecentLearningChapter(Long userId){
-        return chapterRepository.findRecentLearningChapterByProblemId(userId);
+        return chapterRepository.findRecentLearningChapter(userId);
     }
 }

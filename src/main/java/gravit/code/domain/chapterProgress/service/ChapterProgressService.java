@@ -1,5 +1,6 @@
 package gravit.code.domain.chapterProgress.service;
 
+import gravit.code.domain.chapter.domain.ChapterRepository;
 import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
@@ -15,10 +16,11 @@ import java.util.List;
 public class ChapterProgressService {
 
     private final ChapterProgressRepository chapterProgressRepository;
+    private final ChapterRepository chapterRepository;
 
     public void createChapterProgress(Long userId, Long chapterId){
         if (!chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)){
-            Long totalUnits = chapterProgressRepository.getTotalUnitsByChapterId(chapterId);
+            Long totalUnits = chapterRepository.getTotalUnitsByChapterId(chapterId);
             ChapterProgress chapterProgress = ChapterProgress.create(totalUnits, userId, chapterId);
             chapterProgressRepository.save(chapterProgress);
         }
