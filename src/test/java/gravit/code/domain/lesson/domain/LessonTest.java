@@ -1,4 +1,4 @@
-package gravit.code.lesson.domain;
+package gravit.code.domain.lesson.domain;
 
 import gravit.code.domain.lesson.domain.Lesson;
 import org.junit.jupiter.api.DisplayName;

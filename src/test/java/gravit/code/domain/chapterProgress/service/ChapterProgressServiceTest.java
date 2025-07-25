@@ -1,4 +1,4 @@
-package gravit.code.chapterProgress.service;
+package gravit.code.domain.chapterProgress.service;
 
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
