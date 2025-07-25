@@ -1,4 +1,4 @@
-package gravit.code.problemProgress.domain;
+package gravit.code.domain.problemProgress.domain;
 
 import gravit.code.domain.problemProgress.domain.ProblemProgress;
 import org.junit.jupiter.api.DisplayName;

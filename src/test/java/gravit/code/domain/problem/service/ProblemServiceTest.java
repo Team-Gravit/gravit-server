@@ -1,4 +1,4 @@
-package gravit.code.problem.service;
+package gravit.code.domain.problem.service;
 
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.global.exception.domain.CustomErrorCode;

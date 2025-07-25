@@ -1,7 +1,10 @@
 package gravit.code.unitProgress.repository;
 
+import gravit.code.domain.unit.domain.Unit;
+import gravit.code.domain.unit.domain.UnitRepository;
 import gravit.code.domain.unitProgress.domain.UnitProgress;
 import gravit.code.domain.unitProgress.domain.UnitProgressRepository;
+import gravit.code.domain.unitProgress.dto.response.UnitInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,14 +24,41 @@ class UnitProgressRepositoryTest {
     @Autowired
     private UnitProgressRepository unitProgressRepository;
 
+    @Autowired
+    private UnitRepository unitRepository;
+
     @BeforeEach
     void setUp() {
-        UnitProgress unitProgress = UnitProgress.create(
+        UnitProgress unitProgress1 = UnitProgress.create(
                 3L,
                 1L,
                 2L
         );
-        unitProgressRepository.save(unitProgress);
+        unitProgressRepository.save(unitProgress1);
+
+        Unit unit1 = unitRepository.save(Unit.create("스택", 5L, 1L));
+        Unit unit2 = unitRepository.save(Unit.create("큐", 4L, 1L));
+        Unit unit3 = unitRepository.save(Unit.create("힙", 6L, 1L));
+        Unit unit4 = unitRepository.save(Unit.create("트리", 8L, 1L));
+
+        UnitProgress unitProgress2 = unitProgressRepository.save(
+                UnitProgress.create(5L, 1L, unit1.getId())
+        );
+        unitProgress2.updateCompletedLessons();
+        unitProgress2.updateCompletedLessons();
+        unitProgress2.updateCompletedLessons();
+
+        UnitProgress unitProgress3 = unitProgressRepository.save(
+                UnitProgress.create(4L, 1L, unit2.getId())
+        );
+        unitProgress3.updateCompletedLessons();
+        unitProgress3.updateCompletedLessons();
+        unitProgress3.updateCompletedLessons();
+        unitProgress3.updateCompletedLessons();
+
+        UnitProgress unitProgress4 = unitProgressRepository.save(
+                UnitProgress.create(6L, 1L, unit3.getId())
+        );
     }
 
     @Test
@@ -60,5 +91,53 @@ class UnitProgressRepositoryTest {
 
         // then
         assertThat(unitProgress).isNotPresent();
+    }
+
+    @Test
+    @DisplayName("unitId와 userId로 UnitProgress가 존재하는지 조회할 수 있다.")
+    void getUnitProgressExistByUnitIdAndUserId1(){
+        //given
+        Long unitId = 2L;
+        Long userId = 1L;
+
+        //when
+        boolean exist = unitProgressRepository.existsByUnitIdAndUserId(unitId, userId);
+
+        //then
+        assertThat(exist).isTrue();
+    }
+
+    @Test
+    @DisplayName("unitId와 userId로 UnitProgress가 존재하는지 조회할 수 있다.")
+    void getUnitProgressExistByUnitIdAndUserId2(){
+        //given
+        Long unitId = 2222L;
+        Long userId = 1111L;
+
+        //when
+        boolean exist = unitProgressRepository.existsByUnitIdAndUserId(unitId, userId);
+
+        //then
+        assertThat(exist).isFalse();
+    }
+
+    @Test
+    @DisplayName("chapterId와 userId로 진행도를 포함한 Unit을 조회할 수 있다.")
+    void getUnitInfoWithProgressByChapterIdAndUserId(){
+        //given
+        Long chapterId = 1L;
+        Long userId = 1L;
+
+        //when
+        List<UnitInfo> unitInfos = unitProgressRepository.findAllUnitsWithProgress(userId, chapterId);
+
+        //then
+        assertThat(unitInfos).hasSize(4);
+
+        assertThat(unitInfos.get(0).unitId()).isEqualTo(1L);
+        assertThat(unitInfos.get(0).completedLesson()).isEqualTo(3L);
+
+        assertThat(unitInfos.get(3).unitId()).isEqualTo(4L);
+        assertThat(unitInfos.get(3).completedLesson()).isEqualTo(0L);
     }
 }

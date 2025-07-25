@@ -1,10 +1,11 @@
 package gravit.code.user.service;
 
+import gravit.code.domain.user.domain.User;
+import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.service.UserService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.domain.user.domain.User;
-import gravit.code.domain.user.dto.response.UserLevelResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

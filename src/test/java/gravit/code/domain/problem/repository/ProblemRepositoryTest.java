@@ -1,4 +1,4 @@
-package gravit.code.problem.repository;
+package gravit.code.domain.problem.repository;
 
 import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.problem.domain.Problem;

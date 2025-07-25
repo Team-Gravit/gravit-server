@@ -15,13 +15,6 @@ public interface UnitProgressJpaRepository extends JpaRepository<UnitProgress,Lo
     boolean existsByUnitIdAndUserId(Long unitId, Long userId);
 
     @Query("""
-        SELECT up.totalLessons
-        FROM UnitProgress up
-        WHERE up.unitId = :unitId
-    """)
-    Long getTotalLessonsByUnitId(Long unitId);
-
-    @Query("""
         SELECT new gravit.code.domain.unitProgress.dto.response.UnitInfo(u.id, u.name, u.totalLessons, COALESCE(CAST(up.completedLessons as long), 0L))
         FROM Unit u
         LEFT JOIN UnitProgress up ON u.id = up.unitId AND up.userId = :userId

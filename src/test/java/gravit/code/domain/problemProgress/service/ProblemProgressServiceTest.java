@@ -1,4 +1,4 @@
-package gravit.code.problemProgress.service;
+package gravit.code.domain.problemProgress.service;
 
 import gravit.code.domain.problem.dto.request.ProblemResult;
 import gravit.code.domain.problemProgress.domain.ProblemProgress;

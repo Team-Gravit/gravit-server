@@ -27,11 +27,6 @@ public class UnitProgressRepositoryImpl implements UnitProgressRepository {
     }
 
     @Override
-    public Long getTotalLessonsByUnitId(Long unitId){
-        return unitProgressJpaRepository.getTotalLessonsByUnitId(unitId);
-    }
-
-    @Override
     public List<UnitInfo> findAllUnitsWithProgress(@Param("userId") Long userId, @Param("chapterId") Long chapterId){
         return  unitProgressJpaRepository.findUnitsWithProgressByChapterId(chapterId, userId);
     }

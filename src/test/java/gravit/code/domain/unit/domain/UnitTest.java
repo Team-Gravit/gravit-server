@@ -1,4 +1,4 @@
-package gravit.code.unit.domain;
+package gravit.code.domain.unit.domain;
 
 import gravit.code.domain.unit.domain.Unit;
 import org.junit.jupiter.api.DisplayName;

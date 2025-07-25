@@ -11,8 +11,6 @@ public interface UnitProgressRepository {
 
     boolean existsByUnitIdAndUserId(Long unitId, Long userId);
 
-    Long getTotalLessonsByUnitId(Long unitId);
-
     List<UnitInfo> findAllUnitsWithProgress(@Param("userId") Long userId, @Param("chapterId") Long chapterId);
 
     UnitProgress save(UnitProgress unitProgress);

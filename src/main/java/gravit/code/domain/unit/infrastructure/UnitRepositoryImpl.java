@@ -15,4 +15,9 @@ public class UnitRepositoryImpl implements UnitRepository {
     public Unit save(Unit unit) {
         return unitJpaRepository.save(unit);
     }
+
+    @Override
+    public Long getTotalLessonsByUnitId(Long unitId) {
+        return unitJpaRepository.getTotalLessonsByUnitId(unitId);
+    }
 }
