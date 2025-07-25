@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
     @Query("""
-        SELECT new gravit.code.domain.lesson.dto.response.ProblemInfo(p.id, p.problemType, p.question, p.options, p.answer)
+        SELECT new gravit.code.domain.problem.dto.response.ProblemInfo(p.id, p.problemType, p.question, p.options, p.answer)
         FROM Problem p
         WHERE p.lessonId = :lessonId
         ORDER BY p.id ASC

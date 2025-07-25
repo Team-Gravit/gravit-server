@@ -3,7 +3,6 @@ package gravit.code.global.config;
 
 import gravit.code.auth.jwt.JwtAuthFilter;
 import gravit.code.auth.jwt.JwtProvider;
-import gravit.code.domain.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
