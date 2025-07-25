@@ -1,4 +1,4 @@
-package gravit.code.unitProgress.service;
+package gravit.code.domain.unitProgress.service;
 
 import gravit.code.domain.unit.domain.UnitRepository;
 import gravit.code.domain.unitProgress.domain.UnitProgress;

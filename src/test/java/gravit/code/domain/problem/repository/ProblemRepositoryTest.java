@@ -1,9 +1,9 @@
 package gravit.code.domain.problem.repository;
 
-import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.problem.domain.Problem;
 import gravit.code.domain.problem.domain.ProblemType;
-import gravit.code.domain.problem.domain.ProblemRepository;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.infrastructure.ProblemJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProblemRepositoryTest {
 
     @Autowired
-    private ProblemRepository problemRepository;
+    private ProblemJpaRepository problemRepository;
 
     @BeforeEach
     void setUp() {

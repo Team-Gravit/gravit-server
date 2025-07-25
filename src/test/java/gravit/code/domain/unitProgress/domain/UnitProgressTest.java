@@ -1,4 +1,4 @@
-package gravit.code.unitProgress.domain;
+package gravit.code.domain.unitProgress.domain;
 
 import gravit.code.domain.unitProgress.domain.UnitProgress;
 import org.junit.jupiter.api.DisplayName;

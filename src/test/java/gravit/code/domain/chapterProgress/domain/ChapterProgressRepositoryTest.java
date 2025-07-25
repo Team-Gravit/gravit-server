@@ -1,14 +1,16 @@
 package gravit.code.domain.chapterProgress.domain;
 
 import gravit.code.domain.chapter.domain.Chapter;
-import gravit.code.domain.chapter.domain.ChapterRepository;
+import gravit.code.domain.chapter.infrastructure.ChapterJpaRepository;
 import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
+import gravit.code.domain.chapterProgress.infrastructure.ChapterProgressJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,56 +18,52 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ChapterProgressRepositoryTest {
 
     @Autowired
-    private ChapterProgressRepository chapterProgressRepository;
+    private ChapterProgressJpaRepository chapterProgressJpaRepository;
 
     @Autowired
-    private ChapterRepository chapterRepository;
+    private ChapterJpaRepository chapterJpaRepository;
 
     @BeforeEach
     void setUp() {
-        ChapterProgress chapterProgress = ChapterProgress.create(
-            10L, 1L,1L
-        );
-        chapterProgressRepository.save(chapterProgress);
-
         Chapter chapter1 = Chapter.create(
-                "자료구조", "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다.", 10L
+                "자료구조0", "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다.", 10L
         );
-        chapterRepository.save(chapter1);
+        chapterJpaRepository.save(chapter1);
 
         Chapter chapter2 = Chapter.create(
                 "컴퓨터 네트워크", "컴퓨터 네트워크와 관련된 개념을 학습합니다.", 11L
         );
-        chapterRepository.save(chapter2);
+        chapterJpaRepository.save(chapter2);
 
         Chapter chapter3 = Chapter.create(
-                "자료구조", "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다.", 12L
+                "자료구조1", "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다.", 12L
         );
-        chapterRepository.save(chapter3);
+        chapterJpaRepository.save(chapter3);
 
         Chapter chapter4 = Chapter.create(
-                "자료구조", "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다.", 13L
+                "자료구조2", "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다.", 13L
         );
-        chapterRepository.save(chapter4);
+        chapterJpaRepository.save(chapter4);
 
         ChapterProgress chapterProgress1 = ChapterProgress.create(
                 10L, 2L, chapter1.getId()
         );
-        chapterProgressRepository.save(chapterProgress1);
+        chapterProgressJpaRepository.save(chapterProgress1);
 
         ChapterProgress chapterProgress2 = ChapterProgress.create(
                 11L, 2L, chapter2.getId()
         );
-        chapterProgressRepository.save(chapterProgress2);
+        chapterProgressJpaRepository.save(chapterProgress2);
 
         ChapterProgress chapterProgress3 = ChapterProgress.create(
                 12L, 2L, chapter3.getId()
         );
-        chapterProgressRepository.save(chapterProgress3);
+        chapterProgressJpaRepository.save(chapterProgress3);
     }
 
     @Test
@@ -73,11 +71,11 @@ class ChapterProgressRepositoryTest {
     void getChapterProgressByValidChapterIdAndUserId() {
         //given
         Long chapterId = 1L;
-        Long userId = 1L;
+        Long userId = 2L;
 
         //when
+        Optional<ChapterProgress> chapterProgress = chapterProgressJpaRepository.findByChapterIdAndUserId(chapterId, userId);
 
-        Optional<ChapterProgress> chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapterId, userId);
         //then
         assertThat(chapterProgress).isPresent();
         assertThat(chapterProgress.get().getChapterId()).isEqualTo(chapterId);
@@ -92,7 +90,7 @@ class ChapterProgressRepositoryTest {
         Long userId = 22222L;
 
         //when
-        Optional<ChapterProgress> chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapterId, userId);
+        Optional<ChapterProgress> chapterProgress = chapterProgressJpaRepository.findByChapterIdAndUserId(chapterId, userId);
 
         //then
         assertThat(chapterProgress).isNotPresent();
@@ -106,7 +104,7 @@ class ChapterProgressRepositoryTest {
         Long userId = 2L;
 
         //when
-        boolean exists = chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId);
+        boolean exists = chapterProgressJpaRepository.existsByChapterIdAndUserId(chapterId, userId);
 
         //then
         assertThat(exists).isTrue();
@@ -120,7 +118,7 @@ class ChapterProgressRepositoryTest {
         Long userId = 33L;
 
         //when
-        boolean exists = chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId);
+        boolean exists = chapterProgressJpaRepository.existsByChapterIdAndUserId(chapterId, userId);
 
         //then
         assertThat(exists).isFalse();
@@ -133,7 +131,7 @@ class ChapterProgressRepositoryTest {
         Long userId = 2L;
 
         //when
-        List<ChapterInfoResponse> chapterInfoResponses = chapterProgressRepository.findAllChaptersWithProgress(userId);
+        List<ChapterInfoResponse> chapterInfoResponses = chapterProgressJpaRepository.findAllChapterInfoByUserId(userId);
 
         assertThat(chapterInfoResponses).hasSize(4);
         assertThat(chapterInfoResponses.get(3).completedUnits()).isZero(); // SQL coalesce 함수 검증

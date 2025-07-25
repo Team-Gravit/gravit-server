@@ -1,10 +1,10 @@
 package gravit.code.domain.lessonProgress.repository;
 
 import gravit.code.domain.lesson.domain.Lesson;
-import gravit.code.domain.lesson.domain.LessonRepository;
+import gravit.code.domain.lesson.infrastructure.LessonJpaRepository;
 import gravit.code.domain.lessonProgress.domain.LessonProgress;
-import gravit.code.domain.lessonProgress.domain.LessonProgressRepository;
 import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
+import gravit.code.domain.lessonProgress.infrastructure.LessonProgressJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,23 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @EnableJpaAuditing
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class LessonProgressRepositoryTest {
 
     @Autowired
-    private LessonProgressRepository lessonProgressRepository;
+    private LessonProgressJpaRepository lessonProgressRepository;
 
     @Autowired
-    private LessonRepository lessonRepository;
+    private LessonJpaRepository lessonRepository;
 
     @BeforeEach
     void setUp() {
-        LessonProgress lessonProgress = LessonProgress.create(
-            1L,
-                1L,
-                false
-        );
-        lessonProgressRepository.save(lessonProgress);
 
         Lesson lesson1 = lessonRepository.save(Lesson.create("스택 기초", 10L, 1L));
         Lesson lesson2 = lessonRepository.save(Lesson.create("스택 활용", 8L, 1L));
@@ -100,7 +96,7 @@ class LessonProgressRepositoryTest {
         Long unitId = 1L;
 
         //when
-        List<LessonInfo> lessonInfos = lessonProgressRepository.findAllLessonsWithProgress(userId, unitId);
+        List<LessonInfo> lessonInfos = lessonProgressRepository.findLessonsWithProgressByUnitId(userId, unitId);
 
         //then
         assertThat(lessonInfos).isNotEmpty();

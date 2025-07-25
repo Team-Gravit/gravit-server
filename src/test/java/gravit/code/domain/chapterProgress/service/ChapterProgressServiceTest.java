@@ -1,8 +1,8 @@
 package gravit.code.domain.chapterProgress.service;
 
+import gravit.code.domain.chapter.domain.ChapterRepository;
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
-import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +22,9 @@ class ChapterProgressServiceTest {
 
     @Mock
     private ChapterProgressRepository chapterProgressRepository;
+
+    @Mock
+    private ChapterRepository chapterRepository;
 
     @InjectMocks
     private ChapterProgressService chapterProgressService;
@@ -67,13 +70,15 @@ class ChapterProgressServiceTest {
         Long chapterId = 4L;
         Long userId = 1L;
 
-        ChapterProgress chapterProgress =  mock(ChapterProgress.class);
+        when(chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)).thenReturn(false);
+        when(chapterRepository.getTotalUnitsByChapterId(chapterId)).thenReturn(12L);
 
         //when
-        when(chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)).thenReturn(false);
+        chapterProgressService.createChapterProgress(userId, chapterId);
 
         //then
-        verify(chapterProgressRepository).save(chapterProgress);
+        verify(chapterRepository).getTotalUnitsByChapterId(chapterId);
+        verify(chapterProgressRepository).save(any(ChapterProgress.class));
     }
 
     @Test
@@ -83,13 +88,13 @@ class ChapterProgressServiceTest {
         Long chapterId = 1L;
         Long userId = 1L;
 
-        ChapterProgress chapterProgress =  mock(ChapterProgress.class);
-
-        //when
         when(chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)).thenReturn(true);
 
+        //when
+        chapterProgressService.createChapterProgress(userId, chapterId);
+
         //then
-        verify(chapterProgressRepository, never()).save(chapterProgress);
+        verify(chapterProgressRepository, never()).save(any(ChapterProgress.class));
     }
 
 }

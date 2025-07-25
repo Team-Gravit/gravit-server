@@ -1,4 +1,4 @@
-package gravit.code.user.service;
+package gravit.code.domain.user.service;
 
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,9 +41,11 @@ class UserServiceTest {
         Long userId = 1L;
         User user = User.create(
                 "test@inu.ac.kr",
+                "google 123456789",
                 "test1",
                 "@dc5xay",
-                "https://test-profile-image-url/test.jpg"
+                1,
+                LocalDateTime.now()
         );
 
         when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
@@ -51,7 +54,7 @@ class UserServiceTest {
         UserLevelResponse response =  userService.updateUserLevel(userId);
 
         // then
-        assertThat(response.level()).isEqualTo(1);
+        assertThat(response.currentLevel()).isEqualTo(1);
         assertThat(response.xp()).isEqualTo(20);
     }
 

@@ -15,7 +15,7 @@ public interface LessonProgressJpaRepository extends JpaRepository<LessonProgres
     boolean existsByLessonIdAndUserId(Long lessonId, Long userId);
 
     @Query("""
-        SELECT new gravit.code.domain.lessonProgress.dto.response.LessonInfo(l.id, l.name, lp.isCompleted)
+        SELECT new gravit.code.domain.lessonProgress.dto.response.LessonInfo(l.id, l.name, COALESCE(lp.isCompleted, false))
         FROM Lesson l
         LEFT JOIN LessonProgress lp ON l.id = lp.lessonId AND lp.userId = :userId
         WHERE l.unitId = :unitId

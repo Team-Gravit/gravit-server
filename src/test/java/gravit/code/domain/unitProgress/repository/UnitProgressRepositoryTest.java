@@ -1,16 +1,17 @@
-package gravit.code.unitProgress.repository;
+package gravit.code.domain.unitProgress.repository;
 
 import gravit.code.domain.unit.domain.Unit;
-import gravit.code.domain.unit.domain.UnitRepository;
+import gravit.code.domain.unit.infrastructure.UnitJpaRepository;
 import gravit.code.domain.unitProgress.domain.UnitProgress;
-import gravit.code.domain.unitProgress.domain.UnitProgressRepository;
 import gravit.code.domain.unitProgress.dto.response.UnitInfo;
+import gravit.code.domain.unitProgress.infrastructure.UnitProgressJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,24 +19,18 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UnitProgressRepositoryTest {
 
     @Autowired
-    private UnitProgressRepository unitProgressRepository;
+    private UnitProgressJpaRepository unitProgressRepository;
 
     @Autowired
-    private UnitRepository unitRepository;
+    private UnitJpaRepository unitRepository;
 
     @BeforeEach
     void setUp() {
-        UnitProgress unitProgress1 = UnitProgress.create(
-                3L,
-                1L,
-                2L
-        );
-        unitProgressRepository.save(unitProgress1);
-
         Unit unit1 = unitRepository.save(Unit.create("스택", 5L, 1L));
         Unit unit2 = unitRepository.save(Unit.create("큐", 4L, 1L));
         Unit unit3 = unitRepository.save(Unit.create("힙", 6L, 1L));
@@ -75,8 +70,8 @@ class UnitProgressRepositoryTest {
         assertThat(unitProgress).isPresent();
         assertThat(unitProgress.get().getUnitId()).isEqualTo(unitId);
         assertThat(unitProgress.get().getUserId()).isEqualTo(userId);
-        assertThat(unitProgress.get().getTotalLessons()).isEqualTo(3L);
-        assertThat(unitProgress.get().getCompletedLessons()).isZero();
+        assertThat(unitProgress.get().getTotalLessons()).isEqualTo(4L);
+        assertThat(unitProgress.get().getCompletedLessons()).isEqualTo(4L);
     }
 
     @Test
@@ -129,7 +124,7 @@ class UnitProgressRepositoryTest {
         Long userId = 1L;
 
         //when
-        List<UnitInfo> unitInfos = unitProgressRepository.findAllUnitsWithProgress(userId, chapterId);
+        List<UnitInfo> unitInfos = unitProgressRepository.findUnitsWithProgressByChapterId(userId, chapterId);
 
         //then
         assertThat(unitInfos).hasSize(4);

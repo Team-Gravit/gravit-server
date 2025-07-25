@@ -1,17 +1,18 @@
 package gravit.code.domain.chapter.domain;
 
+import gravit.code.domain.chapter.infrastructure.ChapterJpaRepository;
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
-import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
+import gravit.code.domain.chapterProgress.infrastructure.ChapterProgressJpaRepository;
 import gravit.code.domain.learning.dto.response.RecentLearningInfo;
 import gravit.code.domain.lesson.domain.Lesson;
-import gravit.code.domain.lesson.domain.LessonRepository;
+import gravit.code.domain.lesson.infrastructure.LessonJpaRepository;
 import gravit.code.domain.problem.domain.Problem;
-import gravit.code.domain.problem.domain.ProblemRepository;
 import gravit.code.domain.problem.domain.ProblemType;
+import gravit.code.domain.problem.infrastructure.ProblemJpaRepository;
 import gravit.code.domain.problemProgress.domain.ProblemProgress;
-import gravit.code.domain.problemProgress.domain.ProblemProgressRepository;
+import gravit.code.domain.problemProgress.infrastructure.ProblemProgressJpaRepository;
 import gravit.code.domain.unit.domain.Unit;
-import gravit.code.domain.unit.domain.UnitRepository;
+import gravit.code.domain.unit.infrastructure.UnitJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,26 +29,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @EnableJpaAuditing
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ChapterRepositoryTest {
 
     @Autowired
-    private ChapterRepository chapterRepository;
+    private ChapterJpaRepository chapterRepository;
 
     @Autowired
-    private UnitRepository unitRepository;
+    private UnitJpaRepository unitRepository;
 
     @Autowired
-    private LessonRepository lessonRepository;
+    private LessonJpaRepository lessonRepository;
 
     @Autowired
-    private ProblemRepository problemRepository;
+    private ProblemJpaRepository problemRepository;
 
     @Autowired
-    private ChapterProgressRepository chapterProgressRepository;
+    private ChapterProgressJpaRepository chapterProgressRepository;
 
     @Autowired
-    private ProblemProgressRepository problemProgressRepository;
+    private ProblemProgressJpaRepository problemProgressRepository;
 
     @BeforeEach
     void setUp(){
@@ -102,7 +105,7 @@ class ChapterRepositoryTest {
         assertThat(recentLearningInfo.get().chapterName()).isEqualTo("자료구조");
         assertThat(recentLearningInfo.get().chapterDescription()).isEqualTo("스택, 큐, 힙과 같은 자료구조에 대해 학습합니다.");
         assertThat(recentLearningInfo.get().totalUnits()).isEqualTo(10L);
-        assertThat(recentLearningInfo.get().completedUnits()).isEqualTo(1L);
+        assertThat(recentLearningInfo.get().completedUnits()).isEqualTo(0L);
     }
 
     @Test

@@ -250,6 +250,7 @@ class LearningControllerTest {
     }
 
     @Test
+    @WithMockLoginUser
     @DisplayName("lessonId로 레슨에 포함된 문제를 조회할 수 있다.")
     void getProblemsByLessonId() throws Exception {
         //given
