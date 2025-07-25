@@ -37,4 +37,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<UserMainPageInfo> findUserMainPageInfoByUserId(Long userId){
         return jpaRepository.findUserMainPageInfoByUserId(userId);
     }
+
+    @Override
+    public boolean existsByHandle(String handle) {
+        return jpaRepository.existsByHandle(handle);
+    }
 }

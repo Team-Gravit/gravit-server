@@ -10,4 +10,5 @@ public interface UserRepository {
     void save(User user);
     boolean existsByNickname(String nickname);
     Optional<UserMainPageInfo> findUserMainPageInfoByUserId(Long userId);
+    boolean existsByHandle(String handle);
 }
