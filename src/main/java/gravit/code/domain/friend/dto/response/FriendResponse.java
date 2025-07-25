@@ -1,4 +1,4 @@
-package gravit.code.domain.friend.application.dto.response;
+package gravit.code.domain.friend.dto.response;
 
 import gravit.code.domain.friend.domain.Friend;
 import lombok.Builder;

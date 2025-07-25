@@ -14,7 +14,7 @@ public class HandleGenerator {
     public static String generateUniqueHandle(UserRepository userRepository) {
         for (int i = 0; i < MAX_RETRY; i++) {
             String handle = generateHandle();
-            if(!userRepository.existsByNickname(handle)) {
+            if(!userRepository.existsByHandle(handle)) {
                 return handle;
             }
         }

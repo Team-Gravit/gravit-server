@@ -1,7 +1,9 @@
-package gravit.code.domain.friend.application;
+package gravit.code.domain.friend.service;
 
 
-import gravit.code.domain.friend.application.dto.response.FriendResponse;
+import gravit.code.domain.friend.dto.response.FollowerResponse;
+import gravit.code.domain.friend.dto.response.FollowingResponse;
+import gravit.code.domain.friend.dto.response.FriendResponse;
 import gravit.code.domain.friend.domain.Friend;
 import gravit.code.domain.friend.domain.FriendRepository;
 import gravit.code.domain.user.domain.UserRepository;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -55,5 +58,15 @@ public class FriendService {
         }
 
         friendRepository.delete(friend.get());
+    }
+
+    @Transactional(readOnly = true)
+    public List<FollowerResponse> getFollowers(Long followeeId) {
+        return friendRepository.findByFollowersByFolloweeId(followeeId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FollowingResponse> getFollowings(Long followerId) {
+        return friendRepository.findByFollowingsByFollowerId(followerId);
     }
 }

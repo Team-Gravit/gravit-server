@@ -1,16 +1,17 @@
-package gravit.code.domain.friend.presentation;
+package gravit.code.domain.friend.controller;
 
 import gravit.code.auth.oauth.LoginUser;
-import gravit.code.domain.friend.application.FriendService;
-import gravit.code.domain.friend.application.dto.response.FriendResponse;
+import gravit.code.domain.friend.dto.response.FollowerResponse;
+import gravit.code.domain.friend.dto.response.FollowingResponse;
+import gravit.code.domain.friend.service.FriendService;
+import gravit.code.domain.friend.dto.response.FriendResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,6 +35,20 @@ public class FriendController {
                                               @AuthenticationPrincipal LoginUser loginUser) {
         friendService.unFollowing(followeeId, loginUser.getId());
         return ResponseEntity.ok("팔로우를 성공적으로 취소하였습니다. followeeId = " + followeeId);
+    }
+
+    @GetMapping("/follower")
+    public ResponseEntity<List<FollowerResponse>> getFollowers(@AuthenticationPrincipal LoginUser loginUser){
+        Long followeeId = loginUser.getId();
+        List<FollowerResponse> followers = friendService.getFollowers(followeeId);
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/following")
+    public ResponseEntity<List<FollowingResponse>> getFollowings(@AuthenticationPrincipal LoginUser loginUser){
+        Long followerId = loginUser.getId();
+        List<FollowingResponse> followings = friendService.getFollowings(followerId);
+        return ResponseEntity.ok(followings);
     }
 
 }

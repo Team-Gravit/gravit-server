@@ -1,5 +1,6 @@
 package gravit.code.domain.user.service;
 
+import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.domain.user.domain.User;
@@ -39,6 +40,10 @@ public class UserService {
         user.onboard(request.nickname(), request.avatarId());
         user.checkOnboarded();
         return UserResponse.from(user);
+    }
+
+    public MyPageResponse getMyPage(Long userId) {
+        return userRepository.findMyPageByUserId(userId).orElseThrow(RuntimeException::new);
     }
 
     public UserLevelResponse updateUserLevel(Long userId){

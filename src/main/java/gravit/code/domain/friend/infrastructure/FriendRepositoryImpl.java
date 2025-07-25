@@ -3,9 +3,12 @@ package gravit.code.domain.friend.infrastructure;
 
 import gravit.code.domain.friend.domain.Friend;
 import gravit.code.domain.friend.domain.FriendRepository;
+import gravit.code.domain.friend.dto.response.FollowerResponse;
+import gravit.code.domain.friend.dto.response.FollowingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,5 +35,15 @@ public class FriendRepositoryImpl implements FriendRepository {
     @Override
     public void delete(Friend friend) {
         jpaRepository.delete(friend);
+    }
+
+    @Override
+    public List<FollowerResponse> findByFollowersByFolloweeId(Long followeeId) {
+        return jpaRepository.findFollowersByFolloweeId(followeeId);
+    }
+
+    @Override
+    public List<FollowingResponse> findByFollowingsByFollowerId(Long followerId) {
+        return jpaRepository.findByFollowingsByFollowerId(followerId);
     }
 }

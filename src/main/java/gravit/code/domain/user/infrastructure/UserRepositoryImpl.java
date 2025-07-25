@@ -2,6 +2,7 @@ package gravit.code.domain.user.infrastructure;
 
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserMainPageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -41,5 +42,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean existsByHandle(String handle) {
         return jpaRepository.existsByHandle(handle);
+    }
+
+    @Override
+    public Optional<MyPageResponse> findMyPageByUserId(Long userId) {
+        return jpaRepository.findMyPageByUserId(userId);
     }
 }
