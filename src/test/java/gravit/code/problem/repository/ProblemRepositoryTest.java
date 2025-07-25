@@ -68,7 +68,7 @@ class ProblemRepositoryTest {
         Long lessonId = 1L;
 
         // when
-        List<ProblemInfo>  lessonProblems = problemRepository.findByLessonId(lessonId);
+        List<ProblemInfo>  lessonProblems = problemRepository.findAllProblemsByLessonId(lessonId);
 
         // then
         assertThat(lessonProblems).hasSize(4);

@@ -1,4 +1,4 @@
-package gravit.code.lessonProgress.repository;
+package gravit.code.domain.lessonProgress.repository;
 
 import gravit.code.domain.lesson.domain.Lesson;
 import gravit.code.domain.lesson.domain.LessonRepository;

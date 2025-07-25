@@ -38,10 +38,10 @@ class ProblemServiceTest {
                 new ProblemInfo(2L, ProblemType.SELECT_DESCRIPTION, "문제2", "선택지", "정답2")
         );
 
-        when(problemRepository.findByLessonId(lessonId)).thenReturn(expectedResponse);
+        when(problemRepository.findAllProblemsByLessonId(lessonId)).thenReturn(expectedResponse);
 
         // when
-        List<ProblemInfo> actualResponse = problemService.getLesson(lessonId);
+        List<ProblemInfo> actualResponse = problemService.getAllProblems(lessonId);
 
         // then
         assertThat(actualResponse).hasSize(expectedResponse.size());
@@ -53,10 +53,10 @@ class ProblemServiceTest {
     void getLessonProblemByNonExistLessonId(){
         // given
         Long lessonId = 100000L;
-        when(problemRepository.findByLessonId(lessonId)).thenReturn(List.of());
+        when(problemRepository.findAllProblemsByLessonId(lessonId)).thenReturn(List.of());
 
         // when & then
-        assertThatThrownBy(() -> problemService.getLesson(lessonId))
+        assertThatThrownBy(() -> problemService.getAllProblems(lessonId))
                 .isInstanceOf(RestApiException.class)
                 .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.LESSON_NOT_FOUND);
     }
