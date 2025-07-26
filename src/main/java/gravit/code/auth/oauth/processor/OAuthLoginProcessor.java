@@ -3,6 +3,7 @@ package gravit.code.auth.oauth.processor;
 import gravit.code.auth.jwt.JwtProvider;
 import gravit.code.auth.oauth.dto.LoginResponse;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
+import gravit.code.auth.util.HandleGenerator;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +40,11 @@ public class OAuthLoginProcessor {
         User user;
         if (oldUser.isEmpty()) {
             log.info("첫 로그인, 회원가입 시작");
+            String handle = HandleGenerator.generateUniqueHandle(userRepository);
             user = User.create(oAuthUserInfo.getEmail(),
                     providerId,
                     oAuthUserInfo.getName(),
-                    "test",
+                    handle,
                     1,
                     LocalDateTime.now());
 

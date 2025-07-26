@@ -15,22 +15,23 @@ public class Friend {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "following_id", columnDefinition = "bigint", nullable = false)
-    private Long followingId;
-
     @Column(name = "follower_id", columnDefinition = "bigint", nullable = false)
     private Long followerId;
 
+    @Column(name = "followee_id", columnDefinition = "bigint", nullable = false)
+    private Long followeeId;
+
+
     @Builder
-    private Friend(Long followingId, Long followerId) {
-        this.followingId = followingId;
+    private Friend(Long followerId, Long followeeId) {
         this.followerId = followerId;
+        this.followeeId = followeeId;
     }
 
-    public static Friend create(Long followingId, Long followerId) {
+    public static Friend create(Long followerId, Long followeeId) {
         return Friend.builder()
-                .followingId(followingId)
                 .followerId(followerId)
+                .followeeId(followeeId)
                 .build();
     }
 }
