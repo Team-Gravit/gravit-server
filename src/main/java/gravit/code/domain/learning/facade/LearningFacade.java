@@ -4,7 +4,7 @@ import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.service.LearningService;
-import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
 import gravit.code.domain.problem.service.ProblemService;
@@ -33,14 +33,13 @@ public class LearningFacade {
     private final ProblemProgressService problemProgressService;
 
     @Transactional(readOnly = true)
-    public List<LessonResponse> getAllProblemsInLesson(Long lessonId){
-        return problemService.getAllProblemsInLesson(lessonId);
+    public List<ProblemInfo> getAllProblemsInLesson(Long lessonId){
+        return problemService.getAllProblems(lessonId);
     }
 
     @Transactional
     public UserLevelResponse saveLearningResult(Long userId, LearningResultSaveRequest request){
 
-        // 챕터, 유닛, 레슨 중간테이블 초기화
         learningService.initLearningProgress(userId, request.chapterId(), request.unitId(), request.lessonId());
 
         problemProgressService.saveProblemResults(userId, request.problemResults());
@@ -55,16 +54,16 @@ public class LearningFacade {
 
     @Transactional(readOnly = true)
     public List<ChapterInfoResponse> getAllChapters(Long userId){
-        return chapterProgressService.findChaptersWithProgressByUserId(userId);
+        return chapterProgressService.getAllChaptersWithProgress(userId);
     }
 
     @Transactional(readOnly = true)
     public List<UnitPageResponse> getAllUnitsInChapter(Long userId, Long chapterId){
-        List<UnitInfo> unitInfos = unitProgressService.getUnitInfosByChapterId(userId, chapterId);
+        List<UnitInfo> unitInfos = unitProgressService.getAllUnitsWithProgress(userId, chapterId);
 
         return unitInfos.stream()
                 .map(unitInfo -> {
-                    List<LessonInfo> lessonInfos = lessonProgressService.getLessonInfosByUnitId(userId, unitInfo.unitId());
+                    List<LessonInfo> lessonInfos = lessonProgressService.getAllLessonsWithProgress(userId, unitInfo.unitId());
 
                     return UnitPageResponse.create(unitInfo, lessonInfos);
                 })

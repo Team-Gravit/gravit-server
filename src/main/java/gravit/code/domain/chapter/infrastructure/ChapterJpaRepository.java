@@ -21,5 +21,12 @@ public interface ChapterJpaRepository extends JpaRepository<Chapter, Long> {
         ORDER BY pp.createdAt DESC
         LIMIT 1
     """)
-    Optional<RecentLearningInfo> findRecentLearningChapterByProblemId(@Param("userId") Long userId);
+    Optional<RecentLearningInfo> findRecentLearningChapter(@Param("userId") Long userId);
+
+    @Query("""
+        SELECT c.totalUnits
+        FROM Chapter c
+        WHERE c.id = :chapterId
+    """)
+    Long getTotalUnitsByChapterId(@Param("chapterId") Long chapterId);
 }

@@ -15,13 +15,6 @@ public interface ChapterProgressJpaRepository extends JpaRepository<ChapterProgr
     boolean existsByChapterIdAndUserId(Long chapterId, Long userId);
 
     @Query("""
-        SELECT cp.totalUnits
-        FROM ChapterProgress cp
-        WHERE cp.chapterId = :chapterId
-    """)
-    Long getTotalUnitsByChapterId(Long chapterId);
-
-    @Query("""
         SELECT new gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse(c.id, c.name, c.description, c.totalUnits, COALESCE(CAST(cp.completedUnits as long), 0L))
         FROM Chapter c
         LEFT JOIN ChapterProgress cp ON c.id = cp.chapterId AND cp.userId = :userId

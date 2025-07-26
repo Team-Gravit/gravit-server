@@ -27,7 +27,7 @@ public class LessonProgressRepositoryImpl implements LessonProgressRepository {
     }
 
     @Override
-    public List<LessonInfo> findLessonsWithProgressByUnitId(@Param("userId") Long userId, @Param("unitId") Long unitId){
+    public List<LessonInfo> findAllLessonsWithProgress(@Param("userId") Long userId, @Param("unitId") Long unitId){
         return lessonProgressJpaRepository.findLessonsWithProgressByUnitId(userId, unitId);
     }
 

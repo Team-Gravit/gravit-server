@@ -1,6 +1,7 @@
 package gravit.code.domain.problem.infrastructure;
 
-import gravit.code.domain.lesson.dto.response.LessonResponse;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.domain.Problem;
 import gravit.code.domain.problem.domain.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,12 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     private final ProblemJpaRepository problemJpaRepository;
 
     @Override
-    public List<LessonResponse> findByLessonId(@Param("lessonId") Long lessonId){
-        return problemJpaRepository.findByLessonId(lessonId);
+    public List<ProblemInfo> findAllProblemsByLessonId(@Param("lessonId") Long lessonId){
+        return problemJpaRepository.findAllProblemsByLessonId(lessonId);
+    }
+
+    @Override
+    public Problem save(Problem problem) {
+        return problemJpaRepository.save(problem);
     }
 }

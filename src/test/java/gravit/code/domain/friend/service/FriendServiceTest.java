@@ -1,10 +1,10 @@
 package gravit.code.domain.friend.service;
 
 import gravit.code.domain.friend.domain.Friend;
+import gravit.code.domain.friend.domain.FriendRepository;
 import gravit.code.domain.friend.dto.response.FollowerResponse;
 import gravit.code.domain.friend.dto.response.FollowingResponse;
 import gravit.code.domain.friend.dto.response.FriendResponse;
-import gravit.code.domain.friend.domain.FriendRepository;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,16 +12,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
+@Transactional
 class FriendServiceTest {
 
     @Autowired
