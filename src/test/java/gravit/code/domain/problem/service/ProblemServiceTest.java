@@ -1,6 +1,5 @@
 package gravit.code.domain.problem.service;
 
-import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.domain.problem.dto.response.ProblemInfo;
