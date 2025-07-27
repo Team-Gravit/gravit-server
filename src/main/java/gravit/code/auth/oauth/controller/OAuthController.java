@@ -37,14 +37,8 @@ public class OAuthController implements OAuthControllerDocs {
     @PostMapping("/{provider}")
     public ResponseEntity<LoginResponse> oauthLogin(@PathVariable("provider") String provider,
                                                     @RequestBody AuthCodeRequest request){
-        String code = request.code();
-
-        if(code == null){
-            return  ResponseEntity.badRequest().build();
-        }
-
+        String code = request.authCode();
         OAuthUserInfo userInfo = oAuthClientService.getUserInfo(code, provider);
-
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
