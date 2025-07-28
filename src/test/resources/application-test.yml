@@ -1,19 +1,19 @@
 spring:
   datasource:
-    url: ${POSTGRESQL_URL}
-    username: ${POSTGRESQL_USERNAME}
-    password: ${POSTGRESQL_PASSWORD}
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
     open-in-view: false
 
   security:
