@@ -1,9 +1,9 @@
 package gravit.code.domain.chapterProgress.service;
 
 import gravit.code.domain.chapter.domain.ChapterRepository;
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
+import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;

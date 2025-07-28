@@ -10,6 +10,21 @@ jobs:
     name: run test code on gradle
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: checkout code
         uses: actions/checkout@v3
@@ -25,9 +40,9 @@ jobs:
         with:
           files: ./src/test/resources/application-test.yml
         env:
-          spring.datasource.url: ${{secrets.POSTGRESQL_URL}}
-          spring.datasource.username: ${{secrets.POSTGRESQL_USERNAME}}
-          spring.datasource.password: ${{secrets.POSTGRESQL_PASSWORD}}
+          spring.datasource.url: jdbc:postgresql://localhost:5432/test_db
+          spring.datasource.username: postgres
+          spring.datasource.password: postgres
           jwt.secret: ${{secrets.JWT_SECRET}}
 
           spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
