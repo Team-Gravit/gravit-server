@@ -43,7 +43,7 @@ public class OAuthClientService {
         String decodedCode = URLDecoder.decode(authCode, StandardCharsets.UTF_8);
 
         // OAuth 설정 정보 가져오기
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(provider);
+        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(provider.toLowerCase());
 
         // 토큰 요청
         String accessToken = getAccessToken(registration, decodedCode);
