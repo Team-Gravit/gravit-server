@@ -19,7 +19,7 @@ public class OAuthLoginUrlService {
     public String generateLoginUrl(String provider) {
         validateProvider(provider);
 
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(provider);
+        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(provider.toLowerCase());
         String authorizationUri = registration.getProviderDetails().getAuthorizationUri();
         String clientId = registration.getClientId();
         String responseType = "code";
