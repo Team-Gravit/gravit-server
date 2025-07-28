@@ -116,7 +116,7 @@ public class OAuthClientService {
 
     private void validateAuthCode(String authCode) {
         if(authCode == null || authCode.isBlank()){
-            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+            throw new RestApiException(CustomErrorCode.AUTH_CODE_INVALID);
         }
     }
 
