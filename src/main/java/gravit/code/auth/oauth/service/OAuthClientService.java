@@ -41,9 +41,10 @@ public class OAuthClientService {
 
         // 웹에서 특수 문자나 공백 등이 URL 인코딩 된 상태로 전달되는 문제를 해결하기 위함
         String decodedCode = URLDecoder.decode(authCode, StandardCharsets.UTF_8);
+        String lowerCaseProvider = provider.toLowerCase();
 
         // OAuth 설정 정보 가져오기
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(provider.toLowerCase());
+        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(lowerCaseProvider);
 
         // 토큰 요청
         String accessToken = getAccessToken(registration, decodedCode);
@@ -51,7 +52,7 @@ public class OAuthClientService {
         // 사용자 정보 요청
         Map<String, Object> userInfo = getUserInfo(registration, accessToken);
 
-        return oAuthResponseFactory.createOAuthUserInfo(provider, userInfo);
+        return oAuthResponseFactory.createOAuthUserInfo(lowerCaseProvider, userInfo);
     }
 
     private Map<String, Object> getUserInfo(ClientRegistration registration, String accessToken) {
@@ -126,6 +127,7 @@ public class OAuthClientService {
         }
 
         String lowerCaseProvider = provider.toLowerCase();
+
         if(!OAUTH_PROVIDERS.contains(lowerCaseProvider)){
             throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
         }
