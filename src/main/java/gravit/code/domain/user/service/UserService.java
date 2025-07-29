@@ -21,20 +21,20 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponse findById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
         return UserResponse.from(user);
     }
 
     @Transactional
     public UserResponse onboarding(Long userId, OnboardingRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
 
         if(user.isOnboarded()){
-            throw new RestApiException(CustomErrorCode.ALREADY_ONBOARDING);
+            throw new RuntimeException("이미 추가 정보 입력이 완료된 사용자 입니다.");
         }
 
         if(userRepository.existsByNickname(request.nickname())){
-            throw new RestApiException(CustomErrorCode.USER_NICKNAME_CONFLICT);
+            throw new RuntimeException("이미 사용 중인 닉네임 입니다.");
         }
 
         user.onboard(request.nickname(), request.avatarId());
@@ -43,7 +43,7 @@ public class UserService {
     }
 
     public MyPageResponse getMyPage(Long userId) {
-        return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
+        return userRepository.findMyPageByUserId(userId).orElseThrow(RuntimeException::new);
     }
 
     public UserLevelResponse updateUserLevel(Long userId){
