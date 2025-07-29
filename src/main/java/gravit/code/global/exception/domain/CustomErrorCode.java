@@ -31,6 +31,7 @@ public enum CustomErrorCode implements ErrorCode {
 
     // ChapterProgress
     CHAPTER_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_P_4041", "챕터 진행 결과 조회 실패"),
+    CHAPTER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND,"CHAPTER_P_4042", "챕터 정보, 진행도 조회 실패"),
 
     // UnitProgress
     UNIT_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIT_P_4041", "유닛 진행 결과 조회 실패"),

@@ -1,5 +1,6 @@
 package gravit.code.domain.recentLearning.domain;
 
+import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,21 +21,21 @@ public class RecentLearning {
     @Column(name = "chapter_name", columnDefinition = "varchar(100)", nullable = false)
     private String chapterName;
 
-    @Column(name = "total_lessons", columnDefinition = "bigint", nullable = false)
-    private Long totalLessons;
+    @Column(name = "total_units", columnDefinition = "bigint", nullable = false)
+    private Long totalUnits;
 
-    @Column(name = "completed_lessons", columnDefinition = "bigint", nullable = false)
-    private Long completedLessons;
+    @Column(name = "completed_units", columnDefinition = "bigint", nullable = false)
+    private Long completedUnits;
 
-    @Column(name = "user_id", columnDefinition = "bigint", nullable = false)
+    @Column(name = "user_id", columnDefinition = "bigint", nullable = false, unique = true)
     private Long userId;
 
     @Builder
     private RecentLearning(Long userId){
         this.chapterId = 0L;
         this.chapterName = " ";
-        this.totalLessons = 0L;
-        this.completedLessons = 0L;
+        this.totalUnits = 0L;
+        this.completedUnits = 0L;
         this.userId = userId;
     }
 
@@ -44,10 +45,10 @@ public class RecentLearning {
                 .build();
     }
 
-    public void update(Long chapterId, String chapterName, Long totalLessons, Long completedLessons) {
-        this.chapterId = chapterId;
-        this.chapterName = chapterName;
-        this.totalLessons = totalLessons;
-        this.completedLessons = completedLessons;
+    public void update(ChapterInfo chapterInfo) {
+        this.chapterId = chapterInfo.chapterId();
+        this.chapterName = chapterInfo.chapterName();
+        this.totalUnits = chapterInfo.totalUnits();
+        this.completedUnits = chapterInfo.completedUnits();
     }
 }

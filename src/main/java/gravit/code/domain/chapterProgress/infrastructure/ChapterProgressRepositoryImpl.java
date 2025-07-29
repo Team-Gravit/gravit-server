@@ -2,6 +2,7 @@ package gravit.code.domain.chapterProgress.infrastructure;
 
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
+import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
 import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -34,6 +35,11 @@ public class ChapterProgressRepositoryImpl implements ChapterProgressRepository 
     @Override
     public ChapterProgress save(ChapterProgress chapterProgress){
         return chapterProgressJpaRepository.save(chapterProgress);
+    }
+
+    @Override
+    public Optional<ChapterInfo> findChapterInfoByChapterIdAndUserId(Long chapterId, Long userId){
+        return chapterProgressJpaRepository.findChapterInfoByChapterIdAndUserId(chapterId, userId);
     }
 
 }

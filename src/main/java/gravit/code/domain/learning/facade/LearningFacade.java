@@ -4,9 +4,9 @@ import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.service.LearningService;
-import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
+import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.domain.problemProgress.service.ProblemProgressService;
 import gravit.code.domain.unitProgress.dto.response.UnitInfo;
@@ -25,8 +25,11 @@ import java.util.List;
 public class LearningFacade {
 
     private final UserService userService;
+
     private final LearningService learningService;
+
     private final ProblemService problemService;
+
     private final ChapterProgressService chapterProgressService;
     private final UnitProgressService unitProgressService;
     private final LessonProgressService lessonProgressService;
@@ -34,6 +37,7 @@ public class LearningFacade {
 
     @Transactional(readOnly = true)
     public List<ProblemInfo> getAllProblemsInLesson(Long lessonId){
+
         return problemService.getAllProblems(lessonId);
     }
 
@@ -50,6 +54,8 @@ public class LearningFacade {
 
         if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(userId, request.unitId())))
             chapterProgressService.updateChapterProgress(userId, request.chapterId());
+
+        learningService.updateRecentLearning(userId, request.chapterId());
 
         // @EventListener 처리
         return userService.updateUserLevel(userId);
