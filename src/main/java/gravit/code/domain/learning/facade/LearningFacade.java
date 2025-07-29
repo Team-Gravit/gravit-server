@@ -40,15 +40,18 @@ public class LearningFacade {
     @Transactional
     public UserLevelResponse saveLearningResult(Long userId, LearningResultSaveRequest request){
 
+        // @EventListener 처리
         learningService.initLearningProgress(userId, request.chapterId(), request.unitId(), request.lessonId());
 
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
+        // @EventListener 처리
         lessonProgressService.updateLessonProgressStatus(userId, request.lessonId());
 
         if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(userId, request.unitId())))
             chapterProgressService.updateChapterProgress(userId, request.chapterId());
 
+        // @EventListener 처리
         return userService.updateUserLevel(userId);
     }
 
