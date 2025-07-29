@@ -3,6 +3,9 @@ package gravit.code.domain.recentLearning.service;
 import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
 import gravit.code.domain.recentLearning.domain.RecentLearning;
 import gravit.code.domain.recentLearning.domain.RecentLearningRepository;
+import gravit.code.domain.recentLearning.dto.response.RecentLearningInfo;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,4 +31,8 @@ public class RecentLearningService {
         recentLearningRepository.save(recentLearning);
     }
 
+    public RecentLearningInfo getRecentLearningInfo(Long userId) {
+        return recentLearningRepository.findRecentLearningInfoByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.RECENT_LEARNING_INFO_NOT_FOUND));
+    }
 }

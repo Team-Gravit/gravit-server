@@ -29,6 +29,9 @@ public enum CustomErrorCode implements ErrorCode {
     TOKEN_NOT_SIGNED(HttpStatus.UNAUTHORIZED," ","서명되지 않은 토큰입니다."),
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "", "토큰을 찾을 수 없습니다."),
 
+    // RecentLearning
+    RECENT_LEARNING_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "RECENT_LEARNING_4041", "최근 학습 정보 조회 실패"),
+
     // ChapterProgress
     CHAPTER_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_P_4041", "챕터 진행 결과 조회 실패"),
     CHAPTER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND,"CHAPTER_P_4042", "챕터 정보, 진행도 조회 실패"),
