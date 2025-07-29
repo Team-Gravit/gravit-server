@@ -1,6 +1,7 @@
 package gravit.code.domain.user.controller;
 
 import gravit.code.auth.oauth.LoginUser;
+import gravit.code.domain.user.controller.docs.UserControllerDocs;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController implements UserControllerDocs {
 
     private final UserService userService;
 

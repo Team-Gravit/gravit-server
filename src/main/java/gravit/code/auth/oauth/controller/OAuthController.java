@@ -1,5 +1,6 @@
 package gravit.code.auth.oauth.controller;
 
+import gravit.code.auth.oauth.controller.docs.OAuthControllerDocs;
 import gravit.code.auth.oauth.dto.AuthCodeRequest;
 import gravit.code.auth.oauth.dto.LoginResponse;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
@@ -16,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
-public class OAuthController {
+public class OAuthController implements OAuthControllerDocs {
     private final OAuthClientService oAuthClientService;
     private final OAuthLoginProcessor oAuthLoginProcessor;
     private final OAuthLoginUrlService oAuthLoginUrlService;
@@ -33,7 +34,6 @@ public class OAuthController {
     /**
      * auth code 를 기반으로 소셜 로그인 시도 한 유져의 정보를 가져와 회원가입 및 로그인을 처리합니다.
      */
-
     @PostMapping("/{provider}")
     public ResponseEntity<LoginResponse> oauthLogin(@PathVariable("provider") String provider,
                                                     @RequestBody AuthCodeRequest request){
