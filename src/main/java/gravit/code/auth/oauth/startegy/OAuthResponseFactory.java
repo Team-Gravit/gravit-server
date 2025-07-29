@@ -1,8 +1,6 @@
 package gravit.code.auth.oauth.startegy;
 
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,7 +22,7 @@ public class OAuthResponseFactory {
     public OAuthUserInfo createOAuthUserInfo(String registrationId, Map<String, Object> attributes){
         OAuthResponseStrategy strategy = strategies.get(registrationId);
         System.out.println(strategy);
-        if(Objects.equals(strategy,null)) throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+        if(Objects.equals(strategy,null)) throw new IllegalStateException("지원하지 않는 provider 입니다.");
         return strategy.createOAuthUserInfo(attributes);
     }
 }
