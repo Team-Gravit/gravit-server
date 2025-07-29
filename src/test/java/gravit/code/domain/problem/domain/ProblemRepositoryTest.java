@@ -1,7 +1,5 @@
-package gravit.code.domain.problem.repository;
+package gravit.code.domain.problem.domain;
 
-import gravit.code.domain.problem.domain.Problem;
-import gravit.code.domain.problem.domain.ProblemType;
 import gravit.code.domain.problem.dto.response.ProblemInfo;
 import gravit.code.domain.problem.infrastructure.ProblemJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class ProblemRepositoryTest {
 
     @Autowired

@@ -1,8 +1,7 @@
-package gravit.code.domain.unitProgress.repository;
+package gravit.code.domain.unitProgress.domain;
 
 import gravit.code.domain.unit.domain.Unit;
 import gravit.code.domain.unit.infrastructure.UnitJpaRepository;
-import gravit.code.domain.unitProgress.domain.UnitProgress;
 import gravit.code.domain.unitProgress.dto.response.UnitInfo;
 import gravit.code.domain.unitProgress.infrastructure.UnitProgressJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class UnitProgressRepositoryTest {
 
     @Autowired
