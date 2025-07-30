@@ -63,38 +63,4 @@ class ChapterProgressServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_PROGRESS_NOT_FOUND);
     }
 
-    @Test
-    @DisplayName("특정 챕터와 유저의 ChapterProgress가 존재하지 않으면 생성한다.")
-    void createChapterProgressIfNotExistsWithChapterIdAndUserId(){
-        //given
-        Long chapterId = 4L;
-        Long userId = 1L;
-
-        when(chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)).thenReturn(false);
-        when(chapterRepository.getTotalUnitsByChapterId(chapterId)).thenReturn(12L);
-
-        //when
-        chapterProgressService.createChapterProgress(userId, chapterId);
-
-        //then
-        verify(chapterRepository).getTotalUnitsByChapterId(chapterId);
-        verify(chapterProgressRepository).save(any(ChapterProgress.class));
-    }
-
-    @Test
-    @DisplayName("특정 챕터와 유저의 ChapterProgress가 존재하면 생성하지 않는다.")
-    void createNoChapterProgressIfExistsWithChapterIdAndUserId(){
-        //given
-        Long chapterId = 1L;
-        Long userId = 1L;
-
-        when(chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)).thenReturn(true);
-
-        //when
-        chapterProgressService.createChapterProgress(userId, chapterId);
-
-        //then
-        verify(chapterProgressRepository, never()).save(any(ChapterProgress.class));
-    }
-
 }

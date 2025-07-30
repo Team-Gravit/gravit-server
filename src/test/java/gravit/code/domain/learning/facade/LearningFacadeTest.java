@@ -84,7 +84,6 @@ class LearningFacadeTest {
         learningFacade.saveLearningResult(userId, request);
 
         //then
-        verify(learningService).initLearningProgress(userId, chapterId, unitId, lessonId);
         verify(problemProgressService).saveProblemResults(userId, request.problemResults());
         verify(unitProgressService).updateUnitProgress(userId, request.unitId());
         verify(chapterProgressService).updateChapterProgress(userId, chapterId);
@@ -123,7 +122,6 @@ class LearningFacadeTest {
         learningFacade.saveLearningResult(userId, request);
 
         //then
-        verify(learningService).initLearningProgress(userId, chapterId, unitId, lessonId);
         verify(problemProgressService).saveProblemResults(userId, request.problemResults());
         verify(unitProgressService).updateUnitProgress(userId, request.unitId());
         verify(chapterProgressService, never()).updateChapterProgress(userId, chapterId);

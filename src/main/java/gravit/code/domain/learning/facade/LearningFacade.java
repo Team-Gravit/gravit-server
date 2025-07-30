@@ -37,27 +37,14 @@ public class LearningFacade {
 
     @Transactional(readOnly = true)
     public List<ProblemInfo> getAllProblemsInLesson(Long lessonId){
-
         return problemService.getAllProblems(lessonId);
     }
 
-    /**
-     * TODO
-     * 현재 Problem 문제 풀이 결과를 저장하는 로직이 상당히 무겁다
-     * 1. 학습 관련 중간 테이블 초기화
-     * 2. 문제 풀이 결과 저장
-     * 3. 학습 관련 중간 테이블의 푼__ 수 초기화
-     * 4. 최근 학습 업데이트
-     */
     @Transactional
     public UserLevelResponse saveLearningResult(Long userId, LearningResultSaveRequest request){
 
-        // @EventListener 처리
-        learningService.initLearningProgress(userId, request.chapterId(), request.unitId(), request.lessonId());
-
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
-        // @EventListener 처리
         lessonProgressService.updateLessonProgressStatus(userId, request.lessonId());
 
         if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(userId, request.unitId())))
@@ -65,7 +52,6 @@ public class LearningFacade {
 
         learningService.updateRecentLearning(userId, request.chapterId());
 
-        // @EventListener 처리
         return userService.updateUserLevel(userId);
     }
 

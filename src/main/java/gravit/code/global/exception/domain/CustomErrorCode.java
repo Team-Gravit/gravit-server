@@ -42,8 +42,14 @@ public enum CustomErrorCode implements ErrorCode {
     // LessonProgress
     LESSON_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_P_4041", "레슨 진행 결과 조회 실패"),
 
+    // Chapter
+    CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회 실패"),
+
     // Lesson
     LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4041", "레슨 조회 실패"),
+
+    // Unit
+    UNIT_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIT_4041", "유닛 조회 실패"),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),

@@ -1,5 +1,6 @@
 package gravit.code.domain.chapterProgress.service;
 
+import gravit.code.domain.chapter.domain.Chapter;
 import gravit.code.domain.chapter.domain.ChapterRepository;
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
@@ -16,20 +17,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChapterProgressService {
 
-    private final ChapterProgressRepository chapterProgressRepository;
     private final ChapterRepository chapterRepository;
-
-    public void createChapterProgress(Long userId, Long chapterId){
-        if (!chapterProgressRepository.existsByChapterIdAndUserId(chapterId, userId)){
-            Long totalUnits = chapterRepository.getTotalUnitsByChapterId(chapterId);
-            ChapterProgress chapterProgress = ChapterProgress.create(totalUnits, userId, chapterId);
-            chapterProgressRepository.save(chapterProgress);
-        }
-    }
+    private final ChapterProgressRepository chapterProgressRepository;
 
     public void updateChapterProgress(Long userId, Long chapterId){
+
+        Chapter targetChapter = chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
+
         ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapterId,userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_PROGRESS_NOT_FOUND));
+                .orElseGet(() -> ChapterProgress.create(targetChapter.getTotalUnits(), userId, chapterId));
 
         chapterProgress.updateCompletedUnits();
     }

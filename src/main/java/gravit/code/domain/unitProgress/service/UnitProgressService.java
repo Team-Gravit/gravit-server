@@ -1,5 +1,6 @@
 package gravit.code.domain.unitProgress.service;
 
+import gravit.code.domain.unit.domain.Unit;
 import gravit.code.domain.unit.domain.UnitRepository;
 import gravit.code.domain.unitProgress.domain.UnitProgress;
 import gravit.code.domain.unitProgress.domain.UnitProgressRepository;
@@ -20,23 +21,15 @@ public class UnitProgressService {
 
     public Boolean updateUnitProgress(Long userId, Long unitId){
 
+        Unit targetUnit = unitRepository.findById(unitId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+
         UnitProgress unitProgress = unitProgressRepository.findByUnitIdAndUserId(unitId,userId)
-                        .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_PROGRESS_NOT_FOUND));
+                .orElseGet(() -> UnitProgress.create(targetUnit.getTotalLessons(), userId, unitId));
 
         unitProgress.updateCompletedLessons();
 
         return unitProgress.isUnitCompleted();
-    }
-
-    public Boolean createUnitProgress(Long userId, Long unitId){
-        if (unitProgressRepository.existsByUnitIdAndUserId(unitId,userId)) {
-            return false;
-        }else{
-            Long totalLessons = unitRepository.getTotalLessonsByUnitId(unitId);
-            UnitProgress unitProgress = UnitProgress.create(totalLessons, userId, unitId);
-            unitProgressRepository.save(unitProgress);
-            return true;
-        }
     }
 
     public List<UnitInfo> getAllUnitsWithProgress(Long userId, Long chapterId){

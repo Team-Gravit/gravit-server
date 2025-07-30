@@ -3,7 +3,6 @@ package gravit.code.domain.unitProgress.service;
 import gravit.code.domain.unit.domain.UnitRepository;
 import gravit.code.domain.unitProgress.domain.UnitProgress;
 import gravit.code.domain.unitProgress.domain.UnitProgressRepository;
-import gravit.code.domain.unitProgress.service.UnitProgressService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UnitProgressServiceTest {
@@ -62,39 +61,5 @@ class UnitProgressServiceTest {
         assertThat(chapterProgressUpdatedNeeded).isFalse();
     }
 
-    @Test
-    @DisplayName("userId와 unitId로 UnitProgress를 조회한 경우 존재한다면, false를 반환한다.")
-    void createNoUnitProgressIfExistAndReturnFalse(){
-        //given
-        Long userId = 1L;
-        Long unitId = 1L;
 
-        when(unitProgressRepository.existsByUnitIdAndUserId(unitId, userId)).thenReturn(true);
-
-        //when
-        Boolean result = unitProgressService.createUnitProgress(userId, unitId);
-
-        //then
-        assertThat(result).isFalse();
-        verify(unitRepository, never()).getTotalLessonsByUnitId(unitId);
-        verify(unitProgressRepository, never()).save(any(UnitProgress.class));
-    }
-
-    @Test
-    @DisplayName("userId와 unitId로 UnitProgress를 조회한 경우 존재하지 않는다면 생성하고, true를 반환한다. ")
-    void createUnitProgressIfNotExistAndReturnTrue(){
-        //given
-        Long userId = 1L;
-        Long unitId = 1L;
-
-        when(unitProgressRepository.existsByUnitIdAndUserId(unitId, userId)).thenReturn(false);
-        when(unitRepository.getTotalLessonsByUnitId(unitId)).thenReturn(10L);
-        //when
-        Boolean result = unitProgressService.createUnitProgress(userId, unitId);
-
-        //then
-        assertThat(result).isTrue();
-        verify(unitRepository).getTotalLessonsByUnitId(unitId);
-        verify(unitProgressRepository).save(any(UnitProgress.class));
-    }
 }
