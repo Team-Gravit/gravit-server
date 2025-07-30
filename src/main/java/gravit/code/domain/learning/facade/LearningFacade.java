@@ -41,6 +41,14 @@ public class LearningFacade {
         return problemService.getAllProblems(lessonId);
     }
 
+    /**
+     * TODO
+     * 현재 Problem 문제 풀이 결과를 저장하는 로직이 상당히 무겁다
+     * 1. 학습 관련 중간 테이블 초기화
+     * 2. 문제 풀이 결과 저장
+     * 3. 학습 관련 중간 테이블의 푼__ 수 초기화
+     * 4. 최근 학습 업데이트
+     */
     @Transactional
     public UserLevelResponse saveLearningResult(Long userId, LearningResultSaveRequest request){
 
