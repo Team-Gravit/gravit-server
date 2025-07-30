@@ -4,6 +4,7 @@ import gravit.code.auth.jwt.JwtProvider;
 import gravit.code.auth.oauth.dto.LoginResponse;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.util.HandleGenerator;
+import gravit.code.auth.util.RandomHandleGenerator;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class OAuthLoginProcessor {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final HandleGenerator handleGenerator;
 
     @Transactional
     public LoginResponse process(OAuthUserInfo oAuthUserInfo) {
@@ -40,7 +42,7 @@ public class OAuthLoginProcessor {
         User user;
         if (oldUser.isEmpty()) {
             log.info("첫 로그인, 회원가입 시작");
-            String handle = HandleGenerator.generateUniqueHandle(userRepository);
+            String handle = handleGenerator.generateUniqueHandle();
             user = User.create(oAuthUserInfo.getEmail(),
                     providerId,
                     oAuthUserInfo.getName(),
@@ -55,6 +57,4 @@ public class OAuthLoginProcessor {
         log.info("이미 가입된 유저입니다.");
         return oldUser.get();
     }
-
-
 }
