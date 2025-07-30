@@ -3,7 +3,6 @@ package gravit.code.domain.learning.facade;
 import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.domain.learning.service.LearningService;
 import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
 import gravit.code.domain.problem.domain.ProblemType;
@@ -31,9 +30,6 @@ class LearningFacadeTest {
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private LearningService learningService;
 
     @Mock
     private ProblemService problemService;

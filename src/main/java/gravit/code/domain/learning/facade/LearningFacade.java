@@ -3,7 +3,7 @@ package gravit.code.domain.learning.facade;
 import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.domain.learning.service.LearningService;
+import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
 import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
 import gravit.code.domain.problem.dto.response.ProblemInfo;
@@ -15,6 +15,7 @@ import gravit.code.domain.unitProgress.service.UnitProgressService;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +25,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LearningFacade {
 
+    private final ApplicationEventPublisher publisher;
+
     private final UserService userService;
-
-    private final LearningService learningService;
-
     private final ProblemService problemService;
 
     private final ChapterProgressService chapterProgressService;
@@ -50,7 +50,7 @@ public class LearningFacade {
         if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(userId, request.unitId())))
             chapterProgressService.updateChapterProgress(userId, request.chapterId());
 
-        learningService.updateRecentLearning(userId, request.chapterId());
+        publisher.publishEvent(new RecentLearningEventDto(userId, request.chapterId()));
 
         return userService.updateUserLevel(userId);
     }
