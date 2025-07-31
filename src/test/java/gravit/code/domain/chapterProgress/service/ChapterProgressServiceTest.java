@@ -1,5 +1,6 @@
 package gravit.code.domain.chapterProgress.service;
 
+import gravit.code.domain.chapter.domain.Chapter;
 import gravit.code.domain.chapter.domain.ChapterRepository;
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
@@ -30,37 +31,60 @@ class ChapterProgressServiceTest {
     private ChapterProgressService chapterProgressService;
 
     @Test
-    @DisplayName("chapterId와 userId를 통해 ChapterProgress를 업데이트할 수 있다.")
-    void updateChapterProgressByChapterIdAndUserId(){
-        // given
-        Long chapterId = 1L;
+    @DisplayName("ChapterProgress를 업데이트할 때, Chapter 조회에 실패하면 예외를 반환한다.")
+    void throwExceptionWhenUpdateChapterProgressIfFailedAtFindChapter(){
+        //given
         Long userId = 1L;
+        Long chapterId = 1L;
 
-        ChapterProgress mockChapterProgress = mock(ChapterProgress.class);
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.empty());
 
-        when(chapterProgressRepository.findByChapterIdAndUserId(chapterId, userId)).thenReturn(Optional.ofNullable(mockChapterProgress));
-
-        // when
-        chapterProgressService.updateChapterProgress(chapterId, userId);
-
-        // then
-        verify(chapterProgressRepository).findByChapterIdAndUserId(chapterId, userId);
-        verify(mockChapterProgress).updateCompletedUnits();
+        //when&then
+        assertThatThrownBy(() -> chapterProgressService.updateChapterProgress(userId, chapterId))
+                .isInstanceOf(RestApiException.class)
+                .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_NOT_FOUND);
     }
 
     @Test
-    @DisplayName("chapterId와 userId를 통해 ChapterProgress 조회에 실패한 경우 예외를 반환한다.")
-    void updateChapterProgressByNonExistChapterIdAndUserId(){
-        // given
-        Long chapterId = 11111L;
-        Long userId = 11111L;
+    @DisplayName("ChapterProgress를 업데이트 할때, ChapterProgress 조회에 실패하면 새로운 ChapterProgress를 생성해 업데이트한다.")
+    void createNewChapterProgressWhenUpdateChapterProgressIfFailedAtFindChapterProgress(){
+        //given
+        Long userId = 1L;
+        Long chapterId = 1L;
+        Long totalUnits = 3L;
+        Chapter chapter = Chapter.create("챕터", "설명", totalUnits);
+        ChapterProgress chapterProgress = mock(ChapterProgress.class);
 
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
         when(chapterProgressRepository.findByChapterIdAndUserId(chapterId, userId)).thenReturn(Optional.empty());
+        when(chapterProgressRepository.save(any(ChapterProgress.class))).thenReturn(chapterProgress);
 
-        // when & then
-        assertThatThrownBy(() -> chapterProgressService.updateChapterProgress(chapterId, userId))
-                .isInstanceOf(RestApiException.class)
-                .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_PROGRESS_NOT_FOUND);
+        //when
+        chapterProgressService.updateChapterProgress(userId, chapterId);
+
+        //then
+        verify(chapterProgressRepository).save(any(ChapterProgress.class));
+    }
+
+    @Test
+    @DisplayName("ChapterProgress를 업데이트할 때, ChapterProgress 조회에 성공하면 조회된 ChapterProgress를 업데이트한 후, 푼 유닛수와 총 유닛수가 같으면 true를 반환한다.")
+    void updateChapterProgressAndReturnTrueWhenTotalUnitsEqualsCompletedUnits(){
+        //given
+        Long userId = 1L;
+        Long chapterId = 1L;
+        Long totalUnits = 2L;
+        Chapter chapter = Chapter.create("챕터", "설명", totalUnits);
+        ChapterProgress chapterProgress = mock(ChapterProgress.class);
+
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(chapterProgressRepository.findByChapterIdAndUserId(chapterId, userId)).thenReturn(Optional.of(chapterProgress));
+        when(chapterProgressRepository.save(any(ChapterProgress.class))).thenReturn(chapterProgress);
+
+        //when
+        chapterProgressService.updateChapterProgress(userId, chapterId);
+
+        //then
+        verify(chapterProgress).updateCompletedUnits();
     }
 
 }

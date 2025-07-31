@@ -29,6 +29,8 @@ public class ChapterProgressService {
                 .orElseGet(() -> ChapterProgress.create(targetChapter.getTotalUnits(), userId, chapterId));
 
         chapterProgress.updateCompletedUnits();
+
+        chapterProgressRepository.save(chapterProgress);
     }
 
     public List<ChapterInfoResponse> getAllChaptersWithProgress(Long userId){

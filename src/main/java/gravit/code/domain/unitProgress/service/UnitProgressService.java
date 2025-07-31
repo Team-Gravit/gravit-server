@@ -29,6 +29,8 @@ public class UnitProgressService {
 
         unitProgress.updateCompletedLessons();
 
+        unitProgressRepository.save(unitProgress);
+
         return unitProgress.isUnitCompleted();
     }
 
