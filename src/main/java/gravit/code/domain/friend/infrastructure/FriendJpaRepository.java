@@ -37,6 +37,4 @@ public interface FriendJpaRepository extends JpaRepository<Friend, Long> {
         where f.followerId = :followerId
 """)
     List<FollowingResponse> findByFollowingsByFollowerId(@Param("followerId") Long followerId);
-
-
 }
