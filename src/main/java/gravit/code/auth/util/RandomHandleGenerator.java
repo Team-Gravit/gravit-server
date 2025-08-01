@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
+/**
+ * handle 길이는 8 자리로 fix
+ */
 @Component
 @RequiredArgsConstructor
 public class RandomHandleGenerator implements HandleGenerator{
