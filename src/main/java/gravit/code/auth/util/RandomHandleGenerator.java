@@ -16,6 +16,7 @@ public class RandomHandleGenerator implements HandleGenerator{
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
     private static final Random RANDOM = new Random();
     private static final int MAX_RETRY = 10;
+    private static final int MAX_LENGTH = 8;
 
     private final UserRepository userRepository;
 
@@ -31,11 +32,10 @@ public class RandomHandleGenerator implements HandleGenerator{
     }
 
     private String generateHandle(){
-        int length = RANDOM.nextInt(5) + 6;
-        StringBuilder handle = new StringBuilder(length);
+        StringBuilder handle = new StringBuilder(MAX_LENGTH);
         handle.append("@");
 
-        for(int i = 0; i < length; i++){
+        for(int i = 0; i < MAX_LENGTH; i++){
             int index = RANDOM.nextInt(CHARACTERS.length());
             handle.append(CHARACTERS.charAt(index));
         }
