@@ -3,7 +3,7 @@ package gravit.code.domain.recentLearning.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "최근 학습 정보 Response")
-public record RecentLearningInfo(
+public record RecentLearningSummaryResponse(
         @Schema(
                 description = "챕터 아이디",
                 example = "1"

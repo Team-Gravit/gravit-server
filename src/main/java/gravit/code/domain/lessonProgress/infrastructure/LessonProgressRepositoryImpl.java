@@ -2,7 +2,7 @@ package gravit.code.domain.lessonProgress.infrastructure;
 
 import gravit.code.domain.lessonProgress.domain.LessonProgress;
 import gravit.code.domain.lessonProgress.domain.LessonProgressRepository;
-import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
+import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,22 +17,18 @@ public class LessonProgressRepositoryImpl implements LessonProgressRepository {
     private final LessonProgressJpaRepository lessonProgressJpaRepository;
 
     @Override
+    public LessonProgress save(LessonProgress lessonProgress){
+        return lessonProgressJpaRepository.save(lessonProgress);
+    }
+
+    @Override
     public Optional<LessonProgress> findByLessonIdAndUserId(Long lessonId, Long userId){
         return lessonProgressJpaRepository.findByLessonIdAndUserId(lessonId, userId);
     }
 
     @Override
-    public boolean existsByLessonIdAndUserId(Long lessonId, Long userId){
-        return lessonProgressJpaRepository.existsByLessonIdAndUserId(lessonId, userId);
+    public List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(@Param("userId") Long userId, @Param("unitId") Long unitId){
+        return lessonProgressJpaRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
     }
 
-    @Override
-    public List<LessonInfo> findAllLessonsWithProgress(@Param("userId") Long userId, @Param("unitId") Long unitId){
-        return lessonProgressJpaRepository.findLessonsWithProgressByUnitId(userId, unitId);
-    }
-
-    @Override
-    public LessonProgress save(LessonProgress lessonProgress){
-        return lessonProgressJpaRepository.save(lessonProgress);
-    }
 }

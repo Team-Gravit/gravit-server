@@ -1,6 +1,6 @@
 package gravit.code.domain.problem.domain;
 
-import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.infrastructure.ProblemJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -66,12 +66,12 @@ class ProblemRepositoryTest {
         Long lessonId = 1L;
 
         // when
-        List<ProblemInfo>  lessonProblems = problemRepository.findAllProblemsByLessonId(lessonId);
+        List<ProblemResponse>  lessonProblems = problemRepository.findAllProblemByLessonId(lessonId);
 
         // then
         assertThat(lessonProblems).hasSize(4);
         assertThat(lessonProblems.get(0).problemId()).isLessThan(lessonProblems.get(1).problemId());
         assertThat(lessonProblems).isInstanceOf(List.class);
-        assertThat(lessonProblems.get(0)).isInstanceOf(ProblemInfo.class);
+        assertThat(lessonProblems.get(0)).isInstanceOf(ProblemResponse.class);
     }
 }

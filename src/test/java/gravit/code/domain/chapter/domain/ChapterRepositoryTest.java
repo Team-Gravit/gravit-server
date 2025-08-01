@@ -97,7 +97,7 @@ class ChapterRepositoryTest {
         Long chapterId = 1L;
 
         //when
-        Long totalUnits = chapterRepository.getTotalUnitsByChapterId(chapterId);
+        Long totalUnits = chapterRepository.findTotalUnitsByChapterId(chapterId);
 
         //then
         assertThat(totalUnits).isEqualTo(10L);

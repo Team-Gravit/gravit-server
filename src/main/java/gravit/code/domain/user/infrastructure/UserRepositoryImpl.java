@@ -3,7 +3,7 @@ package gravit.code.domain.user.infrastructure;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.response.MyPageResponse;
-import gravit.code.domain.user.dto.response.UserMainPageInfo;
+import gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -35,8 +35,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UserMainPageInfo> findUserMainPageInfoByUserId(Long userId){
-        return jpaRepository.findUserMainPageInfoByUserId(userId);
+    public Optional<MainPageUserSummaryResponse> findUserMainPageSummaryByUserId(Long userId){
+        return jpaRepository.findUserMainPageSummaryByUserId(userId);
     }
 
     @Override

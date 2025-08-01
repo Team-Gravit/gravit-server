@@ -1,9 +1,9 @@
 package gravit.code.domain.recentLearning.service;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
+import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import gravit.code.domain.recentLearning.domain.RecentLearning;
 import gravit.code.domain.recentLearning.domain.RecentLearningRepository;
-import gravit.code.domain.recentLearning.dto.response.RecentLearningInfo;
+import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +22,17 @@ public class RecentLearningService {
         recentLearningRepository.save(recentLearning);
     }
 
-    public void updateRecentLearning(Long userId, ChapterInfo chapterInfo){
+    public void updateRecentLearning(Long userId, ChapterSummaryResponse chapterSummaryResponse){
         RecentLearning recentLearning = recentLearningRepository.findByUserId(userId)
                 .orElseGet(() -> RecentLearning.init(userId));
 
-        recentLearning.update(chapterInfo);
+        recentLearning.update(chapterSummaryResponse);
 
         recentLearningRepository.save(recentLearning);
     }
 
-    public RecentLearningInfo getRecentLearningInfo(Long userId) {
-        return recentLearningRepository.findRecentLearningInfoByUserId(userId)
+    public RecentLearningSummaryResponse getRecentLearningSummary(Long userId) {
+        return recentLearningRepository.findRecentLearningSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.RECENT_LEARNING_INFO_NOT_FOUND));
     }
 }

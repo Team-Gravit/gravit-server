@@ -1,15 +1,15 @@
 package gravit.code.domain.learning.facade;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
+import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
-import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
+import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
-import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.domain.problemProgress.service.ProblemProgressService;
-import gravit.code.domain.unitProgress.dto.response.UnitInfo;
+import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
 import gravit.code.domain.unitProgress.service.UnitProgressService;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
@@ -36,8 +36,8 @@ public class LearningFacade {
     private final ProblemProgressService problemProgressService;
 
     @Transactional(readOnly = true)
-    public List<ProblemInfo> getAllProblemsInLesson(Long lessonId){
-        return problemService.getAllProblems(lessonId);
+    public List<ProblemResponse> getAllProblemsInLesson(Long lessonId){
+        return problemService.getAllProblem(lessonId);
     }
 
     @Transactional
@@ -45,30 +45,30 @@ public class LearningFacade {
 
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
-        lessonProgressService.updateLessonProgressStatus(userId, request.lessonId());
+        lessonProgressService.updateLessonProgressStatus(request.lessonId(), userId);
 
-        if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(userId, request.unitId())))
-            chapterProgressService.updateChapterProgress(userId, request.chapterId());
+        if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(request.unitId(), userId)))
+            chapterProgressService.updateChapterProgress(request.chapterId(), userId);
 
         publisher.publishEvent(new RecentLearningEventDto(userId, request.chapterId()));
 
-        return userService.updateUserLevel(userId);
+        return userService.updateUserLevelAndXp(userId);
     }
 
     @Transactional(readOnly = true)
-    public List<ChapterInfoResponse> getAllChapters(Long userId){
-        return chapterProgressService.getAllChaptersWithProgress(userId);
+    public List<ChapterProgressDetailResponse> getAllChapters(Long userId){
+        return chapterProgressService.getChapterProgressDetails(userId);
     }
 
     @Transactional(readOnly = true)
     public List<UnitPageResponse> getAllUnitsInChapter(Long userId, Long chapterId){
-        List<UnitInfo> unitInfos = unitProgressService.getAllUnitsWithProgress(userId, chapterId);
+        List<UnitProgressDetailResponse> unitProgressDetailResponses = unitProgressService.findAllUnitProgress(chapterId, userId);
 
-        return unitInfos.stream()
-                .map(unitInfo -> {
-                    List<LessonInfo> lessonInfos = lessonProgressService.getAllLessonsWithProgress(userId, unitInfo.unitId());
+        return unitProgressDetailResponses.stream()
+                .map(unitProgressDetailResponse -> {
+                    List<LessonProgressSummaryResponse> lessonProgressSummaryResponses = lessonProgressService.getLessonProgressSummaries(userId, unitProgressDetailResponse.unitId());
 
-                    return UnitPageResponse.create(unitInfo, lessonInfos);
+                    return UnitPageResponse.create(unitProgressDetailResponse, lessonProgressSummaryResponses);
                 })
                 .toList();
     }

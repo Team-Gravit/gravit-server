@@ -2,7 +2,7 @@ package gravit.code.domain.lessonProgress.domain;
 
 import gravit.code.domain.lesson.domain.Lesson;
 import gravit.code.domain.lesson.infrastructure.LessonJpaRepository;
-import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
+import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.domain.lessonProgress.infrastructure.LessonProgressJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -95,15 +95,15 @@ class LessonProgressRepositoryTest {
         Long unitId = 1L;
 
         //when
-        List<LessonInfo> lessonInfos = lessonProgressRepository.findLessonsWithProgressByUnitId(userId, unitId);
+        List<LessonProgressSummaryResponse> lessonSummaryResponses = lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
 
         //then
-        assertThat(lessonInfos).isNotEmpty();
+        assertThat(lessonSummaryResponses).isNotEmpty();
 
-        assertThat(lessonInfos.get(0).lessonId()).isEqualTo(1L);
-        assertThat(lessonInfos.get(0).isCompleted()).isTrue();
+        assertThat(lessonSummaryResponses.get(0).lessonId()).isEqualTo(1L);
+        assertThat(lessonSummaryResponses.get(0).isCompleted()).isTrue();
 
-        assertThat(lessonInfos.get(3).lessonId()).isEqualTo(4L);
-        assertThat(lessonInfos.get(3).isCompleted()).isFalse();
+        assertThat(lessonSummaryResponses.get(3).lessonId()).isEqualTo(4L);
+        assertThat(lessonSummaryResponses.get(3).isCompleted()).isFalse();
     }
 }

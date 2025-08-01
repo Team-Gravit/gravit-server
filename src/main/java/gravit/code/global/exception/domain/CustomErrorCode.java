@@ -48,6 +48,9 @@ public enum CustomErrorCode implements ErrorCode {
     // Lesson
     LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4041", "레슨 조회 실패"),
 
+    // Problem
+    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 조회 실패"),
+
     // Unit
     UNIT_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIT_4041", "유닛 조회 실패"),
 

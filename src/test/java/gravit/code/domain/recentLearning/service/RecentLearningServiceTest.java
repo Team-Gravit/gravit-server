@@ -1,6 +1,6 @@
 package gravit.code.domain.recentLearning.service;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
+import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import gravit.code.domain.recentLearning.domain.RecentLearning;
 import gravit.code.domain.recentLearning.domain.RecentLearningRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +51,7 @@ class RecentLearningServiceTest {
     void updateRecentLearningByUserIdAndChapterInfo(){
         //given
         Long userId = 1L;
-        ChapterInfo chapterInfo = ChapterInfo.create(
+        ChapterSummaryResponse chapterSummaryResponse = ChapterSummaryResponse.create(
                 1L,
                 "자료구조",
                 3L,
@@ -63,10 +63,10 @@ class RecentLearningServiceTest {
         when(recentLearningRepository.findByUserId(userId)).thenReturn(Optional.ofNullable(recentLearning));
 
         //when
-        recentLearningService.updateRecentLearning(userId, chapterInfo);
+        recentLearningService.updateRecentLearning(userId, chapterSummaryResponse);
 
         //then
-        verify(recentLearning).update(chapterInfo);
+        verify(recentLearning).update(chapterSummaryResponse);
         verify(recentLearningRepository).save(recentLearning);
     }
 }

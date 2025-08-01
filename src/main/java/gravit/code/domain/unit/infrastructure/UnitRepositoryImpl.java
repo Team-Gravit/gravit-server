@@ -14,16 +14,13 @@ public class UnitRepositoryImpl implements UnitRepository {
     private final UnitJpaRepository unitJpaRepository;
 
     @Override
-    public Optional<Unit> findById(Long unitId) {
-        return unitJpaRepository.findById(unitId);
-    }
-    @Override
     public Unit save(Unit unit) {
         return unitJpaRepository.save(unit);
     }
 
     @Override
-    public Long getTotalLessonsByUnitId(Long unitId) {
-        return unitJpaRepository.getTotalLessonsByUnitId(unitId);
+    public Optional<Unit> findById(Long unitId) {
+        return unitJpaRepository.findById(unitId);
     }
+
 }

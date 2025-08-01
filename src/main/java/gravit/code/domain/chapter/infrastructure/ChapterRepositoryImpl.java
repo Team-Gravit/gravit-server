@@ -21,10 +21,4 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     public Chapter save(Chapter chapter) {
         return chapterJpaRepository.save(chapter);
     }
-
-    @Override
-    public Long getTotalUnitsByChapterId(Long chapterId) {
-        return chapterJpaRepository.getTotalUnitsByChapterId(chapterId);
-    }
-
 }

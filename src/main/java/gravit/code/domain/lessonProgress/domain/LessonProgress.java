@@ -16,14 +16,14 @@ public class LessonProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "is_completed", columnDefinition = "boolean", nullable = false)
+    private boolean isCompleted;
+
     @Column(name = "user_id",columnDefinition = "bigint", nullable = false)
     private Long userId;
 
     @Column(name = "lesson_id",columnDefinition = "bigint", nullable = false)
     private Long lessonId;
-
-    @Column(name = "is_completed", columnDefinition = "boolean", nullable = false)
-    private boolean isCompleted;
 
     @Builder
     private LessonProgress(Long userId, Long lessonId, boolean isCompleted) {
@@ -40,7 +40,7 @@ public class LessonProgress {
                 .build();
     }
 
-    public void updateProgressStatus(){
+    public void updateStatus(){
         this.isCompleted = true;
     }
 }

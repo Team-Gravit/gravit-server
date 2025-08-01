@@ -1,7 +1,7 @@
 package gravit.code.domain.recentLearning.domain;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
-import gravit.code.domain.recentLearning.dto.response.RecentLearningInfo;
+import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
+import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryResponse;
 import gravit.code.domain.recentLearning.infrastructure.RecentLearningJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,16 +25,16 @@ class RecentLearningRepositoryTest {
 
     @BeforeEach
     void setUp(){
-        ChapterInfo chapterInfo = ChapterInfo.builder()
+        ChapterSummaryResponse chapterSummaryResponse = ChapterSummaryResponse.builder()
                 .chapterId(1L)
-                .chapterName("자료구조")
+                .name("자료구조")
                 .totalUnits(3L)
                 .completedUnits(2L)
                 .build();
 
         RecentLearning recentLearning = RecentLearning.init(1L);
 
-        recentLearning.update(chapterInfo);
+        recentLearning.update(chapterSummaryResponse);
 
         recentLearningJpaRepository.save(recentLearning);
     }
@@ -51,7 +51,7 @@ class RecentLearningRepositoryTest {
         Long completedUnits = 2L;
 
         //when
-        Optional<RecentLearningInfo> recentLearningInfo = recentLearningJpaRepository.findRecentLearningInfoByUserId(userId);
+        Optional<RecentLearningSummaryResponse> recentLearningInfo = recentLearningJpaRepository.findRecentLearningSummaryByUserId(userId);
 
         //then
         assertThat(recentLearningInfo).isPresent();

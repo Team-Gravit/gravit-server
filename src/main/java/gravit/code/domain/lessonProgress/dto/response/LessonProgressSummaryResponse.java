@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 @Schema(description = "레슨 정보 DTO")
-public record LessonInfo(
+public record LessonProgressSummaryResponse(
         @Schema(
                 description = "레슨 아이디",
                 example = "1"
@@ -16,7 +16,7 @@ public record LessonInfo(
                 description = "레슨 이름",
                 example = "스택 1/3"
         )
-        String lessonName,
+        String name,
 
         @Schema(
                 description = "레슨 완료 여부",
@@ -24,10 +24,10 @@ public record LessonInfo(
         )
         boolean isCompleted
 ) {
-        public static LessonInfo create(Long lessonId, String lessonName, boolean isCompleted) {
-                return LessonInfo.builder()
+        public static LessonProgressSummaryResponse create(Long lessonId, String name, boolean isCompleted) {
+                return LessonProgressSummaryResponse.builder()
                         .lessonId(lessonId)
-                        .lessonName(lessonName)
+                        .name(name)
                         .isCompleted(isCompleted)
                         .build();
         }

@@ -1,10 +1,10 @@
-package gravit.code.domain.user.dto.response;
+package gravit.code.domain.mainPage.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
-public record UserMainPageInfo(
+public record MainPageUserSummaryResponse(
 
         @Schema(
                 description = "유저 닉네임",

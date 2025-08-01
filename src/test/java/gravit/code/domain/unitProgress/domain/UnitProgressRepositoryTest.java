@@ -2,7 +2,7 @@ package gravit.code.domain.unitProgress.domain;
 
 import gravit.code.domain.unit.domain.Unit;
 import gravit.code.domain.unit.infrastructure.UnitJpaRepository;
-import gravit.code.domain.unitProgress.dto.response.UnitInfo;
+import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.infrastructure.UnitProgressJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,34 +88,6 @@ class UnitProgressRepositoryTest {
     }
 
     @Test
-    @DisplayName("unitId와 userId로 UnitProgress가 존재하는지 조회할 수 있다.")
-    void getUnitProgressExistByUnitIdAndUserId1(){
-        //given
-        Long unitId = 2L;
-        Long userId = 1L;
-
-        //when
-        boolean exist = unitProgressRepository.existsByUnitIdAndUserId(unitId, userId);
-
-        //then
-        assertThat(exist).isTrue();
-    }
-
-    @Test
-    @DisplayName("unitId와 userId로 UnitProgress가 존재하는지 조회할 수 있다.")
-    void getUnitProgressExistByUnitIdAndUserId2(){
-        //given
-        Long unitId = 2222L;
-        Long userId = 1111L;
-
-        //when
-        boolean exist = unitProgressRepository.existsByUnitIdAndUserId(unitId, userId);
-
-        //then
-        assertThat(exist).isFalse();
-    }
-
-    @Test
     @DisplayName("chapterId와 userId로 진행도를 포함한 Unit을 조회할 수 있다.")
     void getUnitInfoWithProgressByChapterIdAndUserId(){
         //given
@@ -123,7 +95,7 @@ class UnitProgressRepositoryTest {
         Long userId = 1L;
 
         //when
-        List<UnitInfo> unitInfos = unitProgressRepository.findUnitsWithProgressByChapterId(userId, chapterId);
+        List<UnitProgressDetailResponse> unitInfos = unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
 
         //then
         assertThat(unitInfos).hasSize(4);

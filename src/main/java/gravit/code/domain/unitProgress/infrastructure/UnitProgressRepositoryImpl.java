@@ -2,7 +2,7 @@ package gravit.code.domain.unitProgress.infrastructure;
 
 import gravit.code.domain.unitProgress.domain.UnitProgress;
 import gravit.code.domain.unitProgress.domain.UnitProgressRepository;
-import gravit.code.domain.unitProgress.dto.response.UnitInfo;
+import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -22,13 +22,8 @@ public class UnitProgressRepositoryImpl implements UnitProgressRepository {
     }
 
     @Override
-    public boolean existsByUnitIdAndUserId(Long unitId, Long userId){
-        return unitProgressJpaRepository.existsByUnitIdAndUserId(unitId, userId);
-    }
-
-    @Override
-    public List<UnitInfo> findAllUnitsWithProgress(@Param("userId") Long userId, @Param("chapterId") Long chapterId){
-        return  unitProgressJpaRepository.findUnitsWithProgressByChapterId(chapterId, userId);
+    public List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(@Param("chapterId") Long chapterId, @Param("userId") Long userId){
+        return  unitProgressJpaRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
     }
 
     @Override

@@ -12,5 +12,5 @@ public interface ChapterJpaRepository extends JpaRepository<Chapter, Long> {
         FROM Chapter c
         WHERE c.id = :chapterId
     """)
-    Long getTotalUnitsByChapterId(@Param("chapterId") Long chapterId);
+    Long findTotalUnitsByChapterId(@Param("chapterId") Long chapterId);
 }

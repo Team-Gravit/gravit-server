@@ -40,7 +40,7 @@ class ChapterProgressServiceTest {
         when(chapterRepository.findById(chapterId)).thenReturn(Optional.empty());
 
         //when&then
-        assertThatThrownBy(() -> chapterProgressService.updateChapterProgress(userId, chapterId))
+        assertThatThrownBy(() -> chapterProgressService.updateChapterProgress(chapterId, userId))
                 .isInstanceOf(RestApiException.class)
                 .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_NOT_FOUND);
     }
@@ -60,7 +60,7 @@ class ChapterProgressServiceTest {
         when(chapterProgressRepository.save(any(ChapterProgress.class))).thenReturn(chapterProgress);
 
         //when
-        chapterProgressService.updateChapterProgress(userId, chapterId);
+        chapterProgressService.updateChapterProgress(chapterId, userId);
 
         //then
         verify(chapterProgressRepository).save(any(ChapterProgress.class));
@@ -81,7 +81,7 @@ class ChapterProgressServiceTest {
         when(chapterProgressRepository.save(any(ChapterProgress.class))).thenReturn(chapterProgress);
 
         //when
-        chapterProgressService.updateChapterProgress(userId, chapterId);
+        chapterProgressService.updateChapterProgress(chapterId, userId);
 
         //then
         verify(chapterProgress).updateCompletedUnits();

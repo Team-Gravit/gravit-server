@@ -1,9 +1,8 @@
 package gravit.code.domain.problemProgress.service;
 
-import gravit.code.domain.problem.dto.request.ProblemResult;
+import gravit.code.domain.problem.dto.request.ProblemResultRequest;
 import gravit.code.domain.problemProgress.domain.ProblemProgress;
 import gravit.code.domain.problemProgress.domain.ProblemProgressRepository;
-import gravit.code.domain.problemProgress.service.ProblemProgressService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,17 +41,17 @@ class ProblemProgressServiceTest {
         Long problemId9 = 9L;
         Long problemId10 = 10L;
 
-        List<ProblemResult> problemResults = List.of(
-                new ProblemResult(problemId1, true, 0L),
-                new ProblemResult(problemId2, false, 2L),
-                new ProblemResult(problemId3, true, 0L),
-                new ProblemResult(problemId4, true, 0L),
-                new ProblemResult(problemId5, true, 0L),
-                new ProblemResult(problemId6, true, 0L),
-                new ProblemResult(problemId7, true, 0L),
-                new ProblemResult(problemId8, true, 0L),
-                new ProblemResult(problemId9, true, 0L),
-                new ProblemResult(problemId10, false, 1L)
+        List<ProblemResultRequest> problemResults = List.of(
+                new ProblemResultRequest(problemId1, true, 0L),
+                new ProblemResultRequest(problemId2, false, 2L),
+                new ProblemResultRequest(problemId3, true, 0L),
+                new ProblemResultRequest(problemId4, true, 0L),
+                new ProblemResultRequest(problemId5, true, 0L),
+                new ProblemResultRequest(problemId6, true, 0L),
+                new ProblemResultRequest(problemId7, true, 0L),
+                new ProblemResultRequest(problemId8, true, 0L),
+                new ProblemResultRequest(problemId9, true, 0L),
+                new ProblemResultRequest(problemId10, false, 1L)
                 );
 
         ArgumentCaptor<List<ProblemProgress>> captor = ArgumentCaptor.forClass(List.class);

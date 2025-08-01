@@ -2,7 +2,7 @@ package gravit.code.domain.problem.service;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.domain.ProblemType;
 import gravit.code.domain.problem.domain.ProblemRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -32,15 +32,15 @@ class ProblemServiceTest {
     void getLessonProblemsByExistLessonId(){
         // given
         Long lessonId = 1L;
-        List<ProblemInfo> expectedResponse = List.of(
-                new ProblemInfo(1L, ProblemType.FILL_BLANK, "문제1", "-", "정답1"),
-                new ProblemInfo(2L, ProblemType.SELECT_DESCRIPTION, "문제2", "선택지", "정답2")
+        List<ProblemResponse> expectedResponse = List.of(
+                new ProblemResponse(1L, ProblemType.FILL_BLANK, "문제1", "-", "정답1"),
+                new ProblemResponse(2L, ProblemType.SELECT_DESCRIPTION, "문제2", "선택지", "정답2")
         );
 
-        when(problemRepository.findAllProblemsByLessonId(lessonId)).thenReturn(expectedResponse);
+        when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(expectedResponse);
 
         // when
-        List<ProblemInfo> actualResponse = problemService.getAllProblems(lessonId);
+        List<ProblemResponse> actualResponse = problemService.getAllProblem(lessonId);
 
         // then
         assertThat(actualResponse).hasSize(expectedResponse.size());
@@ -52,11 +52,11 @@ class ProblemServiceTest {
     void getLessonProblemByNonExistLessonId(){
         // given
         Long lessonId = 100000L;
-        when(problemRepository.findAllProblemsByLessonId(lessonId)).thenReturn(List.of());
+        when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(List.of());
 
         // when & then
-        assertThatThrownBy(() -> problemService.getAllProblems(lessonId))
+        assertThatThrownBy(() -> problemService.getAllProblem(lessonId))
                 .isInstanceOf(RestApiException.class)
-                .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.LESSON_NOT_FOUND);
+                .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
     }
 }

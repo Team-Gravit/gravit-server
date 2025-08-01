@@ -42,7 +42,7 @@ class UnitProgressServiceTest {
         when(unitRepository.findById(unitId)).thenReturn(Optional.empty());
 
         //when&then
-        assertThatThrownBy(() -> unitProgressService.updateUnitProgress(userId, unitId))
+        assertThatThrownBy(() -> unitProgressService.updateUnitProgress(unitId, userId))
                 .isInstanceOf(RestApiException.class)
                 .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.UNIT_NOT_FOUND);
     }
@@ -62,7 +62,7 @@ class UnitProgressServiceTest {
         when(unitProgressRepository.save(any(UnitProgress.class))).thenReturn(unitProgress);
 
         //when
-        Boolean result = unitProgressService.updateUnitProgress(userId, unitId);
+        Boolean result = unitProgressService.updateUnitProgress(unitId, userId);
 
         //then
         assertThat(result).isFalse();
@@ -84,7 +84,7 @@ class UnitProgressServiceTest {
         when(unitProgressRepository.save(any(UnitProgress.class))).thenReturn(unitProgress);
 
         //when
-        Boolean result = unitProgressService.updateUnitProgress(userId, unitId);
+        Boolean result = unitProgressService.updateUnitProgress(unitId, userId);
 
         //then
         assertThat(result).isTrue();

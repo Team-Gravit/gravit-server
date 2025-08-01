@@ -2,7 +2,7 @@ package gravit.code.domain.lessonProgress.service;
 
 import gravit.code.domain.lessonProgress.domain.LessonProgress;
 import gravit.code.domain.lessonProgress.domain.LessonProgressRepository;
-import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
+import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +14,15 @@ public class LessonProgressService {
 
     private final LessonProgressRepository lessonProgressRepository;
 
-    public void updateLessonProgressStatus(Long userId, Long lessonId){
+    public void updateLessonProgressStatus(Long lessonId, Long userId){
 
         LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(userId, lessonId)
                 .orElseGet(() -> LessonProgress.create(userId, lessonId, false));
 
-        lessonProgress.updateProgressStatus();
+        lessonProgress.updateStatus();
     }
 
-    public List<LessonInfo> getAllLessonsWithProgress(Long userId, Long unitId){
-        return lessonProgressRepository.findAllLessonsWithProgress(userId, unitId);
+    public List<LessonProgressSummaryResponse> getLessonProgressSummaries(Long userId, Long unitId){
+        return lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(userId, unitId);
     }
 }

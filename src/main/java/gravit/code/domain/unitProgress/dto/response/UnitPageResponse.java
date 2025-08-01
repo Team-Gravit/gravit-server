@@ -1,6 +1,6 @@
 package gravit.code.domain.unitProgress.dto.response;
 
-import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
+import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -13,17 +13,17 @@ public record UnitPageResponse(
         @Schema(
                 description = "유닛 정보"
         )
-        UnitInfo unitInfo,
+        UnitProgressDetailResponse unitProgressDetailResponse,
 
         @Schema(
                 description = "해당 유닛에 포함된 레슨 정보"
         )
-        List<LessonInfo> lessonInfos
+        List<LessonProgressSummaryResponse> lessonProgressSummaryResponses
 ) {
-    public static UnitPageResponse create(UnitInfo unitInfo, List<LessonInfo> lessonInfos) {
+    public static UnitPageResponse create(UnitProgressDetailResponse unitProgressDetailResponse, List<LessonProgressSummaryResponse> lessonProgressSummaryResponses) {
         return UnitPageResponse.builder()
-                .unitInfo(unitInfo)
-                .lessonInfos(lessonInfos)
+                .unitProgressDetailResponse(unitProgressDetailResponse)
+                .lessonProgressSummaryResponses(lessonProgressSummaryResponses)
                 .build();
     }
 }

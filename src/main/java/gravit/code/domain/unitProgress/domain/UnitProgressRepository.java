@@ -1,17 +1,17 @@
 package gravit.code.domain.unitProgress.domain;
 
-import gravit.code.domain.unitProgress.dto.response.UnitInfo;
+import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UnitProgressRepository {
-    Optional<UnitProgress> findByUnitIdAndUserId(Long unitId, Long userId);
-
-    boolean existsByUnitIdAndUserId(Long unitId, Long userId);
-
-    List<UnitInfo> findAllUnitsWithProgress(@Param("userId") Long userId, @Param("chapterId") Long chapterId);
 
     UnitProgress save(UnitProgress unitProgress);
+
+    Optional<UnitProgress> findByUnitIdAndUserId(Long unitId, Long userId);
+
+    List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(@Param("chapterId") Long chapterId, @Param("userId") Long userId);
+
 }

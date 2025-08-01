@@ -50,7 +50,7 @@ public class UnitProgress {
         this.completedLessons++;
     }
 
-    public Boolean isUnitCompleted() {
+    public Boolean isComplete() {
         return Objects.equals(completedLessons, totalLessons);
     }
 }

@@ -1,6 +1,6 @@
 package gravit.code.domain.recentLearning.service;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
+import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ public class RecentLearningEventHandler {
     @Async("learningAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void updateRecentLearning(RecentLearningEventDto recentLearningEventDto){
-        ChapterInfo chapterInfo = chapterProgressService.getChapterInfo(recentLearningEventDto.userId(), recentLearningEventDto.chapterId());
+        ChapterSummaryResponse chapterSummaryResponse = chapterProgressService.getChapterSummary(recentLearningEventDto.chapterId(), recentLearningEventDto.userId());
 
-        recentLearningService.updateRecentLearning(recentLearningEventDto.userId(), chapterInfo);
+        recentLearningService.updateRecentLearning(recentLearningEventDto.userId(), chapterSummaryResponse);
     }
 }

@@ -3,7 +3,7 @@ package gravit.code.domain.problem.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-public record ProblemResult(
+public record ProblemResultRequest(
 
         @Schema(
                 description = "문제 아이디",

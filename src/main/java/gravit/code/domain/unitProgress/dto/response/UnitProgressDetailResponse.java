@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 @Schema(description = "유닛 정보 DTO")
-public record UnitInfo(
+public record UnitProgressDetailResponse(
         @Schema(
                 description = "유닛 아이디",
                 example = "1"
@@ -16,7 +16,7 @@ public record UnitInfo(
                 description = "유닛 이름",
                 example = "큐"
         )
-        String unitName,
+        String name,
 
         @Schema(
                 description = "총 레슨",
@@ -30,10 +30,10 @@ public record UnitInfo(
         )
         Long completedLesson
 ) {
-        public static UnitInfo create(Long unitId, String unitName, Long totalLesson, Long completedLesson) {
-                return UnitInfo.builder()
+        public static UnitProgressDetailResponse create(Long unitId, String name, Long totalLesson, Long completedLesson) {
+                return UnitProgressDetailResponse.builder()
                         .unitId(unitId)
-                        .unitName(unitName)
+                        .name(name)
                         .totalLesson(totalLesson)
                         .completedLesson(completedLesson)
                         .build();
