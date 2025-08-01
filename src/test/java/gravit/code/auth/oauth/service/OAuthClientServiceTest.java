@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -56,9 +56,12 @@ class OAuthClientServiceTest {
         OAuthUserInfo result = oAuthClientService.getUserInfo(authCode, provider);
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result.getEmail()).isEqualTo("test@test.com");
-        assertThat(result.getProvider()).isEqualTo(provider);
+
+        assertSoftly(softly -> {
+            softly.assertThat(result).isNotNull();
+            softly.assertThat(result.getEmail()).isEqualTo("test@test.com");
+            softly.assertThat(result.getProvider()).isEqualTo(provider);
+        });
     }
 
     @Test

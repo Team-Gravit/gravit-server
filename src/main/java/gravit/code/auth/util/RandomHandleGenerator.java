@@ -1,6 +1,9 @@
 package gravit.code.auth.util;
 
 import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.ErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +31,7 @@ public class RandomHandleGenerator implements HandleGenerator{
                 return handle;
             }
         }
-        throw new IllegalStateException("Handle 생성 실패: 중복으로 인해 유효한 handle 을 찾지 못했습니다.");
+        throw new RestApiException(CustomErrorCode.HANDLE_CONFLICT_TEN_TIMES);
     }
 
     private String generateHandle(){
