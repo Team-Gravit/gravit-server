@@ -34,7 +34,7 @@ public class FriendController implements FriendControllerDocs {
     @PostMapping("/unfollowing/{followeeId}")
     public ResponseEntity<String> unFollowing(@PathVariable("followeeId")Long followeeId,
                                               @AuthenticationPrincipal LoginUser loginUser) {
-        friendService.unFollowing(followeeId, loginUser.getId());
+        friendService.unFollowing(loginUser.getId(), followeeId);
         return ResponseEntity.ok("팔로우를 성공적으로 취소하였습니다. followeeId = " + followeeId);
     }
 

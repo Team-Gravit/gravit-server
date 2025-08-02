@@ -44,6 +44,11 @@ public enum CustomErrorCode implements ErrorCode {
     // Lesson
     LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4041", "레슨 조회 실패"),
 
+    // Friend
+    FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),
+    UNABLE_FOLLOWING_YOURSELF(HttpStatus.BAD_REQUEST,"FRIEND_4001", "자기 자신에게 팔로잉은 불가능합니다"),
+    FRIEND_CONFLICT(HttpStatus.CONFLICT, "FRIEND_4091","이미 팔로잉을 한 유저입니다."),
+
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "GLOBAL_5001", "예기치 못한 예외 발생");

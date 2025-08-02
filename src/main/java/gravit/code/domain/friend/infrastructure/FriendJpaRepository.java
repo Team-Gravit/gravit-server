@@ -16,6 +16,7 @@ public interface FriendJpaRepository extends JpaRepository<Friend, Long> {
 
     @Query("""
         select new gravit.code.domain.friend.dto.response.FollowerResponse(
+            u.id,
             u.nickname,
             u.profileImgNumber,
             u.handle
@@ -28,6 +29,7 @@ public interface FriendJpaRepository extends JpaRepository<Friend, Long> {
 
     @Query("""
         select new gravit.code.domain.friend.dto.response.FollowingResponse(
+            u.id,
             u.nickname,
             u.profileImgNumber,
             u.handle
