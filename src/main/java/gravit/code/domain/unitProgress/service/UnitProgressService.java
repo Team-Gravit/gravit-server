@@ -35,6 +35,12 @@ public class UnitProgressService {
     }
 
     public List<UnitProgressDetailResponse> findAllUnitProgress(Long chapterId, Long userId){
-        return unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
+
+        List<UnitProgressDetailResponse> unitProgressDetailResponses = unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
+
+        if (unitProgressDetailResponses.isEmpty())
+            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
+
+        return unitProgressDetailResponses;
     }
 }

@@ -9,8 +9,8 @@ import gravit.code.domain.lessonProgress.service.LessonProgressService;
 import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.domain.problemProgress.service.ProblemProgressService;
-import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
+import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.service.UnitProgressService;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.service.UserService;
@@ -36,6 +36,24 @@ public class LearningFacade {
     private final ProblemProgressService problemProgressService;
 
     @Transactional(readOnly = true)
+    public List<ChapterProgressDetailResponse> getAllChapters(Long userId){
+        return chapterProgressService.getChapterProgressDetails(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UnitPageResponse> getAllUnitsInChapter(Long userId, Long chapterId){
+        List<UnitProgressDetailResponse> unitProgressDetailResponses = unitProgressService.findAllUnitProgress(chapterId, userId);
+
+        return unitProgressDetailResponses.stream()
+                .map(unitProgressDetailResponse -> {
+                    List<LessonProgressSummaryResponse> lessonProgressSummaryResponses = lessonProgressService.getLessonProgressSummaries(unitProgressDetailResponse.unitId(), userId);
+
+                    return UnitPageResponse.create(unitProgressDetailResponse, lessonProgressSummaryResponses);
+                })
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<ProblemResponse> getAllProblemsInLesson(Long lessonId){
         return problemService.getAllProblem(lessonId);
     }
@@ -53,23 +71,5 @@ public class LearningFacade {
         publisher.publishEvent(new RecentLearningEventDto(userId, request.chapterId()));
 
         return userService.updateUserLevelAndXp(userId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ChapterProgressDetailResponse> getAllChapters(Long userId){
-        return chapterProgressService.getChapterProgressDetails(userId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UnitPageResponse> getAllUnitsInChapter(Long userId, Long chapterId){
-        List<UnitProgressDetailResponse> unitProgressDetailResponses = unitProgressService.findAllUnitProgress(chapterId, userId);
-
-        return unitProgressDetailResponses.stream()
-                .map(unitProgressDetailResponse -> {
-                    List<LessonProgressSummaryResponse> lessonProgressSummaryResponses = lessonProgressService.getLessonProgressSummaries(userId, unitProgressDetailResponse.unitId());
-
-                    return UnitPageResponse.create(unitProgressDetailResponse, lessonProgressSummaryResponses);
-                })
-                .toList();
     }
 }

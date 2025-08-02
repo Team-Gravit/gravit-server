@@ -5,6 +5,8 @@ import gravit.code.domain.lesson.domain.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class LessonRepositoryImpl implements LessonRepository {
@@ -14,5 +16,10 @@ public class LessonRepositoryImpl implements LessonRepository {
     @Override
     public Lesson save(Lesson lesson) {
         return lessonJpaRepository.save(lesson);
+    }
+
+    @Override
+    public Optional<Lesson> findById(Long lessonId){
+        return lessonJpaRepository.findById(lessonId);
     }
 }

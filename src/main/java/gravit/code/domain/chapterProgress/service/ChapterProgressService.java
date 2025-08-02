@@ -21,7 +21,12 @@ public class ChapterProgressService {
     private final ChapterProgressRepository chapterProgressRepository;
 
     public List<ChapterProgressDetailResponse> getChapterProgressDetails(Long userId){
-        return chapterProgressRepository.findAllChapterProgressDetailByUserId(userId);
+        List<ChapterProgressDetailResponse> chapterProgressDetailResponses = chapterProgressRepository.findAllChapterProgressDetailByUserId(userId);
+
+        if(chapterProgressDetailResponses.isEmpty())
+            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
+
+        return chapterProgressDetailResponses;
     }
 
     public ChapterSummaryResponse getChapterSummary(Long chapterId, Long userId) {
