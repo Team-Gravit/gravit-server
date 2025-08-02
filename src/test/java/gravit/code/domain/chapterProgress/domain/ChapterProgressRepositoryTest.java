@@ -107,7 +107,7 @@ class ChapterProgressRepositoryTest {
     class FindChapterProgressDetail{
 
         @Test
-        @DisplayName("userId가 유효하면 ChapterProgressDetail을 반환한다.")
+        @DisplayName("userId가 유효하면 정상적으로 반환한다.")
         void withValidUserId(){
             //given
             Long userId = 1L;

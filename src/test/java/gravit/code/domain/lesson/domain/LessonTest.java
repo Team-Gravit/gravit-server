@@ -1,6 +1,5 @@
 package gravit.code.domain.lesson.domain;
 
-import gravit.code.domain.lesson.domain.Lesson;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LessonTest {
 
-    @DisplayName("유효한 데이터로 레슨을 생성할 수 있다")
     @Test
+    @DisplayName("유효한 데이터로 레슨을 생성할 수 있다")
     void createLessonWithAvailableData(){
 
         // given

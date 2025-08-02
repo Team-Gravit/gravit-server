@@ -1,11 +1,12 @@
 package gravit.code.domain.problem.service;
 
+import gravit.code.domain.problem.domain.ProblemRepository;
+import gravit.code.domain.problem.domain.ProblemType;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.domain.problem.dto.response.ProblemResponse;
-import gravit.code.domain.problem.domain.ProblemType;
-import gravit.code.domain.problem.domain.ProblemRepository;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,36 +28,68 @@ class ProblemServiceTest {
     @InjectMocks
     private ProblemService problemService;
 
-    @Test
-    @DisplayName("lessonId를 통해 Problem을 조회할 수 있다.")
-    void getLessonProblemsByExistLessonId(){
-        // given
-        Long lessonId = 1L;
-        List<ProblemResponse> expectedResponse = List.of(
-                new ProblemResponse(1L, ProblemType.FILL_BLANK, "문제1", "-", "정답1"),
-                new ProblemResponse(2L, ProblemType.SELECT_DESCRIPTION, "문제2", "선택지", "정답2")
+    @Nested
+    @DisplayName("모든 문제를 조회할 떄,")
+    class getAllProblems{
+
+        private final List<ProblemResponse> problemResponses = List.of(
+                ProblemResponse.create(
+                        1L,
+                        ProblemType.FILL_BLANK,
+                        "이진 탐색 트리에서 중위 순회(In-order traversal)를 수행하면 노드들이 ( )된 순서로 방문됩니다.",
+                        "-",
+                        "오름차순 정렬"
+                ),
+                ProblemResponse.create(
+                        2L,
+                        ProblemType.SELECT_DESCRIPTION,
+                        "해시 테이블에서 서로 다른 키가 동일한 해시 값을 가지는 충돌(Collision) 현상을 해결하기 위해 연결 리스트로 같은 해시 값의 데이터들을 체인 형태로 연결하는 기법은?",
+                        "-",
+                        "체이닝"
+                ),
+                ProblemResponse.create(
+                        3L,
+                        ProblemType.FILL_BLANK,
+                        "이진 탐색 트리에서 중위 순회(In-order traversal)를 수행하면 노드들이 ( )된 순서로 방문됩니다.",
+                        "1. 오름차순 정렬, 2. 내림차순 정렬, 3. 무작위, 4. 역정렬",
+                        "1"
+                ),
+                ProblemResponse.create(
+                        4L,
+                        ProblemType.SELECT_DESCRIPTION,
+                        "해시 테이블에서 서로 다른 키가 동일한 해시 값을 가지는 충돌(Collision) 현상을 해결하기 위해 연결 리스트로 같은 해시 값의 데이터들을 체인 형태로 연결하는 기법은?",
+                        "1. 선형 탐사법, 2. 이차 탐사법, 3. 체이닝, 4. 이중 해싱",
+                        "1"
+                )
         );
 
-        when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(expectedResponse);
+        @Test
+        @DisplayName("lessonId가 유효하면 정상적으로 반환한다.")
+        void getLessonProblemsByExistLessonId(){
+            // given
+            Long lessonId = 1L;
 
-        // when
-        List<ProblemResponse> actualResponse = problemService.getAllProblem(lessonId);
+            when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(problemResponses);
 
-        // then
-        assertThat(actualResponse).hasSize(expectedResponse.size());
-        assertThat(actualResponse).isEqualTo(expectedResponse);
-    }
+            // when
+            List<ProblemResponse> actualResponse = problemService.getAllProblem(lessonId);
 
-    @Test
-    @DisplayName("조회 결과가 빈 리스트인 경우(존재하지 않는 lessonId로 조회한 경우) 예외를 반환한다.")
-    void getLessonProblemByNonExistLessonId(){
-        // given
-        Long lessonId = 100000L;
-        when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(List.of());
+            // then
+            assertThat(actualResponse).hasSize(problemResponses.size());
+        }
 
-        // when & then
-        assertThatThrownBy(() -> problemService.getAllProblem(lessonId))
-                .isInstanceOf(RestApiException.class)
-                .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
+        @Test
+        @DisplayName("lessonId가 유효하지 않으면 빈 리스트가 반환되어 예외를 반환한다.")
+        void getLessonProblemByNonExistLessonId(){
+            // given
+            Long lessonId = 999L
+                    ;
+            when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(List.of());
+
+            // when & then
+            assertThatThrownBy(() -> problemService.getAllProblem(lessonId))
+                    .isInstanceOf(RestApiException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
+        }
     }
 }

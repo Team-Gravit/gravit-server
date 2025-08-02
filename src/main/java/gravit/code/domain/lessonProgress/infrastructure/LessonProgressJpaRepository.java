@@ -12,13 +12,11 @@ import java.util.Optional;
 public interface LessonProgressJpaRepository extends JpaRepository<LessonProgress, Long> {
     Optional<LessonProgress> findByLessonIdAndUserId(Long lessonId, Long userId);
 
-    boolean existsByLessonIdAndUserId(Long lessonId, Long userId);
-
     @Query("""
         SELECT new gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse(l.id, l.name, COALESCE(lp.isCompleted, false))
         FROM Lesson l
         LEFT JOIN LessonProgress lp ON l.id = lp.lessonId AND lp.userId = :userId
-        WHERE l.unitId = :unitId
+        WHERE l.unitId = :unitId AND EXISTS (SELECT 1 FROM User u WHERE u.id = :userId)
         ORDER BY l.id
     """)
     List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(@Param("unitId") Long unitId, @Param("userId") Long userId);
