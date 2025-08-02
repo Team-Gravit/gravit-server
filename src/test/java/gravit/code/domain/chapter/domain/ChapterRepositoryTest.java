@@ -3,7 +3,6 @@ package gravit.code.domain.chapter.domain;
 import gravit.code.domain.chapter.infrastructure.ChapterJpaRepository;
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.infrastructure.ChapterProgressJpaRepository;
-import gravit.code.domain.learning.dto.response.RecentLearningInfo;
 import gravit.code.domain.lesson.domain.Lesson;
 import gravit.code.domain.lesson.infrastructure.LessonJpaRepository;
 import gravit.code.domain.problem.domain.Problem;
@@ -23,7 +22,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -91,35 +89,6 @@ class ChapterRepositoryTest {
         problemProgressRepository.saveAll(problemProgressList);
     }
 
-    @Test
-    @DisplayName("최근에 푼 문제를 통해, 사용자의 최근 학습 정보를 조회한다.")
-    void getRecentLearningInfoWithRecentlySolvedProblem(){
-        //given
-        Long userId = 1L;
-
-        //when
-        Optional<RecentLearningInfo> recentLearningInfo = chapterRepository.findRecentLearningChapter(userId);
-
-        //then
-        assertThat(recentLearningInfo).isPresent();
-        assertThat(recentLearningInfo.get().chapterName()).isEqualTo("자료구조");
-        assertThat(recentLearningInfo.get().chapterDescription()).isEqualTo("스택, 큐, 힙과 같은 자료구조에 대해 학습합니다.");
-        assertThat(recentLearningInfo.get().totalUnits()).isEqualTo(10L);
-        assertThat(recentLearningInfo.get().completedUnits()).isEqualTo(0L);
-    }
-
-    @Test
-    @DisplayName("가장 최근에 푼 문제가 없다면, Optional.empty()를 반환한다.")
-    void getRecentLearningInfoWithNoRecentlySolvedProblem(){
-        //given
-        Long userId = 2L;
-
-        //when
-        Optional<RecentLearningInfo> recentLearningInfo = chapterRepository.findRecentLearningChapter(userId);
-
-        //then
-        assertThat(recentLearningInfo).isNotPresent();
-    }
 
     @Test
     @DisplayName("chapterId로 totalUnits를 조회할 수 있다.")
