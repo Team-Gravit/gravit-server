@@ -7,7 +7,6 @@ import gravit.code.domain.friend.dto.response.FollowingResponse;
 import gravit.code.domain.friend.dto.response.FriendResponse;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
