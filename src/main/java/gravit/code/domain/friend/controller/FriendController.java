@@ -1,7 +1,6 @@
 package gravit.code.domain.friend.controller;
 
 import gravit.code.auth.oauth.LoginUser;
-import gravit.code.domain.friend.controller.docs.FriendControllerDocs;
 import gravit.code.domain.friend.dto.response.FollowerResponse;
 import gravit.code.domain.friend.dto.response.FollowingResponse;
 import gravit.code.domain.friend.service.FriendService;
@@ -18,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/friends")
 @RequiredArgsConstructor
-public class FriendController implements FriendControllerDocs {
+public class FriendController {
 
     private final FriendService friendService;
 
