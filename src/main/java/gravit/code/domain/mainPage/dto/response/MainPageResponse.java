@@ -1,6 +1,6 @@
 package gravit.code.domain.mainPage.dto.response;
 
-import gravit.code.domain.learning.dto.response.RecentLearningInfo;
+import gravit.code.domain.recentLearning.dto.response.RecentLearningInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
