@@ -1,62 +1,224 @@
 package gravit.code.domain.user.service;
 
-import gravit.code.domain.friend.domain.Friend;
-import gravit.code.domain.friend.domain.FriendRepository;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
-import lombok.extern.slf4j.Slf4j;
+import gravit.code.domain.user.dto.response.UserResponse;
+import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Slf4j
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Autowired
+    @InjectMocks
     private UserService userService;
 
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
-    @Autowired
-    private FriendRepository friendRepository;
-
     @Test
-    void 마이페이지_조회_테스트() {
+    void 온보딩_성공_테스트(){
         // given
-        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
-        userRepository.save(user1);
-        User user2 = User.create("user2@example.com", "kakao1258853439443", "User2", "@user2", 1, LocalDateTime.now());
-        userRepository.save(user2);
-        User user3 = User.create("user3@example.com", "kakao6438123471324", "User3", "@user3", 1, LocalDateTime.now());
-        userRepository.save(user3);
+        Long userId = 1L;
+        String testNickname = "kang";
+        int testProfilePhotoNumber = 1;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
 
-        Friend friend1 = Friend.create(user1.getId(), user2.getId());
-        friendRepository.save(friend1);
-        Friend friend2 = Friend.create(user1.getId(), user3.getId());
-        friendRepository.save(friend2);
-        Friend friend3 = Friend.create(user2.getId(), user1.getId());
-        friendRepository.save(friend3);
-        Friend friend4 = Friend.create(user3.getId(), user1.getId());
-        friendRepository.save(friend4);
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
         // when
-        MyPageResponse myPageResponse = userService.getMyPage(user1.getId());
-        log.info("MyPageResponse 정보 : {}",myPageResponse.toString());
+        UserResponse result = userService.onboarding(userId, request);
 
         // then
-        assertEquals("User1", myPageResponse.nickname());
-        assertEquals(1, myPageResponse.profileImgNumber());
-        assertEquals("@user1", myPageResponse.handle());
-        assertEquals(2, myPageResponse.following());
-        assertEquals(2, myPageResponse.following());
+        assertSoftly(softly -> {
+            softly.assertThat(result.providerId()).isEqualTo(testUser.getProviderId());
+            softly.assertThat(result.nickname()).isEqualTo(testNickname);
+            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
+            softly.assertThat(testUser.isOnboarded()).isEqualTo(true);
+        });
+    }
+
+    @Test
+    void 온보딩시_닉네임이_8자_이상이면_예외를_던집니다(){
+        // given
+        Long userId = 1L;
+        String testNickname = "kangkangkang";
+        int testProfilePhotoNumber = 1;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        // when
+        // then
+        assertThrows(RestApiException.class, ()-> userService.onboarding(userId, request));
+    }
+
+
+    @Test
+    void 온보딩시_닉네임이_2자_이하면_예외를_던집니다(){
+        // given
+        Long userId = 1L;
+        String testNickname = "k";
+        int testProfilePhotoNumber = 1;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        // when
+        // then
+        assertThrows(RestApiException.class, ()-> userService.onboarding(userId, request));
+    }
+
+    @Test
+    void 온보딩시_프로필_이미지_번호가_1보다_작으면_예외를_던집니다(){
+        // given
+        Long userId = 1L;
+        String testNickname = "kang";
+        int testProfilePhotoNumber = 0;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        // when
+        // then
+        assertThrows(RestApiException.class, ()-> userService.onboarding(userId, request));
+    }
+
+    @Test
+    void 온보딩시_프로필_이미지_번호가_10보다_크면_예외를_던집니다(){
+        // given
+        Long userId = 1L;
+        String testNickname = "kang";
+        int testProfilePhotoNumber = 11;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        // when
+        // then
+        assertThrows(RestApiException.class, ()-> userService.onboarding(userId, request));
+    }
+
+    @Test
+    void 유저가_존재하지_않으면_예외를_던집니다(){
+        // given
+        Long userId = 1L;
+        String testNickname = "kang";
+        int testProfilePhotoNumber = 1;
+
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // when
+        // then
+        assertThrows(RestApiException.class, ()-> userService.onboarding(userId, request));
+    }
+
+    @Test
+    void 이미_온보딩을_한_유저라면_예외를_던집니다(){
+        // given
+        Long userId = 1L;
+        String testNickname = "kang";
+        int testProfilePhotoNumber = 1;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        testUser.checkOnboarded();
+
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        // when
+        // then
+        assertThrows(RestApiException.class, ()-> userService.onboarding(userId, request));
+    }
+
+    @Test
+    void 유저_아이디로_유저를_조회합니다(){
+        // given
+        Long userId = 1L;
+        String testEmail = "test@test.com";
+        String testNickname = "kang";
+        String testHandle = "@qwe123";
+        int testProfilePhotoNumber = 1;
+        String testProviderId = "kakao123123";
+        User testUser = User.create(testEmail, testProviderId, testNickname, testHandle, testProfilePhotoNumber, LocalDateTime.now());
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        // when
+        UserResponse result = userService.findById(userId);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.providerId()).isEqualTo(testUser.getProviderId());
+            softly.assertThat(result.nickname()).isEqualTo(testNickname);
+            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
+        });
+    }
+
+    @Test
+    void 유저_아이디로_유저_마이페이지를_조회합니다(){
+        // given
+        Long userId = 1L;
+        int testProfilePhotoNumber = 1;
+        String testNickname = "kang";
+        String testHandle = "@qwe123";
+        int testFollowerCount = 1;
+        int testFollowingCount = 1;
+
+        MyPageResponse myPageResponse = new MyPageResponse(testNickname, testProfilePhotoNumber, testHandle, testFollowerCount, testFollowingCount);
+        when(userRepository.findMyPageByUserId(userId)).thenReturn(Optional.of(myPageResponse));
+
+        // when
+        MyPageResponse result = userService.getMyPage(userId);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.handle()).isEqualTo(testHandle);
+            softly.assertThat(result.nickname()).isEqualTo(testNickname);
+            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
+            softly.assertThat(result.follower()).isEqualTo(testFollowerCount);
+            softly.assertThat(result.following()).isEqualTo(testFollowingCount);
+        });
+    }
+
+    @Test
+    void 유저의_마이페이지가_존재하지_않다면_예외를_던집니다(){
+        // given
+        Long userId = 1L;
+
+        when(userRepository.findMyPageByUserId(userId)).thenReturn(Optional.empty());
+
+        // when
+        // then
+        assertThrows(RestApiException.class, ()-> userService.getMyPage(userId));
     }
 }
