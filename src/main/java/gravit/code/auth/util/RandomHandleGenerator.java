@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Random;
 
 /**
- * handle 길이는 8 자리로 fix
+ * handle 길이는 9 자리로 fix (@포함)
  */
 @Component
 @RequiredArgsConstructor
