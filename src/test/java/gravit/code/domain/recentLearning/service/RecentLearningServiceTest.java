@@ -3,7 +3,11 @@ package gravit.code.domain.recentLearning.service;
 import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import gravit.code.domain.recentLearning.domain.RecentLearning;
 import gravit.code.domain.recentLearning.domain.RecentLearningRepository;
+import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryResponse;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,49 +30,88 @@ class RecentLearningServiceTest {
     @InjectMocks
     private RecentLearningService recentLearningService;
 
-    @Test
-    @DisplayName("userId를 통해 RecentLearning을 초기화하고 저장할 수 있다.")
-    void initAndSaveRecentLearningByUserId(){
-        //given
-        Long userId = 1L;
-        RecentLearning recentLearning = mock(RecentLearning.class);
+    @Nested
+    @DisplayName("최근 학습를 업데이트할 때,")
+    class UpdateRecentLearning {
 
-        // static 메소드를 모킹하는 방식
-        try(MockedStatic<RecentLearning> mockedStatic = mockStatic(RecentLearning.class)){
+        @Test
+        @DisplayName("최근 학습 조회에 실패하면 객체를 생성하여 업데이트한다.")
+        void updateNewRecentLearning() {
+            //given
+            Long userId = 1L;
 
-            mockedStatic.when(() -> RecentLearning.init(userId))
-                    .thenReturn(recentLearning);
+            ChapterSummaryResponse chapterSummaryResponse = mock(ChapterSummaryResponse.class);
+            RecentLearning recentLearning = mock(RecentLearning.class);
+
+            when(recentLearningRepository.findByUserId(userId)).thenReturn(Optional.empty());
+
+            try(MockedStatic<RecentLearning> mockedStatic = mockStatic(RecentLearning.class)){
+
+                mockedStatic.when(() -> RecentLearning.init(userId))
+                        .thenReturn(recentLearning);
+
+                //when
+                recentLearningService.updateRecentLearning(userId, chapterSummaryResponse);
+
+                //then
+                mockedStatic.verify(() -> RecentLearning.init(userId));
+                verify(recentLearning).update(chapterSummaryResponse);
+                verify(recentLearningRepository).save(recentLearning);
+
+            }
+        }
+
+        @Test
+        @DisplayName("최근 학습 조회에 성공하면 조회된 객체를 업데이트한다.")
+        void updateExistingRecentLearning() {
+            //given
+            Long userId = 1L;
+            ChapterSummaryResponse chapterSummaryResponse = mock(ChapterSummaryResponse.class);
+            RecentLearning recentLearning = mock(RecentLearning.class);
+
+            when(recentLearningRepository.findByUserId(userId)).thenReturn(Optional.of(recentLearning));
 
             //when
-            recentLearningService.initRecentLearning(userId);
+            recentLearningService.updateRecentLearning(userId, chapterSummaryResponse);
 
             //then
-            mockedStatic.verify(() -> RecentLearning.init(userId));
+            verify(recentLearning).update(chapterSummaryResponse);
             verify(recentLearningRepository).save(recentLearning);
         }
     }
 
-    @Test
-    @DisplayName("userId와 ChapterInfo를 통해 RecentLearning을 수정할 수 있다.")
-    void updateRecentLearningByUserIdAndChapterInfo(){
-        //given
-        Long userId = 1L;
-        ChapterSummaryResponse chapterSummaryResponse = ChapterSummaryResponse.create(
-                1L,
-                "자료구조",
-                3L,
-                2L
-        );
+    @Nested
+    @DisplayName("최근 학습을 조회할 때,")
+    class GetRecentLearning{
 
-        RecentLearning recentLearning = mock(RecentLearning.class);
+        @Test
+        @DisplayName("조회에 실패하면 예외를 반환한다.")
+        void throwExceptionWhenFailedAtFind(){
+            //given
+            Long userId = 1L;
 
-        when(recentLearningRepository.findByUserId(userId)).thenReturn(Optional.ofNullable(recentLearning));
+            when(recentLearningRepository.findRecentLearningSummaryByUserId(userId)).thenReturn(Optional.empty());
 
-        //when
-        recentLearningService.updateRecentLearning(userId, chapterSummaryResponse);
+            //when&then
+            assertThatThrownBy(() -> recentLearningService.getRecentLearningSummary(userId))
+                    .isInstanceOf(RestApiException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.RECENT_LEARNING_INFO_NOT_FOUND);
+        }
 
-        //then
-        verify(recentLearning).update(chapterSummaryResponse);
-        verify(recentLearningRepository).save(recentLearning);
+        @Test
+        @DisplayName("조회에 성공하면 정상적으로 반환한다.")
+        void returnRecentLearningSummary(){
+            //given
+            Long userId = 1L;
+            RecentLearningSummaryResponse recentLearningSummaryResponse = mock(RecentLearningSummaryResponse.class);
+
+            when(recentLearningRepository.findRecentLearningSummaryByUserId(userId)).thenReturn(Optional.of(recentLearningSummaryResponse));
+
+            //when
+            RecentLearningSummaryResponse response = recentLearningService.getRecentLearningSummary(userId);
+
+            //then
+            assertThat(response).isInstanceOf(RecentLearningSummaryResponse.class);
+        }
     }
 }

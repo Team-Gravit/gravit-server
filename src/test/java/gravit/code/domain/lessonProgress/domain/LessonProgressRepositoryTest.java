@@ -79,7 +79,7 @@ class LessonProgressRepositoryTest {
             List<LessonProgressSummaryResponse> lessonProgressSummaryResponse = lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
 
             //then
-            assertThat(lessonProgressSummaryResponse).hasSize(3);
+            assertThat(lessonProgressSummaryResponse).hasSize(4);
             assertThat(lessonProgressSummaryResponse.get(0).isCompleted()).isTrue();
             assertThat(lessonProgressSummaryResponse.get(3).lessonId()).isEqualTo(4L);
         }

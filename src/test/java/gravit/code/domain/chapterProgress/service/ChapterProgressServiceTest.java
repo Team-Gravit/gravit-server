@@ -59,21 +59,15 @@ class ChapterProgressServiceTest {
         void withValidUserId(){
             //given
             Long userId = 1L;
-            List<ChapterProgressDetailResponse> notEmptyList = List.of(
-                    ChapterProgressDetailResponse.create(1L,"이름1", "설명1", 10L, 5L),
-                    ChapterProgressDetailResponse.create(1L,"이름2", "설명1", 10L, 5L),
-                    ChapterProgressDetailResponse.create(1L,"이름3", "설명1", 10L, 5L),
-                    ChapterProgressDetailResponse.create(1L,"이름4", "설명1", 10L, 5L),
-                    ChapterProgressDetailResponse.create(1L,"이름5", "설명1", 10L, 5L)
-            );
+            List<ChapterProgressDetailResponse> chapterProgressDetailResponse = mock(List.class);
 
-            when(chapterProgressRepository.findAllChapterProgressDetailByUserId(userId)).thenReturn(notEmptyList);
+            when(chapterProgressRepository.findAllChapterProgressDetailByUserId(userId)).thenReturn(chapterProgressDetailResponse);
 
             //when
             List<ChapterProgressDetailResponse> returnValue = chapterProgressService.getChapterProgressDetails(userId);
 
             //then
-            assertThat(returnValue).hasSize(notEmptyList.size());
+            assertThat(returnValue).isEqualTo(chapterProgressDetailResponse);
 
         }
     }
@@ -155,7 +149,7 @@ class ChapterProgressServiceTest {
         }
 
         @Test
-        @DisplayName("Chapter 조회에 성공하고 ChapterProgress 조회도 성공하면 ChapterProgress를 생성한 후 업데이트한다.")
+        @DisplayName("Chapter 조회에 성공하고 ChapterProgress 조회도 성공하면 조회한 ChapterProgress를 업데이트한다.")
         void withValidChapterIdAndSucceedAtFindChapterProgressThenCreateChapterProgress(){
             //given
             Long chapterId = 1L;

@@ -4,16 +4,19 @@ import gravit.code.domain.unit.domain.Unit;
 import gravit.code.domain.unit.infrastructure.UnitJpaRepository;
 import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.infrastructure.UnitProgressJpaRepository;
+import gravit.code.domain.user.domain.User;
+import gravit.code.domain.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UnitProgressRepositoryTest {
 
     @Autowired
+    private UserJpaRepository userRepository;
+
+    @Autowired
     private UnitProgressJpaRepository unitProgressRepository;
 
     @Autowired
@@ -30,80 +36,53 @@ class UnitProgressRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        Unit unit1 = unitRepository.save(Unit.create("스택", 5L, 1L));
-        Unit unit2 = unitRepository.save(Unit.create("큐", 4L, 1L));
-        Unit unit3 = unitRepository.save(Unit.create("힙", 6L, 1L));
-        Unit unit4 = unitRepository.save(Unit.create("트리", 8L, 1L));
 
-        UnitProgress unitProgress2 = unitProgressRepository.save(
-                UnitProgress.create(5L, 1L, unit1.getId())
-        );
-        unitProgress2.updateCompletedLessons();
-        unitProgress2.updateCompletedLessons();
-        unitProgress2.updateCompletedLessons();
+        User user = User.create("이메일", "프로바이더 아이디", "닉네임", "핸들", 1, LocalDateTime.now());
+        userRepository.save(user);
 
-        UnitProgress unitProgress3 = unitProgressRepository.save(
-                UnitProgress.create(4L, 1L, unit2.getId())
-        );
-        unitProgress3.updateCompletedLessons();
-        unitProgress3.updateCompletedLessons();
-        unitProgress3.updateCompletedLessons();
-        unitProgress3.updateCompletedLessons();
+        Unit unit1 = Unit.create("유닛1", 10L, 1L);
+        Unit unit2 = Unit.create("유닛2", 10L, 1L);
+        Unit unit3 = Unit.create("유닛3", 10L, 1L);
 
-        UnitProgress unitProgress4 = unitProgressRepository.save(
-                UnitProgress.create(6L, 1L, unit3.getId())
-        );
+        unitRepository.saveAll(List.of(unit1, unit2, unit3));
+
+        UnitProgress unitProgress1 = UnitProgress.create(10L, user.getId(), unit1.getId());
+        UnitProgress unitProgress2 = UnitProgress.create(10L, user.getId(), unit2.getId());
+
+        unitProgressRepository.saveAll(List.of(unitProgress1, unitProgress2));
     }
 
-    @Test
-    @DisplayName("unitId와 userId를 통해 UnitProgress를 조회할 수 있다.")
-    void getUnitProgressByUnitIdAndUserId(){
-        // given
-        Long unitId = 2L;
-        Long userId = 1L;
+    @Nested
+    @DisplayName("UnitProgressDetail을 조회할 때,")
+    class FindUnitProgressDetail{
 
-        // when
-        Optional<UnitProgress> unitProgress = unitProgressRepository.findByUnitIdAndUserId(unitId, userId);
+        @Test
+        @DisplayName("userId가 유효하지 않으면 빈 리스트를 반환한다.")
+        void withInvalidUserId(){
+            //given
+            Long userId = 999L;
+            Long chapterId = 1L;
 
-        // then
-        assertThat(unitProgress).isPresent();
-        assertThat(unitProgress.get().getUnitId()).isEqualTo(unitId);
-        assertThat(unitProgress.get().getUserId()).isEqualTo(userId);
-        assertThat(unitProgress.get().getTotalLessons()).isEqualTo(4L);
-        assertThat(unitProgress.get().getCompletedLessons()).isEqualTo(4L);
-    }
+            //when
+            List<UnitProgressDetailResponse> unitProgressDetailResponse = unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
 
-    @Test
-    @DisplayName("존재하지 않는 unitId와 userId를 통해 UnitProgress를 조회하면 null을 반환한다.")
-    void getUnitProgressByNonExistUnitIdAndUserId(){
-        // given
-        Long unitId = 222222L;
-        Long userId = 111111L;
+            //then
+            assertThat(unitProgressDetailResponse).isEmpty();
+        }
 
-        // when
-        Optional<UnitProgress> unitProgress = unitProgressRepository.findByUnitIdAndUserId(unitId, userId);
+        @Test
+        @DisplayName("userId가 유효하면 정상적으로 반환한다.")
+        void withValidUserId(){
+            //given
+            Long userId = 1L;
+            Long chapterId = 1L;
 
-        // then
-        assertThat(unitProgress).isNotPresent();
-    }
+            //when
+            List<UnitProgressDetailResponse> unitProgressDetailResponse = unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
 
-    @Test
-    @DisplayName("chapterId와 userId로 진행도를 포함한 Unit을 조회할 수 있다.")
-    void getUnitInfoWithProgressByChapterIdAndUserId(){
-        //given
-        Long chapterId = 1L;
-        Long userId = 1L;
-
-        //when
-        List<UnitProgressDetailResponse> unitInfos = unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
-
-        //then
-        assertThat(unitInfos).hasSize(4);
-
-        assertThat(unitInfos.get(0).unitId()).isEqualTo(1L);
-        assertThat(unitInfos.get(0).completedLesson()).isEqualTo(3L);
-
-        assertThat(unitInfos.get(3).unitId()).isEqualTo(4L);
-        assertThat(unitInfos.get(3).completedLesson()).isEqualTo(0L);
+            //then
+            assertThat(unitProgressDetailResponse).hasSize(3);
+            assertThat(unitProgressDetailResponse.get(2).completedLesson()).isZero();
+        }
     }
 }

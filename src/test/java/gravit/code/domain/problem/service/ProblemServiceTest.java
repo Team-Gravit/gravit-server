@@ -82,8 +82,7 @@ class ProblemServiceTest {
         @DisplayName("lessonId가 유효하지 않으면 빈 리스트가 반환되어 예외를 반환한다.")
         void getLessonProblemByNonExistLessonId(){
             // given
-            Long lessonId = 999L
-                    ;
+            Long lessonId = 999L;
             when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(List.of());
 
             // when & then

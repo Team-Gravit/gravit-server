@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChapterProgressRepositoryTest {
 
     @Autowired
-    private UserJpaRepository userJpaRepository;
+    private UserJpaRepository userRepository;
 
     @Autowired
     private ChapterProgressJpaRepository chapterProgressJpaRepository;
@@ -38,7 +38,7 @@ class ChapterProgressRepositoryTest {
     @BeforeEach
     void setUp() {
         User user = User.create("이메일", "프로바이더 아이디", "닉네임", "핸들", 1, LocalDateTime.now());
-        userJpaRepository.save(user);
+        userRepository.save(user);
 
         Chapter chapter1 = Chapter.create("자료구조", "스택, 큐, 트리, 그래프 등 기본적인 자료구조의 개념과 구현을 학습합니다.", 8L);
         chapterJpaRepository.save(chapter1);
