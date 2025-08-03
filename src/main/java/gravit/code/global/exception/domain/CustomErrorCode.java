@@ -32,8 +32,12 @@ public enum CustomErrorCode implements ErrorCode {
     TOKEN_NOT_SIGNED(HttpStatus.UNAUTHORIZED," ","서명되지 않은 토큰입니다."),
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "", "토큰을 찾을 수 없습니다."),
 
+    // RecentLearning
+    RECENT_LEARNING_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "RECENT_LEARNING_4041", "최근 학습 정보 조회 실패"),
+
     // ChapterProgress
     CHAPTER_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_P_4041", "챕터 진행 결과 조회 실패"),
+    CHAPTER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND,"CHAPTER_P_4042", "챕터 정보, 진행도 조회 실패"),
 
     // UnitProgress
     UNIT_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIT_P_4041", "유닛 진행 결과 조회 실패"),
@@ -41,8 +45,14 @@ public enum CustomErrorCode implements ErrorCode {
     // LessonProgress
     LESSON_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_P_4041", "레슨 진행 결과 조회 실패"),
 
+    // Chapter
+    CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회 실패"),
+
     // Lesson
     LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4041", "레슨 조회 실패"),
+
+    // Unit
+    UNIT_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIT_4041", "유닛 조회 실패"),
 
     // Friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),
