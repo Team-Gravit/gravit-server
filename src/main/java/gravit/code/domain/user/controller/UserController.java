@@ -6,6 +6,7 @@ import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
 import gravit.code.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,7 @@ public class UserController implements UserControllerDocs {
 
     @PatchMapping("/onboarding")
     public ResponseEntity<UserResponse> onboardUser(@AuthenticationPrincipal LoginUser loginUser,
-                                              @RequestBody OnboardingRequest request) {
+                                              @Valid @RequestBody OnboardingRequest request) {
         UserResponse userResponse = userService.onboarding(loginUser.getId(), request);
         return ResponseEntity.ok(userResponse);
     }

@@ -83,17 +83,25 @@ public class User {
 
     private void validateOnboard(String nickname, int profileImgNumber) {
         validateNickname(nickname);
-        validateProfileNum(profileImgNumber);
+        validateProfileImgNum(profileImgNumber);
     }
 
-    private void validateProfileNum(int profileImgNumber) {
-        if(profileImgNumber < 1 || profileImgNumber > 20){
+    private void validateProfileImgNum(int profileImgNumber) {
+        if(profileImgNumber < 1 || profileImgNumber > 10){
             throw new RestApiException(CustomErrorCode.PROFILE_IMG_NUM_INVALID);
         }
     }
 
     private void validateNickname(String nickname) {
         if(nickname == null || nickname.isBlank()){
+            throw new RestApiException(CustomErrorCode.NICKNAME_INVALID);
+        }
+
+        if (nickname.length() < 2 || nickname.length() > 8) {
+            throw new RestApiException(CustomErrorCode.NICKNAME_INVALID);
+        }
+
+        if (!nickname.matches("^[가-힣a-zA-Z0-9]+$")) {
             throw new RestApiException(CustomErrorCode.NICKNAME_INVALID);
         }
     }

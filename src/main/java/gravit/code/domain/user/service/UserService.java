@@ -37,7 +37,7 @@ public class UserService {
             throw new RestApiException(CustomErrorCode.USER_NICKNAME_CONFLICT);
         }
 
-        user.onboard(request.nickname(), request.avatarId());
+        user.onboard(request.nickname(), request.profilePhotoNumber());
         user.checkOnboarded();
         return UserResponse.from(user);
     }
