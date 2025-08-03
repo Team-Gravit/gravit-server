@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@Sql(scripts = "/sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class FriendControllerTest {
 
     @Autowired
@@ -41,6 +43,7 @@ public class FriendControllerTest {
 
     @BeforeEach
     void setUp() {
+
         testUser1 = User.create("test1@test.com", "kakao_123123", "kang", "@qwe123",1, LocalDateTime.now());
         userRepository.save(testUser1);
         testUser2 = User.create("test2@test.com", "google_123123", "hyung", "@ewq321", 2, LocalDateTime.now());
