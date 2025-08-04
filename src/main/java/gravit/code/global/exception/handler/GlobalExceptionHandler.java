@@ -5,12 +5,14 @@ import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,12 @@ import java.util.List;
 @Log4j2
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final View error;
+
+    public GlobalExceptionHandler(View error) {
+        this.error = error;
+    }
 
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<ErrorResponse<String>> handleRestApiException(RestApiException e){
@@ -41,6 +49,13 @@ public class GlobalExceptionHandler {
         }
 
         return handleExceptionInternal(errorMessages);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorResponse<String>> handleDatabaseException(DataAccessException e){
+        ErrorCode errorCode = CustomErrorCode.DATABASE_EXCEPTION;
+
+        return handleExceptionInternal(errorCode);
     }
 
     @ExceptionHandler(Exception.class)

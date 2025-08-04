@@ -31,7 +31,7 @@ public class ChapterProgressService {
 
     public ChapterSummaryResponse getChapterSummary(Long chapterId, Long userId) {
         return chapterProgressRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_INFO_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_SUMMARY_NOT_FOUND));
     }
 
     public void updateChapterProgress(Long chapterId, Long userId){

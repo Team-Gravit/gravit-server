@@ -2,10 +2,9 @@ package gravit.code.domain.chapterProgress.infrastructure;
 
 import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.domain.ChapterProgressRepository;
-import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public class ChapterProgressRepositoryImpl implements ChapterProgressRepository 
     }
 
     @Override
-    public List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(@Param("userId") Long userId){
+    public List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(Long userId){
         return chapterProgressJpaRepository.findAllChapterProgressDetailByUserId(userId);
     }
 

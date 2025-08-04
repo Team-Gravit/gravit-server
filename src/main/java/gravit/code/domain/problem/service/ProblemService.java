@@ -15,8 +15,8 @@ public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
-    public List<ProblemResponse> getAllProblem(Long lessonsId){
-        List<ProblemResponse> problems = problemRepository.findAllProblemByLessonId(lessonsId);
+    public List<ProblemResponse> getAllProblem(Long lessonId){
+        List<ProblemResponse> problems = problemRepository.findAllProblemByLessonId(lessonId);
 
         if(problems.isEmpty())
             throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);

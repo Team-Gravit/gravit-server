@@ -16,7 +16,7 @@ public interface UnitProgressJpaRepository extends JpaRepository<UnitProgress,Lo
         SELECT new gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse(u.id, u.name, u.totalLessons, COALESCE(CAST(up.completedLessons as long), 0L))
         FROM Unit u
         LEFT JOIN UnitProgress up ON u.id = up.unitId AND up.userId = :userId
-        WHERE u.chapterId = :chapterId AND EXISTS (SELECT 1 FROM User u WHERE u.id = :userId)
+        WHERE u.chapterId = :chapterId AND EXISTS (SELECT 1 FROM User user WHERE user.id = :userId)
         ORDER BY u.id
     """)
     List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(@Param("chapterId") Long chapterId, @Param("userId") Long userId);

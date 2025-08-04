@@ -27,7 +27,7 @@ public class UserController implements UserControllerDocs {
 
     @PatchMapping("/onboarding")
     public ResponseEntity<UserResponse> onboardUser(@AuthenticationPrincipal LoginUser loginUser,
-                                              @Valid @RequestBody OnboardingRequest request) {
+                                                    @Valid @RequestBody OnboardingRequest request) {
         UserResponse userResponse = userService.onboarding(loginUser.getId(), request);
         return ResponseEntity.ok(userResponse);
     }
