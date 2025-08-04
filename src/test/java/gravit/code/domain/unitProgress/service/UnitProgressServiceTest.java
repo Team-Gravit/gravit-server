@@ -1,19 +1,26 @@
 package gravit.code.domain.unitProgress.service;
 
+import gravit.code.domain.unit.domain.Unit;
 import gravit.code.domain.unit.domain.UnitRepository;
 import gravit.code.domain.unitProgress.domain.UnitProgress;
 import gravit.code.domain.unitProgress.domain.UnitProgressRepository;
-import gravit.code.domain.unitProgress.service.UnitProgressService;
+import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,73 +35,112 @@ class UnitProgressServiceTest {
     @InjectMocks
     private UnitProgressService unitProgressService;
 
-    @Test
-    @DisplayName("UnitProgress를 업데이트한 후, ChapterProgress를 업데이트해야 하면 True를 반환한다.")
-    void updateLessonProgressAndReturnTrueWhenChapterProgressUpdateNeeded(){
-        // given
-        Long unitId = 1L;
-        Long userId = 1L;
-        UnitProgress expectedUnitProgress = UnitProgress.create(1L, 1L, 1L);
+    @Nested
+    @DisplayName("UnitProgress를 업데이트할 때,")
+    class UpdateUnitProgress{
 
-        when(unitProgressRepository.findByUnitIdAndUserId(unitId, userId)).thenReturn(Optional.ofNullable(expectedUnitProgress));
+        @Test
+        @DisplayName("Unit 조회에 실패하면 예외를 반환한다.")
+        void withInvalidUnitId(){
+            //given
+            Long unitId = 1L;
+            Long userId = 1L;
 
-        // when
-        Boolean chapterProgressUpdatedNeeded = unitProgressService.updateUnitProgress(unitId, userId);
+            when(unitRepository.findById(unitId)).thenReturn(Optional.empty());
 
-        // then
-        assertThat(chapterProgressUpdatedNeeded).isTrue();
+            //when&then
+            assertThatThrownBy(() -> unitProgressService.updateUnitProgress(unitId, userId))
+                    .isInstanceOf(RestApiException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.UNIT_NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("Unit 조회에 성공하고 UnitProgress 조회에 실패하면 UnitProgress를 생성한 후 업데이트한다.")
+        void withValidUnitIdAndSucceedAtFindUnitProgressThenCreateUnitProgress(){
+            //given
+            Long unitId = 1L;
+            Long userId = 1L;
+
+            Unit targetUnit = Unit.create("유닛", 10L, 1L);
+            UnitProgress unitProgress = mock(UnitProgress.class);
+
+            when(unitRepository.findById(unitId)).thenReturn(Optional.of(targetUnit));
+
+            try(MockedStatic<UnitProgress> mockedStatic = mockStatic(UnitProgress.class)){
+
+                mockedStatic.when(() -> UnitProgress.create(targetUnit.getTotalLessons(), userId, unitId))
+                        .thenReturn(unitProgress);
+
+                //when
+                unitProgressService.updateUnitProgress(unitId, userId);
+
+                //then
+                mockedStatic.verify(() -> UnitProgress.create(targetUnit.getTotalLessons(), userId, unitId));
+                verify(unitProgress).updateCompletedLessons();
+                verify(unitProgressRepository).save(unitProgress);
+                verify(unitProgress).isComplete();
+
+            }
+        }
+
+        @Test
+        @DisplayName("Unit 조회에 성공하고 UnitProgress 조회도 성공하면 조회한 UnitProgress를 업데이트한다.")
+        void withValidUnitIdAndFailedAtFindUnitProgressThenCreateUnitProgress(){
+            //given
+            Long unitId = 1L;
+            Long userId = 1L;
+
+            Unit targetUnit = Unit.create("유닛", 10L, 1L);
+            UnitProgress unitProgress = mock(UnitProgress.class);
+
+            when(unitRepository.findById(unitId)).thenReturn(Optional.of(targetUnit));
+            when(unitProgressRepository.findByUnitIdAndUserId(unitId, userId)).thenReturn(Optional.of(unitProgress));
+
+            //when
+            unitProgressService.updateUnitProgress(unitId, userId);
+
+            //then
+            verify(unitProgress).updateCompletedLessons();
+            verify(unitProgressRepository).save(unitProgress);
+            verify(unitProgress).isComplete();
+        }
     }
 
-    @Test
-    @DisplayName("UnitProgress를 업데이트한 후, ChapterProgress를 업데이트가 필요하지 않으면 False를 반환한다.")
-    void updateLessonProgressAndReturnFalseWhenChapterProgressUpdateIsNotNeeded(){
-        // given
-        Long unitId = 1L;
-        Long userId = 1L;
-        UnitProgress expectedUnitProgress = UnitProgress.create(3L, 1L, 1L);
+    @Nested
+    @DisplayName("모든 유닛(진행도 포함)을 조회할 때,")
+    class GetAllUnitProgress{
 
-        when(unitProgressRepository.findByUnitIdAndUserId(unitId, userId)).thenReturn(Optional.ofNullable(expectedUnitProgress));
+        @Test
+        @DisplayName("userId가 유효하지 않으면 예외를 반환한다.")
+        void withInvalidUserId(){
+            //given
+            Long chapterId = 1L;
+            Long userId = 99L;
 
-        // when
-        Boolean chapterProgressUpdatedNeeded = unitProgressService.updateUnitProgress(unitId, userId);
+            when(unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId)).thenReturn(List.of());
 
-        // then
-        assertThat(chapterProgressUpdatedNeeded).isFalse();
-    }
+            //when&then
+            assertThatThrownBy(() -> unitProgressService.findAllUnitProgress(chapterId, userId))
+                    .isInstanceOf(RestApiException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.USER_NOT_FOUND);
+        }
 
-    @Test
-    @DisplayName("userId와 unitId로 UnitProgress를 조회한 경우 존재한다면, false를 반환한다.")
-    void createNoUnitProgressIfExistAndReturnFalse(){
-        //given
-        Long userId = 1L;
-        Long unitId = 1L;
+        @Test
+        @DisplayName("userId가 유효하면 정상적으로 반환한다.")
+        void withValidUserId(){
+            //given
+            Long chapterId = 1L;
+            Long userId = 99L;
 
-        when(unitProgressRepository.existsByUnitIdAndUserId(unitId, userId)).thenReturn(true);
+            List<UnitProgressDetailResponse> unitProgressDetailResponse = mock(List.class);
 
-        //when
-        Boolean result = unitProgressService.createUnitProgress(userId, unitId);
+            when(unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId)).thenReturn(unitProgressDetailResponse);
 
-        //then
-        assertThat(result).isFalse();
-        verify(unitRepository, never()).getTotalLessonsByUnitId(unitId);
-        verify(unitProgressRepository, never()).save(any(UnitProgress.class));
-    }
+            //when
+            List<UnitProgressDetailResponse> response = unitProgressService.findAllUnitProgress(chapterId, userId);
 
-    @Test
-    @DisplayName("userId와 unitId로 UnitProgress를 조회한 경우 존재하지 않는다면 생성하고, true를 반환한다. ")
-    void createUnitProgressIfNotExistAndReturnTrue(){
-        //given
-        Long userId = 1L;
-        Long unitId = 1L;
-
-        when(unitProgressRepository.existsByUnitIdAndUserId(unitId, userId)).thenReturn(false);
-        when(unitRepository.getTotalLessonsByUnitId(unitId)).thenReturn(10L);
-        //when
-        Boolean result = unitProgressService.createUnitProgress(userId, unitId);
-
-        //then
-        assertThat(result).isTrue();
-        verify(unitRepository).getTotalLessonsByUnitId(unitId);
-        verify(unitProgressRepository).save(any(UnitProgress.class));
+            //then
+            assertThat(response).isEqualTo(unitProgressDetailResponse);
+        }
     }
 }

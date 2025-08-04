@@ -7,9 +7,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ChapterTest {
 
-    @DisplayName("유효한 데이터로 챕터를 생성할 수 있다")
+    @DisplayName("유효한 값으로 Chapter를 생성할 수 있다")
     @Test
-    void createChapterWithAvailableData(){
+    void createChapterWithValidValue(){
 
         // given
         String name = "자료구조";
@@ -23,6 +23,5 @@ class ChapterTest {
         assertThat(chapter.getName()).isEqualTo(name);
         assertThat(chapter.getDescription()).isEqualTo(description);
         assertThat(chapter.getTotalUnits()).isEqualTo(totalUnits);
-
     }
 }

@@ -18,7 +18,7 @@ public class Chapter {
     @Column(columnDefinition = "varchar(50)", nullable = false, unique = true)
     private String name;
 
-    @Column(columnDefinition = "text", nullable = false)
+    @Column(columnDefinition = "text", nullable = false, unique = true)
     private String description;
 
     @Column(name = "total_units",columnDefinition = "bigint", nullable = false)

@@ -1,5 +1,7 @@
 package gravit.code.domain.user.domain;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -74,8 +76,34 @@ public class User {
     }
 
     public void onboard(String nickname, int profileImgNumber){
+        validateOnboard(nickname, profileImgNumber);
         this.nickname = nickname;
         this.profileImgNumber = profileImgNumber;
+    }
+
+    private void validateOnboard(String nickname, int profileImgNumber) {
+        validateNickname(nickname);
+        validateProfileImgNum(profileImgNumber);
+    }
+
+    private void validateProfileImgNum(int profileImgNumber) {
+        if(profileImgNumber < 1 || profileImgNumber > 10){
+            throw new RestApiException(CustomErrorCode.PROFILE_IMG_NUM_INVALID);
+        }
+    }
+
+    private void validateNickname(String nickname) {
+        if(nickname == null || nickname.isBlank()){
+            throw new RestApiException(CustomErrorCode.NICKNAME_NOT_NULL);
+        }
+
+        if (nickname.length() < 2 || nickname.length() > 8) {
+            throw new RestApiException(CustomErrorCode.NICKNAME_LENGTH_INVALID);
+        }
+
+        if (!nickname.matches("^[가-힣a-zA-Z0-9]+$")) {
+            throw new RestApiException(CustomErrorCode.NICKNAME_PATTERN_INVALID);
+        }
     }
 
     public void updateXp(Integer xp){

@@ -2,7 +2,10 @@ package gravit.code.auth.oauth.service;
 
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.oauth.startegy.OAuthResponseFactory;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,54 +16,86 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import static gravit.code.auth.oauth.OAuthConstants.OAUTH_PROVIDERS;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OAuthClientService {
+    private final static String GRANT_TYPE = "authorization_code";
+
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final OAuthResponseFactory oAuthResponseFactory;
-    private final WebClient webClient;
+    private final WebClientAdapter webClientAdapter;
 
-    public OAuthUserInfo getUserInfo(String code, String provider) {
-        String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);
+    public OAuthUserInfo getUserInfo(String authCode, String provider) {
+        validateProvider(provider);
+        validateAuthCode(authCode);
 
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(provider);
+        // 웹에서 특수 문자나 공백 등이 URL 인코딩 된 상태로 전달되는 문제를 해결하기 위함
+        String decodedCode = URLDecoder.decode(authCode, StandardCharsets.UTF_8);
+        String lowerCaseProvider = provider.toLowerCase();
+
+        // OAuth 설정 정보 가져오기
+        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(lowerCaseProvider);
 
         // 토큰 요청
+        String accessToken = getAccessToken(registration, decodedCode);
+
+        // 사용자 정보 요청
+        Map<String, Object> userInfo = getUserInfo(registration, accessToken);
+
+        return oAuthResponseFactory.createOAuthUserInfo(lowerCaseProvider, userInfo);
+    }
+
+    private Map<String, Object> getUserInfo(ClientRegistration registration, String accessToken) {
+
+        // 사용자 정보를 조회하기 위한 엔드포인트
+        String userInfoUri = registration.getProviderDetails().getUserInfoEndpoint().getUri();
+
+        return webClientAdapter.getWithAccessToken(userInfoUri, accessToken);
+    }
+
+    private String getAccessToken(ClientRegistration registration, String decodedCode) {
+        
+        // 요청 만들기
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
-        tokenRequest.add("grant_type", "authorization_code");
+        tokenRequest.add("grant_type", GRANT_TYPE);
         tokenRequest.add("client_id", registration.getClientId());
         tokenRequest.add("client_secret", registration.getClientSecret());
         tokenRequest.add("redirect_uri", registration.getRedirectUri());
         tokenRequest.add("code", decodedCode);
 
+        // AccessToken 을 발급받기 위한 엔드포인트
         String tokenUri = registration.getProviderDetails().getTokenUri();
-        Map<String, Object> tokenResponse = webClient.post()
-                .uri(tokenUri)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .body(BodyInserters.fromFormData(tokenRequest))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String,Object>>() {})
-                .blockOptional()
-                .orElseThrow(RuntimeException::new);
+
+        Map<String, Object> tokenResponse = webClientAdapter.getTokenResponse(tokenUri, tokenRequest);
+        return (String) tokenResponse.get("access_token");
+    }
 
 
-        String accessToken = (String) tokenResponse.get("access_token");
+    private void validateAuthCode(String authCode) {
+        if(authCode == null || authCode.isBlank()){
+            throw new RestApiException(CustomErrorCode.AUTH_CODE_INVALID);
+        }
+    }
 
-        // 사용자 정보 요청
-        String userInfoUri = registration.getProviderDetails().getUserInfoEndpoint().getUri();
-        Map<String, Object> userInfo = webClient.get()
-                .uri(userInfoUri)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String,Object>>() {})
-                .blockOptional()
-                .orElseThrow(RuntimeException::new);
+    private void validateProvider(String provider) {
+        if(provider == null || provider.isBlank()){
+            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+        }
 
-        return oAuthResponseFactory.createOAuthUserInfo(provider, userInfo);
+        String lowerCaseProvider = provider.toLowerCase();
+
+        if(!OAUTH_PROVIDERS.contains(lowerCaseProvider)){
+            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+        }
     }
 }

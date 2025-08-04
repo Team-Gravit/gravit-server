@@ -5,6 +5,8 @@ import gravit.code.domain.unit.domain.UnitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class UnitRepositoryImpl implements UnitRepository {
@@ -17,7 +19,8 @@ public class UnitRepositoryImpl implements UnitRepository {
     }
 
     @Override
-    public Long getTotalLessonsByUnitId(Long unitId) {
-        return unitJpaRepository.getTotalLessonsByUnitId(unitId);
+    public Optional<Unit> findById(Long unitId) {
+        return unitJpaRepository.findById(unitId);
     }
+
 }

@@ -1,12 +1,11 @@
 package gravit.code.domain.problem.service;
 
+import gravit.code.domain.problem.domain.ProblemRepository;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.domain.problem.dto.response.ProblemInfo;
-import gravit.code.domain.problem.domain.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,13 +15,12 @@ public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
-    @Transactional(readOnly = true)
-    public List<ProblemInfo> getAllProblems(Long lessonsId){
-        List<ProblemInfo> lessons = problemRepository.findAllProblemsByLessonId(lessonsId);
+    public List<ProblemResponse> getAllProblem(Long lessonsId){
+        List<ProblemResponse> problems = problemRepository.findAllProblemByLessonId(lessonsId);
 
-        if(lessons.isEmpty())
-            throw new RestApiException(CustomErrorCode.LESSON_NOT_FOUND);
+        if(problems.isEmpty())
+            throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
 
-        return lessons;
+        return problems;
     }
 }

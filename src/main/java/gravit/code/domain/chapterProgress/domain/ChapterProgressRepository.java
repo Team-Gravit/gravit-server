@@ -1,17 +1,18 @@
 package gravit.code.domain.chapterProgress.domain;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
-import org.springframework.data.repository.query.Param;
+import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
+import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ChapterProgressRepository {
-    Optional<ChapterProgress> findByChapterIdAndUserId(Long chapterId, Long userId);
-
-    boolean existsByChapterIdAndUserId(Long chapterId, Long userId);
-
-    List<ChapterInfoResponse> findAllChaptersWithProgress(@Param("userId") Long userId);
 
     ChapterProgress save(ChapterProgress chapterProgress);
+
+    Optional<ChapterProgress> findByChapterIdAndUserId(Long chapterId, Long userId);
+
+    List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(Long userId);
+
+    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(Long chapterId, Long userId);
 }

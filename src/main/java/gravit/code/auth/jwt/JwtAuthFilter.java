@@ -1,5 +1,8 @@
 package gravit.code.auth.jwt;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.ErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +31,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String jwtToken = token.substring(7);
 
             if(!jwtProvider.isValidToken(jwtToken)){
-                throw new RuntimeException();
+                throw new RestApiException(CustomErrorCode.TOKEN_EXPIRED);
             }
 
             Authentication authentication = jwtProvider.getAuthUser(jwtToken);

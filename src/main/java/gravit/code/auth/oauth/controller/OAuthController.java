@@ -27,7 +27,7 @@ public class OAuthController {
     @GetMapping("/login-url/{provider}")
     public ResponseEntity<Map<String, String>> authorizeUrl(@PathVariable("provider") String provider) {
         String loginUrl = oAuthLoginUrlService.generateLoginUrl(provider);
-        return  ResponseEntity.ok(Map.of("loginUrl", loginUrl));
+        return ResponseEntity.ok(Map.of("loginUrl", loginUrl));
     }
 
     /**

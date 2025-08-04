@@ -1,6 +1,6 @@
 package gravit.code.domain.learning.dto.request;
 
-import gravit.code.domain.problem.dto.request.ProblemResult;
+import gravit.code.domain.problem.dto.request.ProblemResultRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -34,5 +34,5 @@ public record LearningResultSaveRequest(
                 description = "각 문제의 풀이 결과"
         )
         @Valid
-        List<ProblemResult> problemResults
+        List<ProblemResultRequest> problemResults
 ) {}

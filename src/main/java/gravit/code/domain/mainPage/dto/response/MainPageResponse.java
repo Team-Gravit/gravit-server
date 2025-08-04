@@ -1,6 +1,6 @@
 package gravit.code.domain.mainPage.dto.response;
 
-import gravit.code.domain.learning.dto.response.RecentLearningInfo;
+import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -35,15 +35,15 @@ public record MainPageResponse(
                 description = "최근학습정보",
                 example = ""
         )
-        RecentLearningInfo recentLearningInfo
+        RecentLearningSummaryResponse recentLearningSummaryResponse
 ) {
-    public static MainPageResponse create(String nickname, Integer level, Integer xp, String league, RecentLearningInfo recentLearningInfo){
+    public static MainPageResponse create(String nickname, Integer level, Integer xp, String league, RecentLearningSummaryResponse recentLearningSummaryResponse){
         return MainPageResponse.builder()
                 .nickname(nickname)
                 .league(league)
                 .level(level)
                 .xp(xp)
-                .recentLearningInfo(recentLearningInfo)
+                .recentLearningSummaryResponse(recentLearningSummaryResponse)
                 .build();
     }
 }

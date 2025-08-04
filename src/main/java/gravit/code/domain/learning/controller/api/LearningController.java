@@ -1,11 +1,11 @@
 package gravit.code.domain.learning.controller.api;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
+import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.auth.oauth.LoginUser;
 import gravit.code.domain.learning.controller.docs.LearningControllerSpecification;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.facade.LearningFacade;
-import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import jakarta.validation.Valid;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/learning")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/learning")
 public class LearningController implements LearningControllerSpecification {
 
     private final LearningFacade learningFacade;
 
     @GetMapping("/chapters")
-    public ResponseEntity<List<ChapterInfoResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser) {
+    public ResponseEntity<List<ChapterProgressDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser) {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllChapters(loginUser.getId()));
     }
 
@@ -36,7 +36,7 @@ public class LearningController implements LearningControllerSpecification {
     }
 
     @GetMapping("/{lessonId}/problems")
-    public ResponseEntity<List<ProblemInfo>> getProblems(@PathVariable("lessonId") Long lessonsId){
+    public ResponseEntity<List<ProblemResponse>> getProblems(@PathVariable("lessonId") Long lessonsId){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId));
     }
 
