@@ -1,5 +1,6 @@
 package gravit.code.auth.oauth.controller;
 
+import gravit.code.auth.oauth.controller.docs.OAuthControllerDocs;
 import gravit.code.auth.oauth.dto.AuthCodeRequest;
 import gravit.code.auth.oauth.dto.LoginResponse;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
@@ -16,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
-public class OAuthController {
+public class OAuthController implements OAuthControllerDocs {
     private final OAuthClientService oAuthClientService;
     private final OAuthLoginProcessor oAuthLoginProcessor;
     private final OAuthLoginUrlService oAuthLoginUrlService;
