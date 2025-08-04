@@ -20,25 +20,6 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: set up application-test.yml
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ./src/test/resources/application-test.yml
-        env:
-          jwt.secret: ${{secrets.JWT_SECRET}}
-
-          spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
-          spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          spring.security.oauth2.client.registration.google.redirect-uri: ${{ secrets.GOOGLE_REDIRECT_URI }}
-
-          spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_CLIENT_ID }}
-          spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          spring.security.oauth2.client.registration.kakao.redirect-uri: ${{ secrets.KAKAO_REDIRECT_URI }}
-
-          spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_CLIENT_ID }}
-          spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_CLIENT_SECRET }}
-          spring.security.oauth2.client.registration.naver.redirect-uri: ${{ secrets.NAVER_REDIRECT_URI }}
-
       - name: run test
         run: |
           chmod +x ./gradlew

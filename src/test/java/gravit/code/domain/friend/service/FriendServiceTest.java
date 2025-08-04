@@ -7,23 +7,21 @@ import gravit.code.domain.friend.dto.response.FollowingResponse;
 import gravit.code.domain.friend.dto.response.FriendResponse;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Slf4j
-@Transactional
+@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class FriendServiceTest {
 
     @Autowired
@@ -44,8 +42,8 @@ class FriendServiceTest {
         userRepository.save(user2);
 
         // when
-        FriendResponse response2 = friendService.following(user1.getId(), user2.getId()); // user2 -> user1
-        FriendResponse response1 = friendService.following(user2.getId(), user1.getId()); // user1 -> user2
+        FriendResponse response1 = friendService.following(user1.getId(), user2.getId()); // user2 -> user1
+        FriendResponse response2 = friendService.following(user2.getId(), user1.getId()); // user1 -> user2
 
 
         // then
@@ -62,12 +60,24 @@ class FriendServiceTest {
     }
 
     @Test
-    void unFollowing() {
+    void 팔로잉을_한_유저를_대상으로_팔로잉을_취소합니다() {
+        // given
+        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
+        userRepository.save(user1);
+        User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, LocalDateTime.now());
+        userRepository.save(user2);
+        friendService.following(user1.getId(), user2.getId());
+
+        // when
+        friendService.unFollowing(user1.getId(), user2.getId());
+
+        // then
+        List<FollowingResponse> followings = friendRepository.findByFollowingsByFollowerId(user1.getId());
+        assertThat(followings.isEmpty()).isTrue();
     }
 
     @Test
-    @DisplayName("나를 팔로우 한 사람들을 조회합니다.")
-    void getFollowers() {
+    void 나를_팔로우_한_사람들을_조회합니다() {
         // given
         User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
         userRepository.save(user1);
@@ -98,8 +108,7 @@ class FriendServiceTest {
     }
 
     @Test
-    @DisplayName("내가 팔로우 한 사람들을 조회합니다.")
-    void getFollowings() {
+    void 내가_팔로우_한_사람들을_조회합니다() {
         // given
         User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
         userRepository.save(user1);

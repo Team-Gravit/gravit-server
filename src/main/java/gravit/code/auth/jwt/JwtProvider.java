@@ -48,7 +48,7 @@ public class JwtProvider {
 
     public Authentication getAuthUser(String token){
         Long userId = getUserId(token);
-        User user = userRepository.findById(userId).orElseThrow(RuntimeException::new);
+        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
         LoginUser loginUser = new LoginUser(user.getId(),user.getProviderId(),null);
 
         return new UsernamePasswordAuthenticationToken(loginUser, "",
