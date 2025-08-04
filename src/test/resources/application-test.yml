@@ -38,29 +38,29 @@ spring:
         registration:
           google:
             client-name: google
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            client-id: test-client-id
+            client-secret: test-client-secret
+            redirect-uri: test-redirect-uri
             authorization-grant-type: authorization_code
             scope: profile, email
 
           kakao:
             client-name: kakao
-            client-id: ${KAKAO_CLIENT_ID}
-            client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: ${KAKAO_REDIRECT_URI}
+            client-id: test-client-id
+            client-secret: test-client-secret
+            redirect-uri: test-redirect-uri
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             scope: profile_nickname, account_email
 
           naver:
             client-name: naver
-            client-id: ${NAVER_CLIENT_ID}
-            client-secret: ${NAVER_CLIENT_SECRET}
-            redirect-uri: ${NAVER_REDIRECT_URI}
+            client-id: test-client-id
+            client-secret: test-client-secret
+            redirect-uri: test-redirect-uri
             authorization-grant-type: authorization_code
             scope: name,email
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: qwdqwei83qwiu99wq8f9qw98asf8p219qnf43yj90j32
   valid-time: 7200000

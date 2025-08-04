@@ -33,15 +33,12 @@ public class UserService {
             throw new RestApiException(CustomErrorCode.ALREADY_ONBOARDING);
         }
 
-        if(userRepository.existsByNickname(request.nickname())){
-            throw new RestApiException(CustomErrorCode.USER_NICKNAME_CONFLICT);
-        }
-
-        user.onboard(request.nickname(), request.avatarId());
+        user.onboard(request.nickname(), request.profilePhotoNumber());
         user.checkOnboarded();
         return UserResponse.from(user);
     }
 
+    @Transactional(readOnly = true)
     public MyPageResponse getMyPage(Long userId) {
         return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }

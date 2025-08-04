@@ -33,7 +33,7 @@ public class OAuthClientService {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final OAuthResponseFactory oAuthResponseFactory;
-    private final WebClient webClient;
+    private final WebClientAdapter webClientAdapter;
 
     public OAuthUserInfo getUserInfo(String authCode, String provider) {
         validateProvider(provider);
@@ -60,24 +60,7 @@ public class OAuthClientService {
         // 사용자 정보를 조회하기 위한 엔드포인트
         String userInfoUri = registration.getProviderDetails().getUserInfoEndpoint().getUri();
 
-        Map<String, Object> userInfo;
-        try{
-            userInfo = webClient.get()
-                    .uri(userInfoUri)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<Map<String,Object>>() {})
-                    .blockOptional()
-                    .orElseThrow(()-> new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR));
-        }catch (WebClientResponseException.BadRequest e){
-            log.warn("유효하지 않은 AccessToken 요청 : {}", e.getCause().getMessage());
-            throw new RestApiException(CustomErrorCode.OAUTH_ACCESS_TOKEN_INVALID);
-        }catch (WebClientException e){
-            log.error("OAuth 서버 통신 오류", e);
-            throw new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR);
-        }
-
-        return userInfo;
+        return webClientAdapter.getWithAccessToken(userInfoUri, accessToken);
     }
 
     private String getAccessToken(ClientRegistration registration, String decodedCode) {
@@ -93,24 +76,7 @@ public class OAuthClientService {
         // AccessToken 을 발급받기 위한 엔드포인트
         String tokenUri = registration.getProviderDetails().getTokenUri();
 
-        Map<String, Object> tokenResponse;
-        try{
-            tokenResponse = webClient.post()
-                    .uri(tokenUri)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                    .body(BodyInserters.fromFormData(tokenRequest))
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<Map<String,Object>>() {})
-                    .blockOptional()
-                    .orElseThrow(()-> new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR));
-        }catch (WebClientResponseException.BadRequest e){
-            log.warn("유효하지 않은 AuthCode 요청 : {}",e.getCause().getMessage());
-            throw new RestApiException(CustomErrorCode.AUTH_CODE_INVALID);
-        }catch (WebClientException e){
-            log.error("OAuth 서버 통신 오류", e);
-            throw new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR);
-        }
-
+        Map<String, Object> tokenResponse = webClientAdapter.getTokenResponse(tokenUri, tokenRequest);
         return (String) tokenResponse.get("access_token");
     }
 
