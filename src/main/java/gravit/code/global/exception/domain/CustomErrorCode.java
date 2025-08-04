@@ -13,8 +13,10 @@ public enum CustomErrorCode implements ErrorCode {
     //USER_NICKNAME_CONFLICT(HttpStatus.CONFLICT, "USER_4091", "이미 존재하는 닉네임 입니다."),
     USER_PAGE_NOT_FOUND(HttpStatus.NOT_FOUND,"USER_PAGE_4041", "유저 페이지가 존재하지 않습니다."),
     ALREADY_ONBOARDING(HttpStatus.BAD_REQUEST,"USER_4001","이미 온보딩이 완료된 유저입니다."),
-    NICKNAME_INVALID(HttpStatus.BAD_REQUEST,"USER_4002", "유효하지 않은 닉네임 형식입니다."),
-    PROFILE_IMG_NUM_INVALID(HttpStatus.BAD_REQUEST,"USER_4003","유효하지 않은 프로필 이미지 번호입니다."),
+    NICKNAME_NOT_NULL(HttpStatus.BAD_REQUEST,"USER_4002", "닉네임이 null 이거나 empty 일 순 없습니다."),
+    NICKNAME_LENGTH_INVALID(HttpStatus.BAD_REQUEST,"USER_4003", "유효하지 않은 닉네임 길이 입니다."),
+    NICKNAME_PATTERN_INVALID(HttpStatus.BAD_REQUEST,"USER_4004", "유효하지 않은 닉네임 패턴 입니다."),
+    PROFILE_IMG_NUM_INVALID(HttpStatus.BAD_REQUEST,"USER_4005","유효하지 않은 프로필 이미지 번호입니다."),
 
     // Auth
     PROVIDER_INVALID(HttpStatus.BAD_REQUEST, "AUTH_4001","유효하지 않은 OAuth 제공자 이름입니다."),
