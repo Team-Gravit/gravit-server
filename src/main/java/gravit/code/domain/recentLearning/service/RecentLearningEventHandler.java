@@ -4,11 +4,13 @@ import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class RecentLearningEventHandler {
@@ -19,8 +21,12 @@ public class RecentLearningEventHandler {
     @Async("learningAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void updateRecentLearning(RecentLearningEventDto recentLearningEventDto){
-        ChapterSummaryResponse chapterSummaryResponse = chapterProgressService.getChapterSummary(recentLearningEventDto.chapterId(), recentLearningEventDto.userId());
+        try{
+            ChapterSummaryResponse chapterSummaryResponse = chapterProgressService.getChapterSummary(recentLearningEventDto.chapterId(), recentLearningEventDto.userId());
 
-        recentLearningService.updateRecentLearning(recentLearningEventDto.userId(), chapterSummaryResponse);
+            recentLearningService.updateRecentLearning(recentLearningEventDto.userId(), chapterSummaryResponse);
+        }catch(Exception e){
+            log.error("Exception occurred while updating recentLearning with {}", e.getMessage());
+        }
     }
 }

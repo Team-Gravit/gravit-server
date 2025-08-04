@@ -7,6 +7,7 @@ import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryRespo
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +17,7 @@ public class RecentLearningService {
     private final RecentLearningRepository recentLearningRepository;
 
     // 유저 온보딩 완료시 호출 메소드
+    @Async("learningAsync")
     public void initRecentLearning(Long userId){
         RecentLearning recentLearning = RecentLearning.init(userId);
 

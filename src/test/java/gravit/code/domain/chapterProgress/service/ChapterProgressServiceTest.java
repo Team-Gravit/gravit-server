@@ -88,7 +88,7 @@ class ChapterProgressServiceTest {
             //when&then
             assertThatThrownBy(() -> chapterProgressService.getChapterSummary(chapterId, userId))
                     .isInstanceOf(RestApiException.class)
-                    .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_INFO_NOT_FOUND);
+                    .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_SUMMARY_NOT_FOUND);
         }
 
         @Test
@@ -129,7 +129,7 @@ class ChapterProgressServiceTest {
         }
 
         @Test
-        @DisplayName("Chapter 조회에 성공하고 ChapterProgress 조회에 실패하면 ChapterProgress를 생성한 후 업데이트한다.")
+        @DisplayName("Chapter 조회에 성공하고 ChapterProgress 조회도 성공하면 조회한 ChapterProgress를 업데이트한다.")
         void withValidChapterIdAndFailedAtFindChapterProgressThenCreateChapterProgress(){
             //given
             Long chapterId = 1L;
@@ -149,7 +149,7 @@ class ChapterProgressServiceTest {
         }
 
         @Test
-        @DisplayName("Chapter 조회에 성공하고 ChapterProgress 조회도 성공하면 조회한 ChapterProgress를 업데이트한다.")
+        @DisplayName("Chapter 조회에 성공하고 ChapterProgress 조회에 실패하면 ChapterProgress를 생성한 후 업데이트한다.")
         void withValidChapterIdAndSucceedAtFindChapterProgressThenCreateChapterProgress(){
             //given
             Long chapterId = 1L;

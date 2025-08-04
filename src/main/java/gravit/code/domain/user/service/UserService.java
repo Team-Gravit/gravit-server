@@ -1,14 +1,15 @@
 package gravit.code.domain.user.service;
 
-import gravit.code.domain.user.dto.response.MyPageResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse;
+import gravit.code.domain.recentLearning.service.RecentLearningService;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
+import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
-import gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final RecentLearningService recentLearningService;
 
     private final UserRepository userRepository;
 
@@ -35,6 +38,9 @@ public class UserService {
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
         user.checkOnboarded();
+
+        recentLearningService.initRecentLearning(userId);
+
         return UserResponse.from(user);
     }
 

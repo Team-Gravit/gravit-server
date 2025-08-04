@@ -1,4 +1,4 @@
-package gravit.code.domain.learning.controller.api;
+package gravit.code.domain.learning.controller;
 
 import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.auth.oauth.LoginUser;

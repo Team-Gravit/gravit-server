@@ -28,6 +28,8 @@ public class LessonProgressService {
                 .orElseGet(() -> LessonProgress.create(userId, targetLesson.getId(), false));
 
         lessonProgress.updateStatus();
+
+        lessonProgressRepository.save(lessonProgress);
     }
 
     public List<LessonProgressSummaryResponse> getLessonProgressSummaries(Long unitId, Long userId){

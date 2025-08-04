@@ -4,7 +4,6 @@ import gravit.code.domain.lessonProgress.domain.LessonProgress;
 import gravit.code.domain.lessonProgress.domain.LessonProgressRepository;
 import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public class LessonProgressRepositoryImpl implements LessonProgressRepository {
     }
 
     @Override
-    public List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(@Param("userId") Long userId, @Param("unitId") Long unitId){
+    public List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(Long unitId, Long userId){
         return lessonProgressJpaRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
     }
 

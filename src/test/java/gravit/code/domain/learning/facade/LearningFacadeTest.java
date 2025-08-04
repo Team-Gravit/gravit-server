@@ -76,7 +76,7 @@ class LearningFacadeTest {
 
         @Test
         @DisplayName("진행도 조회에 실패하면 예외를 반환한다.") // 진행도 관련 값이 빈 리스트 = userId가 유효하지 않아 조회 실패
-        void withValidUserId(){
+        void withInvalidUserId(){
             //given
             Long userId = 9999L;
             when(chapterProgressService.getChapterProgressDetails(userId)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
@@ -89,7 +89,7 @@ class LearningFacadeTest {
 
         @Test
         @DisplayName("진행도 조회에 성공하면 정상적으로 반환한다.")
-        void withInvalidUserId(){
+        void withValidUserId(){
             //given
             Long userId = 1L;
             when(chapterProgressService.getChapterProgressDetails(userId)).thenReturn(chapterProgressDetailResponse);

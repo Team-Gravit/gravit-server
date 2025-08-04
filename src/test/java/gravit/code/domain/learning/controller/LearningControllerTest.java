@@ -3,7 +3,6 @@ package gravit.code.domain.learning.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.common.auth.WithMockLoginUser;
 import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.domain.learning.controller.api.LearningController;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.facade.LearningFacade;
 import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;

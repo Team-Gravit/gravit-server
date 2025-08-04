@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Tag(name = "MainPageController", description = "메인페이지 관련 API")
+@Tag(name = "MainPage API", description = "메인페이지 관련 API")
 public interface MainPageControllerSpecification {
     @Operation(summary = "메인 페이지 정보 조회", description = "사용자의 메인 페이지에 필요한 정보를 조회합니다<br>" +
             "닉네임, 레벨, 경험치, 리그 정보, 최근 학습 정보를 포함합니다<br>" +
@@ -27,7 +27,17 @@ public interface MainPageControllerSpecification {
                             examples = {
                                     @ExampleObject(
                                             name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"유저 조회 실패\"}"
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "RECENT_LEARNING_4041", description = "🚨 최근 학습 정보 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "최근 학습 정보 조회 실패",
+                                            value = "{\"error\" : \"RECENT_LEARNING_4041\", \"message\" : \"최근 학습 정보 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
