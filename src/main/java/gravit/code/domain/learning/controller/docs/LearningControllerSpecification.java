@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@Tag(name = "LearningController", description = "학습 관련 API")
+@Tag(name = "Learning API", description = "학습 관련 API")
 public interface LearningControllerSpecification {
 
     @Operation(summary = "챕터 목록 조회", description = "사용자의 챕터 진행 상황과 함께 전체 챕터 목록을 조회합니다<br>" +
@@ -37,7 +37,7 @@ public interface LearningControllerSpecification {
                             examples = {
                                     @ExampleObject(
                                             name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"유저 조회 실패\"}"
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -65,7 +65,7 @@ public interface LearningControllerSpecification {
                             examples = {
                                     @ExampleObject(
                                             name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"유저 조회 실패\"}"
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -89,22 +89,12 @@ public interface LearningControllerSpecification {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 레슨 문제 목록 조회 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"유저 조회 실패\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "LESSON_4041", description = "🚨 레슨 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "레슨 조회 실패",
-                                            value = "{\"error\" : \"LESSON_4041\", \"message\" : \"레슨 조회 실패\"}"
+                                            name = "문제 조회 실패",
+                                            value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -132,37 +122,37 @@ public interface LearningControllerSpecification {
                             examples = {
                                     @ExampleObject(
                                             name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"유저 조회 실패\"}"
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "CHAPTER_P_4041", description = "🚨 챕터 진행 결과 조회 실패",
+            @ApiResponse(responseCode = "LESSON_4041", description = "🚨 레슨 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "챕터 진행 결과 조회 실패",
-                                            value = "{\"error\" : \"CHAPTER_P_4041\", \"message\" : \"챕터 진행 결과 조회 실패\"}"
+                                            name = "레슨 조회 실패",
+                                            value = "{\"error\" : \"LESSON_4041\", \"message\" : \"레슨 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "UNIT_P_4041", description = "🚨 유닛 진행 결과 조회 실패",
+            @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유닛 진행 결과 조회 실패",
-                                            value = "{\"error\" : \"UNIT_P_4041\", \"message\" : \"유닛 진행 결과 조회 실패\"}"
+                                            name = "유닛 조회 실패",
+                                            value = "{\"error\" : \"UNIT_4041\", \"message\" : \"유닛 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "LESSON_P_4041", description = "🚨 레슨 진행 결과 조회 실패",
+            @ApiResponse(responseCode = "CHAPTER_4041", description = "🚨 챕터 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "레슨 진행 결과 조회 실패",
-                                            value = "{\"error\" : \"LESSON_P_4041\", \"message\" : \"레슨 진행 결과 조회 실패\"}"
+                                            name = "챕터 조회 실패",
+                                            value = "{\"error\" : \"CHAPTER_4041\", \"message\" : \"챕터 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))

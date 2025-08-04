@@ -1,4 +1,4 @@
-package gravit.code.domain.mainPage.controller.api;
+package gravit.code.domain.mainPage.controller;
 
 import gravit.code.auth.oauth.LoginUser;
 import gravit.code.domain.mainPage.controller.docs.MainPageControllerSpecification;
