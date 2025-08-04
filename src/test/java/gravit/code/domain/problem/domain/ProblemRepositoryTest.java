@@ -1,9 +1,10 @@
 package gravit.code.domain.problem.domain;
 
-import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.infrastructure.ProblemJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -59,19 +60,34 @@ class ProblemRepositoryTest {
         problemRepository.save(multipleChoiceProblemSelectDescriptionType);
     }
 
-    @Test
-    @DisplayName("lessonId를 통해 Problem을 조회할 수 있다.")
-    void getLessonProblemsByLessonId(){
-        // given
-        Long lessonId = 1L;
+    @Nested
+    @DisplayName("Problem을 조회할 때,")
+    class findProblem{
 
-        // when
-        List<ProblemInfo>  lessonProblems = problemRepository.findAllProblemsByLessonId(lessonId);
+        @Test
+        @DisplayName("lessonId가 유효하지 않으면 빈 리스트를 반환한다.")
+        void withInvalidLessonId(){
+            //given
+            Long lessonId = 2L;
 
-        // then
-        assertThat(lessonProblems).hasSize(4);
-        assertThat(lessonProblems.get(0).problemId()).isLessThan(lessonProblems.get(1).problemId());
-        assertThat(lessonProblems).isInstanceOf(List.class);
-        assertThat(lessonProblems.get(0)).isInstanceOf(ProblemInfo.class);
+            //when
+            List<ProblemResponse> problemResponses = problemRepository.findAllProblemByLessonId(lessonId);
+
+            //then
+            assertThat(problemResponses).isEmpty();
+        }
+
+        @Test
+        @DisplayName("lessonId가 유효하면 정상적으로 반환한다.")
+        void withValidLEssonId(){
+            //given
+            Long lessonId = 1L;
+
+            //when
+            List<ProblemResponse> problemResponses = problemRepository.findAllProblemByLessonId(lessonId);
+
+            //then
+            assertThat(problemResponses).hasSize(4);
+        }
     }
 }

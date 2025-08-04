@@ -1,9 +1,9 @@
 package gravit.code.domain.mainPage.facade;
 
 import gravit.code.domain.mainPage.dto.response.MainPageResponse;
-import gravit.code.domain.recentLearning.dto.response.RecentLearningInfo;
+import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryResponse;
 import gravit.code.domain.recentLearning.service.RecentLearningService;
-import gravit.code.domain.user.dto.response.UserMainPageInfo;
+import gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse;
 import gravit.code.domain.user.service.UserService;
 import gravit.code.domain.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
@@ -14,26 +14,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MainPageFacade {
 
-    private final RecentLearningService recentLearningService;
     private final UserService userService;
     private final UserLeagueService userLeagueService;
+    private final RecentLearningService recentLearningService;
 
     @Transactional(readOnly = true)
     public MainPageResponse getMainPage(Long userId){
 
-        UserMainPageInfo userMainPageInfo = userService.getUserMainPageInfo(userId);
+        MainPageUserSummaryResponse mainPageUserSummary = userService.getMainPageUserSummary(userId);
 
         String league = userLeagueService.getUserLeagueName(userId);
 
-        RecentLearningInfo recentLearningInfo = recentLearningService.getRecentLearningInfo(userId);
-
+        RecentLearningSummaryResponse recentLearningSummary = recentLearningService.getRecentLearningSummary(userId);
 
         return MainPageResponse.create(
-                userMainPageInfo.nickname(),
-                userMainPageInfo.level(),
-                userMainPageInfo.xp(),
+                mainPageUserSummary.nickname(),
+                mainPageUserSummary.level(),
+                mainPageUserSummary.xp(),
                 league,
-                recentLearningInfo
+                recentLearningSummary
         );
     }
 }

@@ -7,7 +7,7 @@ import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
-import gravit.code.domain.user.dto.response.UserMainPageInfo;
+import gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class UserService {
         return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }
 
-    public UserLevelResponse updateUserLevel(Long userId){
+    public UserLevelResponse updateUserLevelAndXp(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
@@ -52,8 +52,8 @@ public class UserService {
         return UserLevelResponse.create(user.getLevel(), user.getXp());
     }
 
-    public UserMainPageInfo getUserMainPageInfo(Long userId){
-        return userRepository.findUserMainPageInfoByUserId(userId)
+    public MainPageUserSummaryResponse getMainPageUserSummary(Long userId){
+        return userRepository.findUserMainPageSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
     }
 }

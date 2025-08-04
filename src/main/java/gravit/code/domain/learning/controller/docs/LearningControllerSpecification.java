@@ -1,9 +1,9 @@
 package gravit.code.domain.learning.controller.docs;
 
 import gravit.code.auth.oauth.LoginUser;
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfoResponse;
+import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.domain.problem.dto.response.ProblemInfo;
+import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
@@ -54,7 +54,7 @@ public interface LearningControllerSpecification {
             )
     })
     @GetMapping("/chapters")
-    ResponseEntity<List<ChapterInfoResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<List<ChapterProgressDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser);
 
     @Operation(summary = "유닛 목록 조회", description = "특정 챕터의 유닛 목록과 레슨 진행 상황을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -121,7 +121,7 @@ public interface LearningControllerSpecification {
             )
     })
     @GetMapping("/{lessonId}/problems")
-    ResponseEntity<List<ProblemInfo>> getProblems(@PathVariable("lessonId") Long lessonId);
+    ResponseEntity<List<ProblemResponse>> getProblems(@PathVariable("lessonId") Long lessonId);
 
     @Operation(summary = "학습 결과 저장", description = "레슨 완료 후 문제 풀이 결과를 저장하고 사용자 레벨을 업데이트합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

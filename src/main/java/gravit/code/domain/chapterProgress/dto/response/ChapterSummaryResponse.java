@@ -3,16 +3,16 @@ package gravit.code.domain.chapterProgress.dto.response;
 import lombok.Builder;
 
 @Builder
-public record ChapterInfo(
+public record ChapterSummaryResponse(
         Long chapterId,
-        String chapterName,
+        String name,
         Long totalUnits,
         Long completedUnits
 ) {
-    public static ChapterInfo create(Long chapterId, String chapterName, Long totalUnits, Long completedUnits) {
-        return ChapterInfo.builder()
+    public static ChapterSummaryResponse create(Long chapterId, String name, Long totalUnits, Long completedUnits) {
+        return ChapterSummaryResponse.builder()
                 .chapterId(chapterId)
-                .chapterName(chapterName)
+                .name(name)
                 .totalUnits(totalUnits)
                 .completedUnits(completedUnits)
                 .build();

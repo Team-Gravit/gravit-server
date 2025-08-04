@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 @Schema(description = "문제 정보 Response")
-public record ProblemInfo(
+public record ProblemResponse(
 
         @Schema(
                 description = "문제 아이디",
@@ -38,8 +38,8 @@ public record ProblemInfo(
         )
         String answer
 ) {
-        public static ProblemInfo create(Long problemId, ProblemType problemType, String question, String options, String answer) {
-                return ProblemInfo.builder()
+        public static ProblemResponse create(Long problemId, ProblemType problemType, String question, String options, String answer) {
+                return ProblemResponse.builder()
                         .problemId(problemId)
                         .problemType(problemType)
                         .question(question)

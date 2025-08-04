@@ -1,7 +1,7 @@
 package gravit.code.domain.user.domain;
 
 import gravit.code.domain.user.dto.response.MyPageResponse;
-import gravit.code.domain.user.dto.response.UserMainPageInfo;
+import gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse;
 
 import java.util.Optional;
 
@@ -10,7 +10,7 @@ public interface UserRepository {
     Optional<User> findByProviderId(String providerId);
     void save(User user);
     boolean existsByNickname(String nickname);
-    Optional<UserMainPageInfo> findUserMainPageInfoByUserId(Long userId);
+    Optional<MainPageUserSummaryResponse> findUserMainPageSummaryByUserId(Long userId);
     boolean existsByHandle(String handle);
     Optional<MyPageResponse> findMyPageByUserId(Long userId);
 }

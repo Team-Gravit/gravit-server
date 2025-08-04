@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 @Schema(description = "챕터 정보 조회 Response")
-public record ChapterInfoResponse(
+public record ChapterProgressDetailResponse(
 
         @Schema(
                 description = "챕터 아이디",
@@ -17,13 +17,13 @@ public record ChapterInfoResponse(
                 description = "챕터 이름",
                 example = "자료구조"
         )
-        String chapterName,
+        String name,
 
         @Schema(
                 description = "챕터 설명",
                 example = "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다."
         )
-        String chapterDescription,
+        String description,
 
         @Schema(
                 description = "총 유닛",
@@ -37,11 +37,11 @@ public record ChapterInfoResponse(
         )
         Long completedUnits
 ) {
-    public static ChapterInfoResponse create(Long chapterId, String chapterName, String chapterDescription, Long totalUnits, Long completedUnits) {
-        return ChapterInfoResponse.builder()
+    public static ChapterProgressDetailResponse create(Long chapterId, String name, String description, Long totalUnits, Long completedUnits) {
+        return ChapterProgressDetailResponse.builder()
                 .chapterId(chapterId)
-                .chapterName(chapterName)
-                .chapterDescription(chapterDescription)
+                .name(name)
+                .description(description)
                 .totalUnits(totalUnits)
                 .completedUnits(completedUnits)
                 .build();

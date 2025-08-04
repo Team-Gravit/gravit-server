@@ -1,6 +1,6 @@
 package gravit.code.domain.recentLearning.domain;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterInfo;
+import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -46,10 +46,10 @@ public class RecentLearning {
                 .build();
     }
 
-    public void update(ChapterInfo chapterInfo) {
-        this.chapterId = chapterInfo.chapterId();
-        this.chapterName = chapterInfo.chapterName();
-        this.totalUnits = chapterInfo.totalUnits();
-        this.completedUnits = chapterInfo.completedUnits();
+    public void update(ChapterSummaryResponse chapterSummaryResponse) {
+        this.chapterId = chapterSummaryResponse.chapterId();
+        this.chapterName = chapterSummaryResponse.name();
+        this.totalUnits = chapterSummaryResponse.totalUnits();
+        this.completedUnits = chapterSummaryResponse.completedUnits();
     }
 }

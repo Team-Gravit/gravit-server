@@ -7,25 +7,25 @@ on:
 
 jobs:
   test:
-    name: run test code on gradle
+    name: 테스트 코드 실행
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout code
+      - name: 체크아웃
         uses: actions/checkout@v3
 
-      - name: set up JDK with version 17
+      - name: JDK 버전 설정
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: run test
+      - name: 테스트 실행
         run: |
           chmod +x ./gradlew
           ./gradlew --info test
 
-      - name: display test result
+      - name: 테스트 결과 출력
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: ${{ always() }}
         with:

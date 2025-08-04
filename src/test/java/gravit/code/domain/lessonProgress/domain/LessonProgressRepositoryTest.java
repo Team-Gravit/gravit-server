@@ -2,10 +2,13 @@ package gravit.code.domain.lessonProgress.domain;
 
 import gravit.code.domain.lesson.domain.Lesson;
 import gravit.code.domain.lesson.infrastructure.LessonJpaRepository;
-import gravit.code.domain.lessonProgress.dto.response.LessonInfo;
+import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.domain.lessonProgress.infrastructure.LessonProgressJpaRepository;
+import gravit.code.domain.user.domain.User;
+import gravit.code.domain.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -13,8 +16,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,6 +28,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LessonProgressRepositoryTest {
 
     @Autowired
+    private UserJpaRepository userRepository;
+
+    @Autowired
     private LessonProgressJpaRepository lessonProgressRepository;
 
     @Autowired
@@ -32,78 +38,50 @@ class LessonProgressRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        User validUser = userRepository.save(User.create("test@example.com", "google 123456", "테스트유저", "@test", 1, LocalDateTime.now()));
 
-        Lesson lesson1 = lessonRepository.save(Lesson.create("스택 기초", 10L, 1L));
-        Lesson lesson2 = lessonRepository.save(Lesson.create("스택 활용", 8L, 1L));
-        Lesson lesson3 = lessonRepository.save(Lesson.create("스택 심화", 12L, 1L));
-        Lesson lesson4 = lessonRepository.save(Lesson.create("스택 문제해결", 15L, 1L));
+        Lesson lesson1 = lessonRepository.save(Lesson.create("스택 기본 개념", 10L, 1L));
+        Lesson lesson2 = lessonRepository.save(Lesson.create("스택 구현하기", 8L, 1L));
+        Lesson lesson3 = lessonRepository.save(Lesson.create("스택 활용 문제", 12L, 1L));
+        Lesson lesson4 = lessonRepository.save(Lesson.create("스택 심화 응용", 15L, 1L));
 
-        lessonProgressRepository.save(LessonProgress.create(1L, lesson1.getId(), true));
-        lessonProgressRepository.save(LessonProgress.create(1L, lesson2.getId(), true));
-        lessonProgressRepository.save(LessonProgress.create(1L, lesson3.getId(), false));
+        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson1.getId(), true));
+        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson2.getId(), true));
+        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson3.getId(), false));
     }
 
-    @Test
-    @DisplayName("lessonId와 userId를 통해 LessonProgress를 조회할 수 있다.")
-    void getLessonProgressByLessonIdAndUserId(){
-        // given
-        Long userId = 1L;
-        Long lessonId = 1L;
+    @Nested
+    @DisplayName("LessonProgressSummary를 조회할 때,")
+    class FindLessonProgressSummary{
 
-        // when
-        Optional<LessonProgress> lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId);
+        @Test
+        @DisplayName("userId가 유효하지 않으면 빈 리스트를 반환한다.")
+        void withInvalidUserId(){
+            //given
+            Long unitId = 1L;
+            Long userId = 111111L;
 
-        // then
-        assertThat(lessonProgress).isPresent();
-        assertThat(lessonProgress.get().getUserId()).isEqualTo(userId);
-        assertThat(lessonProgress.get().getLessonId()).isEqualTo(lessonId);
-    }
+            //given
+            List<LessonProgressSummaryResponse> lessonProgressSummaryResponse = lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
 
-    @Test
-    @DisplayName("lessonId와 userId로 LessonProgress의 존재 여부를 조회할 수 있다")
-    void getLessonProgressExistByLessonIdAndUserId1(){
-        //given
-        Long userId = 1L;
-        Long lessonId = 1L;
+            //then
+            assertThat(lessonProgressSummaryResponse).hasSize(0);
+        }
 
-        //when
-        boolean exists = lessonProgressRepository.existsByLessonIdAndUserId(lessonId, userId);
+        @Test
+        @DisplayName("userId가 유효하면 정상적으로 반환한다.")
+        void withValidUserId(){
+            //given
+            Long unitId = 1L;
+            Long userId = 1L;
 
-        //then
-        assertThat(exists).isTrue();
-    }
+            //given
+            List<LessonProgressSummaryResponse> lessonProgressSummaryResponse = lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
 
-    @Test
-    @DisplayName("lessonId와 userId로 LessonProgress의 존재 여부를 조회할 수 있다")
-    void getLessonProgressExistByLessonIdAndUserId2(){
-        //given
-        Long userId = 222L;
-        Long lessonId = 222L;
-
-        //when
-        boolean exists = lessonProgressRepository.existsByLessonIdAndUserId(lessonId, userId);
-
-        //then
-        assertThat(exists).isFalse();
-    }
-
-    @Test
-    @DisplayName("unitId와 userId를 통해 진행도를 포함한 Lesson 정보를 조회할 수 있다.")
-    void getLessonWithProgressByUserIdAndUnitId(){
-        //given
-        Long userId = 1L;
-        Long unitId = 1L;
-
-        //when
-        List<LessonInfo> lessonInfos = lessonProgressRepository.findLessonsWithProgressByUnitId(userId, unitId);
-
-        //then
-        assertThat(lessonInfos).isNotEmpty();
-
-        assertThat(lessonInfos.get(0).lessonId()).isEqualTo(1L);
-        assertThat(lessonInfos.get(0).isCompleted()).isTrue();
-
-        assertThat(lessonInfos.get(3).lessonId()).isEqualTo(4L);
-        assertThat(lessonInfos.get(3).isCompleted()).isFalse();
+            //then
+            assertThat(lessonProgressSummaryResponse).hasSize(4);
+            assertThat(lessonProgressSummaryResponse.get(0).isCompleted()).isTrue();
+            assertThat(lessonProgressSummaryResponse.get(3).lessonId()).isEqualTo(4L);
+        }
     }
 }
