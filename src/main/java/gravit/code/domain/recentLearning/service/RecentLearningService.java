@@ -29,7 +29,6 @@ public class RecentLearningService {
                 .orElseGet(() -> RecentLearning.init(userId));
 
         recentLearning.update(chapterSummaryResponse);
-
         recentLearningRepository.save(recentLearning);
     }
 
@@ -37,4 +36,8 @@ public class RecentLearningService {
         return recentLearningRepository.findRecentLearningSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.RECENT_LEARNING_INFO_NOT_FOUND));
     }
+
+
+
+
 }
