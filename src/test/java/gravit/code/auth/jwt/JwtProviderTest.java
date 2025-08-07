@@ -113,16 +113,14 @@ class JwtProviderTest {
         void setUp() throws NoSuchFieldException, IllegalAccessException {
             Field validTimeField = JwtProvider.class.getDeclaredField("validTime");
             validTimeField.setAccessible(true);
-            validTimeField.setInt(jwtProvider,1);
+            validTimeField.setInt(jwtProvider,0);
         }
 
         @Test
-        void 유효기간이_지난_토큰이라면_예외를_리턴합니다() throws InterruptedException {
+        void 유효기간이_지난_토큰이라면_예외를_리턴합니다(){
             // given
             Long userId = testUser.getId();
             String accessToken = jwtProvider.createAccessToken(userId);
-
-            Thread.sleep(3);
 
             // when
             // then
@@ -135,7 +133,6 @@ class JwtProviderTest {
             Long userId = testUser.getId();
             String accessToken = jwtProvider.createAccessToken(userId);
 
-            Thread.sleep(3);
 
             // when
             // then
