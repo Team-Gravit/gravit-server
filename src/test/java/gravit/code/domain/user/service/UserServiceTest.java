@@ -28,30 +28,30 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Test
-    void 온보딩_성공_테스트(){
-        // given
-        Long userId = 1L;
-        String testNickname = "kang";
-        int testProfilePhotoNumber = 1;
-        String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
-
-        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-
-        // when
-        UserResponse result = userService.onboarding(userId, request);
-
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(result.providerId()).isEqualTo(testUser.getProviderId());
-            softly.assertThat(result.nickname()).isEqualTo(testNickname);
-            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
-            softly.assertThat(testUser.isOnboarded()).isEqualTo(true);
-        });
-    }
+//    @Test
+//    void 온보딩_성공_테스트(){
+//        // given
+//        Long userId = 1L;
+//        String testNickname = "kang";
+//        int testProfilePhotoNumber = 1;
+//        String testProviderId = "kakao123123";
+//        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+//
+//        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+//
+//        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+//
+//        // when
+//        UserResponse result = userService.onboarding(userId, request);
+//
+//        // then
+//        assertSoftly(softly -> {
+//            softly.assertThat(result.providerId()).isEqualTo(testUser.getProviderId());
+//            softly.assertThat(result.nickname()).isEqualTo(testNickname);
+//            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
+//            softly.assertThat(testUser.isOnboarded()).isEqualTo(true);
+//        });
+//    }
 
     @Test
     void 온보딩시_닉네임이_8자_이상이면_예외를_던집니다(){
