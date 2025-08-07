@@ -1,5 +1,6 @@
 package gravit.code.domain.learning.facade;
 
+import gravit.code.domain.chapterProgress.domain.ChapterProgress;
 import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
@@ -9,6 +10,7 @@ import gravit.code.domain.lessonProgress.service.LessonProgressService;
 import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.domain.problemProgress.service.ProblemProgressService;
+import gravit.code.domain.unitProgress.domain.UnitProgress;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
 import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.service.UnitProgressService;
@@ -61,12 +63,15 @@ public class LearningFacade {
     @Transactional
     public UserLevelResponse saveLearningResult(Long userId, LearningResultSaveRequest request){
 
+        ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(request.chapterId(), userId);
+        UnitProgress unitProgress = unitProgressService.ensureUnitProgress(request.unitId(), userId);
+
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
         lessonProgressService.updateLessonProgressStatus(request.lessonId(), userId);
 
-        if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(request.unitId(), userId)))
-            chapterProgressService.updateChapterProgress(request.chapterId(), userId);
+        if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(unitProgress)))
+            chapterProgressService.updateChapterProgress(chapterProgress);
 
         publisher.publishEvent(new RecentLearningEventDto(userId, request.chapterId()));
 

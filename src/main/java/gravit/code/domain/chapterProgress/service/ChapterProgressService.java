@@ -34,16 +34,17 @@ public class ChapterProgressService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_SUMMARY_NOT_FOUND));
     }
 
-    public void updateChapterProgress(Long chapterId, Long userId){
+    public void updateChapterProgress(ChapterProgress chapterProgress){
+        chapterProgress.updateCompletedUnits();
+    }
 
+    public ChapterProgress ensureChapterProgress(Long chapterId, Long userId){
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
 
         ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapterId,userId)
                 .orElseGet(() -> ChapterProgress.create(chapter.getTotalUnits(), userId, chapterId));
 
-        chapterProgress.updateCompletedUnits();
-
-        chapterProgressRepository.save(chapterProgress);
+        return chapterProgressRepository.save(chapterProgress);
     }
 }
