@@ -65,8 +65,9 @@ public class LearningFacade {
 
         lessonProgressService.updateLessonProgressStatus(request.lessonId(), userId);
 
-        if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(request.unitId(), userId)))
-            chapterProgressService.updateChapterProgress(request.chapterId(), userId);
+        unitProgressService.updateUnitProgress(request.unitId(), userId);
+
+        chapterProgressService.updateChapterProgress(request.chapterId(), userId);
 
         publisher.publishEvent(new RecentLearningEventDto(userId, request.chapterId()));
 
