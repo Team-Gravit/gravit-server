@@ -27,7 +27,7 @@ public class JwtProvider {
     private final UserRepository userRepository;
 
     private final SecretKey secretKey;
-    public int validTime;
+    public final int validTime;
 
     private JwtProvider(UserRepository userRepository,
                         @Value("${jwt.secret}") String secret,
