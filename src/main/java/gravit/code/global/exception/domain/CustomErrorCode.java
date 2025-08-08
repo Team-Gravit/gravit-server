@@ -23,6 +23,7 @@ public enum CustomErrorCode implements ErrorCode {
     AUTH_CODE_INVALID(HttpStatus.BAD_REQUEST,"AUTH_4002", "유효하지 않은 AuthCode 입니다."),
     OAUTH_SERVER_ERROR(HttpStatus.BAD_GATEWAY,"AUTH_502","OAuth 인증 서버와의 통신에 실패하였습니다."),
     OAUTH_ACCESS_TOKEN_INVALID(HttpStatus.BAD_REQUEST,"AUTH4003","유효하지 않은 OAuth AccessToken"),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "A_D_403", "접근 권한이 없는 사용자입니다."),
 
     // HandleGenerator
     HANDLE_CONFLICT_TEN_TIMES(HttpStatus.CONFLICT, "H_G_4091", "중복으로 인해 유효한 handle 을 찾지 못했습니다."),
