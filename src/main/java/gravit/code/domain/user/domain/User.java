@@ -38,9 +38,6 @@ public class User {
     @Column(columnDefinition = "integer", nullable = false)
     private Integer xp;
 
-    @Column(columnDefinition = "integer", nullable = false)
-    private Integer lp;
-
     @Column(name = "created_at",  nullable = false)
     private LocalDateTime createdAt;
 
@@ -57,7 +54,6 @@ public class User {
         this.nickname = nickname;
         this.handle = handle;
         this.profileImgNumber = profileImgNumber;
-        this.lp = 0;
         this.level = 1;
         this.xp = 0;
         this.createdAt = createdAt;
