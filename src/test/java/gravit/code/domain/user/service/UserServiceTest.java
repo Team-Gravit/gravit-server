@@ -1,5 +1,6 @@
 package gravit.code.domain.user.service;
 
+import gravit.code.domain.recentLearning.service.RecentLearningService;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
@@ -17,6 +18,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +30,10 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RecentLearningService recentLearningService;
+
 
     @Test
     void 온보딩_성공_테스트(){
@@ -40,6 +47,8 @@ class UserServiceTest {
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        doNothing().when(recentLearningService).initRecentLearning(any(Long.class));
+
 
         // when
         UserResponse result = userService.onboarding(userId, request);

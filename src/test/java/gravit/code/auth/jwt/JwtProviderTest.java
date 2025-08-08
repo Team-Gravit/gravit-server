@@ -93,16 +93,14 @@ class JwtProviderTest {
     }
 
     @Test
-    void 유효기간이_지나지않은_토큰은_true_를_리턴합니다() {
+    void 유효기간이_지나지않은_토큰은_예외를_던지지_않습니다() {
         // given
         Long userId = testUser.getId();
         String accessToken = jwtProvider.createAccessToken(userId);
 
         // when
-        boolean result = jwtProvider.isValidToken(accessToken);
-
         // then
-        assertTrue(result);
+        assertDoesNotThrow(() -> jwtProvider.validateToken(accessToken));
     }
 
     @Nested
@@ -124,7 +122,7 @@ class JwtProviderTest {
 
             // when
             // then
-            assertThrows(RestApiException.class, () -> jwtProvider.isValidToken(accessToken));
+            assertThrows(RestApiException.class, () -> jwtProvider.validateToken(accessToken));
         }
 
         @Test
