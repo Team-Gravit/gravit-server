@@ -16,7 +16,7 @@ public class League {
     private Long id;
 
     @Column(columnDefinition = "varchar(20)", nullable = false)
-    private String name;
+    private String tierName;
 
     @Column(name = "max_xp", columnDefinition = "integer", nullable = false)
     private Integer maxXp;
@@ -28,16 +28,16 @@ public class League {
     private String leagueImgUrl;
 
     @Builder
-    private League(String name, Integer maxXp, Integer minXp, String leagueImgUrl) {
-        this.name = name;
+    private League(String tierName, Integer maxXp, Integer minXp, String leagueImgUrl) {
+        this.tierName = tierName;
         this.maxXp = maxXp;
         this.minXp = minXp;
         this.leagueImgUrl = leagueImgUrl;
     }
 
-    public static League create(String name, Integer maxXp, Integer minXp, String leagueImgUrl) {
+    public static League create(String tierName, Integer maxXp, Integer minXp, String leagueImgUrl) {
         return League.builder()
-                .name(name)
+                .tierName(tierName)
                 .maxXp(maxXp)
                 .minXp(minXp)
                 .leagueImgUrl(leagueImgUrl)
