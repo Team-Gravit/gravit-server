@@ -8,9 +8,11 @@ import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
+import gravit.code.domain.user.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,8 @@ public class UserService {
     private final RecentLearningService recentLearningService;
 
     private final UserRepository userRepository;
+
+    private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
     public UserResponse findById(Long userId) {
@@ -40,6 +44,8 @@ public class UserService {
         user.checkOnboarded();
 
         recentLearningService.initRecentLearning(userId);
+
+        publisher.publishEvent(new OnboardingUserLeagueEvent(user.getId()));
 
         return UserResponse.from(user);
     }

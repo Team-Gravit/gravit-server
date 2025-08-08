@@ -16,31 +16,36 @@ public class League {
     private Long id;
 
     @Column(columnDefinition = "varchar(20)", nullable = false)
-    private String tierName;
+    private String name;
 
-    @Column(name = "max_xp", columnDefinition = "integer", nullable = false)
-    private Integer maxXp;
+    @Column(name = "max_lp", columnDefinition = "integer", nullable = false)
+    private Integer maxLp;
 
-    @Column(name = "min_xp", columnDefinition = "integer", nullable = false)
-    private Integer minXp;
+    @Column(name = "min_lp", columnDefinition = "integer", nullable = false)
+    private Integer minLp;
 
     @Column(name = "league_img_url", columnDefinition = "varchar(150)", nullable = false)
     private String leagueImgUrl;
 
+    @Column(name = "sort_order", nullable = false)
+    private Integer sortOrder;
+
     @Builder
-    private League(String tierName, Integer maxXp, Integer minXp, String leagueImgUrl) {
-        this.tierName = tierName;
-        this.maxXp = maxXp;
-        this.minXp = minXp;
+    private League(String name, Integer maxLp, Integer minLp, String leagueImgUrl, int sortOrder) {
+        this.name = name;
+        this.maxLp = maxLp;
+        this.minLp = minLp;
         this.leagueImgUrl = leagueImgUrl;
+        this.sortOrder = sortOrder;
     }
 
-    public static League create(String tierName, Integer maxXp, Integer minXp, String leagueImgUrl) {
+    public static League create(String name, Integer maxLp, Integer minLp, String leagueImgUrl, int sortOrder) {
         return League.builder()
-                .tierName(tierName)
-                .maxXp(maxXp)
-                .minXp(minXp)
+                .name(name)
+                .maxLp(maxLp)
+                .minLp(minLp)
                 .leagueImgUrl(leagueImgUrl)
+                .sortOrder(sortOrder)
                 .build();
     }
 }
