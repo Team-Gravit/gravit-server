@@ -4,7 +4,6 @@ import gravit.code.auth.jwt.JwtProvider;
 import gravit.code.auth.oauth.dto.LoginResponse;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.util.HandleGenerator;
-import gravit.code.auth.util.RandomHandleGenerator;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;

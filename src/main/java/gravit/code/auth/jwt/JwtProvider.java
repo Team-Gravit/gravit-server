@@ -27,7 +27,7 @@ public class JwtProvider {
     private final UserRepository userRepository;
 
     private final SecretKey secretKey;
-    public int validTime;
+    public final int validTime;
 
     private JwtProvider(UserRepository userRepository,
                         @Value("${jwt.secret}") String secret,
@@ -69,14 +69,13 @@ public class JwtProvider {
         );
     }
 
-    public boolean isValidToken(String token){
-        return handleJwtException(token, (value) -> {
-            Jws<Claims> claims = Jwts.parser()
+    public void validateToken(String token){
+        handleJwtException(token, (value) -> {
+            Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(value);
-            Date expiration = claims.getPayload().getExpiration();
-            return expiration.after(new Date());
+            return null;
         });
     }
 
