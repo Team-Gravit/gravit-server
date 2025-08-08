@@ -22,10 +22,14 @@ public class UserLeague {
     @Column(name = "league_id", columnDefinition = "bigint", nullable = false)
     private Long leagueId;
 
+    @Column(name = "league_point", columnDefinition = "integer", nullable = false)
+    private int lp;
+
     @Builder
     private UserLeague(Long userId, Long leagueId) {
         this.userId = userId;
         this.leagueId = leagueId;
+        this.lp = 0;
     }
 
     public static UserLeague create(Long userId, Long leagueId) {
