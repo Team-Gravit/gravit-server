@@ -9,8 +9,10 @@ public interface UserLeagueJpaRepository extends JpaRepository<UserLeague,Long> 
     @Query("""
         SELECT l.name
         FROM UserLeague ul
-        JOIN League l ON ul.leagueId = l.id
-        WHERE ul.userId = :userId
+        JOIN League l ON ul.league.id = l.id
+        WHERE ul.user.id = :userId
     """)
     String findUserLeagueNameByUserId(@Param("userId") Long userId);
+
+    boolean existsByUserId(Long userId);
 }

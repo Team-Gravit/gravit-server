@@ -27,7 +27,7 @@ public class League {
     @Column(name = "league_img_url", columnDefinition = "varchar(150)", nullable = false)
     private String leagueImgUrl;
 
-    @Column(name = "sort_order", nullable = false)
+    @Column(name = "sort_order", nullable = false, unique = true)
     private Integer sortOrder;
 
     @Builder

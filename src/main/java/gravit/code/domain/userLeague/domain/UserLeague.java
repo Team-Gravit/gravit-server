@@ -1,5 +1,6 @@
 package gravit.code.domain.userLeague.domain;
 
+import gravit.code.domain.league.domain.League;
 import gravit.code.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -22,12 +23,13 @@ public class UserLeague {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "league_id", columnDefinition = "bigint", nullable = false)
-    private Long leagueId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "league_id", nullable = false)
+    private League league;
 
     @Column(name = "league_point", columnDefinition = "integer", nullable = false)
     private int lp;
@@ -37,16 +39,16 @@ public class UserLeague {
     private LocalDateTime updatedAt;
 
     @Builder
-    private UserLeague(User user, Long leagueId) {
+    private UserLeague(User user, League league) {
         this.user = user;
-        this.leagueId = leagueId;
+        this.league = league;
         this.lp = 0;
     }
 
-    public static UserLeague create(User user, Long leagueId) {
+    public static UserLeague create(User user, League league) {
         return UserLeague.builder()
                 .user(user)
-                .leagueId(leagueId)
+                .league(league)
                 .build();
     }
 }
