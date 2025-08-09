@@ -6,7 +6,6 @@ import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.userLeague.domain.UserLeague;
 import gravit.code.domain.userLeague.domain.UserLeagueRepository;
-import gravit.code.domain.userLeague.infrastructure.UserLeagueJpaRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ public class UserLeagueService {
     private final UserLeagueRepository userLeagueRepository;
     private final UserRepository userRepository;
     private final LeagueRepository leagueRepository;
-    private final UserLeagueJpaRepository userLeagueJpaRepository;
 
     public String getUserLeagueName(Long userId){
         return userLeagueRepository.findUserLeagueNameByUserId(userId);
@@ -42,8 +40,6 @@ public class UserLeagueService {
 
         log.info("initUserLeague : 유저 리그 생성");
         userLeagueRepository.save(UserLeague.create(user, startLeague));
-        //userLeagueJpaRepository.flush();
-
     }
 
 }
