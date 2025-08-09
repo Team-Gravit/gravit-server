@@ -32,7 +32,7 @@ public class UserLeague {
     private League league;
 
     @Column(name = "league_point", columnDefinition = "integer", nullable = false)
-    private int lp;
+    private Integer lp;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
