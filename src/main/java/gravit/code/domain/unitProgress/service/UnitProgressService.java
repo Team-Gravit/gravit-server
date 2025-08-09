@@ -19,17 +19,8 @@ public class UnitProgressService {
     private final UnitRepository unitRepository;
     private final UnitProgressRepository unitProgressRepository;
 
-    public Boolean updateUnitProgress(Long unitId, Long userId){
-
-        Unit targetUnit = unitRepository.findById(unitId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
-
-        UnitProgress unitProgress = unitProgressRepository.findByUnitIdAndUserId(unitId, userId)
-                .orElseGet(() -> UnitProgress.create(targetUnit.getTotalLessons(), userId, unitId));
-
+    public Boolean updateUnitProgress(UnitProgress unitProgress){
         unitProgress.updateCompletedLessons();
-
-        unitProgressRepository.save(unitProgress);
 
         return unitProgress.isComplete();
     }
@@ -42,5 +33,16 @@ public class UnitProgressService {
             throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
 
         return unitProgressDetailResponses;
+    }
+
+    public UnitProgress ensureUnitProgress(Long unitId, Long userId){
+
+        Unit targetUnit = unitRepository.findById(unitId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+
+        UnitProgress unitProgress = unitProgressRepository.findByUnitIdAndUserId(unitId, userId)
+                .orElseGet(() -> UnitProgress.create(targetUnit.getTotalLessons(), userId, unitId));
+
+        return unitProgressRepository.save(unitProgress);
     }
 }
