@@ -23,7 +23,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
                 "classpath:sql/data.sql"
         },
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-)class UserLeagueRankServiceTest {
+)
+class UserLeagueRankServiceTest {
 
     @Autowired
     private UserLeagueRankService rankService;

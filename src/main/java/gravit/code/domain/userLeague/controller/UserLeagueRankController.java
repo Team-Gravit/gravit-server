@@ -2,6 +2,7 @@ package gravit.code.domain.userLeague.controller;
 
 
 import gravit.code.auth.oauth.LoginUser;
+import gravit.code.domain.userLeague.controller.docs.UserLeagueRankControllerDocs;
 import gravit.code.domain.userLeague.dto.response.LeagueRankRow;
 import gravit.code.domain.userLeague.service.UserLeagueRankService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/rank")
 @RequiredArgsConstructor
-public class UserLeagueRankController {
+public class UserLeagueRankController implements UserLeagueRankControllerDocs {
     private final UserLeagueRankService userLeagueRankService;
 
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")

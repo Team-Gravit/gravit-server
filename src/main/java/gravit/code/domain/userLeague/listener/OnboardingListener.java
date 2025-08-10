@@ -1,6 +1,6 @@
 package gravit.code.domain.userLeague.listener;
 
-import gravit.code.domain.user.event.OnboardingUserLeagueEvent;
+import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.domain.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

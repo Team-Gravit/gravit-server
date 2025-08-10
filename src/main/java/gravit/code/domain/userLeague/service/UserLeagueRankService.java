@@ -1,8 +1,5 @@
 package gravit.code.domain.userLeague.service;
 
-import gravit.code.domain.league.infrastructure.LeagueRepository;
-import gravit.code.domain.user.domain.UserRepository;
-import gravit.code.domain.userLeague.domain.UserLeagueRepository;
 import gravit.code.domain.userLeague.dto.response.LeagueRankRow;
 import gravit.code.domain.userLeague.infrastructure.UserLeagueRankQueryRepository;
 import lombok.RequiredArgsConstructor;
