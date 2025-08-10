@@ -2,6 +2,8 @@ package gravit.code.domain.userLeague.service;
 
 import gravit.code.domain.league.domain.League;
 import gravit.code.domain.league.infrastructure.LeagueRepository;
+import gravit.code.domain.season.domain.Season;
+import gravit.code.domain.season.service.SeasonService;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.userLeague.domain.UserLeague;
@@ -21,6 +23,7 @@ public class UserLeagueService {
     private final UserLeagueRepository userLeagueRepository;
     private final UserRepository userRepository;
     private final LeagueRepository leagueRepository;
+    private final SeasonService seasonService;
 
     public String getUserLeagueName(Long userId){
         return userLeagueRepository.findUserLeagueNameByUserId(userId);
@@ -39,7 +42,8 @@ public class UserLeagueService {
         League startLeague = leagueRepository.findFirstByOrderBySortOrderAsc().orElseThrow(()-> new RestApiException(CustomErrorCode.LEAGUE_NOT_FOUND));
 
         log.info("initUserLeague : 유저 리그 생성");
-        userLeagueRepository.save(UserLeague.create(user, startLeague));
+        Season season = seasonService.getOrCreateActiveSeason();
+        userLeagueRepository.save(UserLeague.create(user, season, startLeague));
     }
 
 }

@@ -1,6 +1,7 @@
 package gravit.code.domain.userLeague.domain;
 
 import gravit.code.domain.league.domain.League;
+import gravit.code.domain.season.domain.Season;
 import gravit.code.domain.user.domain.User;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -25,6 +26,10 @@ public class UserLeague {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sesson_id", nullable = false)
+    private Season season;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -41,15 +46,17 @@ public class UserLeague {
     private LocalDateTime updatedAt;
 
     @Builder
-    private UserLeague(User user, League league) {
+    private UserLeague(User user, Season season, League league) {
         this.user = user;
+        this.season = season;
         this.league = league;
         this.lp = 0;
     }
 
-    public static UserLeague create(User user, League league) {
+    public static UserLeague create(User user, Season season, League league) {
         return UserLeague.builder()
                 .user(user)
+                .season(season)
                 .league(league)
                 .build();
     }

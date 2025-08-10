@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -68,7 +69,6 @@ public interface UserLeagueRankControllerDocs {
                 - `pageNum`은 0부터 시작하는 페이지 번호(0-based)입니다.
                 - 인증 필요: Bearer JWT
                 """,
-            security = { @SecurityRequirement(name = "bearerAuth") },
             parameters = {
                     @Parameter(
                             name = "pageNum",
@@ -94,7 +94,7 @@ public interface UserLeagueRankControllerDocs {
     )
     ResponseEntity<List<LeagueRankRow>> getLeagueRankingByUser(
             int pageNum,
-            @Parameter(hidden = true) LoginUser loginUser
+            @AuthenticationPrincipal LoginUser loginUser
     );
 
 }

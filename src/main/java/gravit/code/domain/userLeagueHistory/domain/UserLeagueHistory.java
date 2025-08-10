@@ -1,8 +1,10 @@
 package gravit.code.domain.userLeagueHistory.domain;
 
 import gravit.code.domain.league.domain.League;
+import gravit.code.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,15 +24,15 @@ public class UserLeagueHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "season_id", nullable = false)
+    private Long seasonId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "final_league_id", nullable = false)
     private League finalLeague;
-
-    @Column(name = "week_start", nullable = false)
-    private LocalDate weekStart;
-
-    @Column(name = "week_end", nullable = false)
-    private LocalDate weekEnd;
 
     @Column(name = "final_rank", nullable = false)
     private Integer finalRank;
@@ -41,4 +43,17 @@ public class UserLeagueHistory {
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Builder
+    private UserLeagueHistory(Long seasonId, User user, League league, Integer finalLp) {
+        this.seasonId = seasonId;
+        this.user = user;
+        this.finalLeague = league;
+        this.finalLp = finalLp;
+    }
+
+    public static UserLeagueHistory create(Long seasonId, User user, League league, int finalLp) {
+        return UserLeagueHistory.builder()
+                .seasonId(seasonId).user(user).league(league).finalLp(finalLp).build();
+    }
 }
