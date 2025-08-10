@@ -1,5 +1,7 @@
 package gravit.code.domain.userLeague.infrastructure;
 
+import gravit.code.domain.league.domain.League;
+import gravit.code.domain.season.domain.Season;
 import gravit.code.domain.userLeague.domain.UserLeague;
 import gravit.code.domain.userLeague.domain.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +33,10 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
     @Override
     public Optional<UserLeague> findByUserId(Long userId) {
         return userLeagueJpaRepository.findById(userId);
+    }
+
+    @Override
+    public int resetAllForNextSeason(Season currentSeason, Season nextSeason, League startLeague) {
+        return userLeagueJpaRepository.resetAllForNextSeason(currentSeason, nextSeason, startLeague);
     }
 }
