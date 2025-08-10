@@ -20,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @Sql(
         scripts = {
                 "classpath:sql/truncate_all.sql",
-                "classpath:sql/data.sql"
+                "classpath:sql/user_league_rank_data.sql"
         },
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
