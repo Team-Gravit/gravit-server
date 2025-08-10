@@ -5,6 +5,8 @@ import gravit.code.domain.userLeague.domain.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class UserLeagueRepositoryImpl implements UserLeagueRepository {
@@ -24,5 +26,10 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
     @Override
     public void save(UserLeague userLeague) {
         userLeagueJpaRepository.save(userLeague);
+    }
+
+    @Override
+    public Optional<UserLeague> findByUserId(Long userId) {
+        return userLeagueJpaRepository.findById(userId);
     }
 }

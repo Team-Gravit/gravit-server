@@ -2,6 +2,8 @@ package gravit.code.domain.userLeague.domain;
 
 import gravit.code.domain.league.domain.League;
 import gravit.code.domain.user.domain.User;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,4 +53,24 @@ public class UserLeague {
                 .league(league)
                 .build();
     }
+
+    public int addLeaguePoints(int points) {
+        if(points <= 0){
+            throw new RestApiException(CustomErrorCode.LEAGUE_POINT_MUST_BE_POSITIVE);
+        }
+        this.lp += points;
+        return lp;
+    }
+
+    public void updateLeagueIfDifferent(League newLeague) {
+        validateAndCheckDifferent(newLeague);
+        this.league = newLeague;
+    }
+
+    private void validateAndCheckDifferent(League newLeague) {
+        if(newLeague == null || this.league.equals(newLeague)){
+            throw new RestApiException(CustomErrorCode.LEAGUE_INVALID);
+        }
+    }
+
 }

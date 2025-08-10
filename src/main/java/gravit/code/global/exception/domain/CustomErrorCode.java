@@ -3,6 +3,7 @@ package gravit.code.global.exception.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.w3c.dom.html.HTMLParagraphElement;
 
 @Getter
 @RequiredArgsConstructor
@@ -61,8 +62,13 @@ public enum CustomErrorCode implements ErrorCode {
 
     // LEAGUE
     LEAGUE_NOT_FOUND(HttpStatus.NOT_FOUND, "LEAGUE_4041", "리그 조회에 실패하였습니다."),
+    LEAGUE_NOT_MATCH_LEAGUE_POINT(HttpStatus.NOT_FOUND, "LEAGUE_4041","리그 포인트에 매치되는 리그를 찾을 수 없습니다."),
+    LEAGUE_INVALID(HttpStatus.BAD_REQUEST, "LEAGUE_4001", "리그가 유효하지 않습니다."),
+
     // UserLeague
     USER_LEAGUE_CONFLICT(HttpStatus.CONFLICT, "U_L_4091", "이미 유저 리그가 존재합니다."),
+    USER_LEAGUE_NOT_FOUND(HttpStatus.NOT_FOUND, "U_L_4041", "유저의 리그가 존재하지 않습니다"),
+    LEAGUE_POINT_MUST_BE_POSITIVE(HttpStatus.BAD_REQUEST,"U_L_4001", "리그 포인트는 양수여야 합니다."),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),

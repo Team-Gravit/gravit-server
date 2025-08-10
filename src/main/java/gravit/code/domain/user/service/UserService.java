@@ -8,7 +8,7 @@ import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
-import gravit.code.domain.user.event.OnboardingUserLeagueEvent;
+import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;

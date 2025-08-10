@@ -36,8 +36,4 @@ public class RecentLearningService {
         return recentLearningRepository.findRecentLearningSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.RECENT_LEARNING_INFO_NOT_FOUND));
     }
-
-
-
-
 }

@@ -1,4 +1,4 @@
-package gravit.code.domain.user.event;
+package gravit.code.global.event;
 
 public record OnboardingUserLeagueEvent(Long userId) {
 }
