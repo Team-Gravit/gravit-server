@@ -26,8 +26,8 @@ public class UserLeague {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sesson_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "season_id", nullable = false)
     private Season season;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -16,7 +16,7 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
            insert into UserLeagueHistory (season, user, finalLeague, finalLp)
-           select :season, ul.user, ul.league, ul.lp, CURRENT_TIMESTAMP
+           select :season, ul.user, ul.league, ul.lp
            from UserLeague ul
            where ul.season = :season
     """)
