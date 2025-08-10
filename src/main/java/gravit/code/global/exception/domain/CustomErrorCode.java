@@ -70,6 +70,11 @@ public enum CustomErrorCode implements ErrorCode {
     USER_LEAGUE_NOT_FOUND(HttpStatus.NOT_FOUND, "U_L_4041", "유저의 리그가 존재하지 않습니다"),
     LEAGUE_POINT_MUST_BE_POSITIVE(HttpStatus.BAD_REQUEST,"U_L_4001", "리그 포인트는 양수여야 합니다."),
 
+    // Season
+    ACTIVE_SEASON_NOT_FOUND(HttpStatus.NOT_FOUND, "SEASON_4041", "마감 대상 ACTIVE 시즌이 없습니다."),
+    BATCH_PREP_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4091", "배치 처리 도중, PREP 시즌 생성 관련하여 충돌이 발생하였습니다."),
+    BATCH_ACTIVE_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4092", "배치 처리 도중, ACTIVE 시즌 생성 관련하여 충돌이 발생하였습니다."),
+
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
     DATABASE_EXCEPTION(HttpStatus.BAD_REQUEST, "DB_4001", "데이터베이스 작업 중 예외 발생"),

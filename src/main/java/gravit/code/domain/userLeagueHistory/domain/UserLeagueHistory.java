@@ -1,6 +1,7 @@
 package gravit.code.domain.userLeagueHistory.domain;
 
 import gravit.code.domain.league.domain.League;
+import gravit.code.domain.season.domain.Season;
 import gravit.code.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,10 +25,12 @@ public class UserLeagueHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "season_id", nullable = false)
-    private Long seasonId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "season_id", nullable = false)
+    private Season season;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,15 +48,15 @@ public class UserLeagueHistory {
     private LocalDateTime createdAt;
 
     @Builder
-    private UserLeagueHistory(Long seasonId, User user, League league, Integer finalLp) {
-        this.seasonId = seasonId;
+    private UserLeagueHistory(Season season, User user, League league, Integer finalLp) {
+        this.season = season;
         this.user = user;
         this.finalLeague = league;
         this.finalLp = finalLp;
     }
 
-    public static UserLeagueHistory create(Long seasonId, User user, League league, int finalLp) {
+    public static UserLeagueHistory create(Season season, User user, League league, int finalLp) {
         return UserLeagueHistory.builder()
-                .seasonId(seasonId).user(user).league(league).finalLp(finalLp).build();
+                .season(season).user(user).league(league).finalLp(finalLp).build();
     }
 }

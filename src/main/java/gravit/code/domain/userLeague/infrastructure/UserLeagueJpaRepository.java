@@ -1,7 +1,10 @@
 package gravit.code.domain.userLeague.infrastructure;
 
+import gravit.code.domain.league.domain.League;
+import gravit.code.domain.season.domain.Season;
 import gravit.code.domain.userLeague.domain.UserLeague;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,4 +22,17 @@ public interface UserLeagueJpaRepository extends JpaRepository<UserLeague,Long> 
     boolean existsByUserId(Long userId);
 
     Optional<UserLeague> findByUserId(Long userId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        update UserLeague ul
+        set ul.season   = :nextSeason,
+            ul.league   = :startLeague,
+            ul.lp       = 0,
+            ul.updatedAt = CURRENT_TIMESTAMP
+        where ul.season = :currentSeason
+    """)
+    int resetAllForNextSeason(@Param("currentSeason") Season currentSeason,
+                              @Param("nextSeason") Season nextSeason,
+                              @Param("startLeague") League startLeague);
 }
