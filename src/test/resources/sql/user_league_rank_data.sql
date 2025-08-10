@@ -6,6 +6,10 @@ VALUES (1, 'Bronze 1', 0, 100, 1, 'http://localhost:1234/dlfjgrp');
 INSERT INTO league (id, name, min_lp, max_lp, sort_order, league_img_url)
 VALUES (4, 'Silver 1', 321, 460, 4, 'http://localhost:1234/silver1');
 
+-- 시즌 생성
+INSERT INTO season (id,season_key, starts_at, ends_at, status, tz)
+VALUES (1, '2025-W32', '2025-08-04 00:00:00', '2025-08-11 00:00:00', 'ACTIVE', 'Asia/Seoul');
+
 -- 브론즈 1 유저 데이터 (12명, 프로필 이미지 번호는 1~10 범위)
 INSERT INTO users (id, email, provider_id, nickname, handle, level, xp, created_at, profile_img_number, is_onboarded)
 VALUES (1, 'user1@test.com', 'p1', '유저1', 'handle1', 5, 500, NOW(), 1, true),
@@ -37,31 +41,31 @@ VALUES (13, 'user13@test.com', 'p13', '유저13', 'handle13', 6, 1300, NOW(), 3,
        (24, 'user24@test.com', 'p24', '유저24', 'handle24', 6, 2400, NOW(), 4, true);
 
 -- 브론즈 유저 리그 데이터 (league_point = LP)
-INSERT INTO user_league (id, user_id, league_id, league_point, updated_at)
-VALUES (1, 1, 1, 50, NOW()),
-       (2, 2, 1, 70, NOW()),
-       (3, 3, 1, 20, NOW()),
-       (4, 4, 1, 30, NOW()),
-       (5, 5, 1, 50, NOW()),
-       (6, 6, 1, 90, NOW()),
-       (7, 7, 1, 95, NOW()),
-       (8, 8, 1, 10, NOW()),
-       (9, 9, 1, 15, NOW()),
-       (10, 10, 1, 30, NOW()),
-       (11, 11, 1, 20, NOW()),
-       (12, 12, 1, 75, NOW());
+INSERT INTO user_league (id, user_id, season_id, league_id, league_point, updated_at)
+VALUES (1, 1, 1,1, 50, NOW()),
+       (2, 2, 1,1, 70, NOW()),
+       (3, 3, 1,1, 20, NOW()),
+       (4, 4, 1,1, 30, NOW()),
+       (5, 5, 1,1, 50, NOW()),
+       (6, 6, 1,1, 90, NOW()),
+       (7, 7, 1,1, 95, NOW()),
+       (8, 8, 1,1, 10, NOW()),
+       (9, 9, 1,1, 15, NOW()),
+       (10, 10, 1,1, 30, NOW()),
+       (11, 11, 1,1, 20, NOW()),
+       (12, 12, 1,1, 75, NOW());
 
 -- 실버 1 유저 리그 (league_point = LP, 321~460 범위, 동점 포함)
-INSERT INTO user_league (id, user_id, league_id, league_point, updated_at)
-VALUES (13, 13, 4, 460, NOW()),
-       (14, 14, 4, 455, NOW()),
-       (15, 15, 4, 450, NOW()),
-       (16, 16, 4, 450, NOW()), -- 동점
-       (17, 17, 4, 440, NOW()),
-       (18, 18, 4, 435, NOW()),
-       (19, 19, 4, 430, NOW()),
-       (20, 20, 4, 425, NOW()),
-       (21, 21, 4, 410, NOW()),
-       (22, 22, 4, 390, NOW()),
-       (23, 23, 4, 360, NOW()),
-       (24, 24, 4, 321, NOW());
+INSERT INTO user_league (id, user_id, season_id, league_id, league_point, updated_at)
+VALUES (13, 13, 1,4, 460, NOW()),
+       (14, 14, 1,4, 455, NOW()),
+       (15, 15, 1,4, 450, NOW()),
+       (16, 16, 1,4, 450, NOW()), -- 동점
+       (17, 17, 1,4, 440, NOW()),
+       (18, 18, 1,4, 435, NOW()),
+       (19, 19, 1,4, 430, NOW()),
+       (20, 20, 1,4, 425, NOW()),
+       (21, 21, 1,4, 410, NOW()),
+       (22, 22, 1,4, 390, NOW()),
+       (23, 23, 1,4, 360, NOW()),
+       (24, 24, 1,4, 321, NOW());
