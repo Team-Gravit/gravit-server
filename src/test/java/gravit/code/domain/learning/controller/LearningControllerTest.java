@@ -5,6 +5,7 @@ import gravit.code.common.auth.WithMockLoginUser;
 import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.facade.LearningFacade;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
 import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.domain.problem.domain.ProblemType;
 import gravit.code.domain.problem.dto.request.ProblemResultRequest;
@@ -228,7 +229,7 @@ class LearningControllerTest {
         void withValidUserId() throws Exception{
             //given
             Long lessonId = 1L;
-            List<ProblemResponse> response = List.of(
+            List<ProblemResponse> problemResponses = List.of(
                     ProblemResponse.create(1L, ProblemType.FILL_BLANK, "스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다.", "-", "LIFO"),
                     ProblemResponse.create(2L, ProblemType.SELECT_DESCRIPTION, "스택의 주요 연산이 아닌 것은?", "1. push, 2. pop, 3. peek, 4. enqueue", "4"),
                     ProblemResponse.create(3L, ProblemType.FILL_BLANK, "큐에서 데이터가 삽입되는 곳을 ( ), 삭제되는 곳을 ( )라고 합니다.", "-", "rear, front"),
@@ -239,7 +240,9 @@ class LearningControllerTest {
                     ProblemResponse.create(8L, ProblemType.SELECT_DESCRIPTION, "힙 자료구조의 특징이 아닌 것은?", "1. 완전 이진 트리, 2. 부모가 자식보다 크거나 작음, 3. 중위 순회시 정렬됨, 4. 우선순위 큐 구현", "3")
             );
 
-            when(learningFacade.getAllProblemsInLesson(lessonId)).thenReturn(response);
+            LessonResponse lessonResponse = LessonResponse.create(problemResponses);
+
+            when(learningFacade.getAllProblemsInLesson(lessonId)).thenReturn(lessonResponse);
 
             //when
             ResultActions resultActions = mockMvc.perform(get("/api/v1/learning/{lessonId}/problems", lessonId)
@@ -250,11 +253,12 @@ class LearningControllerTest {
             resultActions
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
-                    .andExpect(jsonPath("$[0].problemId").value(1L))
-                    .andExpect(jsonPath("$[0].problemType").value("FILL_BLANK"))
-                    .andExpect(jsonPath("$[0].question").value("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다."))
-                    .andExpect(jsonPath("$[0].options").value("-"))
-                    .andExpect(jsonPath("$[0].answer").value("LIFO"));
+                    .andExpect(jsonPath("$.problems[0].problemId").value(1L))
+                    .andExpect(jsonPath("$.problems[0].problemType").value("FILL_BLANK"))
+                    .andExpect(jsonPath("$.problems[0].question").value("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다."))
+                    .andExpect(jsonPath("$.problems[0].options").value("-"))
+                    .andExpect(jsonPath("$.problems[0].answer").value("LIFO"))
+                    .andExpect(jsonPath("$.totalProblems").value(8));
         }
     }
 
