@@ -11,10 +11,16 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.RecoverableDataAccessException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 
 @Service
@@ -26,10 +32,15 @@ public class SeasonBatchService {
     private final UserLeagueRepository userLeagueRepository;
     private final LeagueRepository leagueRepository;
 
+    @Retryable(
+            retryFor = {TransientDataAccessException.class, RecoverableDataAccessException.class, SQLException.class},
+            backoff = @Backoff(delay = 2000, multiplier = 2)
+    )
     @Transactional
     public void finalizeAndRolloverWeekly(){
         // 닫을 시즌 확정 , 락
-        Season currentSeason = seasonRepository.findCloseableActiveForUpdate().orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
+        LocalDateTime nowKst = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        Season currentSeason = seasonRepository.findCloseableActiveForUpdate(nowKst).orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
         currentSeason.finalizing();
 
         // 히스토리, UserLeague 스냅샷

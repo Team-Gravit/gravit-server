@@ -48,7 +48,7 @@ class SeasonBatchServiceTest {
         Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
         Season newNextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
 
-        when(seasonRepository.findCloseableActiveForUpdate()).thenReturn(Optional.of(nowSeason));
+        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(nowSeason)).thenReturn(12);
 
@@ -82,7 +82,7 @@ class SeasonBatchServiceTest {
         // given
         Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
         Season nextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
-        when(seasonRepository.findCloseableActiveForUpdate()).thenReturn(Optional.of(nowSeason));
+        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(nowSeason)).thenReturn(12);
 
@@ -114,7 +114,7 @@ class SeasonBatchServiceTest {
     @Test
     void 배치_실행_시_활성_시즌이_없으면_예외를_던진다() {
         // given
-        when(seasonRepository.findCloseableActiveForUpdate()).thenReturn(Optional.empty());
+        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.empty());
 
         // when
         // then
@@ -127,7 +127,7 @@ class SeasonBatchServiceTest {
         Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
         Season newNextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
 
-        when(seasonRepository.findCloseableActiveForUpdate()).thenReturn(Optional.of(nowSeason));
+        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(nowSeason)).thenReturn(12);
 
