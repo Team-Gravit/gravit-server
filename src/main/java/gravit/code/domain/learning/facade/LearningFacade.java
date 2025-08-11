@@ -16,6 +16,7 @@ import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.service.UnitProgressService;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.service.UserService;
+import gravit.code.global.event.LessonCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -74,6 +75,7 @@ public class LearningFacade {
             chapterProgressService.updateChapterProgress(chapterProgress);
 
         publisher.publishEvent(new RecentLearningEventDto(userId, request.chapterId()));
+        publisher.publishEvent(new LessonCompletedEvent(userId, 20));
 
         return userService.updateUserLevelAndXp(userId);
     }

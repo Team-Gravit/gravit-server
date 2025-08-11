@@ -3,6 +3,7 @@ package gravit.code.domain.learning.controller.docs;
 import gravit.code.auth.oauth.LoginUser;
 import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
 import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
@@ -111,7 +112,7 @@ public interface LearningControllerSpecification {
             )
     })
     @GetMapping("/{lessonId}/problems")
-    ResponseEntity<List<ProblemResponse>> getProblems(@PathVariable("lessonId") Long lessonId);
+    ResponseEntity<LessonResponse> getProblems(@PathVariable("lessonId") Long lessonId);
 
     @Operation(summary = "학습 결과 저장", description = "레슨 완료 후 문제 풀이 결과를 저장하고 사용자 레벨을 업데이트합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
