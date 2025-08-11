@@ -64,3 +64,7 @@ spring:
 jwt:
   secret: qwdqwei83qwiu99wq8f9qw98asf8p219qnf43yj90j32
   valid-time: 7200000
+
+scheduler:
+  season:
+    rollover-cron: "* * * * * *"

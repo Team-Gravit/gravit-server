@@ -18,9 +18,9 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             select s from Season s
-            where s.status = 'ACTIVE' and s.endsAt <= CURRENT_TIMESTAMP
+            where s.status = 'ACTIVE' and s.endsAt <= :now
     """)
-    Optional<Season> findCloseableActiveForUpdate();
+    Optional<Season> findCloseableActiveForUpdate(@Param("now") LocalDateTime now);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
