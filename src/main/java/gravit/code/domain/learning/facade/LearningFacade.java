@@ -5,9 +5,9 @@ import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResp
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
 import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
-import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.domain.problemProgress.service.ProblemProgressService;
 import gravit.code.domain.unitProgress.domain.UnitProgress;
@@ -56,8 +56,8 @@ public class LearningFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<ProblemResponse> getAllProblemsInLesson(Long lessonId){
-        return problemService.getAllProblem(lessonId);
+    public LessonResponse getAllProblemsInLesson(Long lessonId){
+        return LessonResponse.create(problemService.getAllProblem(lessonId));
     }
 
     @Transactional
