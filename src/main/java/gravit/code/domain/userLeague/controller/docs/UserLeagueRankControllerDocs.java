@@ -16,8 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
-@Tag(name = "Friend API", description = "팔로우/언팔로우 및 친구 목록 조회 API")
-
 @Tag(name = "League Rank API", description = "리그/사용자 기준 랭킹 조회 API")
 public interface UserLeagueRankControllerDocs {
 

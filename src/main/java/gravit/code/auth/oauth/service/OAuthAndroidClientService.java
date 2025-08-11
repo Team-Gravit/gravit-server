@@ -1,67 +1,61 @@
 package gravit.code.auth.oauth.service;
 
+import gravit.code.auth.oauth.config.Auth0Props;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
-import gravit.code.auth.oauth.startegy.OAuthResponseFactory;
+import gravit.code.auth.oauth.startegy.android.AndroidUserInfoFactory;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
-
-import static gravit.code.auth.oauth.OAuthConstants.OAUTH_PROVIDERS;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class OAuthAndroidClientService {
 
-    private final ClientRegistrationRepository clientRegistrationRepository;
-    private final OAuthResponseFactory oAuthResponseFactory;
-    private final WebClientAdapter webClientAdapter;
+    private final JwtDecoder jwtDecoder;
+    private final Auth0Props props;
 
-    public OAuthUserInfo getUserInfo(String oauthAccessToken, String provider) {
-        validateProvider(provider);
-        validateOAuthAccessToken(oauthAccessToken);
+    public OAuthUserInfo parseIdToken(String idToken) {
+        validateNullAndBlankIdToken(idToken);
 
-        // 웹에서 특수 문자나 공백 등이 URL 인코딩 된 상태로 전달되는 문제를 해결하기 위함
-        String lowerCaseProvider = provider.toLowerCase();
+        // idToken 을 jwt 로 디코딩
+        Jwt jwt = decodingIdTokenToJwt(idToken);
 
-        // OAuth 설정 정보 가져오기
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(lowerCaseProvider);
+        // 수신자 정보와 비교, client-id 로 유효한 idToken 인지 판단
+        List<String> aud = jwt.getAudience();
+        validateClientIdByIdToken(aud);
+        
+        // idToken 에서 claim 획득
+        Map<String, Object> claims = jwt.getClaims();
+        log.info("claims: {}", claims);
 
-        // 사용자 정보 요청
-        Map<String, Object> userInfo = getUserInfo(registration, oauthAccessToken);
-
-        return oAuthResponseFactory.createOAuthUserInfo(lowerCaseProvider, userInfo);
+        return AndroidUserInfoFactory.fromClaims(claims);
     }
 
-    private Map<String, Object> getUserInfo(ClientRegistration registration, String accessToken) {
-
-        // 사용자 정보를 조회하기 위한 엔드포인트
-        String userInfoUri = registration.getProviderDetails().getUserInfoEndpoint().getUri();
-
-        return webClientAdapter.getUserInfoWithAccessToken(userInfoUri, accessToken);
-    }
-
-    private void validateOAuthAccessToken(String authCode) {
-        if(authCode == null || authCode.isBlank()){
-            throw new RestApiException(CustomErrorCode.OAUTH_ACCESS_TOKEN_INVALID);
+    private void validateClientIdByIdToken(List<String> aud) {
+        if(aud.isEmpty() || !aud.contains(props.getAndroidClientId())) {
+            throw new RestApiException(CustomErrorCode.ID_TOKEN_CLIENT_ID_INVALID);
         }
     }
 
-    private void validateProvider(String provider) {
-        if(provider == null || provider.isBlank()){
-            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+    private Jwt decodingIdTokenToJwt(String idToken) {
+        try{
+            return jwtDecoder.decode(idToken);
+        }catch (Exception e) {
+            throw new RestApiException(CustomErrorCode.FAIL_DECODE_ID_TOKEN_TO_JWT);
         }
+    }
 
-        String lowerCaseProvider = provider.toLowerCase();
-
-        if(!OAUTH_PROVIDERS.contains(lowerCaseProvider)){
-            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+    private static void validateNullAndBlankIdToken(String idToken) {
+        if (idToken == null || idToken.isEmpty()) {
+            throw new RestApiException(CustomErrorCode.OAUTH_ID_TOKEN_INVALID);
         }
     }
 }

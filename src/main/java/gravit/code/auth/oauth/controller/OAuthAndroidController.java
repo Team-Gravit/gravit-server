@@ -2,7 +2,7 @@ package gravit.code.auth.oauth.controller;
 
 import gravit.code.auth.oauth.controller.docs.OAuthAndroidControllerDocs;
 import gravit.code.auth.oauth.dto.LoginResponse;
-import gravit.code.auth.oauth.dto.OAuthAccessToken;
+import gravit.code.auth.oauth.dto.android.IdTokenRequest;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.oauth.processor.OAuthLoginProcessor;
 import gravit.code.auth.oauth.service.OAuthAndroidClientService;
@@ -19,16 +19,15 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
     private final OAuthAndroidClientService oAuthAndroidClientService;
     private final OAuthLoginProcessor oAuthLoginProcessor;
 
-    @PostMapping("/{provider}")
-    public ResponseEntity<LoginResponse> oauthLogin(@PathVariable("provider") String provider,
-                                                    @RequestBody OAuthAccessToken request){
-        String oauthAccessToken = request.accessToken();
+    @PostMapping
+    public ResponseEntity<LoginResponse> oauthLogin(@RequestBody IdTokenRequest request){
+        String idToken = request.idToken();
 
-        if(oauthAccessToken == null){
+        if(idToken == null){
             return  ResponseEntity.badRequest().build();
         }
 
-        OAuthUserInfo userInfo = oAuthAndroidClientService.getUserInfo(oauthAccessToken, provider);
+        OAuthUserInfo userInfo = oAuthAndroidClientService.parseIdToken(idToken);
 
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
 
