@@ -1,11 +1,11 @@
 package gravit.code.domain.learning.controller;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.auth.oauth.LoginUser;
+import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.domain.learning.controller.docs.LearningControllerSpecification;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.facade.LearningFacade;
-import gravit.code.domain.problem.dto.response.ProblemResponse;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
 import gravit.code.domain.unitProgress.dto.response.UnitPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import jakarta.validation.Valid;
@@ -36,7 +36,7 @@ public class LearningController implements LearningControllerSpecification {
     }
 
     @GetMapping("/{lessonId}/problems")
-    public ResponseEntity<List<ProblemResponse>> getProblems(@PathVariable("lessonId") Long lessonsId){
+    public ResponseEntity<LessonResponse> getProblems(@PathVariable("lessonId") Long lessonsId){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId));
     }
 
