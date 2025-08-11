@@ -5,9 +5,9 @@ import gravit.code.domain.chapterProgress.dto.response.ChapterProgressDetailResp
 import gravit.code.domain.chapterProgress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
+import gravit.code.domain.lesson.dto.response.LessonResponse;
 import gravit.code.domain.lessonProgress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.domain.lessonProgress.service.LessonProgressService;
-import gravit.code.domain.problem.dto.response.ProblemResponse;
 import gravit.code.domain.problem.service.ProblemService;
 import gravit.code.domain.problemProgress.service.ProblemProgressService;
 import gravit.code.domain.unitProgress.domain.UnitProgress;
@@ -16,6 +16,7 @@ import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.unitProgress.service.UnitProgressService;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.service.UserService;
+import gravit.code.global.event.LessonCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,8 @@ public class LearningFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<ProblemResponse> getAllProblemsInLesson(Long lessonId){
-        return problemService.getAllProblem(lessonId);
+    public LessonResponse getAllProblemsInLesson(Long lessonId){
+        return LessonResponse.create(problemService.getAllProblem(lessonId));
     }
 
     @Transactional
@@ -74,6 +75,7 @@ public class LearningFacade {
             chapterProgressService.updateChapterProgress(chapterProgress);
 
         publisher.publishEvent(new RecentLearningEventDto(userId, request.chapterId()));
+        publisher.publishEvent(new LessonCompletedEvent(userId, 20));
 
         return userService.updateUserLevelAndXp(userId);
     }
