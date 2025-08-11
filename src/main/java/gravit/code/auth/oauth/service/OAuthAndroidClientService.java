@@ -40,7 +40,7 @@ public class OAuthAndroidClientService {
     }
 
     private void validateClientIdByIdToken(List<String> aud) {
-        if(aud.isEmpty() || !aud.contains(props.getAndroidClientId())) {
+        if(aud.isEmpty() || !aud.contains(props.androidClientId())) {
             throw new RestApiException(CustomErrorCode.ID_TOKEN_CLIENT_ID_INVALID);
         }
     }
