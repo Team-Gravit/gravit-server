@@ -68,3 +68,7 @@ jwt:
 scheduler:
   season:
     rollover-cron: "* * * * * *"
+
+auth0:
+  issuer: https://dev-wdqwk434kl24h2k.us.auth0.com/
+  android-client-id: fmewlninfdoiubherihui32ijewoi

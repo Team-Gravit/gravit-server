@@ -39,10 +39,10 @@ class OAuthClientServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(webClientAdapter.getTokenResponse(any(), any())).thenReturn(Map.of(
+        when(webClientAdapter.getAccessTokenResponse(any(), any())).thenReturn(Map.of(
                 "access_token", "test-access-token"
         ));
-        when(webClientAdapter.getWithAccessToken(any(), eq("test-access-token")))
+        when(webClientAdapter.getUserInfoWithAccessToken(any(), eq("test-access-token")))
                 .thenReturn(Map.of("id", "1", "email", "test@test.com"));
     }
 

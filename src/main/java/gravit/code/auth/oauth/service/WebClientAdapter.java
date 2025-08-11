@@ -22,7 +22,7 @@ import java.util.Map;
 public class WebClientAdapter {
     private final WebClient webClient;
 
-    public Map<String, Object> getTokenResponse(String tokenUri, MultiValueMap<String, String> tokenRequest) {
+    public Map<String, Object> getAccessTokenResponse(String tokenUri, MultiValueMap<String, String> tokenRequest) {
         try {
             return webClient.post()
                     .uri(tokenUri)
@@ -41,7 +41,7 @@ public class WebClientAdapter {
         }
     }
 
-    public Map<String, Object> getWithAccessToken(String uri, String accessToken) {
+    public Map<String, Object> getUserInfoWithAccessToken(String uri, String accessToken) {
         try {
             return webClient.get()
                     .uri(uri)
