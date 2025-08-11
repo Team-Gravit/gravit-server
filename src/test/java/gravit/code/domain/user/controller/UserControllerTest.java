@@ -8,11 +8,16 @@ import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.service.UserService;
+import gravit.code.domain.userLeague.service.UserLeagueService;
+import jakarta.persistence.EntityListeners;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -28,7 +33,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@EnableJpaAuditing
+@Sql(
+        scripts = {
+        "classpath:sql/truncate_all.sql",
+        "classpath:sql/onboard_league_data.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class UserControllerTest {
 
     @Autowired
@@ -42,6 +52,12 @@ class UserControllerTest {
 
     @Autowired
     private FriendRepository friendRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private UserLeagueService  userLeagueService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -82,6 +98,7 @@ class UserControllerTest {
         String testProviderId = "kakao123123";
         String testHandle = "@qwe123";
         OnboardingRequest onboardingRequest = new OnboardingRequest(testNickname, testProfileImgNumber);
+
 
         User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
         userRepository.save(user);

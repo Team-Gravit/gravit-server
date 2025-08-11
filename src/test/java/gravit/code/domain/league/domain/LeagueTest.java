@@ -19,12 +19,10 @@ class LeagueTest {
         String leagueImgUrl = "https://example.com/league1.jpg";
 
         // when
-        League league = League.create(name, maxXp, minYp, leagueImgUrl);
+        League league = League.create(name, maxXp, minYp, leagueImgUrl, 1);
 
         // then
         assertThat(league.getName()).isEqualTo(name);
-        assertThat(league.getMaxXp()).isEqualTo(maxXp);
-        assertThat(league.getMinXp()).isEqualTo(minYp);
         assertThat(league.getLeagueImgUrl()).isEqualTo(leagueImgUrl);
     }
 

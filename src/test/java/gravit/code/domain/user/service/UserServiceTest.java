@@ -6,12 +6,15 @@ import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
+import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.RestApiException;
+import org.apache.catalina.core.ApplicationPushBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -34,6 +37,9 @@ class UserServiceTest {
     @Mock
     private RecentLearningService recentLearningService;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
 
     @Test
     void 온보딩_성공_테스트(){
@@ -48,6 +54,7 @@ class UserServiceTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         doNothing().when(recentLearningService).initRecentLearning(any(Long.class));
+        doNothing().when(eventPublisher).publishEvent(any(OnboardingUserLeagueEvent.class));
 
 
         // when

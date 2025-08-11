@@ -18,29 +18,34 @@ public class League {
     @Column(columnDefinition = "varchar(20)", nullable = false)
     private String name;
 
-    @Column(name = "max_xp", columnDefinition = "integer", nullable = false)
-    private Integer maxXp;
+    @Column(name = "max_lp", columnDefinition = "integer", nullable = false)
+    private Integer maxLp;
 
-    @Column(name = "min_xp", columnDefinition = "integer", nullable = false)
-    private Integer minXp;
+    @Column(name = "min_lp", columnDefinition = "integer", nullable = false)
+    private Integer minLp;
 
     @Column(name = "league_img_url", columnDefinition = "varchar(150)", nullable = false)
     private String leagueImgUrl;
 
+    @Column(name = "sort_order", nullable = false, unique = true)
+    private Integer sortOrder;
+
     @Builder
-    private League(String name, Integer maxXp, Integer minXp, String leagueImgUrl) {
+    private League(String name, Integer maxLp, Integer minLp, String leagueImgUrl, int sortOrder) {
         this.name = name;
-        this.maxXp = maxXp;
-        this.minXp = minXp;
+        this.maxLp = maxLp;
+        this.minLp = minLp;
         this.leagueImgUrl = leagueImgUrl;
+        this.sortOrder = sortOrder;
     }
 
-    public static League create(String name, Integer maxXp, Integer minXp, String leagueImgUrl) {
+    public static League create(String name, Integer maxLp, Integer minLp, String leagueImgUrl, int sortOrder) {
         return League.builder()
                 .name(name)
-                .maxXp(maxXp)
-                .minXp(minXp)
+                .maxLp(maxLp)
+                .minLp(minLp)
                 .leagueImgUrl(leagueImgUrl)
+                .sortOrder(sortOrder)
                 .build();
     }
 }
