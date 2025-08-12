@@ -70,14 +70,16 @@ public class UserLeague {
     }
 
     public void updateLeagueIfDifferent(League newLeague) {
-        validateAndCheckDifferent(newLeague);
-        this.league = newLeague;
+        if(validateAndCheckDifferent(newLeague)){
+            this.league = newLeague;
+        }
     }
 
-    private void validateAndCheckDifferent(League newLeague) {
-        if(newLeague == null || this.league.equals(newLeague)){
+    private boolean validateAndCheckDifferent(League newLeague) {
+        if(newLeague == null){
             throw new RestApiException(CustomErrorCode.LEAGUE_INVALID);
         }
+        else return !this.league.equals(newLeague);
     }
 
 }
