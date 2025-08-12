@@ -9,11 +9,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHistory, Long> {
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying(clearAutomatically = false, flushAutomatically = true)
     @Query("delete from UserLeagueHistory lh where lh.season = :season")
     int deleteBySeasonId(@Param("season") Season season);
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying(clearAutomatically = false, flushAutomatically = true)
     @Query("""
            insert into UserLeagueHistory (season, user, finalLeague, finalLp)
            select :season, ul.user, ul.league, ul.lp
