@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "season")
+@Table(name = "season",
+        uniqueConstraints = @UniqueConstraint(name = "uk_season_key", columnNames = "season_key")
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Season {
 

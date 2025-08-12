@@ -20,14 +20,13 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
             select s from Season s
             where s.status = 'ACTIVE' and s.endsAt <= :now
     """)
-    Optional<Season> findCloseableActiveForUpdate(@Param("now") LocalDateTime now);
+    Optional<Season> findCloseableActiveByNowForUpdate(@Param("now") LocalDateTime now);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             select s from Season s
             where s.status = 'PREP' and s.startsAt = :startsAt
     """)
-    Optional<Season> findPrepStartingAtForUpdate(@Param("startsAt") LocalDateTime startsAt);
+    Optional<Season> findPrepByStartingAt(@Param("startsAt") LocalDateTime startsAt);
 
     Optional<Season> findBySeasonKey(String seasonKey);
 }

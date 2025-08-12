@@ -23,7 +23,7 @@ public interface UserLeagueJpaRepository extends JpaRepository<UserLeague,Long> 
 
     Optional<UserLeague> findByUserId(Long userId);
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying(clearAutomatically = false, flushAutomatically = true)
     @Query("""
         update UserLeague ul
         set ul.season   = :nextSeason,

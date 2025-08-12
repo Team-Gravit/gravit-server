@@ -40,7 +40,7 @@ public class SeasonBatchService {
     public void finalizeAndRolloverWeekly(){
         // 닫을 시즌 확정 , 락
         LocalDateTime nowKst = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        Season currentSeason = seasonRepository.findCloseableActiveForUpdate(nowKst).orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
+        Season currentSeason = seasonRepository.findCloseableActiveByNowForUpdate(nowKst).orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
         currentSeason.finalizing();
 
         // 히스토리, UserLeague 스냅샷
@@ -51,7 +51,7 @@ public class SeasonBatchService {
         // 다음 시즌 확보
         LocalDateTime nextStartsAt = currentSeason.getEndsAt();
         LocalDateTime nextEndsAt = nextStartsAt.plusWeeks(1);
-        Season nextSeason = seasonRepository.findPrepStartingAtForUpdate(nextStartsAt).orElseGet(()->
+        Season nextSeason = seasonRepository.findPrepByStartingAt(nextStartsAt).orElseGet(()->
                 seasonRepository.save(Season.prep(SeasonCalendar.isoWeekKey(nextStartsAt.toLocalDate()), nextStartsAt, nextEndsAt))
         );
 
