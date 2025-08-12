@@ -48,12 +48,12 @@ class SeasonBatchServiceTest {
         Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
         Season newNextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
 
-        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
+        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(nowSeason)).thenReturn(12);
 
         /** prep 상태인 다음시즌이 존재하지 않는 상황 **/
-        when(seasonRepository.findPrepStartingAtForUpdate(newNextSeason.getStartsAt())).thenReturn(Optional.empty());
+        when(seasonRepository.findPrepByStartingAt(newNextSeason.getStartsAt())).thenReturn(Optional.empty());
         when(seasonRepository.save(any(Season.class))).thenReturn(newNextSeason);
 
         League firstLeague = League.create("BRONZE 1", 100,0,"http//:localhost.com", 1);
@@ -70,7 +70,7 @@ class SeasonBatchServiceTest {
 
         // findPrepStartingAtForUpdate 인자로 들어간 nextStartsAt이 nowSeason.endsAt 과 같은지 확인
         ArgumentCaptor<LocalDateTime> startCapture = ArgumentCaptor.forClass(LocalDateTime.class);
-        verify(seasonRepository).findPrepStartingAtForUpdate(startCapture.capture());
+        verify(seasonRepository).findPrepByStartingAt(startCapture.capture());
         assertThat(startCapture.getValue()).isEqualTo(newNextSeason.getStartsAt());
 
         verify(seasonRepository, times(1)).save(any(Season.class));
@@ -82,12 +82,12 @@ class SeasonBatchServiceTest {
         // given
         Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
         Season nextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
-        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
+        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(nowSeason)).thenReturn(12);
 
         /** PREP 인 다음 시즌이 존재함 **/
-        when(seasonRepository.findPrepStartingAtForUpdate(nextSeason.getStartsAt())).thenReturn(Optional.of(nextSeason));
+        when(seasonRepository.findPrepByStartingAt(nextSeason.getStartsAt())).thenReturn(Optional.of(nextSeason));
 
         League firstLeague = League.create("BRONZE 1", 100,0,"http//:localhost.com", 1);
         when(leagueRepository.findFirstByOrderBySortOrderAsc()).thenReturn(Optional.of(firstLeague));
@@ -103,7 +103,7 @@ class SeasonBatchServiceTest {
 
         // findPrepStartingAtForUpdate 인자로 들어간 nextStartsAt이 nowSeason.endsAt 과 같은지 확인
         ArgumentCaptor<LocalDateTime> startCapture = ArgumentCaptor.forClass(LocalDateTime.class);
-        verify(seasonRepository).findPrepStartingAtForUpdate(startCapture.capture());
+        verify(seasonRepository).findPrepByStartingAt(startCapture.capture());
         assertThat(startCapture.getValue()).isEqualTo(nextSeason.getStartsAt());
 
         verify(seasonRepository, times(0)).save(any(Season.class));
@@ -114,7 +114,7 @@ class SeasonBatchServiceTest {
     @Test
     void 배치_실행_시_활성_시즌이_없으면_예외를_던진다() {
         // given
-        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.empty());
 
         // when
         // then
@@ -127,12 +127,12 @@ class SeasonBatchServiceTest {
         Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
         Season newNextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
 
-        when(seasonRepository.findCloseableActiveForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
+        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(nowSeason)).thenReturn(12);
 
         /** prep 상태인 다음시즌이 존재하지 않는 상황 **/
-        when(seasonRepository.findPrepStartingAtForUpdate(newNextSeason.getStartsAt())).thenReturn(Optional.empty());
+        when(seasonRepository.findPrepByStartingAt(newNextSeason.getStartsAt())).thenReturn(Optional.empty());
         when(seasonRepository.save(any(Season.class))).thenReturn(newNextSeason);
 
         /** 리그가 존재하지 않을 때 **/
