@@ -3,6 +3,7 @@ package gravit.code.global.exception.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.w3c.dom.html.HTMLParagraphElement;
 
 @Getter
 @RequiredArgsConstructor
@@ -23,6 +24,10 @@ public enum CustomErrorCode implements ErrorCode {
     AUTH_CODE_INVALID(HttpStatus.BAD_REQUEST,"AUTH_4002", "유효하지 않은 AuthCode 입니다."),
     OAUTH_SERVER_ERROR(HttpStatus.BAD_GATEWAY,"AUTH_502","OAuth 인증 서버와의 통신에 실패하였습니다."),
     OAUTH_ACCESS_TOKEN_INVALID(HttpStatus.BAD_REQUEST,"AUTH4003","유효하지 않은 OAuth AccessToken"),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "A_D_403", "접근 권한이 없는 사용자입니다."),
+    OAUTH_ID_TOKEN_INVALID(HttpStatus.BAD_REQUEST,"AUTH_4004", "유효하지 않은 OAuth IdToken 입니다."),
+    FAIL_DECODE_ID_TOKEN_TO_JWT(HttpStatus.BAD_REQUEST,"AUTH_4005", "유효하지 않은 OAuth IdToken 입니다."),
+    ID_TOKEN_CLIENT_ID_INVALID(HttpStatus.BAD_REQUEST,"AUTH_4006","IdToken 의 CLIENT_ID가 유효하지 않습니다."),
 
     // HandleGenerator
     HANDLE_CONFLICT_TEN_TIMES(HttpStatus.CONFLICT, "H_G_4091", "중복으로 인해 유효한 handle 을 찾지 못했습니다."),
@@ -57,6 +62,21 @@ public enum CustomErrorCode implements ErrorCode {
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),
     UNABLE_FOLLOWING_YOURSELF(HttpStatus.BAD_REQUEST,"FRIEND_4001", "자기 자신에게 팔로잉은 불가능합니다"),
     FRIEND_CONFLICT(HttpStatus.CONFLICT, "FRIEND_4091","이미 팔로잉을 한 유저입니다."),
+
+    // LEAGUE
+    LEAGUE_NOT_FOUND(HttpStatus.NOT_FOUND, "LEAGUE_4041", "리그 조회에 실패하였습니다."),
+    LEAGUE_NOT_MATCH_LEAGUE_POINT(HttpStatus.NOT_FOUND, "LEAGUE_4041","리그 포인트에 매치되는 리그를 찾을 수 없습니다."),
+    LEAGUE_INVALID(HttpStatus.BAD_REQUEST, "LEAGUE_4001", "리그가 유효하지 않습니다."),
+
+    // UserLeague
+    USER_LEAGUE_CONFLICT(HttpStatus.CONFLICT, "U_L_4091", "이미 유저 리그가 존재합니다."),
+    USER_LEAGUE_NOT_FOUND(HttpStatus.NOT_FOUND, "U_L_4041", "유저의 리그가 존재하지 않습니다"),
+    LEAGUE_POINT_MUST_BE_POSITIVE(HttpStatus.BAD_REQUEST,"U_L_4001", "리그 포인트는 양수여야 합니다."),
+
+    // Season
+    ACTIVE_SEASON_NOT_FOUND(HttpStatus.NOT_FOUND, "SEASON_4041", "마감 대상 ACTIVE 시즌이 없습니다."),
+    BATCH_PREP_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4091", "배치 처리 도중, PREP 시즌 생성 관련하여 충돌이 발생하였습니다."),
+    BATCH_ACTIVE_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4092", "배치 처리 도중, ACTIVE 시즌 생성 관련하여 충돌이 발생하였습니다."),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),

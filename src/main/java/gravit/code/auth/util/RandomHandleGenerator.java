@@ -2,7 +2,6 @@ package gravit.code.auth.util;
 
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

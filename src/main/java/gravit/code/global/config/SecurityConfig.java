@@ -3,6 +3,8 @@ package gravit.code.global.config;
 
 import gravit.code.auth.jwt.JwtAuthFilter;
 import gravit.code.auth.jwt.JwtProvider;
+import gravit.code.auth.jwt.exception.CustomAccessDeniedHandler;
+import gravit.code.auth.jwt.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -36,18 +40,21 @@ public class SecurityConfig {
         // HTTP Basic 인증 방식 disable
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-        //경로별 인가 작업
-        http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Swagger 관련 경로 허용
-                .requestMatchers("/api/v1/oauth/**").permitAll()
-                .anyRequest().authenticated());
-
         //세션 설정 : STATELESS
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        //경로별 인가 작업
+        http.authorizeHttpRequests((auth) -> auth
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Swagger 관련 경로 허용
+                .requestMatchers("/api/v1/oauth/**").permitAll()
+                .requestMatchers("/api/v1/oauth/android").permitAll()
+                .anyRequest().authenticated());
+
         // JwtFilter 추가
-        http.addFilterBefore(new JwtAuthFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(jwtProvider, authenticationEntryPoint), UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler));
 
         return http.build();
     }

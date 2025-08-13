@@ -1,22 +1,28 @@
 package gravit.code.domain.user.service;
 
+import gravit.code.domain.recentLearning.service.RecentLearningService;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
+import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.RestApiException;
+import org.apache.catalina.core.ApplicationPushBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,30 +34,40 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-//    @Test
-//    void 온보딩_성공_테스트(){
-//        // given
-//        Long userId = 1L;
-//        String testNickname = "kang";
-//        int testProfilePhotoNumber = 1;
-//        String testProviderId = "kakao123123";
-//        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
-//
-//        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-//
-//        // when
-//        UserResponse result = userService.onboarding(userId, request);
-//
-//        // then
-//        assertSoftly(softly -> {
-//            softly.assertThat(result.providerId()).isEqualTo(testUser.getProviderId());
-//            softly.assertThat(result.nickname()).isEqualTo(testNickname);
-//            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
-//            softly.assertThat(testUser.isOnboarded()).isEqualTo(true);
-//        });
-//    }
+    @Mock
+    private RecentLearningService recentLearningService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
+
+    @Test
+    void 온보딩_성공_테스트(){
+        // given
+        Long userId = 1L;
+        String testNickname = "kang";
+        int testProfilePhotoNumber = 1;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+
+        OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        doNothing().when(recentLearningService).initRecentLearning(any(Long.class));
+        doNothing().when(eventPublisher).publishEvent(any(OnboardingUserLeagueEvent.class));
+
+
+        // when
+        UserResponse result = userService.onboarding(userId, request);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.providerId()).isEqualTo(testUser.getProviderId());
+            softly.assertThat(result.nickname()).isEqualTo(testNickname);
+            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
+            softly.assertThat(testUser.isOnboarded()).isEqualTo(true);
+        });
+    }
 
     @Test
     void 온보딩시_닉네임이_8자_이상이면_예외를_던집니다(){

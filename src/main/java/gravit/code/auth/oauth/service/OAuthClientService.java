@@ -6,18 +6,11 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -60,7 +53,7 @@ public class OAuthClientService {
         // 사용자 정보를 조회하기 위한 엔드포인트
         String userInfoUri = registration.getProviderDetails().getUserInfoEndpoint().getUri();
 
-        return webClientAdapter.getWithAccessToken(userInfoUri, accessToken);
+        return webClientAdapter.getUserInfoWithAccessToken(userInfoUri, accessToken);
     }
 
     private String getAccessToken(ClientRegistration registration, String decodedCode) {
@@ -76,7 +69,7 @@ public class OAuthClientService {
         // AccessToken 을 발급받기 위한 엔드포인트
         String tokenUri = registration.getProviderDetails().getTokenUri();
 
-        Map<String, Object> tokenResponse = webClientAdapter.getTokenResponse(tokenUri, tokenRequest);
+        Map<String, Object> tokenResponse = webClientAdapter.getAccessTokenResponse(tokenUri, tokenRequest);
         return (String) tokenResponse.get("access_token");
     }
 

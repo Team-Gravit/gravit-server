@@ -1,6 +1,7 @@
 package gravit.code.auth.jwt;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.auth.jwt.exception.CustomAuthenticationEntryPoint;
+import gravit.code.auth.jwt.exception.CustomAuthenticationException;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.servlet.FilterChain;
@@ -20,25 +21,47 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return request.getMethod().equalsIgnoreCase("OPTIONS")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/webjars")
+                || path.startsWith("/api/v1/oauth")
+                || path.startsWith("/api/v1/oauth/android");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = request.getHeader("Authorization");
+        try{
+            String token = request.getHeader("Authorization");
 
-        if (token != null) {
-            String jwtToken = token.substring(7);
+            if (checkTokenNotNullAndBearer(token)) {
+                String jwtToken = token.substring(7);
 
-            if(!jwtProvider.isValidToken(jwtToken)){
-                throw new RestApiException(CustomErrorCode.TOKEN_EXPIRED);
+                jwtProvider.validateToken(jwtToken);
+                Authentication authentication = jwtProvider.getAuthUser(jwtToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("[doFilterInternal] 토큰 값 검증 완료");
             }
 
-            Authentication authentication = jwtProvider.getAuthUser(jwtToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("[doFilterInternal] 토큰 값 검증 완료");
+            filterChain.doFilter(request, response);
+        } catch (RestApiException e) {
+            ErrorCode errorCode = e.getErrorCode();
+            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(errorCode));
         }
+    }
 
-        filterChain.doFilter(request, response);
+    private boolean checkTokenNotNullAndBearer(String token) {
+        if(token != null && token.startsWith("Bearer ")) {
+            return true;
+        }
+        return false;
     }
 }

@@ -65,3 +65,7 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   valid-time: 7200000
+
+auth0:
+  issuer: ${AUTH0_ISSUER}
+  android-client-id: ${ANDROID_CLIENT_ID}

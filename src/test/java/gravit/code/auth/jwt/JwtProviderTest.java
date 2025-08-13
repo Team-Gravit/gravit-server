@@ -93,16 +93,14 @@ class JwtProviderTest {
     }
 
     @Test
-    void 유효기간이_지나지않은_토큰은_true_를_리턴합니다() {
+    void 유효기간이_지나지않은_토큰은_예외를_던지지_않습니다() {
         // given
         Long userId = testUser.getId();
         String accessToken = jwtProvider.createAccessToken(userId);
 
         // when
-        boolean result = jwtProvider.isValidToken(accessToken);
-
         // then
-        assertTrue(result);
+        assertDoesNotThrow(() -> jwtProvider.validateToken(accessToken));
     }
 
     @Nested
@@ -113,20 +111,18 @@ class JwtProviderTest {
         void setUp() throws NoSuchFieldException, IllegalAccessException {
             Field validTimeField = JwtProvider.class.getDeclaredField("validTime");
             validTimeField.setAccessible(true);
-            validTimeField.setInt(jwtProvider,1);
+            validTimeField.setInt(jwtProvider,0);
         }
 
         @Test
-        void 유효기간이_지난_토큰이라면_예외를_리턴합니다() throws InterruptedException {
+        void 유효기간이_지난_토큰이라면_예외를_리턴합니다(){
             // given
             Long userId = testUser.getId();
             String accessToken = jwtProvider.createAccessToken(userId);
 
-            Thread.sleep(3);
-
             // when
             // then
-            assertThrows(RestApiException.class, () -> jwtProvider.isValidToken(accessToken));
+            assertThrows(RestApiException.class, () -> jwtProvider.validateToken(accessToken));
         }
 
         @Test
@@ -135,7 +131,6 @@ class JwtProviderTest {
             Long userId = testUser.getId();
             String accessToken = jwtProvider.createAccessToken(userId);
 
-            Thread.sleep(3);
 
             // when
             // then
