@@ -31,6 +31,7 @@ public enum CustomErrorCode implements ErrorCode {
 
     // HandleGenerator
     HANDLE_CONFLICT_TEN_TIMES(HttpStatus.CONFLICT, "H_G_4091", "중복으로 인해 유효한 handle 을 찾지 못했습니다."),
+    HANDLE_INVALID(HttpStatus.BAD_REQUEST, "H_G_4001", "유효하지 않은 Handle 입니다."),
 
     // JWT
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "JWT_4011", "유효하지 않은 토큰입니다."),
