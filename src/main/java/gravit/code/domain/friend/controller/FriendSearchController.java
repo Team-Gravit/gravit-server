@@ -1,6 +1,7 @@
 package gravit.code.domain.friend.controller;
 
 import gravit.code.auth.oauth.LoginUser;
+import gravit.code.domain.friend.controller.docs.FriendSearchControllerDocs;
 import gravit.code.domain.friend.dto.response.PageSearchUserResponse;
 import gravit.code.domain.friend.service.FriendSearchService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/friends/search")
 @RequiredArgsConstructor
-public class FriendSearchController {
+public class FriendSearchController implements FriendSearchControllerDocs {
 
     private final FriendSearchService friendSearchService;
 
