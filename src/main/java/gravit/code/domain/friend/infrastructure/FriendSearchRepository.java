@@ -9,7 +9,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Repository
@@ -19,7 +22,7 @@ public class FriendSearchRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private static final int PAGE_SIZE = 10;
     private static final int MIN_CONTAINS_LEN = 2;
-
+    private static final Pattern NON_ALLOWED = Pattern.compile("[^a-z0-9]");
     private static final RowMapper<SearchUser> MAPPER = (rs, i) ->
             new SearchUser(
                     rs.getLong("user_id"),
@@ -30,113 +33,112 @@ public class FriendSearchRepository {
             );
 
     public PageSearchUserResponse searchByHandle(long requesterId, String handleQuery, int page) {
-        final int p = Math.max(0, page);
         final int size = PAGE_SIZE;
 
         final String norm = normalize(handleQuery);
         if (norm.isBlank()) {
-            if (log.isDebugEnabled()) {
-                log.info("[FriendSearch] blank query -> empty result (raw:{})", handleQuery);
-            }
+            log.info("검색할 handle 이 비어있습니다 : {}", norm);
             return PageSearchUserResponse.empty();
         }
 
         final boolean enableContains = norm.length() >= MIN_CONTAINS_LEN;
 
-        // --- FILTER(데이터/카운트 공용) ---
-        String filter = """
-                from users u
-                where u.id <> :me
-                  and (
-                        lower(u.handle) = :q
-                     or lower(u.handle) like :q_prefix
-                """;
-        if (enableContains) {
-            filter += "     or lower(u.handle) like :q_contains\n";
-        }
-        filter += "     )\n";
+        final String filter = buildFilterSql(enableContains);
+        final String selectSql = buildSelectSql(filter, enableContains);
+        final String countSql = buildCountSql(filter);
 
-        // --- SELECT: 응답용 handle에 '@' 붙여서 내려줌 ---
-        String selectSql = """
-                select
-                  u.id as user_id,
-                  u.profile_img_number,
-                  u.nickname,
-                  concat('@', u.handle) as handle,
-                  exists(select 1
-                           from friends f
-                          where f.follower_id = :me
-                            and f.followee_id = u.id) as is_following,
-                  case
-                    when lower(u.handle) = :q then 3
-                    when lower(u.handle) like :q_prefix then 2
-                """;
-        if (enableContains) {
-            selectSql += "    when lower(u.handle) like :q_contains then 1\n";
-        }
-        selectSql += """
-                    else 0
-                  end as w
-                """ + filter + """
-                order by w desc, lower(u.handle) asc, u.id asc
-                limit :limit offset :offset
-                """;
+        final MapSqlParameterSource params = buildParams(requesterId, norm, page, size, enableContains);
 
-        // --- COUNT ---
-        String countSql = "select count(*) " + filter;
-
-        // --- 파라미터 ---
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("me", requesterId)
-                .addValue("q", norm)
-                .addValue("q_prefix", norm + "%")
-                .addValue("limit", size)
-                .addValue("offset", p * size);
-        if (enableContains) {
-            params.addValue("q_contains", "%" + norm + "%");
-        }
-
-
-        log.info("[FriendSearch] q='{}', enableContains={}, page={}, size={}, offset={}", norm, enableContains, p, size, p * size);
-        log.info("[FriendSearch] COUNT SQL:\n{}\nparams: {}", countSql, params.getValues());
-
-        // --- total 안전 조회 ---
-        long t0 = System.currentTimeMillis();
-        Long totalBox = jdbcTemplate.queryForObject(countSql, params, Long.class);
-        long t1 = System.currentTimeMillis();
-        long total = (totalBox != null) ? totalBox : 0L;
-
-
-        log.info("[FriendSearch] SELECT SQL:\n{}\nparams: {}", selectSql, params.getValues());
-        log.info("[FriendSearch] total={}, countTimeMs={}", total, (t1 - t0));
-
+        final long total = queryTotal(countSql, params);
 
         if (total == 0L) {
             log.info("[FriendSearch] no results (q='{}')", norm);
             return PageSearchUserResponse.empty();
         }
 
-        // --- 데이터 조회 ---
-        long t2 = System.currentTimeMillis();
         List<SearchUser> rows = jdbcTemplate.query(selectSql, params, MAPPER);
-        long t3 = System.currentTimeMillis();
 
+        return PageSearchUserResponse.of(page, size, total, rows);
+    }
 
-        log.info("[FriendSearch] fetched {} rows / total {} (page={}, size={}) selectTimeMs={}", rows.size(), total, p, size, (t3 - t2));
+    private MapSqlParameterSource buildParams(long requesterId, String norm, int page, int size, boolean enableContains) {
+        // --- 파라미터 ---
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("me", requesterId)
+                .addValue("q", norm)
+                .addValue("q_prefix", norm + "%")
+                .addValue("limit", size)
+                .addValue("offset", page * size);
+        if (enableContains) {
+            params.addValue("q_contains", "%" + norm + "%");
+        }
+        return params;
+    }
 
+    private String buildFilterSql(boolean enableContains) {
+        String filter = """
+            from users u
+            where u.id <> :me
+              and (
+                    u.handle = :q
+                 or u.handle like :q_prefix
+            """;
+        if (enableContains) {
+            filter += "     or u.handle like :q_contains\n";
+        }
+        filter += "     )\n";
+        return filter;
+    }
 
-            // 프리뷰(최대 5개)만 출력해 로그 과다 방지
-        int preview = Math.min(5, rows.size());
-        log.info("[FriendSearch] rows preview ({} of {}): {}", preview, rows.size(), rows.subList(0, preview));
+    private String buildCountSql(String filter) {
+        return "select count(*) " + filter;
+    }
 
-        return PageSearchUserResponse.of(p, size, total, rows);
+    private String buildSelectSql(String filter, boolean enableContains) {
+        String selectSql = """
+            select
+              u.id as user_id,
+              u.profile_img_number,
+              u.nickname,
+              concat('@', u.handle) as handle,
+              exists(select 1
+                       from friends f
+                      where f.follower_id = :me
+                        and f.followee_id = u.id) as is_following,
+              case
+                when u.handle = :q then 3
+                when u.handle like :q_prefix then 2
+            """;
+        if (enableContains) {
+            selectSql += "    when u.handle like :q_contains then 1\n";
+        }
+        selectSql += """
+                else 0
+              end as w
+            """ + filter + """
+            order by w desc, u.handle asc, u.id asc
+            limit :limit offset :offset
+            """;
+        return selectSql;
+    }
+
+    private long queryTotal(String countSql, MapSqlParameterSource params) {
+        Long totalBox = jdbcTemplate.queryForObject(countSql, params, Long.class);
+        return (totalBox != null) ? totalBox : 0L;
     }
 
     // 입력 정규화: 앞의 '@' 제거 + trim + 소문자
     private static String normalize(String raw) {
-        if (raw == null) return "";
-        String q = raw.trim();
-        if (q.startsWith("@")) q = q.substring(1);
-        return q.toLowerCase();
+        if (raw == null || raw.isBlank()) return "";
+        String q = Normalizer.normalize(raw, Normalizer.Form.NFKC).strip(); //유니코드 정규화
+
+        int i = 0;
+        while(i < q.length() && q.charAt(i) == '@') i++;
+        if(i > 0) q = q.substring(i);
+
+        q = q.toLowerCase(Locale.ROOT);
+        q = NON_ALLOWED.matcher(q).replaceAll(""); // 알파벳, 숫자 빼고 전부 제거
+
+        return q;
     }
 }
