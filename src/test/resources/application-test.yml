@@ -16,6 +16,10 @@ spring:
         show_sql: false
     open-in-view: false
 
+  sql:
+    init:
+      mode: never
+
   security:
     oauth2:
       client:
