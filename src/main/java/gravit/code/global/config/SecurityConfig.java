@@ -63,7 +63,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
-        configuration.setAllowedOrigins(List.of("https://grav-it.inuappcenter.kr", "http://localhost:5173", "https://gravit.inuappcenter.kr"));  // 특정 도메인 허용
+        configuration.setAllowedOrigins(List.of("https://grav-it.inuappcenter.kr", "http://localhost:5173", "https://gravit.inuappcenter.kr", "https://gravit-cs.vercel.app"));  // 특정 도메인 허용
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("ACCESS_TOKEN");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
