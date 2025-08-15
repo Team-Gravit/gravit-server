@@ -32,8 +32,7 @@ class RandomHandleGeneratorTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(newHandle.length()).isEqualTo(9);
-            softly.assertThat(newHandle.charAt(0)).isEqualTo('@');
+            softly.assertThat(newHandle.length()).isEqualTo(8);
             softly.assertThat(newHandle.matches(".*[a-z\\d].*")).isTrue();
         });
     }
@@ -49,8 +48,7 @@ class RandomHandleGeneratorTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(newHandle.length()).isEqualTo(9);
-            softly.assertThat(newHandle.charAt(0)).isEqualTo('@');
+            softly.assertThat(newHandle.length()).isEqualTo(8);
             softly.assertThat(newHandle.matches(".*\\d.*") || newHandle.matches(".*[a-z].*")).isTrue();
         });
     }

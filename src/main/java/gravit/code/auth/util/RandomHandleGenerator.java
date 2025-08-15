@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Random;
 
 /**
- * handle 길이는 9 자리로 fix (@포함)
+ * handle 길이는 8 자리로 fix (저장은 @ 미 포함)
  */
 @Component
 @RequiredArgsConstructor
@@ -26,6 +26,9 @@ public class RandomHandleGenerator implements HandleGenerator{
     public String generateUniqueHandle() {
         for (int i = 0; i < MAX_RETRY; i++) {
             String handle = generateHandle();
+
+            validateHandle(handle);
+
             if(!userRepository.existsByHandle(handle)) {
                 return handle;
             }
@@ -33,9 +36,13 @@ public class RandomHandleGenerator implements HandleGenerator{
         throw new RestApiException(CustomErrorCode.HANDLE_CONFLICT_TEN_TIMES);
     }
 
+    private void validateHandle(String handle) {
+        if(handle == null || !handle.matches("^[a-z0-9]{8}$"))
+            throw new RestApiException(CustomErrorCode.HANDLE_INVALID);
+    }
+
     private String generateHandle(){
         StringBuilder handle = new StringBuilder(MAX_LENGTH);
-        handle.append("@");
 
         for(int i = 0; i < MAX_LENGTH; i++){
             int index = RANDOM.nextInt(CHARACTERS.length());
