@@ -98,5 +98,18 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
         assertThat(res.searchUsers().get(0).handle()).isEqualTo("@zb000001");
     }
 
+    @Test
+    void 사용자가_입력한_문자열의_일부분만_겹친다면_조회되지_않는다(){
+        // given
+        // when
+        PageSearchUserResponse res = friendSearchRepository.searchByHandle(ME, "z0", 0);
+        log.info("res: {}", res);
+        // then
+        assertThat(res.pages()).isEqualTo(0);
+        assertThat(res.total()).isEqualTo(0);
+        assertThat(res.hasNext()).isFalse();
+        assertThat(res.searchUsers().size()).isEqualTo(0);
+    }
+
 
 }

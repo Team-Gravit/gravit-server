@@ -23,7 +23,6 @@ bin/
 *.iml
 *.ipr
 application.yml
-src/main/resources/sql/
 
 out/
 !**/src/main/**/out/
