@@ -20,15 +20,16 @@ class OAuthLoginUrlServiceTest {
     void naver_provider_를_이용해서_login_url을_생성합니다() {
         // given
         String provider = "naver";
+        String dest = "local";
 
         // when
-        String result = oAuthLoginUrlService.generateLoginUrl(provider);
+        String result = oAuthLoginUrlService.generateLoginUrl(provider,dest);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(result).isNotNull();
             softly.assertThat(result.contains("test-client-id")).isTrue();
-            softly.assertThat(result.contains("test-redirect-uri")).isTrue();
+            softly.assertThat(result.contains("http://localhost:5173/login/oauth2/code/naver")).isTrue();
         });
     }
 
@@ -36,15 +37,17 @@ class OAuthLoginUrlServiceTest {
     void 소문자_naver_provider가_아니여도_로그인_url을_생성할_수_있습니다() {
         // given
         String provider = "NaVer";
+        String dest = "local";
+
 
         // when
-        String result = oAuthLoginUrlService.generateLoginUrl(provider);
+        String result = oAuthLoginUrlService.generateLoginUrl(provider,dest);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(result).isNotNull();
             softly.assertThat(result.contains("test-client-id")).isTrue();
-            softly.assertThat(result.contains("test-redirect-uri")).isTrue();
+            softly.assertThat(result.contains("http://localhost:5173/login/oauth2/code/naver")).isTrue();
         });
     }
 
@@ -52,15 +55,17 @@ class OAuthLoginUrlServiceTest {
     void google_provider_를_이용해서_login_url을_생성합니다() {
         // given
         String provider = "google";
+        String dest = "local";
+
 
         // when
-        String result = oAuthLoginUrlService.generateLoginUrl(provider);
+        String result = oAuthLoginUrlService.generateLoginUrl(provider,dest);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(result).isNotNull();
             softly.assertThat(result.contains("test-client-id")).isTrue();
-            softly.assertThat(result.contains("test-redirect-uri")).isTrue();
+            softly.assertThat(result.contains("http://localhost:5173/login/oauth2/code/google")).isTrue();
         });
     }
 
@@ -68,15 +73,16 @@ class OAuthLoginUrlServiceTest {
     void 소문자_google_provider가_아니여도_로그인_url을_생성할_수_있습니다() {
         // given
         String provider = "GoogLe";
+        String dest = "local";
 
         // when
-        String result = oAuthLoginUrlService.generateLoginUrl(provider);
+        String result = oAuthLoginUrlService.generateLoginUrl(provider,dest);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(result).isNotNull();
             softly.assertThat(result.contains("test-client-id")).isTrue();
-            softly.assertThat(result.contains("test-redirect-uri")).isTrue();
+            softly.assertThat(result.contains("http://localhost:5173/login/oauth2/code/google")).isTrue();
         });
     }
 
@@ -84,15 +90,16 @@ class OAuthLoginUrlServiceTest {
     void kakao_provider_를_이용해서_login_url을_생성합니다() {
         // given
         String provider = "kakao";
+        String dest = "local";
 
         // when
-        String result = oAuthLoginUrlService.generateLoginUrl(provider);
+        String result = oAuthLoginUrlService.generateLoginUrl(provider,dest);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(result).isNotNull();
             softly.assertThat(result.contains("test-client-id")).isTrue();
-            softly.assertThat(result.contains("test-redirect-uri")).isTrue();
+            softly.assertThat(result.contains("http://localhost:5173/login/oauth2/code/kakao")).isTrue();
         });
     }
 
@@ -100,15 +107,16 @@ class OAuthLoginUrlServiceTest {
     void 소문자_kakao_provider가_아니여도_로그인_url을_생성할_수_있습니다() {
         // given
         String provider = "KAKAo";
+        String dest = "local";
 
         // when
-        String result = oAuthLoginUrlService.generateLoginUrl(provider);
+        String result = oAuthLoginUrlService.generateLoginUrl(provider,dest);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(result).isNotNull();
             softly.assertThat(result.contains("test-client-id")).isTrue();
-            softly.assertThat(result.contains("test-redirect-uri")).isTrue();
+            softly.assertThat(result.contains("http://localhost:5173/login/oauth2/code/kakao")).isTrue();
         });
     }
 
@@ -116,9 +124,10 @@ class OAuthLoginUrlServiceTest {
     void 올바르지_않은_provider_로_요청하면_예외를_던집니다() {
         // given
         String provider = "samsung";
+        String dest = "local";
 
         // when
         // then
-        assertThrows(RestApiException.class, ()-> oAuthLoginUrlService.generateLoginUrl(provider));
+        assertThrows(RestApiException.class, ()-> oAuthLoginUrlService.generateLoginUrl(provider,dest));
     }
 }

@@ -7,16 +7,20 @@ import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.oauth.processor.OAuthLoginProcessor;
 import gravit.code.auth.oauth.service.OAuthClientService;
 import gravit.code.auth.oauth.service.OAuthLoginUrlService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
+@Slf4j
 public class OAuthController implements OAuthControllerDocs {
     private final OAuthClientService oAuthClientService;
     private final OAuthLoginProcessor oAuthLoginProcessor;
@@ -26,8 +30,9 @@ public class OAuthController implements OAuthControllerDocs {
      * login url 를 프론트에 응답합니다.
      */
     @GetMapping("/login-url/{provider}")
-    public ResponseEntity<Map<String, String>> authorizeUrl(@PathVariable("provider") String provider) {
-        String loginUrl = oAuthLoginUrlService.generateLoginUrl(provider);
+    public ResponseEntity<Map<String, String>> authorizeUrl(@PathVariable("provider") String provider,
+                                                            @RequestParam String dest) {
+        String loginUrl = oAuthLoginUrlService.generateLoginUrl(provider, dest);
         return ResponseEntity.ok(Map.of("loginUrl", loginUrl));
     }
 
@@ -37,14 +42,15 @@ public class OAuthController implements OAuthControllerDocs {
 
     @PostMapping("/{provider}")
     public ResponseEntity<LoginResponse> oauthLogin(@PathVariable("provider") String provider,
-                                                    @RequestBody AuthCodeRequest request){
-        String code = request.code();
+                                                    @RequestBody AuthCodeRequest authCodeRequest,
+                                                    @RequestParam String dest){
+        String code = authCodeRequest.code();
 
         if(code == null){
             return  ResponseEntity.badRequest().build();
         }
 
-        OAuthUserInfo userInfo = oAuthClientService.getUserInfo(code, provider);
+        OAuthUserInfo userInfo = oAuthClientService.getUserInfo(code, provider, dest);
 
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
 
