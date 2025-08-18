@@ -1,9 +1,11 @@
 package gravit.code.auth.oauth.service;
 
+import gravit.code.auth.oauth.RedirectHostConst;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.oauth.startegy.OAuthResponseFactory;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -28,9 +30,10 @@ public class OAuthClientService {
     private final OAuthResponseFactory oAuthResponseFactory;
     private final WebClientAdapter webClientAdapter;
 
-    public OAuthUserInfo getUserInfo(String authCode, String provider) {
+    public OAuthUserInfo getUserInfo(String authCode, String provider, String dest) {
         validateProvider(provider);
         validateAuthCode(authCode);
+        String baseHost = validateDest(dest);
 
         // 웹에서 특수 문자나 공백 등이 URL 인코딩 된 상태로 전달되는 문제를 해결하기 위함
         String decodedCode = URLDecoder.decode(authCode, StandardCharsets.UTF_8);
@@ -40,7 +43,8 @@ public class OAuthClientService {
         ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(lowerCaseProvider);
 
         // 토큰 요청
-        String accessToken = getAccessToken(registration, decodedCode);
+        String redirectUri = baseHost + "/login/oauth2/code/" + lowerCaseProvider;
+        String accessToken = getAccessToken(registration, decodedCode, redirectUri);
 
         // 사용자 정보 요청
         Map<String, Object> userInfo = getUserInfo(registration, accessToken);
@@ -56,14 +60,14 @@ public class OAuthClientService {
         return webClientAdapter.getUserInfoWithAccessToken(userInfoUri, accessToken);
     }
 
-    private String getAccessToken(ClientRegistration registration, String decodedCode) {
-        
+    private String getAccessToken(ClientRegistration registration, String decodedCode, String redirectUri) {
+
         // 요청 만들기
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
         tokenRequest.add("grant_type", GRANT_TYPE);
         tokenRequest.add("client_id", registration.getClientId());
         tokenRequest.add("client_secret", registration.getClientSecret());
-        tokenRequest.add("redirect_uri", registration.getRedirectUri());
+        tokenRequest.add("redirect_uri", redirectUri);
         tokenRequest.add("code", decodedCode);
 
         // AccessToken 을 발급받기 위한 엔드포인트
@@ -73,6 +77,15 @@ public class OAuthClientService {
         return (String) tokenResponse.get("access_token");
     }
 
+    private String validateDest(String dest) {
+        String base = RedirectHostConst.DEST_BASE.get(dest);
+
+        if(base == null || base.isBlank()){
+            throw new RestApiException(CustomErrorCode.DEST_NOT_VALID);
+        }
+
+        return base;
+    }
 
     private void validateAuthCode(String authCode) {
         if(authCode == null || authCode.isBlank()){

@@ -1,5 +1,6 @@
 package gravit.code.auth.oauth.service;
 
+import gravit.code.auth.oauth.RedirectHostConst;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +17,16 @@ public class OAuthLoginUrlService {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    public String generateLoginUrl(String provider) {
+    public String generateLoginUrl(String provider, String dest) {
         validateProvider(provider);
+        String baseHost = validateDest(dest);
+        String lowerCaseProvider = provider.toLowerCase();
 
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(provider.toLowerCase());
+        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(lowerCaseProvider);
         String authorizationUri = registration.getProviderDetails().getAuthorizationUri();
         String clientId = registration.getClientId();
         String responseType = "code";
-        String redirectUri = registration.getRedirectUri();
+        String redirectUri = baseHost + "/login/oauth2/code/" + lowerCaseProvider;
         String scope = String.join(" ", registration.getScopes()); // 공백이 표준
 
         return UriComponentsBuilder.fromUriString(authorizationUri)
@@ -32,6 +35,16 @@ public class OAuthLoginUrlService {
                 .queryParam("redirect_uri", redirectUri)
                 .queryParam("scope",scope)
                 .build().toUriString();
+    }
+
+    private String validateDest(String dest) {
+        String base = RedirectHostConst.DEST_BASE.get(dest);
+
+        if(base == null || base.isBlank()){
+            throw new RestApiException(CustomErrorCode.DEST_NOT_VALID);
+        }
+
+        return base;
     }
 
     private void validateProvider(String provider) {
