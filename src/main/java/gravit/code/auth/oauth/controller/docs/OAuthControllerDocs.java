@@ -11,12 +11,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -48,7 +46,8 @@ public interface OAuthControllerDocs {
             )
     })
     @GetMapping("/login-url/{provider}")
-    ResponseEntity<Map<String, String>> authorizeUrl(@Parameter(description = "제공자(kakao, naver, google) 이름") @PathVariable("provider") String provider);
+    ResponseEntity<Map<String, String>> authorizeUrl(@Parameter(description = "제공자(kakao, naver, google) 이름") @PathVariable("provider") String provider,
+                                                     @Parameter(description = "Dest(local, prod)")  @RequestParam String dest);
 
     @Operation(summary = "OAuth 회원가입/로그인 처리", description = "AuthCode를 기반으로 사용자 정보를 조회하고 회원가입 및 로그인 처리를 합니다")
     @ApiResponses({
@@ -86,5 +85,6 @@ public interface OAuthControllerDocs {
     })
     @PostMapping("/{provider}")
     ResponseEntity<LoginResponse> oauthLogin(@Parameter(description = "제공자(kakao, naver, google) 이름") @PathVariable("provider") String provider,
-                                             @RequestBody AuthCodeRequest request);
+                                             @RequestBody AuthCodeRequest authCodeRequest,
+                                             @Parameter(description = "Dest(local, prod)") @RequestParam String dest);
 }

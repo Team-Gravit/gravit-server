@@ -51,9 +51,10 @@ class OAuthClientServiceTest {
         // given
         String authCode = "test-auth-code";
         String provider = "google";
+        String dest = "local";
 
         // when
-        OAuthUserInfo result = oAuthClientService.getUserInfo(authCode, provider);
+        OAuthUserInfo result = oAuthClientService.getUserInfo(authCode, provider,dest);
 
         // then
 
@@ -69,10 +70,11 @@ class OAuthClientServiceTest {
         // given
         String authCode = "";
         String provider = "google";
+        String dest = "local";
 
         // when
         // then
-        assertThrows(RestApiException.class, ()-> oAuthClientService.getUserInfo(authCode, provider));
+        assertThrows(RestApiException.class, ()-> oAuthClientService.getUserInfo(authCode, provider,dest));
     }
 
     @Test
@@ -80,10 +82,11 @@ class OAuthClientServiceTest {
         // given
         String authCode = "test-auth-code";
         String provider = "samsung";
+        String dest = "local";
 
         // when
         // then
-        assertThrows(RestApiException.class, ()-> oAuthClientService.getUserInfo(authCode, provider));
+        assertThrows(RestApiException.class, ()-> oAuthClientService.getUserInfo(authCode, provider,dest));
     }
     
 }
