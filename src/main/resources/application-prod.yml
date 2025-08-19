@@ -27,6 +27,7 @@ spring:
         - classpath:sql/003_gravit-lessons.sql
         - classpath:sql/004_gravit-problems.sql
         - classpath:sql/005_gravit-leagues.sql
+        - classpath:sql/006_gravit-user-leagues.sql
       continue-on-error: false
       encoding: UTF-8
 
