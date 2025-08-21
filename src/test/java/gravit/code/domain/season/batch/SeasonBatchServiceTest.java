@@ -56,7 +56,7 @@ class SeasonBatchServiceTest {
         when(seasonRepository.findPrepByStartingAt(newNextSeason.getStartsAt())).thenReturn(Optional.empty());
         when(seasonRepository.save(any(Season.class))).thenReturn(newNextSeason);
 
-        League firstLeague = League.create("BRONZE 1", 100,0,"http//:localhost.com", 1);
+        League firstLeague = League.create("BRONZE 1", 100,0, 1);
         when(leagueRepository.findFirstByOrderBySortOrderAsc()).thenReturn(Optional.of(firstLeague));
         when(userLeagueRepository.resetAllForNextSeason(nowSeason,newNextSeason,firstLeague)).thenReturn(12);
 
@@ -89,7 +89,7 @@ class SeasonBatchServiceTest {
         /** PREP 인 다음 시즌이 존재함 **/
         when(seasonRepository.findPrepByStartingAt(nextSeason.getStartsAt())).thenReturn(Optional.of(nextSeason));
 
-        League firstLeague = League.create("BRONZE 1", 100,0,"http//:localhost.com", 1);
+        League firstLeague = League.create("BRONZE 1", 100,0, 1);
         when(leagueRepository.findFirstByOrderBySortOrderAsc()).thenReturn(Optional.of(firstLeague));
         when(userLeagueRepository.resetAllForNextSeason(nowSeason, nextSeason, firstLeague)).thenReturn(12);
 
