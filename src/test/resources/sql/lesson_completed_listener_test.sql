@@ -1,8 +1,8 @@
 -- 브론즈 1, 2 리그 생성
-INSERT INTO league (id, name, min_lp, max_lp, sort_order, league_img_url)
-VALUES (1, 'Bronze 1', 0, 100, 1, 'http://localhost:1234/dlfjgrp');
-INSERT INTO league (id, name, min_lp, max_lp, sort_order, league_img_url)
-VALUES (2, 'Bronze 2', 101, 200, 2, 'http://localhost:1234/dlfjgrp');
+INSERT INTO league (id, name, min_lp, max_lp, sort_order)
+VALUES (1, 'Bronze 1', 0, 100, 1);
+INSERT INTO league (id, name, min_lp, max_lp, sort_order)
+VALUES (2, 'Bronze 2', 101, 200, 2);
 
 -- 시즌 생성
 INSERT INTO season (id,season_key, starts_at, ends_at, status, tz)

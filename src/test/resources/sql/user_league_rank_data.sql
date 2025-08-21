@@ -1,10 +1,10 @@
 -- 리그 데이터 (최소 1개)
 -- 브론즈 1 리그
-INSERT INTO league (id, name, min_lp, max_lp, sort_order, league_img_url)
-VALUES (1, 'Bronze 1', 0, 100, 1, 'http://localhost:1234/dlfjgrp');
+INSERT INTO league (id, name, min_lp, max_lp, sort_order)
+VALUES (1, 'Bronze 1', 0, 100, 1);
 -- 실버 1 리그
-INSERT INTO league (id, name, min_lp, max_lp, sort_order, league_img_url)
-VALUES (4, 'Silver 1', 321, 460, 4, 'http://localhost:1234/silver1');
+INSERT INTO league (id, name, min_lp, max_lp, sort_order)
+VALUES (4, 'Silver 1', 321, 460, 4);
 
 -- 시즌 생성
 INSERT INTO season (id,season_key, starts_at, ends_at, status, tz)
