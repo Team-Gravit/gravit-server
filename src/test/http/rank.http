@@ -1,0 +1,12 @@
+@auth_token = qwe123
+
+### 리그 랭킹 조회 (페이징)
+GET http://localhost:8080/api/v1/rank/leagues/1/page/0
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+
+### 핸들명으로 친구 검색 (페이징)
+GET http://localhost:8080/api/v1/friends/search?handleQuery=eed&page=0
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
