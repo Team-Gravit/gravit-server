@@ -1086,3 +1086,419 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
     (507, 'FILL_BLANK', 'SSD의 수명을 늘리기 위해 표기 용량보다 실제로는 더 큰 용량의 메모리를 탑재하는 기법을 _____라고 한다.', '오버 프로비저닝, over-provisioning', '-', 47),
 
     (508, 'SELECT_DESCRIPTION', 'SSD에서 Wear Leveling의 목적은?', '3', '1.SSD 속도를 늦춘다.;2.특정 셀에 집중적으로 쓰기를 유도한다.;3.모든 셀에 고르게 쓰기를 분산해 수명을 늘린다.;4.전력 소모를 늘린다.', 47);
+
+-- Unit01 - 데이터베이스 시스템 1 (Lesson ID: 48)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (509, 'FILL_BLANK', '데이터는 처리되지 않은 _____의 집합이다.', '사실', '-', 48),
+
+    (510, 'FILL_BLANK', '3단계 스키마에서 사용자별 뷰를 정의하는 것은 _____ 스키마이다.', '1', '1.외부(External);2.개념(Conceptual);3.내부(Internal);4.전역(Global)', 48),
+
+    (511, 'FILL_BLANK', '3단계 스키마에서 저장 구조와 접근 경로를 기술하는 것은 _____ 스키마이다.', '3', '1.외부(External);2.개념(Conceptual);3.내부(Internal/Physical);4.논리(Logical)', 48),
+
+    (512, 'FILL_BLANK', '3단계 스키마의 핵심 목적은 응용과 데이터 저장 간 _____을/를 낮추는 것이다.', '1', '1.결합도;2.중복도;3.비용;4.지연시간', 48),
+
+    (513, 'FILL_BLANK', '데이터 사전/카탈로그는 _____에 대한 _____을/를 저장한다.', '1', '1.데이터 - 메타데이터;2.트랜잭션 - 로그;3.인덱스 - 레코드;4.결과 - 캐시', 48),
+
+    (514, 'FILL_BLANK', 'DBMS 사용자 역할에 속하지 않는 것은 _____이다.', '4', '1.DBA;2.응용 프로그래머;3.최종 사용자;4.프린터 관리자', 48),
+
+    (515, 'FILL_BLANK', '데이터 독립성은 스키마 변경 시 _____의 영향이 최소화됨을 뜻한다.', '2', '1.운영체제;2.응용프로그램;3.네트워크 스위치;4.프린터 드라이버', 48),
+
+    (516, 'FILL_BLANK', '논리적 독립성은 _____ 스키마 변경이 외부 스키마와 응용에 영향을 거의 주지 않음을 의미한다.', '3', '1.파일;2.내부;3.개념;4.운영체제', 48),
+
+    (517, 'FILL_BLANK', '물리적 독립성은 저장 구조나 _____변경이 개념 스키마에 영향을 거의 주지 않음을 의미한다.', '1', '1.접근 경로;2.엔터티 관계;3.사용자 뷰;4.도메인 제약', 48),
+
+    (518, 'FILL_BLANK', '스키마를 정의하는 언어는 _____이고, 데이터를 조작하는 언어는 _____이다.', '4', '1.TCL·DCL;2.DML·DDL;3.DCL·DDL;4.DDL·DML', 48),
+
+    (519, 'FILL_BLANK', 'DBMS의 쿼리 처리기에는 파서와 _____가/이 포함되어 있다.', '옵티마이저, optimizer', '-', 48),
+
+    (520, 'FILL_BLANK', '트랜잭션의 ACID에서 C(일관성)는 트랜잭션 전후로 _____이/가 유지됨을 의미한다.', '2', '1.동시 실행 수;2.무결성 제약;3.로그 크기;4.캐시 적중률', 48);
+
+-- Unit01 - 데이터베이스 시스템 2 (Lesson ID: 49)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (521, 'FILL_BLANK', '3단계 스키마는 외부(External), _____, 내부(Internal) 스키마로 구성된다.', '1', '1.개념(Conceptual);2.물리(Physical);3.전역(Global);4.논리(Logical)', 49),
+
+    (522, 'SELECT_DESCRIPTION', '물리적 데이터 독립성을 가장 잘 설명하는 것은?', '2', '1.외부 스키마 변경이 내부에 전파됨;2.내부 저장 구조 변경이 외부 스키마에 영향을 주지 않음;3.개념 스키마 변경이 내부 스키마를 고정함;4.사용자 뷰가 테이블을 자동 생성함', 49),
+
+    (523, 'SELECT_DESCRIPTION', '논리적 데이터 독립성 사례로 적절한 것은?', '3', '1.인덱스 유형 변경;2.파일 블록 크기 조정;3.개념 스키마에 속성 추가 후 기존 사용자 뷰 유지;4.버퍼 캐시 크기 조절', 49),
+
+    (524, 'FILL_BLANK', '외부-개념 매핑은 _____와 개념 스키마 간의 대응을 정의한다.', '4', '1.운영체제;2.내부 스키마;3.저장 파일;4.사용자 뷰', 49),
+
+    (525, 'FILL_BLANK', '내부 스키마는 데이터의 _____ 표현과 접근 경로, 저장 구조를 기술한다.', '물리적', '-', 49),
+
+    (526, 'SELECT_DESCRIPTION', '다음 변경 중 애플리케이션 수정 없이 가능해야 하는 이상적인 경우는? (논리/물리 독립성 관점)', '4', '1.B+트리 → 해시 인덱스 교체;2.외부 뷰의 열 순서 변경;3.데이터파일 페이지 크기 변경;4.모두 가능해야 함', 49),
+
+    (527, 'FILL_BLANK', '개념-내부 매핑은 개념 스키마의 구조를 _____에 대응시키는 규칙이다.', '1', '1.내부 저장 구조;2.사용자 뷰;3.외부 스키마;4.운영체제 커널', 49),
+
+    (528, 'SELECT_DESCRIPTION', '"테이블을 수직 분할하여 저장했지만 사용자 뷰는 기존 컬럼 집합을 그대로 보여준다." 이 설명에 해당하는 성질은?', '2', '1.논리적 독립성;2.물리적 독립성;3.참조 무결성;4.정규화', 49),
+
+    (529, 'FILL_BLANK', '외부 스키마는 _____ 관점에서 데이터 표현을 제공하여 개별 사용자 요구를 반영한다.', '1', '1.사용자/응용;2.하드웨어;3.운영체제;4.네트워크', 49),
+
+    (530, 'SELECT_DESCRIPTION', '"개념 스키마 변경이 외부 스키마에 미치는 영향 최소화"를 무엇이라 하는가?', '3', '1.참조 무결성;2.물리적 독립성;3.논리적 독립성;4.정규화', 49),
+
+    (531, 'SELECT_DESCRIPTION', '다음 중 3단계 스키마 구조의 주요 목적으로 보기 어려운 것은?', '3', '1.데이터 독립성;2.보안/뷰 제공;3.성능 고정(튜닝 불가);4.다양한 응용 지원', 49),
+
+    (532, 'SELECT_DESCRIPTION', '다음 설명 중 옳은 것만을 모두 고른 것은? 1.외부 스키마: 사용자/응용별 뷰를 제공한다. 2.개념 스키마: 조직 전체의 통합 논리 구조를 정의한다. 3.내부 스키마: 물리 저장 구조와 접근 경로를 기술한다. 4.외부-개념 매핑: 사용자 뷰와 개념 스키마 간의 대응을 정의한다.', '4', '1.1, 2;2.1, 3, 4;3.1, 2, 4;4.1, 2, 3, 4', 49);
+
+-- Unit01 - 데이터베이스 시스템 3 (Lesson ID: 50)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (533, 'SELECT_DESCRIPTION', '다음 중 DBA의 주요 역할로 가장 거리가 먼 것은?', '3', '1.권한 관리;2.백업/복구;3.쿼리 옵티마이저 개발;4.성능 모니터링', 50),
+
+    (534, 'SELECT_DESCRIPTION', 'CREATE TABLE, ALTER TABLE, DROP VIEW는 각각 어떤 범주의 언어인가?', '1', '1.모두 DDL;2.모두 DML;3.모두 DCL;4.모두 TCL', 50),
+
+    (535, 'SELECT_DESCRIPTION', 'GRANT SELECT ON T TO U; 문은 어떤 언어 범주에 해당하는가?', '3', '1.DDL;2.DML;3.DCL;4.TCL', 50),
+
+    (536, 'SELECT_DESCRIPTION', '트랜잭션의 종료를 명시하는 명령은?', '1', '1.COMMIT/ROLLBACK;2.GRANT/REVOKE;3.CREATE/DROP;4.ANALYZE/EXPLAIN', 50),
+
+    (537, 'FILL_BLANK', 'DML은 _____ 형태와 _____ 형태가 모두 존재할 수 있다.', '1', '1.절차적·비절차적;2.정규화·비정규화;3.동기·비동기;4.고정·가변', 50),
+
+    (538, 'FILL_BLANK', '일반 사용자(naive user)는 보통 _____를 통해 사전에 작성된 질의나 화면으로 DB에 접근한다.', '2', '1.DDL 스크립트;2.응용 프로그램;3.백업 스케줄러;4.클러스터 매니저', 50),
+
+    (539, 'SELECT_DESCRIPTION', '다음 SQL을 분류하라 - INSERT, UPDATE, DELETE, SELECT … FOR UPDATE, SAVEPOINT S1.', '4', '1.TCL;2.DDL;3.DCL;4.DML', 50),
+
+    (540, 'SELECT_DESCRIPTION', '응용 개발자의 주 업무로 보기 적절한 것은?', '3', '1.스키마 표준 수립;2.정기 백업/복구;3.트리거/프로시저 작성 및 CRUD 구현;4.저장장치 교체', 50),
+
+    (541, 'FILL_BLANK', 'REVOKE는 _____에 속하며, _____을 의미한다.', '1', '1.DCL·권한 회수;2.DDL·스키마 삭제;3.TCL·트랜잭션 종료;4.DML·데이터 삭제', 50),
+
+    (542, 'FILL_BLANK', '테이블 스키마를 정의·변경·삭제하는 명령의 집합을 _____라고 한다.', '3', '1.DCL;2.DML;3.DDL;4.TCL', 50),
+
+    (543, 'SELECT_DESCRIPTION', '다음 SQL과 분류의 짝이 올바른 것은?', '2', '1.GRANT SELECT ON T TO U; - DML;2.CREATE TABLE T(...); - DDL;3.REVOKE UPDATE ON T FROM U; - DML;4.INSERT INTO T VALUES(...); - DDL', 50),
+
+    (544, 'FILL_BLANK', '_____은 스키마 정의·변경·삭제에 해당하고, _____은 데이터 조회·조작에 해당하며, _____은 권한 부여·회수에 해당한다.', '3', '1.DDL, DCL, DML;2.DML, DDL, DCL;3.DDL, DML, DCL;4.DCL, DDL, DML', 50);
+
+-- Unit02 - 관계형 모델 1 (Lesson ID: 51)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (545, 'SELECT_DESCRIPTION', '다음 중 릴레이션의 기본 구성 요소가 아닌 것은?', '4', '1.속성(Attribute);2.튜플(Tuple);3.카디널리티(Cardinality);4.인덱스(Index)', 51),
+
+    (546, 'FILL_BLANK', '릴레이션의 _____는 속성의 개수, _____는 튜플의 개수를 의미한다.', '1', '1.차수-카디널리티;2.카디널리티-차수;3.도메인-슈퍼키;4.슈퍼키-도메인', 51),
+
+    (547, 'SELECT_DESCRIPTION', '최소성과 유일성을 모두 만족하는 키를 무엇이라 하는가?', '2', '1.슈퍼키;2.후보키;3.기본키;4.대체키', 51),
+
+    (548, 'SELECT_DESCRIPTION', '다음 설명 중 옳은 것만을 모두 고르시오. ① 모든 기본키는 후보키이다. ② 모든 후보키는 슈퍼키이다. ③ 슈퍼키는 항상 최소성을 만족한다. ④ 외래키는 반드시 NULL을 가질 수 없다.', '1', '1.①, ②;2.①, ③;3.②, ④;4.①, ②, ③, ④', 51),
+
+    (549, 'SELECT_DESCRIPTION', '기본키 선정 기준으로 옳지 않은 것은?', '3', '1.변경 가능성이 낮은 속성을 고른다;2.가능한 짧은 길이가 좋다;3.의미 있는 자연키를 반드시 사용한다;4.NULL/중복이 불가능해야 한다', 51),
+
+    (550, 'SELECT_DESCRIPTION', 'Member(employee_no UNIQUE, email UNIQUE, phone UNIQUE, name)에서 후보키 집합과 추천 기본키의 조합으로 옳은 것은?', '1', '1.후보키={employee_no},{email},{phone} / 기본키=employee_no;2.후보키={employee_no},{email} / 기본키=email;3.후보키={email},{phone} / 기본키=phone;4.후보키={employee_no},{name} / 기본키=name', 51),
+
+    (551, 'SELECT_DESCRIPTION', '다음 DDL에서 기본키는 무엇인가? CREATE TABLE Enrollment( student_id BIGINT NOT NULL, course_id BIGINT NOT NULL, enrolled_at TIMESTAMP NOT NULL, PRIMARY KEY (student_id, course_id), FOREIGN KEY (student_id) REFERENCES Student(id), FOREIGN KEY (course_id) REFERENCES Course(id) );', '3', '1.student_id;2.course_id;3.(student_id, course_id);4.enrolled_at', 51),
+
+    (552, 'SELECT_DESCRIPTION', '외래키에 대한 설명으로 옳은 것은?', '2', '1.외래키는 항상 기본키여야 한다;2.외래키는 참조 대상의 후보키/기본키를 참조한다;3.외래키는 NULL이 될 수 없다;4.외래키는 항상 UNIQUE여야 한다', 51),
+
+    (553, 'SELECT_DESCRIPTION', '한 주문에 여러 주문상세. 같은 주문에서 같은 상품은 한 번만 담을 수 있음. 인조키 금지, 다른 테이블이 OrderItem 직접 참조하지 않음, PK는 업무 속성만 사용. 가장 타당한 PK 설계는?', '2', '1.id + (order_id, product_id) UNIQUE;2.(order_id, product_id) 복합 PK;3.product_id 단일 PK;4.order_id 단일 PK', 51),
+
+    (554, 'SELECT_DESCRIPTION', '다음 중 참조 무결성을 가장 강하게 보장하는 삭제 정책은?', '3', '1.ON DELETE RESTRICT;2.ON DELETE SET NULL;3.ON DELETE CASCADE;4.ON DELETE NO ACTION', 51),
+
+    (555, 'FILL_BLANK', '기본키로 선택되지 않은 후보키를 _____라 하고, 업무 의미와 무관한 인조 식별자를 _____라 한다.', '1', '1.대체키·서로게이트 키;2.슈퍼키·후보키;3.기본키·외래키;4.복합키·부분키', 51),
+
+    (556, 'FILL_BLANK', 'Category(id PK, name, parent_id FK→Category.id)에서 루트 카테고리를 허용하려면 가장 적절한 제약은?', '2', '1.parent_id NOT NULL;2.parent_id NULL 허용;3.parent_id UNIQUE;4.parent_id에 기본키 부여', 51);
+
+-- Unit02 - 관계형 모델 2 (Lesson ID: 52)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (557, 'SELECT_DESCRIPTION', '엔터티 무결성(Entity Integrity) 규칙으로 옳은 것은?', '3', '1.기본키는 NULL 가능;2.기본키는 중복 가능;3.기본키는 NULL 불가·유일해야 한다;4.외래키는 반드시 기본키여야 한다', 52),
+
+    (558, 'FILL_BLANK', '세 가지 무결성은 엔티티 무결성, 참조 무결성, _____ 무결성이다.', '도메인', '-', 52),
+
+    (559, 'SELECT_DESCRIPTION', '다음 중 엔터티 무결성을 위반하는 DDL은?', '3', '1.CREATE TABLE A(id INT PRIMARY KEY, name TEXT NOT NULL);2.CREATE TABLE B(id INT, name TEXT, PRIMARY KEY (id));3.CREATE TABLE C(id INT NULL, PRIMARY KEY (id));4.CREATE TABLE D(a INT, b INT, PRIMARY KEY (a, b))', 52),
+
+    (560, 'SELECT_DESCRIPTION', '잘못된 선지를 골라주세요.', '1', '1.WHERE col = NULL은 참인 행을 찾는다.;2.COUNT(col)은 NULL을 제외한다.;3.WHERE col <> 5는 col이 NULL인 행은 잡아내지 않는다.;4.COUNT(DISTINCT col)은 NULL을 제외한다.', 52),
+
+    (561, 'SELECT_DESCRIPTION', 'Product(category_id FK → Category.id)에서 카테고리 삭제 시 상품은 남기되, 소속만 제거하려면?', '3', '1.ON DELETE RESTRICT + category_id NOT NULL;2.ON DELETE CASCADE + category_id NOT NULL;3.ON DELETE SET NULL + category_id NULL 허용;4.ON DELETE NO ACTION + category_id NOT NULL', 52),
+
+    (562, 'SELECT_DESCRIPTION', '다음 쿼리가 결과를 전혀 반환하지 않는다. 이유와 올바른 대안은? (Blacklist.user_id에 NULL이 하나라도 있으면 어떤 문제가?) SELECT * FROM Order o WHERE o.user_id NOT IN (SELECT user_id FROM Blacklist);', '2', '1.NOT IN은 NULL과 상관없다;2.NOT EXISTS로 바꾸거나 서브 쿼리에서 WHERE user_id IS NOT NULL을 추가;3.IN으로 바꾸면 된다;4.IS NOT NULL만 쓰면 된다', 52),
+
+    (563, 'SELECT_DESCRIPTION', '일반적인 RDBMS에서 UNIQUE(email) 제약의 동작으로 옳은 것은?', '2', '1.email = NULL은 한 행만 허용;2.email = NULL은 여러 행도 허용될 수 있다;3.UNIQUE는 항상 NULL을 금지;4.DB에 따라 UNIQUE가 중복도 허용', 52),
+
+    (564, 'SELECT_DESCRIPTION', 'price가 0보다 커야 하고 비어 있으면 안 된다. 가장 적절한 제약 조합은?', '3', '1.CHECK (price > 0);2.price NOT NULL;3.price NOT NULL CHECK (price > 0);4.DEFAULT 0만 지정', 52),
+
+    (565, 'SELECT_DESCRIPTION', 'Subscription(start_date DATE NOT NULL, end_date DATE NULL)에서 "진행중 구독은 end_date가 NULL이고, 종료된 구독은 end_date ≥ start_date여야 한다." 올바른 CHECK는?', '2', '1.CHECK (end_date >= start_date);2.CHECK (end_date IS NULL OR end_date >= start_date);3.CHECK (end_date IS NOT NULL AND end_date >= start_date);4.CHECK (start_date <= end_date OR end_date = '')', 52),
+
+    (566, 'SELECT_DESCRIPTION', '다음 테이블에서 어떤 INSERT가 실패할까? CREATE TABLE T( a INT, b INT, PRIMARY KEY (a,b) );', '4', '1.INSERT INTO T(a,b) VALUES (1,1);2.INSERT INTO T(a,b) VALUES (1,NULL);3.INSERT INTO T(a,b) VALUES (NULL,1);4.2)와 3) 모두', 52),
+
+    (567, 'SELECT_DESCRIPTION', '다음 정의에서 어떤 문제가 있는가? CREATE TABLE UserProfile( user_id BIGINT NOT NULL, profile_img_url TEXT, FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL );', '2', '1.FK가 PK를 참조하지 않는다;2.ON DELETE SET NULL이지만 user_id가 NOT NULL;3.profile_img_url은 NULL이면 안 된다;4.FOREIGN KEY에는 UNIQUE가 필요', 52),
+
+    (568, 'SELECT_DESCRIPTION', '기본값과 NULL에 관한 설명으로 옳은 것은? CREATE TABLE Log( level INT NOT NULL DEFAULT 1 );', '2', '1.INSERT INTO Log(level) VALUES (NULL);는 DEFAULT가 적용된다;2.INSERT INTO Log DEFAULT VALUES;는 level=1로 들어간다;3.INSERT INTO Log(level) VALUES (2);는 에러;4.DEFAULT는 SELECT시에만 적용', 52);
+
+-- Unit03 - 관계대수 1 (Lesson ID: 53)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (569, 'SELECT_DESCRIPTION', 'A={1,2,3}, B={3,4,5}일 때 A∪B는?', '3', '1.{1, 2, 3};2.{3};3.{1,2,3,4,5};4.{4, 5}', 53),
+
+    (570, 'SELECT_DESCRIPTION', 'A={a,b,c}, B={b,c,d}일 때 A와 B의 교집합은?', '2', '1.{a,d};2.{b,c};3.{a,b,c,d};4.{}', 53),
+
+    (571, 'SELECT_DESCRIPTION', 'A={1,2,3,4}, B={3,4,5}일 때 A-B는?', '1', '1.{1,2};2.{3,4};3.{5};4.{1,2,5}', 53),
+
+    (572, 'SELECT_DESCRIPTION', 'A={1,2}, B={x,y}일 때 A x B(데카르트 곱)는?', '1', '1.{(1,x),(1,y),(2,x),(2,y)};2.{(x,1),(y,1),(x,2),(y,2)};3.{1,2,x,y};4.{(1,2),(x,y)}', 53),
+
+    (573, 'FILL_BLANK', '항상 교환법칙이 성립하는 두 연산은 합집합과 _____입니다.', '교집합', '-', 53),
+
+    (574, 'FILL_BLANK', '항상 결합 법칙이 성립하는 두 연산은 합집합과 _____입니다.', '교집합', '-', 53),
+
+    (575, 'SELECT_DESCRIPTION', '다음 중 항상 참인 등식은?', '2', '1.A x (B 합집합 C) = (A x B) 교집합 (A x C);2.A x (B 교집합 C) = (A x B) 교집합 (A x C);3.A - (B 합집합 C) = (A-B) 합집합 (A-C);4.A - (B 교집합 C) = (A-B) 교집합 (A-C)', 53),
+
+    (576, 'SELECT_DESCRIPTION', '보편집합 U와 공집합(빈집합) {}에 대해 항상 참인 것을 고르시오.', '1', '1.A 합집합 {} = A, A 교집합 U = A;2.A 합집합 U = {}, A 교집합 {} = A;3.A 합집합 {} = {}, A 교집합 U = U;4.A 합집합 U = A, A 교집합 {} = U', 53),
+
+    (577, 'SELECT_DESCRIPTION', '|A|=20, |B|=15, |A 교집합 B|=5일 때 |A 합집합 B|는?', '2', '1.25;2.30;3.35;4.40', 53),
+
+    (578, 'SELECT_DESCRIPTION', '전체 원소가 100개이고 |A|=60, |B|=50, |A 교집합 B|=20일 때 A도 B도 아닌 원소의 수는?', '3', '1.0;2.5;3.10;4.20', 53),
+
+    (579, 'SELECT_DESCRIPTION', 'A={1,2,3}, B={3,4,5}일 때 (A-B) 합집합 (B-A)는?', '2', '1.{3};2.{1,2,4,5};3.{1,2,3,4,5};4.{}', 53),
+
+    (580, 'SELECT_DESCRIPTION', '|A|=4, |B|=10, |C|=3이고 C는 B의 부분 집합일 때 |A x (B-C)|는?', '4', '1.7;2.12;3.21;4.28', 53);
+
+-- Unit03 - 관계대수 2 (Lesson ID: 54)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (581, 'SELECT_DESCRIPTION', 'Student(sid, name, dept) 스키마가 있을 때, "CS 학과 학생들의 이름만"에 해당하는 식은?', '1', '1.π name ( σ dept=''CS'' ( Student ) );2.σ dept=''CS'' ( π name ( Student ) );3.π dept ( σ name=''CS'' ( Student ) );4.π name ( Student ▷◁ Course )', 54),
+
+    (582, 'SELECT_DESCRIPTION', 'Enroll(sid, cid) 스키마가 있을 때, "DB101을 수강한 학생 sid 목록"에 해당하는 식은?', '1', '1.π sid ( σ cid=''DB101'' ( Enroll ) );2.σ cid=''DB101'' ( π sid ( Enroll ) );3.π name ( σ cid=''DB101'' ( Enroll ) );4.π cid ( σ sid=''DB101'' ( Enroll ) )', 54),
+
+    (583, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, "수강한 학생 이름과 과목 제목(title)"을 얻는 식의 빈칸을 채우시오. π name, title ( ( Student _____ Enroll ) _____ Course )', '1', '1.▷◁ , ▷◁;2.▷◁ , ÷;3.÷ , ▷◁;4.▷◁ , σ', 54),
+
+    (584, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid, grade) 스키마가 있을 때, "A학점을 받은 학생 이름"을 σ, π, ▷◁로만 표현하시오. → π name ( Student _____ σ grade=''A'' ( Enroll ) )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
+
+    (585, 'SELECT_DESCRIPTION', 'Teaches(pid, cid, term), Course(cid, title) 스키마가 있을 때, "pid=10 교수가 2025S 학기에 가르친 과목 제목(title)"은?', '1', '1.π title ( σ pid=10 ∧ term=''2025S'' ( Teaches ) ▷◁ Course );2.π title ( Teaches ▷◁ σ pid=10 ( Course ) );3.σ pid=10 ( π title ( Teaches ▷◁ Course ) );4.π cid ( σ pid=10 ∧ term=''2025S'' ( Teaches ) )', 54),
+
+    (586, 'FILL_BLANK', 'Enroll(sid, cid), Course(cid, dept) 스키마가 있을 때, "CS 학과에서 개설된 모든 과목을 수강한 학생 sid"를 ÷로 표현하시오. Enroll _____ π cid ( σ dept=''CS'' ( Course ) )', '4', '1.▷◁;2.π;3.σ;4.÷', 54),
+
+    (587, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Req(cid) 스키마가 있을 때, "Req의 모든 과목을 수강한 학생 sid"에 해당하는 가장 직접적인 식은?', '1', '1.Enroll ÷ Req;2.π sid ( Enroll ▷◁ Req );3.π sid ( σ cid∈Req ( Enroll ) );4.π sid ( Enroll )', 54),
+
+    (588, 'FILL_BLANK', 'Enroll(sid, cid, grade), Student(sid, name) 스키마가 있을 때, 다음 두 식이 동치가 되도록 빈칸에 들어갈 곳을 고르시오. π name ( σ grade=''A'' ( Enroll ) ▷◁ Student ) = π name ( Student ▷◁ _____ )', '1', '1.σ grade=''A'' ( Enroll );2.π sid ( Enroll );3.σ name=''A'' ( Student );4.Enroll ÷ σ grade=''A'' ( Enroll )', 54),
+
+    (589, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, "학생 sid와 수강 과목 title 쌍"을 가장 간단히 나타내는 식은?', '1', '1.π sid, title ( Enroll ▷◁ Course );2.π name, title ( Student ▷◁ Course );3.π sid, title ( Student ▷◁ Course );4.π sid, title ( σ dept=''CS'' ( Enroll ) )', 54),
+
+    (590, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid), Course(cid, title, dept) 스키마가 있을 때, "학생이 자신의 학과(dept)의 과목을 수강한 (sid, name, title)"을 표현하시오. → π sid, name, title ( Student ▷◁ Enroll _____ Course )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
+
+    (591, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid) 스키마가 있을 때, 다음 식에서 빈칸에 맞는 연산을 고르시오. π name ( _____ ( Student ) ▷◁ Enroll ) = "CS 학과이면서 수강 경험이 있는 학생 이름"', '1', '1.σ dept=''CS'';2.π dept;3.÷ Req;4.σ name=''CS''', 54),
+
+    (592, 'FILL_BLANK', 'Teaches(pid, cid), Req(cid) 스키마가 있을 때, 다음 식에서 빈칸에 들어갈 가장 알맞은 표현을 고르시오. π pid ( _____ ) = "필수 과목 Req를 모두 가르친 교수 pid"', '1', '1.Teaches ÷ Req;2.π pid ( Teaches ▷◁ Req );3.σ cid IN π cid(Req) ( Teaches );4.π pid,cid ( Teaches ) ▷◁ Req', 54);
+
+-- Unit04 - SQL 1-1 (Lesson ID: 55)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (593, 'FILL_BLANK', 'Users(id, name, status) 스키마가 있을 때, 활성 사용자 이름만 조회하려 한다. 빈칸에 들어갈 컬럼을 고르시오. \nSELECT _____ FROM Users WHERE status=''ACTIVE'';', '2', '1.id;2.name;3.*;4.id, name', 55),
+
+    (594, 'SELECT_DESCRIPTION', 'Users(id, dept, active) 스키마가 있을 때, "CS 또는 EE 학과이면서 active=1"을 정확히 표현한 WHERE는?', '2', '1.WHERE dept=''CS'' OR dept=''EE'' AND active=1;2.WHERE (dept=''CS'' OR dept=''EE'') AND active=1;3.WHERE dept IN (''CS'',''EE'' AND active=1);4.WHERE (dept=''CS'' AND dept=''EE'') OR active=1', 55),
+
+    (595, 'FILL_BLANK', 'Orders(id, amount) 스키마가 있을 때, 결제 금액이 100 이상 200 이하인 주문을 조회한다. 빈칸에 올바른 연산자를 고르시오. SELECT id FROM Orders WHERE amount _____ 100 AND 200;', '1', '1.BETWEEN;2.IN;3.LIKE;4.EXISTS', 55),
+
+    (596, 'FILL_BLANK', 'Customers(id, name, phone) 스키마가 있을 때, 연락처가 없는 고객을 찾는 WHERE 조건으로 맞는 것은?', '3', '1.WHERE phone = NULL;2.WHERE phone == NULL;3.WHERE phone IS NULL;4.WHERE ISNULL(phone)', 55),
+
+    (597, 'FILL_BLANK', 'Articles(id, title) 스키마가 있을 때, 제목이 ''SQL''로 시작하는 글을 찾는 LIKE 패턴은? SELECT id FROM Articles WHERE title LIKE _____ ;', '1', '1.''SQL%'';2.''%SQL'';3.''%SQL%'';4.''SQL_''', 55),
+
+    (598, 'SELECT_DESCRIPTION', 'Users(u_id), Orders(o_id, user_id) 스키마가 있을 때, "주문이 없는 사용자"를 안전하게 구하는 WHERE는? (서브쿼리에 NULL이 포함될 수 있음)', '2', '1.WHERE u_id NOT IN (SELECT user_id FROM Orders);2.WHERE NOT EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = u.u_id);3.WHERE u_id IN (SELECT user_id FROM Orders) = FALSE;4.WHERE user_id IS NULL', 55),
+
+    (599, 'SELECT_DESCRIPTION', 'Users(id), Orders(id, user_id) 스키마가 있을 때, "주문이 있는 사용자만"을 가장 간결히 표현한 WHERE는?', '3', '1.WHERE id IN (SELECT user_id FROM Orders);2.WHERE EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = Users.id);3.1)과 2) 모두 가능;4.WHERE id = ANY (SELECT id FROM Orders)', 55),
+
+    (600, 'SELECT_DESCRIPTION', 'Sales(id, created_at) 스키마가 있을 때, 2025-08-01 당일 데이터만 정확히(시분초 포함) 조회하려면?', '3', '1.WHERE DATE(created_at) = ''2025-08-01'';2.WHERE created_at BETWEEN ''2025-08-01'' AND ''2025-08-01 23:59:59'';3.WHERE created_at >= ''2025-08-01'' AND created_at < ''2025-08-02'';4.WHERE created_at LIKE ''2025-08-01%''', 55),
+
+    (601, 'SELECT_DESCRIPTION', 'Items(id, price, qty) 스키마가 있을 때, 합계(total)=price*qty가 1000 초과인 행을 고를 때 올바른 WHERE는?', '2', '1.SELECT id, price*qty AS total FROM Items WHERE total > 1000;;2.SELECT id FROM Items WHERE price*qty > 1000;;3.SELECT id FROM Items WHERE qty > 1000/price AS total;;4.SELECT id, total FROM Items WHERE price*qty > 1000;', 55),
+
+    (602, 'FILL_BLANK', 'Employees(id, role) 스키마가 있을 때, ADMIN 또는 MANAGER만 조회하는 WHERE 절에서 빈칸에 알맞는 내용을 작성하라. WHERE role _____ (''ADMIN'', ''MANAGER'')', 'in', '-', 55),
+
+    (603, 'SELECT_DESCRIPTION', 'Employees(id, bonus) 스키마가 있을 때, 보너스가 0보다 큰 직원만 찾는 WHERE로 ANSI 표준에 맞는 것은?', '3', '1.WHERE IFNULL(bonus,0) > 0;2.WHERE NVL(bonus,0) > 0;3.WHERE COALESCE(bonus,0) > 0;4.WHERE ISNULL(bonus,0) > 0', 55),
+
+    (604, 'SELECT_DESCRIPTION', 'Users(id, country, status) 스키마가 있을 때, ''활성'' 사용자들의 서로 다른 ''국가'' 목록만 가져오는 올바른 SELECT는?', '2', '1.SELECT country FROM Users WHERE status=''ACTIVE'';;2.SELECT DISTINCT country FROM Users WHERE status=''ACTIVE'';;3.SELECT country FROM Users GROUP BY status=''ACTIVE'';;4.SELECT DISTINCT country FROM Users;', 55);
+
+-- Unit04 - SQL 1-2 (Lesson ID: 56)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (605, 'SELECT_DESCRIPTION', 'Users(user_id, nickname) 스키마가 있을 때, 사용자 표시명을 닉네임이 있으면 닉네임으로, 없으면 ''user#'' || user_id로 보여주려면?', '2', '1.SELECT NVL(nickname, ''user#'' || user_id) AS display_name FROM Users;2.SELECT COALESCE(nickname, ''user#'' || user_id) AS display_name FROM Users;3.SELECT IFNULL(nickname, CONCAT(''user#'', user_id)) AS display_name FROM Users;4.SELECT CASE WHEN nickname IS NULL THEN ''user#'' || user_id END AS display_name FROM Users', 56),
+
+    (606, 'SELECT_DESCRIPTION', 'Orders(order_id, amount, created_at) 스키마가 있을 때, ''월별'' 매출 합계를 집계하려고 한다. 올바른 GROUP BY는?', '2', '1.SELECT SUM(amount), created_at FROM Orders GROUP BY created_at;2.SELECT EXTRACT(YEAR FROM created_at) AS y, EXTRACT(MONTH FROM created_at) AS m, SUM(amount) FROM Orders GROUP BY EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at);3.SELECT TO_CHAR(created_at, ''YYYY-MM'') ym, SUM(amount) FROM Orders GROUP BY ym;4.SELECT SUM(amount) FROM Orders GROUP BY 1', 56),
+
+    (607, 'SELECT_DESCRIPTION', 'Orders(order_id, amount, created_at) 스키마가 있을 때, 정확히 "일자별" 매출 합계를 구하는 쿼리는?', '2', '1.SELECT created_at, SUM(amount) FROM Orders GROUP BY created_at;2.SELECT CAST(created_at AS DATE) d, SUM(amount) FROM Orders GROUP BY CAST(created_at AS DATE);3.SELECT DATE(created_at) d, SUM(amount) FROM Orders GROUP BY created_at;4.SELECT SUM(amount) FROM Orders GROUP BY DATE(created_at), created_at', 56),
+
+    (608, 'SELECT_DESCRIPTION', 'Orders(order_id, user_id) 스키마가 있을 때, COUNT(col) vs COUNT(*)의 차이로 옳은 것은?', '2', '1.COUNT(col)은 NULL 포함, COUNT(*)는 NULL 제외;2.COUNT(col)은 NULL 제외, COUNT(*)는 행 개수 전부;3.둘 다 NULL 제외;4.둘 다 NULL 포함', 56),
+
+    (609, 'SELECT_DESCRIPTION', 'Orders(order_id, user_id, status, amount) 스키마가 있을 때, 상태가 PAID인 주문만 대상으로 사용자의 총 결제액이 1,000,000원 초과인 user_id를 찾으려면?', '2', '1.SELECT user_id FROM Orders WHERE status=''PAID'' GROUP BY user_id WHERE SUM(amount) > 1000000;2.SELECT user_id FROM Orders WHERE status=''PAID'' GROUP BY user_id HAVING SUM(amount) > 1000000;3.SELECT user_id FROM Orders GROUP BY user_id WHERE SUM(amount) > 1000000 AND status=''PAID'';4.SELECT user_id FROM Orders HAVING status=''PAID'' AND SUM(amount) > 1000000', 56),
+
+    (610, 'FILL_BLANK', 'OrderItem(order_id, product_id, qty), Product(product_id, category) 스키마가 있을 때, 다음 쿼리의 빈칸 [A]~[C]를 알맞게 채워, 카테고리 별 판매 수량 합계를 구하고 합계가 100 이상인 카테고리만 조회하라. \nSELECT _____, SUM(oi.qty) AS total_qty \nFROM OrderItem oi JOIN Product p _____ \nGROUP BY _____ \n_____ SUM(oi.qty) >= 100;', '4', '1.A = p.category, B = HAVING, C = WHERE;2.A = HAVING, B = p.category, C = WHERE;3.A = USING(product_id), B = WHERE, C = p.category;4.A = p.category, B = USING(product_id), C = HAVING', 56),
+
+    (611, 'FILL_BLANK', 'Orders(order_id, user_id, amount, created_at), Users(user_id, city) 스키마가 있을 때, 일자별·도시별 매출 합계를 구하려 한다. 다음 쿼리의 빈칸을 채우시오. \nSELECT CAST(o.created_at AS DATE) AS d, u.city, SUM(o.amount) AS total_amount \nFROM Orders o JOIN Users u ON u.user_id = o.user_id \nGROUP BY _____, _____ ;', '4', '1.o.created_at, u.city;2.d, u.city;3.DATE(o.created_at), Users.city;4.CAST(o.created_at AS DATE), u.city', 56),
+
+    (612, 'SELECT_DESCRIPTION', 'Orders(order_id, user_id, status) 스키마가 있을 때, 사용자별 취소율(= 취소건수 / 전체건수)을 0~1 실수로 구하는 식으로 옳은 것은?', '2', '1.SUM(CASE WHEN status=''CANCELED'' THEN 1 END) / COUNT(*);2.SUM(CASE WHEN status=''CANCELED'' THEN 1 ELSE 0 END) * 1.0 / COUNT(*);3.COUNT(CASE WHEN status=''CANCELED'' THEN 1 END) / COUNT(*);4.AVG(CASE WHEN status=''CANCELED'' THEN 1 END)', 56),
+
+    (613, 'SELECT_DESCRIPTION', 'Orders(order_id, user_id, created_at) 스키마가 있을 때, 월별로 구매한 서로 다른 사용자 수를 구하려면?', '2', '1.... COUNT(user_id) ... GROUP BY 년,월;2.... COUNT(DISTINCT user_id) ... GROUP BY EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at);3.... SUM(DISTINCT user_id) ...;4.... COUNT(*) FILTER (WHERE DISTINCT user_id) ...', 56),
+
+    (614, 'SELECT_DESCRIPTION', 'Orders(order_id, created_at), OrderItem(order_id, product_id) 스키마가 있을 때, 제품별 최초 판매일과 최종 판매일을 구하는 쿼리는?', '2', '1.SELECT product_id, MIN(created_at), MAX(created_at) FROM Orders GROUP BY product_id;2.SELECT product_id, MIN(o.created_at), MAX(o.created_at) FROM OrderItem oi JOIN Orders o USING(order_id) GROUP BY product_id;3.SELECT product_id, FIRST(created_at), LAST(created_at) FROM OrderItem GROUP BY product_id;4.SELECT product_id, MIN(created_at), MAX(created_at) FROM OrderItem GROUP BY created_at', 56),
+
+    (615, 'SELECT_DESCRIPTION', 'Orders(user_id, amount, created_at) 스키마가 있을 때, 다음 쿼리에서 표준 SQL 기준으로 잘못된 부분을 고르시오. 1. SELECT user_id, SUM(amount) AS s 2. FROM Orders 3. GROUP BY user_id 4. ORDER BY created_at', '4', '1.1;2.2;3.3;4.4', 56),
+
+    (616, 'FILL_BLANK', 'Orders(order_id, user_id, status, amount), Users(user_id, city) 스키마가 있을 때, PAID 주문만 대상으로 도시별 평균 결제액이 50,000원 이상인 도시를 구하는 쿼리의 HAVING 부분을 완성하라. SELECT u.city, AVG(o.amount) AS avg_amt FROM Orders o JOIN Users u ON u.user_id = o.user_id WHERE o.status = ''PAID'' GROUP BY u.city HAVING _____ >= 50000;', '1', '1.AVG(o.amount);2.SUM(o.amount);3.COUNT(o.amount);4.o.amount', 56);
+
+-- Unit04 - SQL 1-3 (Lesson ID: 57)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (617, 'SELECT_DESCRIPTION', 'Users(id, level, created_at) 스키마가 있을 때, level 내림차순, 동점이면 created_at 내림차순, 그래도 같으면 id 오름차순으로 정렬하라. 올바른 ORDER BY는?', '3', '1.ORDER BY level, created_at DESC, id;2.ORDER BY level DESC, created_at, id ASC;3.ORDER BY level DESC, created_at DESC, id ASC;4.ORDER BY level DESC, id ASC, created_at DESC', 57),
+
+    (618, 'SELECT_DESCRIPTION', 'Posts(id, title, created_at, pinned_at) 스키마가 있을 때, 고정 글(pinned_at NOT NULL)을 먼저, 그 다음 비고정 글을, 각 그룹 내에서는 최신(created_at DESC) 순으로 정렬하라.', '2', '1.ORDER BY pinned_at DESC, created_at DESC;2.ORDER BY CASE WHEN pinned_at IS NULL THEN 1 ELSE 0 END, created_at DESC;3.ORDER BY pinned_at, created_at DESC;4.ORDER BY created_at DESC', 57),
+
+    (619, 'FILL_BLANK', 'Posts(id, created_at) 스키마가 있을 때, 최신순으로 2페이지(page=2, size=20)를 조회하려고 한다. 빈칸을 채우시오. \nSELECT id FROM Posts \nORDER BY created_at DESC, id DESC \nLIMIT :size OFFSET _____ ;', '2', '1.:page * :size;2.(:page - 1) * :size;3.:page + :size;4.:size - :page', 57),
+
+    (620, 'SELECT_DESCRIPTION', 'Orders(id, created_at) 스키마가 있을 때, Oracle에서 "최신 10건"을 올바르게 가져오는 쿼리는?', '2', '1.SELECT * FROM Orders WHERE ROWNUM <= 10 ORDER BY created_at DESC;2.SELECT * FROM (SELECT * FROM Orders ORDER BY created_at DESC) WHERE ROWNUM <= 10;3.SELECT * FROM Orders ORDER BY created_at DESC FETCH FIRST 10 ROWS ONLY;4.SELECT * FROM Orders WHERE ROWNUM BETWEEN 1 AND 10 ORDER BY created_at DESC', 57),
+
+    (621, 'SELECT_DESCRIPTION', 'Posts(id, created_at, category) 스키마가 있을 때, 최신순 키셋 페이지네이션으로 "커서(created_at=:c_at, id=:c_id) 이전" 20개를 가져올 올바른 조건은?', '2', '1.WHERE created_at <= :c_at AND id < :c_id ORDER BY created_at DESC, id DESC LIMIT 20;2.WHERE (created_at, id) < (:c_at, :c_id) ORDER BY created_at DESC, id DESC LIMIT 20;3.WHERE created_at < :c_at OR id < :c_id ORDER BY created_at DESC, id DESC LIMIT 20;4.WHERE created_at < :c_at ORDER BY id DESC LIMIT 20', 57),
+
+    (622, 'SELECT_DESCRIPTION', 'Posts(id, category, is_public, created_at) 스키마가 있을 때, 카테고리=''news'' AND is_public=TRUE 조건의 전체 행 수(페이지네이션 총 건수)를 구하는 쿼리는?', '1', '1.SELECT COUNT(*) FROM Posts WHERE category=''news'' AND is_public=TRUE;2.SELECT COUNT(*) OVER() FROM Posts WHERE category=''news'' AND is_public=TRUE LIMIT 1;3.SELECT COUNT(id) FROM Posts GROUP BY category, is_public;4.SELECT SUM(1) FROM Posts', 57),
+
+    (623, 'SELECT_DESCRIPTION', '페이지네이션에서 신규 행 삽입으로 인한 중복/누락을 줄이는 데 더 안전한 방식은?', '2', '1.OFFSET/LIMIT;2.키셋 페이지네이션(커서 방식: WHERE (k1,k2) < (:cursor...));3.-;4.-', 57),
+
+    (624, 'SELECT_DESCRIPTION', '1부터 시작하는 페이지 번호 p와 페이지 크기 s가 있을 때 OFFSET을 구하는 수식은?', '3', '1.p * s;2.(p - 1) + s;3.(p - 1) * s;4.p + s', 57),
+
+    (625, 'SELECT_DESCRIPTION', 'Orders(id, user_id, amount, created_at) 스키마가 있을 때, created_at 값이 같은 행들 사이에서도 결과 정렬이 항상 결정되도록 하려면?', '2', '1.ORDER BY created_at DESC;2.ORDER BY created_at DESC, id DESC;3.ORDER BY id DESC;4.ORDER BY created_at', 57),
+
+    (626, 'SELECT_DESCRIPTION', 'Posts(id, category, created_at) 스키마가 있을 때, WHERE category=:cat AND ORDER BY created_at DESC, id DESC 쿼리를 가속하기 좋은 인덱스는?', '2', '1.INDEX ON Posts(created_at);2.INDEX ON Posts(category, created_at DESC, id DESC);3.INDEX ON Posts(id, created_at);4.INDEX ON Posts(category)', 57),
+
+    (627, 'SELECT_DESCRIPTION', 'Products(id, price, updated_at) 스키마가 있을 때, 가격 높은 순으로 상위 5개를 가져오는 올바른 쿼리는?', '1', '1.SELECT * FROM Products ORDER BY price DESC FETCH FIRST 5 ROWS ONLY;2.SELECT * FROM Products WHERE ROWNUM <= 5 ORDER BY price DESC;3.SELECT * FROM (SELECT * FROM Products ORDER BY price) WHERE ROWNUM <= 5;4.SELECT TOP 5 * FROM Products ORDER BY price DESC', 57),
+
+    (628, 'FILL_BLANK', 'Posts(id, created_at) 스키마가 있을 때, 윈도우 함수로 21~40번째(페이지 2, size 20) 최신 글을 구하는 쿼리의 빈칸을 채우시오. \nSELECT id FROM \n( SELECT id, ROW_NUMBER() OVER (ORDER BY created_at DESC, id DESC) AS rn \n  FROM Posts ) t \nWHERE _____ ;', '4', '1.rn BETWEEN 20 AND 40;2.rn > 20;3.rn <= 40;4.rn >= 21 AND rn <= 40', 57);
+
+-- Unit05 - SQL 2-1 (Lesson ID: 58)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (629, 'SELECT_DESCRIPTION', 'Departments(id, name), Employees(id, name, dept_id NULL 허용) 스키마가 있을 때, "직원이 없어도 모든 부서를 포함해 조회"하려면 어떤 조인이 적절한가?', '2', '1.INNER JOIN;2.LEFT JOIN (Departments → Employees);3.RIGHT JOIN (Employees → Departments);4.NATURAL JOIN', 58),
+
+    (630, 'FILL_BLANK', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, "부서가 존재하는 직원만" 조회하는 빈칸을 채우시오. \nSELECT e.* \nFROM Employees e _____ JOIN Departments d \nON d.id = e.dept_id;', '1', '1.INNER;2.LEFT;3.RIGHT;4.FULL OUTER', 58),
+
+    (631, 'SELECT_DESCRIPTION', 'NATURAL JOIN에 대한 설명으로 가장 정확한 것은?', '1', '1.동일한 이름의 모든 컬럼에 대해 자동으로 동등 조인한다.;2.기본키 컬럼만 자동으로 조인한다.;3.USING(id)와 항상 동일하다.;4.스키마 변경에 강하다.', 58),
+
+    (632, 'FILL_BLANK', 'Employees(id, name, manager_id) 스키마가 있을 때, 직원과 그 매니저 이름을 함께 조회하되, 매니저가 없는 직원도 포함하라. \nSELECT e.name AS emp, m.name AS manager \nFROM Employees e \nLEFT JOIN Employees m \nON _____ ;', '1', '1.e.manager_id = m.id;2.e.id = m.manager_id;3.e.dept_id = m.dept_id;4.e.manager_id <> m.id', 58),
+
+    (633, 'SELECT_DESCRIPTION', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, 다음 RIGHT JOIN을 LEFT JOIN으로 동치 변환한 것은? \nSELECT d.id, e.id \nFROM Employees e \nRIGHT JOIN Departments d \nON d.id = e.dept_id;', '1', '1.Departments d LEFT JOIN Employees e ON e.dept_id = d.id;2.Departments d INNER JOIN Employees e ON e.dept_id = d.id;3.Employees e LEFT JOIN Departments d ON d.id = e.dept_id;4.Employees e FULL OUTER JOIN Departments d ON d.id = e.dept_id', 58),
+
+    (634, 'SELECT_DESCRIPTION', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문 유무와 상관없이 모든 고객과 모든 주문을 한 번에 나열(양쪽 모두 보존)"하려면?', '4', '1.INNER JOIN;2.LEFT JOIN;3.RIGHT JOIN;4.FULL OUTER JOIN', 58),
+
+    (635, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문이 없는 고객"을 의도에 가장 안전하게 구하라. 빈칸을 채우시오. SELECT c.* FROM Customers c WHERE _____ ;', '1', '1.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.o.id IS NULL;3.c.id NOT IN (SELECT customer_id FROM Orders);4.-', 58),
+
+    (636, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id), OrderItems(order_id, product_id) 스키마가 있을 때, "상품 :pid를 주문한 고객만(중복 없이)"을 구하라. 빈칸을 채우시오. SELECT c.* FROM Customers c WHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o JOIN OrderItems oi ON oi.order_id = o.id WHERE o.customer_id = c.id AND oi.product_id = :pid);2.c.id IN (SELECT o.customer_id FROM Orders o JOIN OrderItems oi ON oi.order_id = o.id WHERE oi.product_id = :pid);3.NATURAL JOIN으로 모두 결합 후 WHERE product_id = :pid;4.-', 58),
+
+    (637, 'FILL_BLANK', 'Departments(id, active), Employees(id, dept_id, active) 스키마가 있을 때, "활성 부서는 모두 보이고, 활성 직원만 매칭"되도록 빈칸을 채우시오. SELECT d.id, e.id FROM Departments d LEFT JOIN Employees e ON e.dept_id = d.id _____ WHERE d.active = ''Y'';', '3', '1.AND d.active = ''Y'';2.WHERE e.active = ''Y'';3.AND e.active = ''Y'';4.-', 58),
+
+    (638, 'FILL_BLANK', 'Posts(id), Comments(id, post_id), Likes(id, post_id) 스키마가 있을 때, "댓글 ≥1 AND 좋아요 ≥1" 포스트 개수를 중복 없이 구하라. 빈칸을 채우시오. SELECT COUNT(*) FROM Posts p WHERE _____ AND _____ ;', '2', '1.(1) p.id IN (SELECT post_id FROM Comments) (2) p.id IN (SELECT post_id FROM Likes);2.(1) EXISTS (SELECT 1 FROM Comments c WHERE c.post_id = p.id) (2) EXISTS (SELECT 1 FROM Likes l WHERE l.post_id = p.id);3.(1) JOIN Comments (2) JOIN Likes;4.-', 58),
+
+    (639, 'FILL_BLANK', 'Users(id, name), Profiles(user_id, name, photo_url) 스키마가 있을 때, NATURAL JOIN 대신 의도 컬럼만 명시하라. 빈칸을 채우시오. SELECT * FROM Users u JOIN Profiles p ON _____ ;', '1', '1.p.user_id = u.id;2.p.name = u.name;3.USING (id);4.-', 58),
+
+    (640, 'SELECT_DESCRIPTION', 'Employees(id, name, dept_id) 스키마가 있을 때, 같은 부서의 "동료 페어(본인은 제외)"를 구하는 조인 조건은?', '2', '1.e1.dept_id = e2.dept_id AND e1.id = e2.id;2.e1.dept_id = e2.dept_id AND e1.id <> e2.id;3.e1.dept_id <> e2.dept_id AND e1.id <> e2.id;4.e1.dept_id = e2.id', 58);
+
+-- Unit05 - SQL 2-2 (Lesson ID: 59)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (641, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문이 있는 고객"만 조회. 빈칸을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);3.c.id IN (SELECT o.id FROM Orders o);4.-', 59),
+
+    (642, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, 아래 IN을 JOIN으로 바꿀 때, 조인 종류를 채우시오. \nSELECT c.id FROM Customers c WHERE c.id IN (SELECT o.customer_id FROM Orders o) \n→ \nSELECT DISTINCT c.id \nFROM Customers c _____ JOIN Orders o \nON o.customer_id = c.id;', '2', '1.LEFT;2.INNER;3.RIGHT;4.FULL OUTER', 59),
+
+    (643, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id NULL 허용) 스키마가 있을 때, NULL 함정 없이 "주문이 없는 고객"을 안전하게 구하는 조건을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '3', '1.c.id NOT IN (SELECT customer_id FROM Orders);2.c.id NOT IN (SELECT customer_id FROM Orders WHERE customer_id IS NOT NULL);3.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);4.-', 59),
+
+    (644, 'SELECT_DESCRIPTION', 'IN 서브쿼리에 중복이 많아도 결과는 바뀌지 않는다.', '1', '1.참;2.거짓;3.경우에 따라 다름;4.-', 59),
+
+    (645, 'FILL_BLANK', 'Employees(id, salary), DeptSalaries(dept_id, salary) 스키마가 있을 때, salary > ANY(SELECT salary FROM DeptSalaries WHERE dept_id = :d)와 동치인 집계 표현을 채우시오. \nsalary > _____ (SELECT salary FROM DeptSalaries WHERE dept_id = :d)', '1', '1.MIN;2.MAX;3.AVG;4.-', 59),
+
+    (646, 'FILL_BLANK', 'Products(id, price) 스키마가 있을 때, price < ALL(SELECT price FROM Products WHERE id <> :id)와 동치인 집계 표현은? \nprice < _____ (SELECT price FROM Products WHERE id <> :id)', '1', '1.MIN;2.MAX;3.SUM;4.-', 59),
+
+    (647, 'FILL_BLANK', 'Products(id, price), CompetitorPrices(product_id, price) 스키마가 있을 때, p.price > ANY(...)를 EXISTS로 바꿀 때 비교 연산자를 채우시오. \nSELECT p.id \nFROM Products p \nWHERE EXISTS ( \n  SELECT 1 FROM CompetitorPrices cp \n  WHERE cp.product_id = p.id AND p.price _____ cp.price \n);', '3', '1.<;2.=;3.>;4.=', 59),
+
+    (648, 'FILL_BLANK', 'Products(id, price), CompetitorPrices(product_id, price) 스키마가 있을 때, p.price >= ALL(서브쿼리)와 동치인 NOT EXISTS 조건을 채우시오. NOT EXISTS ( SELECT 1 FROM CompetitorPrices cp WHERE cp.product_id = p.id AND p.price _____ cp.price )', '2', '1.<=;2.<;3.>;4.=', 59),
+
+    (649, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id, created_at) 스키마가 있을 때, "2025년에 주문이 없는 고객"을 LEFT JOIN으로 구한다. 빈칸을 채우시오. SELECT c.id FROM Customers c LEFT JOIN Orders o ON o.customer_id = c.id AND o.created_at >= DATE ''2025-01-01'' AND o.created_at < DATE ''2026-01-01'' WHERE _____ ;', '3', '1.o.customer_id IS NOT NULL;2.c.id IS NULL;3.o.id IS NULL;4.-', 59),
+
+    (650, 'FILL_BLANK', 'A(a1, a2), B(b1, b2) 스키마가 있을 때, (a1, a2) IN (SELECT b1, b2 FROM B)를 EXISTS로 바꿀 때 조건을 채우시오. EXISTS (SELECT 1 FROM B b WHERE _____ )', '1', '1.b.b1 = a.a1 AND b.b2 = a.a2;2.b.b1 = a.a2 AND b.b2 = a.a1;3.b.b1 = a.a1 OR b.b2 = a.a2;4.-', 59),
+
+    (651, 'FILL_BLANK', 'OrderItems(order_id, price) 스키마가 있을 때, oi.price > ALL(SELECT price FROM OrderItems WHERE order_id = :x)와 동치인 집계 표현은? oi.price > _____ (SELECT price FROM OrderItems WHERE order_id = :x)', '2', '1.MIN;2.MAX;3.AVG', 59),
+
+    (652, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, IN을 JOIN으로 바꿀 때, IN과 같은 "고객 중복 제거"를 위해 SELECT에 채워야 할 키워드는? SELECT _____ c.id FROM Customers c INNER JOIN Orders o ON o.customer_id = c.id;', '1', '1.DISTINCT;2.UNIQUE;3.TOP 1;4.-', 59);
+
+-- Unit05 - SQL 2-3 (Lesson ID: 60)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (653, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블의 id를 중복 없이 합치려면 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '1', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+
+    (654, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블을 합칠 때 중복 허용 + 빠른 경로를 선택하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '2', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+
+    (655, 'FILL_BLANK', 'Customers(id), Orders(customer_id) 스키마가 있을 때, 주문이 없는 고객 id를 집합 연산으로 구하라(Oracle: MINUS, PostgreSQL: EXCEPT). 빈칸을 채우시오. \nSELECT id FROM Customers \n_____ \nSELECT customer_id FROM Orders;', '4', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+
+    (656, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블에 공통으로 존재하는 id만 구하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+
+    (657, 'SELECT_DESCRIPTION', 'A(id), B(id) 스키마가 있을 때, 집합 연산 결과를 id 오름차순 정렬하려면 ORDER BY는 어디에 둬야 하는가?', '1', '1.마지막 SELECT 뒤 한 번만;2.각 SELECT마다;3.UNION ALL 사이사이;4.MINUS 앞', 60),
+
+    (658, 'FILL_BLANK', 'A(id, active), B(id, active) 스키마가 있을 때, active=''Y'' 조건을 집합 전에 밀어 넣어 비용을 줄여라. 빈칸을 채우시오. SELECT id FROM A WHERE active=''Y'' _____ SELECT id FROM B WHERE active=''Y'';', '1', '1.UNION;2.CONCAT;3.INTERSECT;4.MINUS/EXCEPT', 60),
+
+    (659, 'SELECT_DESCRIPTION', 'T(x 인덱스 존재), 조건: x IN (:a, :b) 스키마가 있을 때, 인덱스 활용 측면에서 유리한 형태는?', '2', '1.SELECT * FROM T WHERE x=:a OR x=:b;2.SELECT * FROM T WHERE x=:a UNION ALL SELECT * FROM T WHERE x=:b;3.SELECT * FROM T WHERE x IN (:a,:b) ORDER BY 1;4.-', 60),
+
+    (660, 'SELECT_DESCRIPTION', 'A(id), B(id) 스키마가 있을 때, 두 테이블의 중복 포함 합계 건수를 가장 간단히 구하라.', '2', '1.SELECT COUNT(*) FROM (SELECT id FROM A UNION SELECT id FROM B);2.SELECT COUNT(*) FROM (SELECT id FROM A UNION ALL SELECT id FROM B);3.SELECT COUNT(DISTINCT id) FROM (SELECT id FROM A UNION ALL SELECT id FROM B);4.-', 60),
+
+    (661, 'FILL_BLANK', 'A(a1,a2), B(b1,b2) 스키마가 있을 때, (a1,a2) 교집합을 구하라. 빈칸을 채우시오. SELECT a1, a2 FROM A _____ SELECT b1, b2 FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+
+    (662, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블에서 중복으로 나타나는 id만 골라라(교집합 값 목록). 빈칸을 채우시오. SELECT id FROM A _____ SELECT id FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+
+    (663, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 다음 MINUS/EXCEPT를 NOT EXISTS로 바꿀 때 괄호 안을 채우시오. SELECT id FROM A MINUS/EXCEPT SELECT id FROM B; → SELECT a.id FROM A a WHERE NOT EXISTS (SELECT 1 FROM B b WHERE _____ );', '1', '1.b.id = a.id;2.b.id <> a.id;3.a.id IS NULL;4.-', 60),
+
+    (664, 'SELECT_DESCRIPTION', '괄호 없이 A UNION B INTERSECT C의 평가 순서는?', '2', '1.(A UNION B) INTERSECT C;2.A UNION (B INTERSECT C);3.(A INTERSECT B) UNION C;4.-', 60);
+
+-- Unit06 - SQL 3-1 (Lesson ID: 61)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (665, 'FILL_BLANK', 'Users 테이블 생성 시 id를 기본키로 지정하라. 빈칸을 채우시오. \nCREATE TABLE Users ( \n  id BIGINT _____ , \n  email VARCHAR(255) \n);', '1', '1.PRIMARY KEY;2.UNIQUE;3.FOREIGN KEY;4.UNION', 61),
+
+    (666, 'FILL_BLANK', 'email을 유니크 제약으로 추가하라. 빈칸을 채우시오. \nALTER TABLE Users \nADD CONSTRAINT ux_users_email _____ (email);', '2', '1.PRIMARY KEY;2.UNIQUE;3.FOREIGN KEY;4.UNION', 61),
+
+    (667, 'FILL_BLANK', 'Orders에 status 컬럼을 기본값 ''PENDING'', NULL 금지로 추가하라. 빈칸을 채우시오. \nALTER TABLE Orders \nADD COLUMN status VARCHAR(20) _____ ;', '4', '1.DEFAULT ''PENDING'' NULL;2.NOT NULL;3.DEFAULT ''PENDING'';4.DEFAULT ''PENDING'' NOT NULL', 61),
+
+    (668, 'FILL_BLANK', 'Users의 nickname 컬럼을 handle로 이름 변경. 빈칸을 채우시오. \nALTER TABLE Users _____ nickname TO handle;', '1', '1.RENAME COLUMN;2.CHANGE COLUMN;3.RENAME TO;4.MODIFY', 61),
+
+    (669, 'FILL_BLANK', 'Orders.user_id → Users(id) 외래키를 추가하며, 사용자 삭제 시 주문도 삭제되게 하라. 빈칸을 채우시오. ALTER TABLE Orders ADD CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE _____ ;', '3', '1.SET NULL;2.RESTRICT;3.CASCADE;4.NO ACTION', 61),
+
+    (670, 'FILL_BLANK', '다른 객체가 참조 중이어도 강제로 Users의 old_col 컬럼을 삭제. 빈칸을 채우시오. ALTER TABLE Users DROP COLUMN old_col _____ ;', '1', '1.CASCADE;2.RESTRICT;3.SET NULL;4.-', 61),
+
+    (671, 'FILL_BLANK', 'Orders의 모든 행을 빠르게 지우고, 스키마는 유지하라. 빈칸을 채우시오. _____ TABLE Orders;', '1', '1.TRUNCATE;2.DROP;3.DELETE;4.-', 61),
+
+    (672, 'FILL_BLANK', 'Users.email에 유니크 인덱스를 생성하라. 빈칸을 채우시오. CREATE _____ INDEX ux_users_email ON Users(email);', '1', '1.UNIQUE;2.PRIMARY;3.FOREIGN;4.-', 61),
+
+    (673, 'FILL_BLANK', 'Products.price가 0보다 커야 한다. 빈칸을 채우시오. ALTER TABLE Products ADD CONSTRAINT chk_price_pos CHECK (price _____ 0);', '1', '1.>;2.>=;3.<>;4.<', 61),
+
+    (674, 'FILL_BLANK', 'MySQL에서 Users.bio 타입을 VARCHAR(255)로 변경. 빈칸을 채우시오. ALTER TABLE Users _____ bio VARCHAR(255);', '2', '1.TYPE;2.MODIFY;3.CHANGE;4.ALTER', 61),
+
+    (675, 'FILL_BLANK', 'OldName 테이블을 NewName으로 변경. 빈칸을 채우시오. ALTER TABLE OldName _____ NewName;', '1', '1.RENAME;2.RENAME TABLE;3.CHANGE TO;4.-', 61),
+
+    (676, 'FILL_BLANK', 'Users 테이블이 존재할 때만 삭제. 빈칸을 채우시오. DROP TABLE _____ Users;', '3', '1.RESTRICT;2.CASCADE;3.IF EXISTS;4.NOT NULL', 61);
+
+-- Unit06 - SQL 3-2 (Lesson ID: 62)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (677, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, email 값을 생략하고 기본값으로 INSERT 하라. 빈칸을 채우시오. INSERT INTO Users(email) VALUES _____ ;', '1', '1.DEFAULT;2.NULL;3.'''';4.NOT NULL', 62),
+
+    (678, 'FILL_BLANK', 'Orders(id PK, user_id BIGINT NOT NULL, FOREIGN KEY (user_id) REFERENCES Users(id)) 스키마가 있을 때, FK 위반 없이 주문을 삽입하려면 user_id에 무엇이 들어가야 하는가? 빈칸을 채우시오. INSERT INTO Orders(user_id) VALUES _____ ;', '4', '1.NOT NULL;2.NULL;3.음수;4.존재하는 Users.id', 62),
+
+    (679, 'FILL_BLANK', 'Orders(user_id BIGINT _____ , FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL) 스키마가 있을 때, SET NULL이 오류 없이 동작하도록 user_id 정의의 빈칸을 채우시오.', '3', '1.UNIQUE;2.NOT NULL;3.NULL;4.-', 62),
+
+    (680, 'FILL_BLANK', 'Orders(user_id FK → Users(id) ON UPDATE CASCADE) 스키마가 있을 때, 사용자 PK가 100→200으로 바뀔 때 참조도 함께 갱신되게 하라. 빈칸을 채우시오. UPDATE Users SET id = _____ WHERE id = 100;', '1', '1.200;2.NULL;3.DEFAULT;4.NOT NULL', 62),
+
+    (681, 'FILL_BLANK', 'Users(email UNIQUE, signups INT NOT NULL DEFAULT 0) 스키마가 있을 때, 같은 email이면 signups를 +1 하도록 UPSERT 하라. 빈칸을 채우시오. INSERT INTO Users(email, signups) VALUES(:email, 1) _____ signups = signups + 1;', '1', '1.ON DUPLICATE KEY UPDATE;2.ON CONFLICT DO UPDATE;3.REPLACE;4.-', 62),
+
+    (682, 'FILL_BLANK', 'REPLACE는 키 충돌 시 기존 행을 _____ 한 뒤 새로 INSERT 한다.', '4', '1.SELECT;2.UPDATE;3.LOCK;4.DELETE', 62),
+
+    (683, 'FILL_BLANK', 'Products(id PK, price DECIMAL(10,2), CHECK (price > 0)) 스키마가 있을 때, 제약을 위반하지 않게 INSERT 하라. 빈칸을 채우시오. INSERT INTO Products(price) VALUES _____ ;', '3', '1.-10;2.0;3.10;4.-10.0', 62),
+
+    (684, 'FILL_BLANK', '대량 적재 중 FK 검사를 끄고 다시 켜라. 두 빈칸을 채우시오. SET _____ = 0; -- 적재 전 SET _____ = 1; -- 적재 후', '1', '1.FOREIGN_KEY_CHECKS;2.UNIQUE_CHECKS;3.SQL_SAFE_UPDATES;4.-', 62),
+
+    (685, 'FILL_BLANK', 'Orders(user_id FK → Users(id) ON DELETE RESTRICT) 스키마가 있을 때, 사용자 10과 그 주문들을 삭제하라(에러 없이). 빈칸을 채우시오. DELETE FROM Orders WHERE user_id = :uid; DELETE FROM Users WHERE id = _____ ;', '1', '1.:uid;2.NULL;3.:order_id;4.-', 62),
+
+    (686, 'FILL_BLANK', 'Users(email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, email을 기본값으로 되돌리려면? 빈칸을 채우시오. UPDATE Users SET email = _____ WHERE id = :id;', '1', '1.DEFAULT(email);2.'''';3.NULL;4.-', 62),
+
+    (687, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email UNIQUE) 스키마가 있을 때, 자동 증가 값을 사용해 삽입하라(모든 환경에서 안전). 빈칸을 채우시오. INSERT INTO Users(id, email) VALUES( _____ , ''a@b.com'');', '1', '1.DEFAULT;2.NULL;3.0;4.1', 62),
+
+    (688, 'FILL_BLANK', 'Orders(id PK, user_id FK → Users(id)), Users(id PK, email) 스키마가 있을 때, 스팸 도메인 사용자 주문만 삭제하라. 빈칸을 채우시오. DELETE o FROM Orders o _____ Users u ON u.id = o.user_id WHERE u.email LIKE ''%@spam.com'';', '3', '1.CROSS JOIN;2.LEFT JOIN;3.INNER JOIN;4.-', 62);
+
+-- Unit06 - SQL 3-3 (Lesson ID: 63)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (689, 'FILL_BLANK', '트랜잭션을 시작하고 변경을 확정할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \n-- DML … \n_____ ;', '1', '1.COMMIT;2.ROLLBACK;3.SAVEPOINT sp;4.TRANSACTION', 63),
+
+    (690, 'FILL_BLANK', '트랜잭션 내 변경을 모두 취소할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \n-- DML … \n_____ ;', '2', '1.COMMIT;2.ROLLBACK;3.SAVEPOINT sp;4.TRANSACTION', 63),
+
+    (691, 'FILL_BLANK', '중간 지점으로만 되돌리도록 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \nSAVEPOINT sp1; \n-- DML A … \n_____ sp1; \n-- DML B … \nCOMMIT;', '4', '1.ROLLBACK;2.RELEASE;3.COMMIT TO;4.ROLLBACK TO', 63),
+
+    (692, 'FILL_BLANK', '세이브포인트 sp1을 해제할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \nSAVEPOINT sp1; \n-- DML … \n_____ SAVEPOINT sp1; \nCOMMIT;', '1', '1.RELEASE;2.ROLLBACK TO;3.DELETE;4.COMMIT TO', 63),
+
+    (693, 'FILL_BLANK', '세션에서 자동 커밋을 끄고 수동으로 제어하려면 다음 SQL 문의 빈칸을 채우시오. _____ autocommit = 0;', '3', '1.SHOW;2.ALTER;3.SET;4.TABLE', 63),
+
+    (694, 'FILL_BLANK', '세션 격리수준을 READ COMMITTED로 바꿀 때, 다음 SQL 문의 빈칸을 채우시오. SET SESSION TRANSACTION ISOLATION LEVEL _____ ;', '1', '1.READ COMMITTED;2.REPEATABLE READ;3.SERIALIZABLE;4.-', 63),
+
+    (695, 'FILL_BLANK', 'InnoDB에서 일관 스냅샷을 잡아 읽기 트랜잭션을 시작할 때, 다음 SQL 문의 빈칸을 채우시오. START TRANSACTION _____ ;', '1', '1.WITH CONSISTENT SNAPSHOT;2.READ ONLY;3.FOR UPDATE;4.START TRANSACTION', 63),
+
+    (696, 'FILL_BLANK', 'Accounts(id PK) 스키마가 있을 때, 특정 행을 업데이트 전 선점 잠금으로 읽으려면 다음 SQL 문의 빈칸을 채우시오. \nSELECT * FROM Accounts WHERE id = :id _____ ;', '3', '1.LOCK IN SHARE MODE;2.FOR SHARE;3.FOR UPDATE;4.LOCK', 63),
+
+    (697, 'FILL_BLANK', 'Products(id PK) 스키마가 있을 때, 다른 트랜잭션의 업데이트를 막고 읽기만 허용하는 공유 잠금으로 읽으려면 다음 SQL 문의 빈칸을 채우시오. \nSELECT * FROM Products WHERE id = :id _____ ;', '2', '1.FOR UPDATE;2.FOR SHARE;3.NOWAIT;4.LOCK', 63),
+
+    (698, 'FILL_BLANK', 'CSV를 가장 빠르게 적재하는 표준적인 구문의 빈칸을 채우시오. \n_____ DATA INFILE ''/path/file.csv'' \nINTO TABLE T \nFIELDS TERMINATED BY '','' \nENCLOSED BY ''"'' \nLINES TERMINATED BY ''\\n'' \nIGNORE 1 LINES;', '1', '1.LOAD;2.IMPORT;3.COPY;4.-', 63),
+
+    (699, 'FILL_BLANK', 'T에 UNIQUE 키가 존재할 때, 중복키가 발생하면 해당 행을 건너뛰고 계속 적재하려면 다음 SQL 문의 빈칸을 채우시오. \nLOAD DATA INFILE ''f.csv'' \nINTO TABLE T _____ ;', '4', '1.UPDATE;2.REPLACE;3.UPSERT;4.IGNORE', 63),
+
+    (700, 'FILL_BLANK', '자식 테이블이 FK를 보유할 때, 대량 적재 전후 FK 검사를 제어하고, 하나의 트랜잭션으로 원자적으로 처리하려면 다음 SQL 문의 빈칸을 채우시오. \nSET FOREIGN_KEY_CHECKS = 0; \nSTART TRANSACTION; \n-- LOAD DATA … \nCOMMIT; \nSET FOREIGN_KEY_CHECKS = _____ ;', '2', '1.0;2.1;3.DEFAULT;4.UNIQUE', 63);
