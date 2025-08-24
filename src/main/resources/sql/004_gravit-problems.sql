@@ -26,6 +26,32 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (12, 'FILL_BLANK', '배열을 순차적으로 접근할 때, 성능이 좋은 이유는 _____지역성 때문이다.', '캐시', '-', 1);
 
+-- Unit02 - 연결리스트 1 (Lesson ID: 2)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (13, 'FILL_BLANK', '연결리스트는 배열리스트와 다르게 _____ 할당 방식을 사용하기 때문에 공간 낭비를 줄일 수 있다.', '동적', '-', 2),
+
+    (14, 'FILL_BLANK', '단일 연결리스트의 노드는 원소를 저장하는 _____필드와 다음 노드를 가리키는 _____필드로 구성된다.', '데이터, 포인터', '1.데이터, 포인터;2.인덱스, 데이터;3.데이터, 인덱스;4.포인터, 데이터', 2),
+
+    (15, 'SELECT_DESCRIPTION', '단일 연결리스트에서 헤드노드 포인터의 역할은?', '2', '1.마지막 노드 가리킴;2.첫번째 노드 가리킴;3.중간 노드 가리킴;4.모든 노드 가리킴', 2),
+
+    (16, 'FILL_BLANK', '빈 연결리스트에서 헤드노드의 포인터는 _____을 가리킨다.', 'null', '-', 2),
+
+    (17, 'FILL_BLANK', '연결리스트의 노드들은 메모리 상에서 _____ 위치에 저장된다.', '불연속적인', '1.연속적인;2.불연속적인;3.임의의;4.정렬된', 2),
+
+    (18, 'FILL_BLANK', '단일 연결 리스트에서 테일노드의 포인터는 _____을 가리킨다.', 'null', '-', 2),
+
+    (19, 'FILL_BLANK', '원형 단일 연결리스트에서 테일노드의 포인터는 _____을 가리킨다.', '헤드 노드', '1.null;2.이전 노드;3.헤드 노드;4.중간노드', 2),
+
+    (20, 'FILL_BLANK', '연결리스트는 런타임에 크기를 _____으로 변경할 수 있다.', '동적', '-', 2),
+
+    (21, 'FILL_BLANK', '연결리스트는 배열과 달리 _____ 기반 접근이 불가능하다.', '인덱스', '-', 2),
+
+    (22, 'SELECT_DESCRIPTION', '연결리스트가 배열보다 메모리를 더 많이 사용하는 이유는?', '2', '1.데이터 중복;2.포인터;3.인덱스;4.캐시미스', 2),
+
+    (23, 'FILL_BLANK', '단일 연결리스트의 맨 앞에 새 노드를 삽입하는 연산의 시간복잡도는 _____이다.', 'o(1)', '1.O(1);2.O(log n);3.O(n);4.O(n²)', 2),
+
+    (24, 'FILL_BLANK', '단일 연결리스트에서 특정 값을 찾아 삭제하는 연산의 시간복잡도는 _____이다.', 'o(n)', '1.O(1);2.O(log n);3.O(n);4.O(n²)', 2);
+
 -- Unit02 - 연결리스트 2 (Lesson ID: 3)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
@@ -1659,7 +1685,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (739, 'SELECT_DESCRIPTION', '리소스 URL의 예측 가능성을 낮추는 좋은 방법은?', '2', '1.숫자 증가 ID;2.UUID v4;3.해시 없는 슬러그;4.연속 문자열', 68),
 
-    (740, 'FILL_BLANK', '중요 기능은 _____ 경로나 전용 서브도메인으로 분리해 네트워크 정책을 분리한다.', '관리', '-', 68)
+    (740, 'FILL_BLANK', '중요 기능은 _____ 경로나 전용 서브도메인으로 분리해 네트워크 정책을 분리한다.', '관리', '-', 68);
 
 -- Unit 2 - Lesson 6: Broken Access Control Exploit (Lesson ID: 69)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
@@ -1679,7 +1705,6 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
     (747, 'SELECT_DESCRIPTION', '다중 테넌트에서 { "role": "admin" }가 온 요청을 안전하게 처리하는 방법은?', '3', '1.본문 role 신뢰;2.JWT role만 확인;3.서명·클레임 검증 후 서버측 권한·테넌트 소유 검증;4.프런트 버튼만 숨김', 69),
 
     (748, 'FILL_BLANK', 'URL·바디·헤더 어디에 있든 _____ 기반으로 권한을 평가해야 일관성이 보장된다.', '주체', '-', 69);
-
 
 -- Unit 3 - Lesson 7: Authentication & Session Concept (Lesson ID: 70)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
@@ -1717,7 +1742,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (763, 'SELECT_DESCRIPTION', '세션 하이재킹과 거리가 먼 시나리오는?', '3', '1.공용 PC 자동 로그인;2.피싱 통한 토큰 탈취;3.CSS 스프라이트 깨짐;4.XSS로 세션 읽기', 71),
 
-    (764, 'FILL_BLANK', '계정 탈취 시도 탐지를 위해 실패 로그인 횟수와 _____ 주소를 함께 모니터링한다.', 'ip', '-', 71)
+    (764, 'FILL_BLANK', '계정 탈취 시도 탐지를 위해 실패 로그인 횟수와 _____ 주소를 함께 모니터링한다.', 'ip', '-', 71);
 
 -- Unit 3 - Lesson 9: Authentication & Session Exploit (Lesson ID: 72)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
