@@ -1,6 +1,7 @@
 -- Chapter 1
 -- Unit01 - 배열 (Lesson ID: 1)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (1, 'FILL_BLANK', '일반적으로 배열은 _____ 종류의 데이터들이 순차적으로 저장되어 있는 자료구조를 의미한다.', '같은, 동일한, 일치하는', '-', 1),
 
     (2, 'FILL_BLANK', '배열은 선언 시점에 크기가 _____되며, 런타임에 크기를 변경할 수 없다.', '고정, 결정', '-', 1),
@@ -27,6 +28,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit02 - 연결리스트 2 (Lesson ID: 3)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (25, 'FILL_BLANK', '선형 양방향 연결리스트에서 헤드노드의 prev 포인터와 테일노드의 next 포인터는 _____을 가리킨다', 'null', '-', 3),
 
     (26, 'FILL_BLANK', '원형 양방향 연결리스트에서 테일노드의 next 포인터는 _____노드를 가리킨다.', '헤드, 머리', '-', 3),
@@ -47,6 +49,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit03 - 스택 (Lesson ID: 4)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (34, 'SELECT_DESCRIPTION', '스택에 3, 5, 1, 2를 순차적으로 넣었을 때, 가장 위에 있는 원소는?', '4', '1.3;2.5;3.1;4.2', 4),
 
     (35, 'FILL_BLANK', '스택은 _____ 구조를 따른다.', 'lifo, 후입선출', '-', 4),
@@ -69,6 +72,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - 큐 (Lesson ID: 5)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (44, 'SELECT_DESCRIPTION', '큐에 2, 9, 7, 4를 순차적으로 넣었을 때, 원소 삭제시 반환되는 값은?', '1', '1.2;2.9;3.7;4.4', 5),
 
     (45, 'FILL_BLANK', '큐는 _____ 구조를 따른다.', 'fifo, 선입선출', '-', 5),
@@ -93,6 +97,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - 힙 (Lesson ID: 6)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (55, 'FILL_BLANK', '_____ _____를 구현한 자료구조를 힙이라고 한다.', '우선순위 큐', '-', 6),
 
     (56, 'FILL_BLANK', '힙은 _____ _____ 트리 구조를 사용한다.', '완전 이진, 완전이진', '-', 6),
@@ -117,6 +122,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - 해시 (Lesson ID: 7)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (66, 'FILL_BLANK', '해시 테이블의 조회, 삽입, 삭제 연산의 시간복잡도는 _____이다.', 'o(1)', '1.O(1);2.O(log n);3.O(n);4.O(n²)', 7),
 
     (67, 'FILL_BLANK', '해시 함수가 " h(x) = x % 10 " 라고할 때, key로 13과 3이 들어오면 같은 해시값을 갖게 되는데 이를 _____이라고 한다.', '충돌', '-', 7),
@@ -141,6 +147,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit07 - 트리 1 (Lesson ID: 8)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (77, 'FILL_BLANK', '트리(Tree)란 _____들이 나무 가지처럼 연결된 자료구조이다.', '노드, node', '-', 8),
 
     (78, 'FILL_BLANK', '각 노드와 노드는 _____으로 연결된다.', '간선, edge', '-', 8),
@@ -163,6 +170,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit07 - 트리 2 (Lesson ID: 9)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (87, 'SELECT_DESCRIPTION', '높이가 5인 이진트리에서 가질 수 있는 최대 노드의 개수는?', '63', '-', 9),
 
     (88, 'FILL_BLANK', '이진트리에서 현재 노드, 왼쪽 자식 노드, 오른쪽 자식 노드 순서로 방문하는 순회방식을 _____순회라고 한다.', '전위, preorder', '-', 9),
@@ -185,6 +193,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit07 - 트리 3 (Lesson ID: 10)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (97, 'FILL_BLANK', '각 노드가 블랙 또는 레드 색상으로 표기되며, 특정 규칙을 통해 스스로 균형을 유지하는 이진탐색트리를 _____트리라고 한다.', '레드블랙, 레드 블랙, 레드-블랙, red-black', '-', 10),
 
     (98, 'FILL_BLANK', '레드-블랙트리에서 루트 노드의 색상은 _____이다', '블랙, 블렉, black, 검은색', '-', 10),
@@ -205,6 +214,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Chapter 2
 -- Unit08 - 정렬 1 (Lesson ID: 11)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (105, 'SELECT_DESCRIPTION', '다음 중 기본적으로 불안정(unstable) 인 정렬은?', '2', '1.버블정렬;2.선택정렬;3.삽입정렬;4.기수정렬(LSD, 안정 카운팅 사용)', 11),
 
     (106, 'SELECT_DESCRIPTION', '입력이 이미 정렬되어 있을 때 Θ(n) 시간에 끝낼 수 있는 정렬은?', '3', '1.버블정렬(조기종료 미적용);2.선택정렬;3.삽입정렬;4.기수정렬', 11),
@@ -231,6 +241,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit08 - 정렬 2 (Lesson ID: 12)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (117, 'SELECT_DESCRIPTION', '다음 중 기본적으로 안정적(stable)인 정렬은?', '3', '1.힙정렬;2.퀵정렬;3.병합정렬;4.모두 불안정', 12),
 
     (118, 'SELECT_DESCRIPTION', 'O(1) 보조 메모리(제자리)로 수행되는 것은?', '2', '1.병합정렬;2.힙정렬;3.퀵정렬(재귀 스택 제외);4.카운팅정렬', 12),
@@ -257,6 +268,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit09 - 그리디 알고리즘 1 (Lesson ID: 13)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (129, 'SELECT_DESCRIPTION', '다음 중 그리디 알고리즘 설명으로 가장 가까운 것은?', '2', '1.모든 경우를 다 탐색해 최적을 찾는다;2.현재 순간 최선처럼 보이는 선택을 한다;3.이전 결과를 저장하고 그 값을 활용한다;4.무작위로 선택해도 평균적으로 맞는다', 13),
 
     (130, 'FILL_BLANK', '그리디-초이스 프로퍼티는 "지금 고른 선택을 포함하는 _____가 적어도 하나 존재한다"는 뜻이다.', '최적해', '1.해답 후보;2.국소해;3.최적해;4.근사해', 13),
@@ -283,6 +295,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit09 - 그리디 알고리즘 2 (Lesson ID: 14)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (141, 'SELECT_DESCRIPTION', '서로 겹치지 않는 구간을 최대 개수로 선택하려면 어떤 정렬 기준이 적절한가?', '3', '1.시작 시간 오름차순;2.길이(끝-시작) 오름차순;3.끝나는 시간 오름차순;4.이득/시간 비율 내림차순', 14),
 
     (142, 'SELECT_DESCRIPTION', '작업들의 마감시간이 주어질 때 최대 지연을 최소로 만드는 단일 머신 스케줄링 규칙은?', '3', '1.시작 시간 오름차순;2.처리 시간 짧은 순(SPT);3.마감 시간 오름차순(EDD);4.가치/시간 비율 내림차순', 14),
@@ -309,6 +322,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit10 - BFS, DFS (Lesson ID: 15)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (153, 'SELECT_DESCRIPTION', 'DFS(깊이 우선 탐색)와 BFS(너비 우선 탐색)의 가장 중요한 차이점은?', '3', '1.DFS는 모든 노드를 방문하지만, BFS는 일부만 방문한다;2.DFS는 재귀를 사용하고 BFS는 반복문을 사용한다;3.DFS는 깊게 탐색하고 BFS는 넓게 탐색한다;4.DFS는 최단 경로를 보장하지만, BFS는 그렇지 않다', 15),
 
     (154, 'SELECT_DESCRIPTION', 'BFS(너비 우선 탐색)에서 일반적으로 사용하는 자료구조는?', '2', '1.스택;2.큐;3.힙;4.해시테이블', 15),
@@ -329,6 +343,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit11 - Dynamic Programming (Lesson ID: 16)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (162, 'FILL_BLANK', '동적 프로그래밍(DP)에서 한 번 계산된 결과를 저장해 두었다가, 같은 문제가 호출되었을 때 저장된 결과를 사용하는 기법을 _____이라고 한다.', '메모이제이션, memoization', '-', 16),
 
     (163, 'SELECT_DESCRIPTION', '동적 프로그래밍(DP)이 적용되기 위한 필수 조건이 아닌 것은?', '3', '1.중복 부분 문제;2.최적 부분 구조;3.정렬된 입력 데이터;4.점화식 도출 가능', 16),
@@ -349,6 +364,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit12 - 다익스트라 알고리즘 (Lesson ID: 17)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (171, 'FILL_BLANK', '다익스트라 알고리즘은 _____의 가중치가 없는 그래프의 한 정점에서 모든 정점까지의 최단 경로를 구하는 알고리즘이다.', '음, -', '-', 17),
 
     (172, 'FILL_BLANK', '다익스트라 알고리즘의 메커니즘은 방문하지 않은 정점 중에서 가장 적은 비용의 정점을 선택한다는 점에서 _____ 알고리즘의 성질을 가지고 있다고 볼 수 있다.', '그리디', '-', 17),
@@ -369,6 +385,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit13 - 벨먼-포드 알고리즘 (Lesson ID: 18)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (180, 'FILL_BLANK', '벨먼-포드 알고리즘과 다익스트라 알고리즘의 가장 중요한 차이점은?', '벨먼-포드는 음수 간선을 처리할 수 있다', '1.벨먼-포드는 음수 간선을 처리할 수 있다;2.벨먼-포드가 더 빠르다;3.다익스트라는 모든 간선을 확인한다;4.벨먼-포드는 우선순위 큐를 사용한다', 18),
 
     (181, 'SELECT_DESCRIPTION', 'V개의 정점과 E개의 간선을 갖고 있는 그래프에서 벨먼-포드 알고리즘의 시간복잡도는?', '1', '1.O(VE);2.O(V²);3.O(E log V);4.O(V + E)', 18),
@@ -384,6 +401,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- CHapter 3
 -- Unit14 - 네트워크 기초 (Lesson ID: 19)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (186, 'SELECT_DESCRIPTION', '다음 중 작은 지역(사무실, 건물) 내에서 컴퓨터와 장치를 연결하는 네트워크는?', '1', '1.LAN;2.WAN;3.MAN;4.인터넷', 19),
 
     (187, 'SELECT_DESCRIPTION', '클라이언트-서버 모델에서 ''클라이언트''의 역할은?', '1', '1.요청을 보내는 역할;2.요청을 처리하고 응답하는 역할;3.네트워크를 관리하는 역할;4.단순히 데이터를 전송하는 역할', 19),
@@ -410,6 +428,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit15 - OSI 7계층 (Lesson ID: 20)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (198, 'SELECT_DESCRIPTION', '비트 단위로 데이터를 전송하고 케이블, 광섬유, 무선 매체를 사용하는 계층은?', '1', '1.물리;2.데이터 링크;3.네트워크;4.전송', 20),
 
     (199, 'SELECT_DESCRIPTION', '데이터 전송 단위를 프레임(Frame)으로 처리하는 계층은?', '2', '1.전송;2.데이터 링크;3.네트워크;4.응용', 20),
@@ -434,6 +453,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit15 - TCP/IP 모델 (Lesson ID: 21)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (209, 'SELECT_DESCRIPTION', 'TCP/IP 모델의 인터넷 계층은 OSI 모델의 어느 계층과 대응되는가?', '3', '1.물리;2.데이터 링크;3.네트워크;4.전송', 21),
 
     (210, 'SELECT_DESCRIPTION', 'TCP/IP 모델 전송 계층의 주요 기능이 아닌 것은?', '3', '1.신뢰성 있는 데이터 전송;2.흐름 제어;3.패킷 라우팅;4.포트 번호 관리', 21),
@@ -454,6 +474,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit16 - 물리 & 데이터 링크 계층 (Lesson ID: 22)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (218, 'FILL_BLANK', '물리 계층에서는 데이터를 _____ 단위로 전송한다.', '비트, bit', '-', 22),
 
     (219, 'SELECT_DESCRIPTION', 'UTP 케이블에서 데이터를 보내는 선의 쌍은 몇 개인가?', '2', '1.1쌍;2.2쌍;3.3쌍;4.4쌍', 22),
@@ -478,6 +499,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit17 - 네트워크 계층 (Lesson ID: 23)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (229, 'FILL_BLANK', 'IPv4 주소는 _____비트로 구성되어 있다.', '32', '-', 23),
 
     (230, 'SELECT_DESCRIPTION', 'IPv6 주소 길이는 얼마인가?', '3', '1.32비트;2.64비트;3.128비트;4.256비트', 23),
@@ -504,6 +526,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit18 - 전송 계층 (Lesson ID: 24)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (241, 'SELECT_DESCRIPTION', 'UDP의 주요 장점으로 올바른 것은?', '2', '1.신뢰성 보장;2.낮은 지연과 오버헤드;3.순서 제어;4.흐름 제어', 24),
 
     (242, 'SELECT_DESCRIPTION', 'TCP 헤더에 포함되지 않는 필드는?', '4', '1.시퀀스 번호;2.체크섬;3.포트번호;4.MAC 주소', 24),
@@ -528,6 +551,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit19 - 응용 계층 (Lesson ID: 25)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (252, 'SELECT_DESCRIPTION', 'HTTPS는 HTTP에 무엇을 추가하여 보안을 강화했는가?', '2', '1.TCP 연결;2.SSL/TLS 암호화;3.UDP 전송;4.DNS 변환', 25),
 
     (253, 'SELECT_DESCRIPTION', 'SMTP의 주된 용도는 무엇인가?', '2', '1.웹 페이지 전송;2.이메일 송신;3.이메일 수신;4.파일 다운로드', 25),
@@ -554,6 +578,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit20 - 네트워크 보안 (Lesson ID: 26)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (264, 'SELECT_DESCRIPTION', 'SSL/TLS의 주요 목적은?', '2', '1.TCP 연결;2.데이터 암호화 및 무결성;3.포트 관리;4.파일 전송', 26),
 
     (265, 'SELECT_DESCRIPTION', 'VPN의 주된 목적은?', '2', '1.이메일 송신;2.안전한 터널링과 암호화;3.DNS 조회;4.포트 필터링', 26),
@@ -583,6 +608,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Chapter 4
 -- Unit21 - 운영체제 & 시스템 구조 1 (Lesson ID: 27)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (277, 'FILL_BLANK', '시스템 콜(System Call)이 실행될 때 CPU 모드는 _____로 전환된다.', '커널, kernel', '-', 27),
 
     (278, 'FILL_BLANK', 'BIOS 이후에 실행되어 운영체제를 메모리에 적재하는 프로그램은 _____이다.', '부트로더, bootloader', '-', 27),
@@ -609,6 +635,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit21 - 운영체제 & 시스템 구조 2 (Lesson ID: 28)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (289, 'FILL_BLANK', 'x86 아키텍처에서 시스템 콜은 int _____명령을 통해 발생한다.', '0x80', '-', 28),
 
     (290, 'FILL_BLANK', '사용자 모드에서 실행되는 프로그램이 시스템 콜을 호출하면 CPU 모드는 _____모드로 변환된다.', '커널, kernel', '-', 28),
@@ -635,6 +662,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit21 - 운영체제 & 시스템 구조 3 (Lesson ID: 29)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (301, 'SELECT_DESCRIPTION', '초기 컴퓨터 시스템의 운영 방식으로, 작업을 순서대로 모아 처리하는 것은?', '2', '1.시분할 시스템;2.배치 처리 시스템;3.멀티태스킹 시스템;4.실시간 시스템', 29),
 
     (302, 'FILL_BLANK', '운영체제는 프로그램이 I/O 장치를 직접 다루지 않고 사용할 수 있도록 _____를 제공한다', '장치 드라이버', '-', 29),
@@ -653,6 +681,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit22 - 프로세스 1 (Lesson ID: 30)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (309, 'FILL_BLANK', '프로그램은 디스크에 저장된 명령어와 데이터의 묶음이고, 실행 중인 프로그램을 _____라 한다.', '프로세스', '-', 30),
 
     (310, 'SELECT_DESCRIPTION', '다음 중 프로세스 상태가 아닌 것은?', '4', '1.Running;2.Ready;3.Waiting;4.Request', 30),
@@ -679,6 +708,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit22 - 프로세스 2 (Lesson ID: 31)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (321, 'SELECT_DESCRIPTION', '우선순위가 가장 높은 프로세스가 준비 상태에서 실행 상태로 전환되는 것은?', '3', '1.Wake Up;2.Timer Runout;3.Dispatch;4.Spooling', 31),
 
     (322, 'SELECT_DESCRIPTION', '프로세스 관리 명령어 중 현재 실행 중인 프로세스를 확인하는 명령어는?', 'ps', '-', 31),
@@ -705,6 +735,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit23 - 스레드 (Lesson ID: 32)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (333, 'FILL_BLANK', '모든 프로세스는 적어도 하나의 _____를 가진다.', '스레드', '-', 32),
 
     (334, 'SELECT_DESCRIPTION', '다중 스레드 프로세스에서 스레드 간에 공유되지 않는 것은?', '3', '1.코드;2.전역 데이터;3.스택;4.파일 디스크립터', 32),
@@ -715,7 +746,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (337, 'SELECT_DESCRIPTION', 'Two-level 스레드 모델이 Many-to-Many 모델과의 차이점으로 옳은 것은?', '4', '1.하나의 커널 스레드만 사용;2.생성 시 커널 스레드 자동 생성;3.병렬 실행 불가;4.특정 스레드 바인딩 가능', 32),
 
-    (338, 'FILL_BLANK', 'Pthread에서 스레드를 생성하는 함수는 _____이다.', 'pthread_create()', '-', 32),
+    (338, 'FILL_BLANK', 'pthread_create()는 스레드를 _____하는 함수이다.', '생성', '-', 32),
 
     (339, 'FILL_BLANK', 'pthread_join(tid, 0)의 역할은 무엇인가? (pthread_t tid;)', '특정 스레드 종료까지 대기', '1.특정 스레드 종료까지 대기;2.현재 스레드 즉시 종료;3.스레드 속성 초기화;4.새 스레드 생성', 32),
 
@@ -735,6 +766,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit24 - 스케줄링 1 (Lesson ID: 33)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (347, 'SELECT_DESCRIPTION', '스케줄러가 스케줄링 결정을 내리는 시점 중 선점(preemption)이 발생하는 경우는?', '3', '1.running → waiting;2.프로세스 종료;3.running → ready;4.waiting → terminated', 33),
 
     (348, 'SELECT_DESCRIPTION', 'Dispatch Latency가 큰 경우 시스템에 미치는 주요 영향은?', '2', '1.CPU 사용률이 높아진다.;2.응답 시간이 느려진다.;3.보안성이 강화된다.;4.프로세스 동기화가 단순해진다.', 33),
@@ -757,6 +789,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit24 - 스케줄링 2 (Lesson ID: 34)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (357, 'SELECT_DESCRIPTION', 'CPU burst 시간이 긴 프로세스가 먼저 실행될 때 짧은 프로세스들이 오랫동안 대기하게 되는 현상을 무엇이라고 하는가?', '2', '1.Head-of-line blocking;2.Convoy effect;3.Starvation;4.Priority inversion', 34),
 
     (358, 'FILL_BLANK', 'SJF 스케줄링 알고리즘은 평균 _____ 시간을 최소화하는 최적 알고리즘으로 알려져 있다.', '대기, waiting', '-', 34),
@@ -775,6 +808,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit24 - 스케줄링 3 (Lesson ID: 35)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (365, 'SELECT_DESCRIPTION', '우선순위 스케줄링에서 기아(Starvation) 문제를 완화하기 위한 대표적인 방법은?', '2', '1.고정된 CPU burst 시간 사용;2.우선순위를 동적으로 조정하는 방법;3.더 긴 프로세스를 우선 실행;4.FIFO 큐 사용', 35),
 
     (366, 'FILL_BLANK', 'EDF(Earliest Deadline First) 스케줄링은 _____이 빠를수록 더 높은 우선순위를 가진다.', 'deadline, 마감기한', '-', 35),
@@ -789,7 +823,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (371, 'SELECT_DESCRIPTION', 'Priority Boost의 주요 목적을 가장 적절히 설명한 것은?', '3', '1.높은 우선순위 프로세스를 더 빨리 끝내기 위해;2.CPU 바운드 작업을 항상 최상위 큐에 두기 위해;3.기아를 방지하고 동적 프로세스 변화를 반영하기 위해;4.모든 프로세스를 무조건 같은 우선순위로 만들기 위해', 35),
 
-    (372, 'FILL_BLANK', ''총 CPU 사용 시간을 기준으로 우선순위 강등'은 MLFQ의 _____ 방지를 위해 수정된 Rule 4 규칙이다.', 'cheat', '-', 35),
+    (372, 'FILL_BLANK', '총 CPU 사용 시간을 기준으로 우선순위 강등은 MLFQ의 _____ 방지를 위해 수정된 Rule 4 규칙이다.', 'cheat', '-', 35),
 
     (373, 'FILL_BLANK', 'Lottery 스케줄링은 각 프로세스에 여러 장의 _____을 주고, 매 타임 슬라이스마다 추첨을 통해 실행할 프로세스를 정한다.', '티켓, ticket', '-', 35),
 
@@ -801,6 +835,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit25 - 프로세스 동기화 1 (Lesson ID: 36)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (377, 'FILL_BLANK', 'CPU의 성능 향상은 주로 _____ 수의 증가와 클럭 속도 향상에 의해 이루어졌으나, 최근에는 클럭 속도 향상이 정체되어 코어 수의 증가로 발전 방향이 바뀌었다.', '트랜지스터', '-', 36),
 
     (378, 'SELECT_DESCRIPTION', 'Concurrency와 Parallelism의 차이를 올바르게 설명한 것은? (C - Concurrency, P - Parallelism)', '3', '1.C는 여러 코어에서 실행되고 P은 단일 코어에서 실행된다.;2.C는 동시에 실행되지만 P은 동시에 실행되지 않는다.;3.C는 시분할 실행, P은 멀티코어 실제 동시 실행.;4.C와 P은 완전히 동일한 개념이다.', 36),
@@ -819,6 +854,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit25 - 프로세스 동기화 2 (Lesson ID: 37)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (385, 'FILL_BLANK', 'Race Condition은 실행 결과가 실행 순서나 스케줄링에 따라 달라지므로, 오류가 _____적이다.', '비결정론적, nondeterministic', '-', 37),
 
     (386, 'FILL_BLANK', '공유 자원을 동시에 접근하지 않도록 보호해야 하는 코드 영역을 _____이라고 한다.', '임계구역, critical section', '-', 37),
@@ -837,7 +873,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (393, 'SELECT_DESCRIPTION', 'Spin Lock의 단점으로 옳은 것은?', '3', '1.문맥 전환 비용이 크다.;2.항상 성능이 높다.;3.공정성이 보장되지 않아 특정 스레드가 무한히 대기할 수 있다.;4.임계 구역을 보호하지 못한다.', 37),
 
-    (394, 'SELECT_DESCRIPTION', 'Multi-CPU(SMP) 환경에서 인터럽트를 disable해도 발생할 수 있는 문제는 무엇인가?', '3', '1.단일 스레드만 실행된다.;2.인터럽트가 아예 발생하지 않는다.;3.다른 CPU에서 동시에 데이터를 읽거나 쓸 수 있다.;4.캐시 동기화가 자동으로 이루어진다.', 37),
+    (394, 'SELECT_DESCRIPTION', 'Multi-CPU(SMP) 환경에서 인터럽트를 비활성화해도 발생할 수 있는 문제는 무엇인가?', '3', '1.단일 스레드만 실행된다.;2.인터럽트가 아예 발생하지 않는다.;3.다른 CPU에서 동시에 데이터를 읽거나 쓸 수 있다.;4.캐시 동기화가 자동으로 이루어진다.', 37),
 
     (395, 'SELECT_DESCRIPTION', '멀티코어 시스템에서 원자적 연산이 비싼 이유로 옳지 않은 것은?', '4', '1.캐시 flush 필수.;2.메모리 버스 lock 필수.;3.다른 CPU stall 가능성.;4.CPU 클럭 속도가 항상 낮아진다.', 37),
 
@@ -861,6 +897,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit25 - 프로세스 동기화 3 (Lesson ID: 38)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (405, 'FILL_BLANK', 'Deadlock이 발생하기 위한 네 가지 조건은 상호 배제, 점유와 대기, _____, 순환 대기.', '비선점', '-', 38),
 
     (406, 'SELECT_DESCRIPTION', 'Deadlock 발생 조건에 해당하지 않는 것은?', '4', '1.Mutual Exclusion;2.Hold and Wait;3.Circular Wait;4.Preemption of all resources', 38),
@@ -883,6 +920,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit26 - 메모리 관리 1 (Lesson ID: 39)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (415, 'FILL_BLANK', '운영체제는 보통 _____ 단위로 메모리를 동적 할당한다. (예: 4KB)', '페이지, page', '-', 39),
 
     (416, 'SELECT_DESCRIPTION', 'malloc() 함수와 free() 함수의 차이로 옳은 것은?', '2', '1.malloc()은 메모리를 해제하고, free()는 메모리를 할당한다.;2.malloc()은 원하는 크기의 메모리를 할당하고 free()는 이를 해제한다.;3.malloc()과 free()는 동일한 기능을 수행한다.;4.free()는 포인터가 아닌 크기를 인자로 받는다.', 39),
@@ -905,6 +943,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit26 - 메모리 관리 2 (Lesson ID: 40)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (425, 'SELECT_DESCRIPTION', 'Free List의 기본 구조는?', '2', '1.배열로 관리한다.;2.연결 리스트로 관리하며 각 노드에 크기를 기록한다.;3.트리 구조로 관리한다.;4.해시 테이블로 관리한다.', 40),
 
     (426, 'SELECT_DESCRIPTION', 'Free List에서 첫 번째 충분히 큰 블록을 선택하는 전략은?', '1', '1.First-Fit;2.Best-Fit;3.Next-Fit;4.Round-Fit', 40),
@@ -927,6 +966,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit26 - 메모리 관리 3 (Lesson ID: 41)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (435, 'SELECT_DESCRIPTION', '메모리 할당 시 Binning 기법의 장점으로 옳은 것은?', '2', '1.항상 가장 작은 블록을 고른다.;2.크기별로 미리 리스트를 나누어 탐색 시간을 줄인다.;3.내부 단편화를 완전히 없앤다.;4.외부 단편화를 항상 제거한다.', 41),
 
     (436, 'FILL_BLANK', 'malloc() 성능을 높이기 위해 크기를 2의 거듭제곱 단위로 올리는 것을 _____라고 한다.', '라운딩', '-', 41),
@@ -949,6 +989,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit27 - 가상 메모리 1 (Lesson ID: 42)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (445, 'FILL_BLANK', '가상 메모리는 프로세스마다 독립적인 _____ 공간을 제공한다.', '주소', '-', 42),
 
     (446, 'SELECT_DESCRIPTION', '가상 메모리의 주요 목적이 아닌 것은?', '4', '1.메모리 보호;2.프로세스 간 격리;3.실제 메모리보다 큰 주소 공간 제공;4.CPU 클럭 속도를 높인다.', 42),
@@ -971,6 +1012,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit27 - 가상 메모리 2 (Lesson ID: 43)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (455, 'SELECT_DESCRIPTION', '페이징의 주요 목적은?', '1', '1.외부 단편화를 줄인다.;2.프로세스의 주소 공간을 고정 크기 블록으로 나눈다.;3.항상 내부 단편화를 제거한다.;4.CPU 속도를 높인다.', 43),
 
     (456, 'FILL_BLANK', '페이징에서 가상 주소는 페이지 번호와 페이지 내 _____으로 나뉜다.', '오프셋', '-', 43),
@@ -993,6 +1035,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit27 - 가상 메모리 3 (Lesson ID: 44)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (465, 'FILL_BLANK', '메모리에서 디스크로 페이지를 내보내는 작업을 _____라고 한다.', '스와핑', '-', 44),
 
     (466, 'SELECT_DESCRIPTION', '스와핑이 필요한 이유는?', '3', '1.CPU 속도를 높이기 위해.;2.캐시 크기를 줄이기 위해.;3.물리 메모리가 한정되어 있어 부족할 때 디스크를 활용하기 위해.;4.프로그램을 항상 같은 주소에 배치하기 위해.', 44),
@@ -1019,6 +1062,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit28 - 파일 시스템 & 저장장치 1 (Lesson ID: 45)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (477, 'FILL_BLANK', '하드 디스크의 데이터 최소 단위는 _____이며, 보통 512바이트 또는 4096바이트이다.', '섹터', '-', 45),
 
     (478, 'SELECT_DESCRIPTION', '실린더(cylinder)를 올바르게 설명한 것은?', '3', '1.디스크의 회전 속도를 의미한다.;2.단일 플래터의 하나의 트랙을 의미한다.;3.여러 플래터의 같은 트랙 위치를 모은 집합이다.;4.섹터를 묶어놓은 집합이다.', 45),
@@ -1043,6 +1087,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit28 - 파일 시스템 & 저장장치 2 (Lesson ID: 46)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (488, 'SELECT_DESCRIPTION', 'FCFS 디스크 스케줄링의 특징은?', '1', '1.요청 순서대로 처리해 공정성은 높으나 성능이 낮다.;2.탐색 시간을 최소화한다.;3.헤드 이동을 최소화한다.;4.특정 요청을 무한히 지연시킬 수 있다.', 46),
 
     (489, 'FILL_BLANK', 'SSTF는 _____ Seek Time First의 약자이다.', 'shortest', '-', 46),
@@ -1065,6 +1110,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit28 - 파일 시스템 & 저장장치 3 (Lesson ID: 47)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (498, 'SELECT_DESCRIPTION', 'SSD에서 쓰기 증폭(write amplification)이 발생하는 원인은?', '2', '1.캐시 크기가 작아서;2.페이지 단위 쓰기와 블록 단위 삭제 차이 때문에;3.RPM이 너무 낮아서;4.CPU 클럭이 낮아서', 47),
 
     (499, 'FILL_BLANK', 'SSD에서 쓰여진 페이지를 지우려면 전체 _____을 삭제해야 한다.', '블록, block', '-', 47),
@@ -1089,6 +1135,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit01 - 데이터베이스 시스템 1 (Lesson ID: 48)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (509, 'FILL_BLANK', '데이터는 처리되지 않은 _____의 집합이다.', '사실', '-', 48),
 
     (510, 'FILL_BLANK', '3단계 스키마에서 사용자별 뷰를 정의하는 것은 _____ 스키마이다.', '1', '1.외부(External);2.개념(Conceptual);3.내부(Internal);4.전역(Global)', 48),
@@ -1115,6 +1162,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit01 - 데이터베이스 시스템 2 (Lesson ID: 49)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (521, 'FILL_BLANK', '3단계 스키마는 외부(External), _____, 내부(Internal) 스키마로 구성된다.', '1', '1.개념(Conceptual);2.물리(Physical);3.전역(Global);4.논리(Logical)', 49),
 
     (522, 'SELECT_DESCRIPTION', '물리적 데이터 독립성을 가장 잘 설명하는 것은?', '2', '1.외부 스키마 변경이 내부에 전파됨;2.내부 저장 구조 변경이 외부 스키마에 영향을 주지 않음;3.개념 스키마 변경이 내부 스키마를 고정함;4.사용자 뷰가 테이블을 자동 생성함', 49),
@@ -1141,6 +1189,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit01 - 데이터베이스 시스템 3 (Lesson ID: 50)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (533, 'SELECT_DESCRIPTION', '다음 중 DBA의 주요 역할로 가장 거리가 먼 것은?', '3', '1.권한 관리;2.백업/복구;3.쿼리 옵티마이저 개발;4.성능 모니터링', 50),
 
     (534, 'SELECT_DESCRIPTION', 'CREATE TABLE, ALTER TABLE, DROP VIEW는 각각 어떤 범주의 언어인가?', '1', '1.모두 DDL;2.모두 DML;3.모두 DCL;4.모두 TCL', 50),
@@ -1167,6 +1216,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit02 - 관계형 모델 1 (Lesson ID: 51)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (545, 'SELECT_DESCRIPTION', '다음 중 릴레이션의 기본 구성 요소가 아닌 것은?', '4', '1.속성(Attribute);2.튜플(Tuple);3.카디널리티(Cardinality);4.인덱스(Index)', 51),
 
     (546, 'FILL_BLANK', '릴레이션의 _____는 속성의 개수, _____는 튜플의 개수를 의미한다.', '1', '1.차수-카디널리티;2.카디널리티-차수;3.도메인-슈퍼키;4.슈퍼키-도메인', 51),
@@ -1193,6 +1243,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit02 - 관계형 모델 2 (Lesson ID: 52)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (557, 'SELECT_DESCRIPTION', '엔터티 무결성(Entity Integrity) 규칙으로 옳은 것은?', '3', '1.기본키는 NULL 가능;2.기본키는 중복 가능;3.기본키는 NULL 불가·유일해야 한다;4.외래키는 반드시 기본키여야 한다', 52),
 
     (558, 'FILL_BLANK', '세 가지 무결성은 엔티티 무결성, 참조 무결성, _____ 무결성이다.', '도메인', '-', 52),
@@ -1219,6 +1270,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit03 - 관계대수 1 (Lesson ID: 53)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (569, 'SELECT_DESCRIPTION', 'A={1,2,3}, B={3,4,5}일 때 A∪B는?', '3', '1.{1, 2, 3};2.{3};3.{1,2,3,4,5};4.{4, 5}', 53),
 
     (570, 'SELECT_DESCRIPTION', 'A={a,b,c}, B={b,c,d}일 때 A와 B의 교집합은?', '2', '1.{a,d};2.{b,c};3.{a,b,c,d};4.{}', 53),
@@ -1245,6 +1297,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit03 - 관계대수 2 (Lesson ID: 54)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (581, 'SELECT_DESCRIPTION', 'Student(sid, name, dept) 스키마가 있을 때, "CS 학과 학생들의 이름만"에 해당하는 식은?', '1', '1.π name ( σ dept=''CS'' ( Student ) );2.σ dept=''CS'' ( π name ( Student ) );3.π dept ( σ name=''CS'' ( Student ) );4.π name ( Student ▷◁ Course )', 54),
 
     (582, 'SELECT_DESCRIPTION', 'Enroll(sid, cid) 스키마가 있을 때, "DB101을 수강한 학생 sid 목록"에 해당하는 식은?', '1', '1.π sid ( σ cid=''DB101'' ( Enroll ) );2.σ cid=''DB101'' ( π sid ( Enroll ) );3.π name ( σ cid=''DB101'' ( Enroll ) );4.π cid ( σ sid=''DB101'' ( Enroll ) )', 54),
@@ -1271,6 +1324,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - SQL 1-1 (Lesson ID: 55)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (593, 'FILL_BLANK', 'Users(id, name, status) 스키마가 있을 때, 활성 사용자 이름만 조회하려 한다. 빈칸에 들어갈 컬럼을 고르시오. \nSELECT _____ FROM Users WHERE status=''ACTIVE'';', '2', '1.id;2.name;3.*;4.id, name', 55),
 
     (594, 'SELECT_DESCRIPTION', 'Users(id, dept, active) 스키마가 있을 때, "CS 또는 EE 학과이면서 active=1"을 정확히 표현한 WHERE는?', '2', '1.WHERE dept=''CS'' OR dept=''EE'' AND active=1;2.WHERE (dept=''CS'' OR dept=''EE'') AND active=1;3.WHERE dept IN (''CS'',''EE'' AND active=1);4.WHERE (dept=''CS'' AND dept=''EE'') OR active=1', 55),
@@ -1297,6 +1351,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - SQL 1-2 (Lesson ID: 56)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (605, 'SELECT_DESCRIPTION', 'Users(user_id, nickname) 스키마가 있을 때, 사용자 표시명을 닉네임이 있으면 닉네임으로, 없으면 ''user#'' || user_id로 보여주려면?', '2', '1.SELECT NVL(nickname, ''user#'' || user_id) AS display_name FROM Users;2.SELECT COALESCE(nickname, ''user#'' || user_id) AS display_name FROM Users;3.SELECT IFNULL(nickname, CONCAT(''user#'', user_id)) AS display_name FROM Users;4.SELECT CASE WHEN nickname IS NULL THEN ''user#'' || user_id END AS display_name FROM Users', 56),
 
     (606, 'SELECT_DESCRIPTION', 'Orders(order_id, amount, created_at) 스키마가 있을 때, ''월별'' 매출 합계를 집계하려고 한다. 올바른 GROUP BY는?', '2', '1.SELECT SUM(amount), created_at FROM Orders GROUP BY created_at;2.SELECT EXTRACT(YEAR FROM created_at) AS y, EXTRACT(MONTH FROM created_at) AS m, SUM(amount) FROM Orders GROUP BY EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at);3.SELECT TO_CHAR(created_at, ''YYYY-MM'') ym, SUM(amount) FROM Orders GROUP BY ym;4.SELECT SUM(amount) FROM Orders GROUP BY 1', 56),
@@ -1323,6 +1378,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - SQL 1-3 (Lesson ID: 57)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (617, 'SELECT_DESCRIPTION', 'Users(id, level, created_at) 스키마가 있을 때, level 내림차순, 동점이면 created_at 내림차순, 그래도 같으면 id 오름차순으로 정렬하라. 올바른 ORDER BY는?', '3', '1.ORDER BY level, created_at DESC, id;2.ORDER BY level DESC, created_at, id ASC;3.ORDER BY level DESC, created_at DESC, id ASC;4.ORDER BY level DESC, id ASC, created_at DESC', 57),
 
     (618, 'SELECT_DESCRIPTION', 'Posts(id, title, created_at, pinned_at) 스키마가 있을 때, 고정 글(pinned_at NOT NULL)을 먼저, 그 다음 비고정 글을, 각 그룹 내에서는 최신(created_at DESC) 순으로 정렬하라.', '2', '1.ORDER BY pinned_at DESC, created_at DESC;2.ORDER BY CASE WHEN pinned_at IS NULL THEN 1 ELSE 0 END, created_at DESC;3.ORDER BY pinned_at, created_at DESC;4.ORDER BY created_at DESC', 57),
@@ -1349,6 +1405,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - SQL 2-1 (Lesson ID: 58)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (629, 'SELECT_DESCRIPTION', 'Departments(id, name), Employees(id, name, dept_id NULL 허용) 스키마가 있을 때, "직원이 없어도 모든 부서를 포함해 조회"하려면 어떤 조인이 적절한가?', '2', '1.INNER JOIN;2.LEFT JOIN (Departments → Employees);3.RIGHT JOIN (Employees → Departments);4.NATURAL JOIN', 58),
 
     (630, 'FILL_BLANK', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, "부서가 존재하는 직원만" 조회하는 빈칸을 채우시오. \nSELECT e.* \nFROM Employees e _____ JOIN Departments d \nON d.id = e.dept_id;', '1', '1.INNER;2.LEFT;3.RIGHT;4.FULL OUTER', 58),
@@ -1375,6 +1432,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - SQL 2-2 (Lesson ID: 59)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (641, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문이 있는 고객"만 조회. 빈칸을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);3.c.id IN (SELECT o.id FROM Orders o);4.-', 59),
 
     (642, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, 아래 IN을 JOIN으로 바꿀 때, 조인 종류를 채우시오. \nSELECT c.id FROM Customers c WHERE c.id IN (SELECT o.customer_id FROM Orders o) \n→ \nSELECT DISTINCT c.id \nFROM Customers c _____ JOIN Orders o \nON o.customer_id = c.id;', '2', '1.LEFT;2.INNER;3.RIGHT;4.FULL OUTER', 59),
@@ -1401,6 +1459,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - SQL 2-3 (Lesson ID: 60)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (653, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블의 id를 중복 없이 합치려면 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '1', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
     (654, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블을 합칠 때 중복 허용 + 빠른 경로를 선택하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '2', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
@@ -1427,6 +1486,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - SQL 3-1 (Lesson ID: 61)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (665, 'FILL_BLANK', 'Users 테이블 생성 시 id를 기본키로 지정하라. 빈칸을 채우시오. \nCREATE TABLE Users ( \n  id BIGINT _____ , \n  email VARCHAR(255) \n);', '1', '1.PRIMARY KEY;2.UNIQUE;3.FOREIGN KEY;4.UNION', 61),
 
     (666, 'FILL_BLANK', 'email을 유니크 제약으로 추가하라. 빈칸을 채우시오. \nALTER TABLE Users \nADD CONSTRAINT ux_users_email _____ (email);', '2', '1.PRIMARY KEY;2.UNIQUE;3.FOREIGN KEY;4.UNION', 61),
@@ -1453,6 +1513,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - SQL 3-2 (Lesson ID: 62)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (677, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, email 값을 생략하고 기본값으로 INSERT 하라. 빈칸을 채우시오. INSERT INTO Users(email) VALUES _____ ;', '1', '1.DEFAULT;2.NULL;3.'''';4.NOT NULL', 62),
 
     (678, 'FILL_BLANK', 'Orders(id PK, user_id BIGINT NOT NULL, FOREIGN KEY (user_id) REFERENCES Users(id)) 스키마가 있을 때, FK 위반 없이 주문을 삽입하려면 user_id에 무엇이 들어가야 하는가? 빈칸을 채우시오. INSERT INTO Orders(user_id) VALUES _____ ;', '4', '1.NOT NULL;2.NULL;3.음수;4.존재하는 Users.id', 62),
@@ -1479,6 +1540,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - SQL 3-3 (Lesson ID: 63)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (689, 'FILL_BLANK', '트랜잭션을 시작하고 변경을 확정할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \n-- DML … \n_____ ;', '1', '1.COMMIT;2.ROLLBACK;3.SAVEPOINT sp;4.TRANSACTION', 63),
 
     (690, 'FILL_BLANK', '트랜잭션 내 변경을 모두 취소할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \n-- DML … \n_____ ;', '2', '1.COMMIT;2.ROLLBACK;3.SAVEPOINT sp;4.TRANSACTION', 63),
@@ -1506,6 +1568,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Chapter 6: 보안
 -- Unit 1 - Lesson 1: 입력 검증 & 신뢰 경계 Concept (Lesson ID: 64)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (701, 'SELECT_DESCRIPTION', '다음 중 ''입력 검증''의 주된 목적을 가장 정확히 설명한 것은?', '2', '1.들어온 값을 자동 보정해 최대한 통과시킨다;2.규정된 형식·범위·타입을 만족하지 않으면 거부한다;3.출력 시 특수문자를 치환한다;4.암호화로 기밀성을 보장한다', 64),
 
     (702, 'SELECT_DESCRIPTION', '신뢰 경계(Trust Boundary)에 대한 설명으로 가장 적절한 것은?', '2', '1.동일 프로세스 내부 함수 간 호출 지점이다;2.데이터가 서로 다른 보안 영역을 넘어가는 지점이다;3.코드 리뷰가 필요한 라인이다;4.암호화를 수행하는 위치이다', 64),
@@ -1625,7 +1688,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (750, 'SELECT_DESCRIPTION', '다음 중 인증 요소로 분류되지 않는 것은?', '4', '1.소지(토큰/기기);2.지식(비밀번호/PIN);3.생체(지문/얼굴);4.화면 해상도', 70),
 
-    (751, 'FILL_BLANK', '세션 고정(Session Fixation)은 공격자가 미리 _____ 값을 정해두고 피해자가 그 값으로 로그인하게 만드는 공격이다.', '세션id', '-', 70),
+    (751, 'FILL_BLANK', '세션 고정(Session Fixation)은 공격자가 미리 _____ 값을 정해두고 피해자가 그 값으로 로그인하게 만드는 공격이다.', '세션id, 세션아이디, sessionid', '-', 70),
 
     (752, 'SELECT_DESCRIPTION', '비밀번호 저장의 올바른 설명은?', '3', '1.단순 SHA-256 해시;2.솔트 없이 MD5;3.솔트+워크팩터 있는 해시 사용;4.평문 암호화 저장', 70),
 
@@ -1644,7 +1707,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (758, 'FILL_BLANK', '로그인 시도 무차별 대입에 대응하지 않으면 _____ 공격(credential stuffing)에 취약해진다.', '브루트포스', '-', 71),
 
-    (759, 'SELECT_DESCRIPTION', '세션 탈취의 전제조건으로 보기 어려운 것은?', '4', '1.세션ID 노출;2.전송 구간 평문;3.XSS 등 실행 컨텍스트;4.정적 파일 압축', 71),
+    (759, 'SELECT_DESCRIPTION', '세션 탈취의 전제조건으로 보기 어려운 것은?', '4', '1.세션 ID 노출;2.전송 구간 평문;3.XSS 등 실행 컨텍스트;4.정적 파일 압축', 71),
 
     (760, 'FILL_BLANK', '동일 브라우저 내 스크립트가 쿠키를 읽지 못하게 하려면 쿠키에 _____ 속성을 설정해야 한다.', 'httponly', '-', 71),
 
@@ -1659,7 +1722,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit 3 - Lesson 9: Authentication & Session Exploit (Lesson ID: 72)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (765, 'SELECT_DESCRIPTION', '세션 관리 베스트 프랙티스가 아닌 것은?', '3', '1.로그인 직후 세션ID 재발급;2.로그아웃 시 세션 무효화;3.장기 미활동에도 세션 유지;4.민감 요청 시 재인증', 72),
+    (765, 'SELECT_DESCRIPTION', '세션 관리 베스트 프랙티스가 아닌 것은?', '3', '1.로그인 직후 세션 ID 재발급;2.로그아웃 시 세션 무효화;3.장기 미활동에도 세션 유지;4.민감 요청 시 재인증', 72),
 
     (766, 'FILL_BLANK', '로그인 실패 횟수 제한, 지연 삽입 등은 _____ 방어 기법에 해당한다.', '브루트포스', '-', 72),
 
@@ -1671,7 +1734,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (770, 'FILL_BLANK', '비밀번호 재설정 링크는 충분히 무작위이며 만료가 짧은 _____ 토큰이어야 한다.', '일회용', '-', 72),
 
-    (771, 'SELECT_DESCRIPTION', '세션 고정 방어의 핵심은?', '2', '1.로그인 전 세션 유지;2.로그인 직후 세션ID 재발급;3.쿠키 삭제 금지;4.토큰 로컬 저장', 72),
+    (771, 'SELECT_DESCRIPTION', '세션 고정 방어의 핵심은?', '2', '1.로그인 전 세션 유지;2.로그인 직후 세션 ID 재발급;3.쿠키 삭제 금지;4.토큰 로컬 저장', 72),
 
     (772, 'FILL_BLANK', '민감한 상태 변경 요청에는 MFA나 _____ 확인(재인증)을 요구한다.', '본인', '-', 72);
 
