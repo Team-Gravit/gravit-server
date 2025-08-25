@@ -1253,13 +1253,13 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (549, 'SELECT_DESCRIPTION', '기본키 선정 기준으로 옳지 않은 것은?', '3', '1.변경 가능성이 낮은 속성을 고른다;2.가능한 짧은 길이가 좋다;3.의미 있는 자연키를 반드시 사용한다;4.NULL/중복이 불가능해야 한다', 51),
 
-    (550, 'SELECT_DESCRIPTION', 'Member(employee_no UNIQUE, email UNIQUE, phone UNIQUE, name)에서 후보키 집합과 추천 기본키의 조합으로 옳은 것은?', '1', '1.후보키={employee_no},{email},{phone} / 기본키=employee_no;2.후보키={employee_no},{email} / 기본키=email;3.후보키={email},{phone} / 기본키=phone;4.후보키={employee_no},{name} / 기본키=name', 51),
+    (550, 'SELECT_DESCRIPTION', 'Member(employee_no UNIQUE, email UNIQUE, phone UNIQUE, name)에서 \n후보키 집합과 추천 기본키의 조합으로 옳은 것은?', '1', '1.후보키={employee_no},{email},{phone} / 기본키=employee_no;2.후보키={employee_no},{email} / 기본키=email;3.후보키={email},{phone} / 기본키=phone;4.후보키={employee_no},{name} / 기본키=name', 51),
 
-    (551, 'SELECT_DESCRIPTION', '다음 DDL에서 기본키는 무엇인가? CREATE TABLE Enrollment( student_id BIGINT NOT NULL, course_id BIGINT NOT NULL, enrolled_at TIMESTAMP NOT NULL, PRIMARY KEY (student_id, course_id), FOREIGN KEY (student_id) REFERENCES Student(id), FOREIGN KEY (course_id) REFERENCES Course(id) );', '3', '1.student_id;2.course_id;3.(student_id, course_id);4.enrolled_at', 51),
+    (551, 'SELECT_DESCRIPTION', '다음 DDL에서 기본키는 무엇인가? \nCREATE TABLE Enrollment(\n  student_id BIGINT NOT NULL,\n  course_id BIGINT NOT NULL,\n  enrolled_at TIMESTAMP NOT NULL,\n  PRIMARY KEY (student_id, course_id),\n  FOREIGN KEY (student_id) REFERENCES Student(id),\n  FOREIGN KEY (course_id) REFERENCES Course(id)\n);', '3', '1.student_id;2.course_id;3.(student_id, course_id);4.enrolled_at', 51),
 
     (552, 'SELECT_DESCRIPTION', '외래키에 대한 설명으로 옳은 것은?', '2', '1.외래키는 항상 기본키여야 한다;2.외래키는 참조 대상의 후보키/기본키를 참조한다;3.외래키는 NULL이 될 수 없다;4.외래키는 항상 UNIQUE여야 한다', 51),
 
-    (553, 'SELECT_DESCRIPTION', '한 주문에 여러 주문상세. 같은 주문에서 같은 상품은 한 번만 담을 수 있음. 인조키 금지, 다른 테이블이 OrderItem 직접 참조하지 않음, PK는 업무 속성만 사용. 가장 타당한 PK 설계는?', '2', '1.id + (order_id, product_id) UNIQUE;2.(order_id, product_id) 복합 PK;3.product_id 단일 PK;4.order_id 단일 PK', 51),
+    (553, 'SELECT_DESCRIPTION', '한 주문에 여러 주문상세. 같은 주문에서 같은 상품은 한 번만 담을 수 있음.\n인조키 금지, 다른 테이블이 OrderItem 직접 참조하지 않음, PK는 업무 속성만 사용. 가장 타당한 PK 설계는?', '2', '1.id + (order_id, product_id) UNIQUE;2.(order_id, product_id) 복합 PK;3.product_id 단일 PK;4.order_id 단일 PK', 51),
 
     (554, 'SELECT_DESCRIPTION', '다음 중 참조 무결성을 가장 강하게 보장하는 삭제 정책은?', '3', '1.ON DELETE RESTRICT;2.ON DELETE SET NULL;3.ON DELETE CASCADE;4.ON DELETE NO ACTION', 51),
 
