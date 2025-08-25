@@ -1,6 +1,7 @@
 -- Chapter 1
 -- Unit01 - 배열 (Lesson ID: 1)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (1, 'FILL_BLANK', '일반적으로 배열은 _____ 종류의 데이터들이 순차적으로 저장되어 있는 자료구조를 의미한다.', '같은, 동일한, 일치하는', '-', 1),
 
     (2, 'FILL_BLANK', '배열은 선언 시점에 크기가 _____되며, 런타임에 크기를 변경할 수 없다.', '고정, 결정', '-', 1),
@@ -25,8 +26,35 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (12, 'FILL_BLANK', '배열을 순차적으로 접근할 때, 성능이 좋은 이유는 _____지역성 때문이다.', '캐시', '-', 1);
 
+-- Unit02 - 연결리스트 1 (Lesson ID: 2)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (13, 'FILL_BLANK', '연결리스트는 배열리스트와 다르게 _____ 할당 방식을 사용하기 때문에 공간 낭비를 줄일 수 있다.', '동적', '-', 2),
+
+    (14, 'FILL_BLANK', '단일 연결리스트의 노드는 원소를 저장하는 _____필드와 다음 노드를 가리키는 _____필드로 구성된다.', '데이터, 포인터', '1.데이터, 포인터;2.인덱스, 데이터;3.데이터, 인덱스;4.포인터, 데이터', 2),
+
+    (15, 'SELECT_DESCRIPTION', '단일 연결리스트에서 헤드노드 포인터의 역할은?', '2', '1.마지막 노드 가리킴;2.첫번째 노드 가리킴;3.중간 노드 가리킴;4.모든 노드 가리킴', 2),
+
+    (16, 'FILL_BLANK', '빈 연결리스트에서 헤드노드의 포인터는 _____을 가리킨다.', 'null', '-', 2),
+
+    (17, 'FILL_BLANK', '연결리스트의 노드들은 메모리 상에서 _____ 위치에 저장된다.', '불연속적인', '1.연속적인;2.불연속적인;3.임의의;4.정렬된', 2),
+
+    (18, 'FILL_BLANK', '단일 연결 리스트에서 테일노드의 포인터는 _____을 가리킨다.', 'null', '-', 2),
+
+    (19, 'FILL_BLANK', '원형 단일 연결리스트에서 테일노드의 포인터는 _____을 가리킨다.', '헤드 노드', '1.null;2.이전 노드;3.헤드 노드;4.중간노드', 2),
+
+    (20, 'FILL_BLANK', '연결리스트는 런타임에 크기를 _____으로 변경할 수 있다.', '동적', '-', 2),
+
+    (21, 'FILL_BLANK', '연결리스트는 배열과 달리 _____ 기반 접근이 불가능하다.', '인덱스', '-', 2),
+
+    (22, 'SELECT_DESCRIPTION', '연결리스트가 배열보다 메모리를 더 많이 사용하는 이유는?', '2', '1.데이터 중복;2.포인터;3.인덱스;4.캐시미스', 2),
+
+    (23, 'FILL_BLANK', '단일 연결리스트의 맨 앞에 새 노드를 삽입하는 연산의 시간복잡도는 _____이다.', 'o(1)', '1.O(1);2.O(log n);3.O(n);4.O(n²)', 2),
+
+    (24, 'FILL_BLANK', '단일 연결리스트에서 특정 값을 찾아 삭제하는 연산의 시간복잡도는 _____이다.', 'o(n)', '1.O(1);2.O(log n);3.O(n);4.O(n²)', 2);
+
 -- Unit02 - 연결리스트 2 (Lesson ID: 3)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (25, 'FILL_BLANK', '선형 양방향 연결리스트에서 헤드노드의 prev 포인터와 테일노드의 next 포인터는 _____을 가리킨다', 'null', '-', 3),
 
     (26, 'FILL_BLANK', '원형 양방향 연결리스트에서 테일노드의 next 포인터는 _____노드를 가리킨다.', '헤드, 머리', '-', 3),
@@ -47,6 +75,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit03 - 스택 (Lesson ID: 4)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (34, 'SELECT_DESCRIPTION', '스택에 3, 5, 1, 2를 순차적으로 넣었을 때, 가장 위에 있는 원소는?', '4', '1.3;2.5;3.1;4.2', 4),
 
     (35, 'FILL_BLANK', '스택은 _____ 구조를 따른다.', 'lifo, 후입선출', '-', 4),
@@ -69,6 +98,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - 큐 (Lesson ID: 5)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (44, 'SELECT_DESCRIPTION', '큐에 2, 9, 7, 4를 순차적으로 넣었을 때, 원소 삭제시 반환되는 값은?', '1', '1.2;2.9;3.7;4.4', 5),
 
     (45, 'FILL_BLANK', '큐는 _____ 구조를 따른다.', 'fifo, 선입선출', '-', 5),
@@ -93,6 +123,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - 힙 (Lesson ID: 6)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (55, 'FILL_BLANK', '_____ _____를 구현한 자료구조를 힙이라고 한다.', '우선순위 큐', '-', 6),
 
     (56, 'FILL_BLANK', '힙은 _____ _____ 트리 구조를 사용한다.', '완전 이진, 완전이진', '-', 6),
@@ -117,6 +148,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - 해시 (Lesson ID: 7)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (66, 'FILL_BLANK', '해시 테이블의 조회, 삽입, 삭제 연산의 시간복잡도는 _____이다.', 'o(1)', '1.O(1);2.O(log n);3.O(n);4.O(n²)', 7),
 
     (67, 'FILL_BLANK', '해시 함수가 " h(x) = x % 10 " 라고할 때, key로 13과 3이 들어오면 같은 해시값을 갖게 되는데 이를 _____이라고 한다.', '충돌', '-', 7),
@@ -141,6 +173,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit07 - 트리 1 (Lesson ID: 8)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (77, 'FILL_BLANK', '트리(Tree)란 _____들이 나무 가지처럼 연결된 자료구조이다.', '노드, node', '-', 8),
 
     (78, 'FILL_BLANK', '각 노드와 노드는 _____으로 연결된다.', '간선, edge', '-', 8),
@@ -163,6 +196,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit07 - 트리 2 (Lesson ID: 9)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (87, 'SELECT_DESCRIPTION', '높이가 5인 이진트리에서 가질 수 있는 최대 노드의 개수는?', '63', '-', 9),
 
     (88, 'FILL_BLANK', '이진트리에서 현재 노드, 왼쪽 자식 노드, 오른쪽 자식 노드 순서로 방문하는 순회방식을 _____순회라고 한다.', '전위, preorder', '-', 9),
@@ -185,6 +219,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit07 - 트리 3 (Lesson ID: 10)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (97, 'FILL_BLANK', '각 노드가 블랙 또는 레드 색상으로 표기되며, 특정 규칙을 통해 스스로 균형을 유지하는 이진탐색트리를 _____트리라고 한다.', '레드블랙, 레드 블랙, 레드-블랙, red-black', '-', 10),
 
     (98, 'FILL_BLANK', '레드-블랙트리에서 루트 노드의 색상은 _____이다', '블랙, 블렉, black, 검은색', '-', 10),
@@ -205,6 +240,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Chapter 2
 -- Unit08 - 정렬 1 (Lesson ID: 11)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (105, 'SELECT_DESCRIPTION', '다음 중 기본적으로 불안정(unstable) 인 정렬은?', '2', '1.버블정렬;2.선택정렬;3.삽입정렬;4.기수정렬(LSD, 안정 카운팅 사용)', 11),
 
     (106, 'SELECT_DESCRIPTION', '입력이 이미 정렬되어 있을 때 Θ(n) 시간에 끝낼 수 있는 정렬은?', '3', '1.버블정렬(조기종료 미적용);2.선택정렬;3.삽입정렬;4.기수정렬', 11),
@@ -231,6 +267,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit08 - 정렬 2 (Lesson ID: 12)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (117, 'SELECT_DESCRIPTION', '다음 중 기본적으로 안정적(stable)인 정렬은?', '3', '1.힙정렬;2.퀵정렬;3.병합정렬;4.모두 불안정', 12),
 
     (118, 'SELECT_DESCRIPTION', 'O(1) 보조 메모리(제자리)로 수행되는 것은?', '2', '1.병합정렬;2.힙정렬;3.퀵정렬(재귀 스택 제외);4.카운팅정렬', 12),
@@ -257,6 +294,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit09 - 그리디 알고리즘 1 (Lesson ID: 13)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (129, 'SELECT_DESCRIPTION', '다음 중 그리디 알고리즘 설명으로 가장 가까운 것은?', '2', '1.모든 경우를 다 탐색해 최적을 찾는다;2.현재 순간 최선처럼 보이는 선택을 한다;3.이전 결과를 저장하고 그 값을 활용한다;4.무작위로 선택해도 평균적으로 맞는다', 13),
 
     (130, 'FILL_BLANK', '그리디-초이스 프로퍼티는 "지금 고른 선택을 포함하는 _____가 적어도 하나 존재한다"는 뜻이다.', '최적해', '1.해답 후보;2.국소해;3.최적해;4.근사해', 13),
@@ -283,6 +321,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit09 - 그리디 알고리즘 2 (Lesson ID: 14)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (141, 'SELECT_DESCRIPTION', '서로 겹치지 않는 구간을 최대 개수로 선택하려면 어떤 정렬 기준이 적절한가?', '3', '1.시작 시간 오름차순;2.길이(끝-시작) 오름차순;3.끝나는 시간 오름차순;4.이득/시간 비율 내림차순', 14),
 
     (142, 'SELECT_DESCRIPTION', '작업들의 마감시간이 주어질 때 최대 지연을 최소로 만드는 단일 머신 스케줄링 규칙은?', '3', '1.시작 시간 오름차순;2.처리 시간 짧은 순(SPT);3.마감 시간 오름차순(EDD);4.가치/시간 비율 내림차순', 14),
@@ -309,6 +348,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit10 - BFS, DFS (Lesson ID: 15)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (153, 'SELECT_DESCRIPTION', 'DFS(깊이 우선 탐색)와 BFS(너비 우선 탐색)의 가장 중요한 차이점은?', '3', '1.DFS는 모든 노드를 방문하지만, BFS는 일부만 방문한다;2.DFS는 재귀를 사용하고 BFS는 반복문을 사용한다;3.DFS는 깊게 탐색하고 BFS는 넓게 탐색한다;4.DFS는 최단 경로를 보장하지만, BFS는 그렇지 않다', 15),
 
     (154, 'SELECT_DESCRIPTION', 'BFS(너비 우선 탐색)에서 일반적으로 사용하는 자료구조는?', '2', '1.스택;2.큐;3.힙;4.해시테이블', 15),
@@ -329,6 +369,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit11 - Dynamic Programming (Lesson ID: 16)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (162, 'FILL_BLANK', '동적 프로그래밍(DP)에서 한 번 계산된 결과를 저장해 두었다가, 같은 문제가 호출되었을 때 저장된 결과를 사용하는 기법을 _____이라고 한다.', '메모이제이션, memoization', '-', 16),
 
     (163, 'SELECT_DESCRIPTION', '동적 프로그래밍(DP)이 적용되기 위한 필수 조건이 아닌 것은?', '3', '1.중복 부분 문제;2.최적 부분 구조;3.정렬된 입력 데이터;4.점화식 도출 가능', 16),
@@ -349,6 +390,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit12 - 다익스트라 알고리즘 (Lesson ID: 17)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (171, 'FILL_BLANK', '다익스트라 알고리즘은 _____의 가중치가 없는 그래프의 한 정점에서 모든 정점까지의 최단 경로를 구하는 알고리즘이다.', '음, -', '-', 17),
 
     (172, 'FILL_BLANK', '다익스트라 알고리즘의 메커니즘은 방문하지 않은 정점 중에서 가장 적은 비용의 정점을 선택한다는 점에서 _____ 알고리즘의 성질을 가지고 있다고 볼 수 있다.', '그리디', '-', 17),
@@ -369,6 +411,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit13 - 벨먼-포드 알고리즘 (Lesson ID: 18)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (180, 'FILL_BLANK', '벨먼-포드 알고리즘과 다익스트라 알고리즘의 가장 중요한 차이점은?', '벨먼-포드는 음수 간선을 처리할 수 있다', '1.벨먼-포드는 음수 간선을 처리할 수 있다;2.벨먼-포드가 더 빠르다;3.다익스트라는 모든 간선을 확인한다;4.벨먼-포드는 우선순위 큐를 사용한다', 18),
 
     (181, 'SELECT_DESCRIPTION', 'V개의 정점과 E개의 간선을 갖고 있는 그래프에서 벨먼-포드 알고리즘의 시간복잡도는?', '1', '1.O(VE);2.O(V²);3.O(E log V);4.O(V + E)', 18),
@@ -384,6 +427,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- CHapter 3
 -- Unit14 - 네트워크 기초 (Lesson ID: 19)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (186, 'SELECT_DESCRIPTION', '다음 중 작은 지역(사무실, 건물) 내에서 컴퓨터와 장치를 연결하는 네트워크는?', '1', '1.LAN;2.WAN;3.MAN;4.인터넷', 19),
 
     (187, 'SELECT_DESCRIPTION', '클라이언트-서버 모델에서 ''클라이언트''의 역할은?', '1', '1.요청을 보내는 역할;2.요청을 처리하고 응답하는 역할;3.네트워크를 관리하는 역할;4.단순히 데이터를 전송하는 역할', 19),
@@ -410,6 +454,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit15 - OSI 7계층 (Lesson ID: 20)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (198, 'SELECT_DESCRIPTION', '비트 단위로 데이터를 전송하고 케이블, 광섬유, 무선 매체를 사용하는 계층은?', '1', '1.물리;2.데이터 링크;3.네트워크;4.전송', 20),
 
     (199, 'SELECT_DESCRIPTION', '데이터 전송 단위를 프레임(Frame)으로 처리하는 계층은?', '2', '1.전송;2.데이터 링크;3.네트워크;4.응용', 20),
@@ -434,6 +479,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit15 - TCP/IP 모델 (Lesson ID: 21)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (209, 'SELECT_DESCRIPTION', 'TCP/IP 모델의 인터넷 계층은 OSI 모델의 어느 계층과 대응되는가?', '3', '1.물리;2.데이터 링크;3.네트워크;4.전송', 21),
 
     (210, 'SELECT_DESCRIPTION', 'TCP/IP 모델 전송 계층의 주요 기능이 아닌 것은?', '3', '1.신뢰성 있는 데이터 전송;2.흐름 제어;3.패킷 라우팅;4.포트 번호 관리', 21),
@@ -454,6 +500,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit16 - 물리 & 데이터 링크 계층 (Lesson ID: 22)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (218, 'FILL_BLANK', '물리 계층에서는 데이터를 _____ 단위로 전송한다.', '비트, bit', '-', 22),
 
     (219, 'SELECT_DESCRIPTION', 'UTP 케이블에서 데이터를 보내는 선의 쌍은 몇 개인가?', '2', '1.1쌍;2.2쌍;3.3쌍;4.4쌍', 22),
@@ -478,6 +525,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit17 - 네트워크 계층 (Lesson ID: 23)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (229, 'FILL_BLANK', 'IPv4 주소는 _____비트로 구성되어 있다.', '32', '-', 23),
 
     (230, 'SELECT_DESCRIPTION', 'IPv6 주소 길이는 얼마인가?', '3', '1.32비트;2.64비트;3.128비트;4.256비트', 23),
@@ -504,6 +552,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit18 - 전송 계층 (Lesson ID: 24)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (241, 'SELECT_DESCRIPTION', 'UDP의 주요 장점으로 올바른 것은?', '2', '1.신뢰성 보장;2.낮은 지연과 오버헤드;3.순서 제어;4.흐름 제어', 24),
 
     (242, 'SELECT_DESCRIPTION', 'TCP 헤더에 포함되지 않는 필드는?', '4', '1.시퀀스 번호;2.체크섬;3.포트번호;4.MAC 주소', 24),
@@ -528,6 +577,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit19 - 응용 계층 (Lesson ID: 25)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (252, 'SELECT_DESCRIPTION', 'HTTPS는 HTTP에 무엇을 추가하여 보안을 강화했는가?', '2', '1.TCP 연결;2.SSL/TLS 암호화;3.UDP 전송;4.DNS 변환', 25),
 
     (253, 'SELECT_DESCRIPTION', 'SMTP의 주된 용도는 무엇인가?', '2', '1.웹 페이지 전송;2.이메일 송신;3.이메일 수신;4.파일 다운로드', 25),
@@ -554,6 +604,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit20 - 네트워크 보안 (Lesson ID: 26)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (264, 'SELECT_DESCRIPTION', 'SSL/TLS의 주요 목적은?', '2', '1.TCP 연결;2.데이터 암호화 및 무결성;3.포트 관리;4.파일 전송', 26),
 
     (265, 'SELECT_DESCRIPTION', 'VPN의 주된 목적은?', '2', '1.이메일 송신;2.안전한 터널링과 암호화;3.DNS 조회;4.포트 필터링', 26),
@@ -583,6 +634,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Chapter 4
 -- Unit21 - 운영체제 & 시스템 구조 1 (Lesson ID: 27)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (277, 'FILL_BLANK', '시스템 콜(System Call)이 실행될 때 CPU 모드는 _____로 전환된다.', '커널, kernel', '-', 27),
 
     (278, 'FILL_BLANK', 'BIOS 이후에 실행되어 운영체제를 메모리에 적재하는 프로그램은 _____이다.', '부트로더, bootloader', '-', 27),
@@ -609,6 +661,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit21 - 운영체제 & 시스템 구조 2 (Lesson ID: 28)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (289, 'FILL_BLANK', 'x86 아키텍처에서 시스템 콜은 int _____명령을 통해 발생한다.', '0x80', '-', 28),
 
     (290, 'FILL_BLANK', '사용자 모드에서 실행되는 프로그램이 시스템 콜을 호출하면 CPU 모드는 _____모드로 변환된다.', '커널, kernel', '-', 28),
@@ -635,6 +688,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit21 - 운영체제 & 시스템 구조 3 (Lesson ID: 29)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (301, 'SELECT_DESCRIPTION', '초기 컴퓨터 시스템의 운영 방식으로, 작업을 순서대로 모아 처리하는 것은?', '2', '1.시분할 시스템;2.배치 처리 시스템;3.멀티태스킹 시스템;4.실시간 시스템', 29),
 
     (302, 'FILL_BLANK', '운영체제는 프로그램이 I/O 장치를 직접 다루지 않고 사용할 수 있도록 _____를 제공한다', '장치 드라이버', '-', 29),
@@ -653,6 +707,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit22 - 프로세스 1 (Lesson ID: 30)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (309, 'FILL_BLANK', '프로그램은 디스크에 저장된 명령어와 데이터의 묶음이고, 실행 중인 프로그램을 _____라 한다.', '프로세스', '-', 30),
 
     (310, 'SELECT_DESCRIPTION', '다음 중 프로세스 상태가 아닌 것은?', '4', '1.Running;2.Ready;3.Waiting;4.Request', 30),
@@ -679,6 +734,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit22 - 프로세스 2 (Lesson ID: 31)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (321, 'SELECT_DESCRIPTION', '우선순위가 가장 높은 프로세스가 준비 상태에서 실행 상태로 전환되는 것은?', '3', '1.Wake Up;2.Timer Runout;3.Dispatch;4.Spooling', 31),
 
     (322, 'SELECT_DESCRIPTION', '프로세스 관리 명령어 중 현재 실행 중인 프로세스를 확인하는 명령어는?', 'ps', '-', 31),
@@ -705,6 +761,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit23 - 스레드 (Lesson ID: 32)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (333, 'FILL_BLANK', '모든 프로세스는 적어도 하나의 _____를 가진다.', '스레드', '-', 32),
 
     (334, 'SELECT_DESCRIPTION', '다중 스레드 프로세스에서 스레드 간에 공유되지 않는 것은?', '3', '1.코드;2.전역 데이터;3.스택;4.파일 디스크립터', 32),
@@ -715,7 +772,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (337, 'SELECT_DESCRIPTION', 'Two-level 스레드 모델이 Many-to-Many 모델과의 차이점으로 옳은 것은?', '4', '1.하나의 커널 스레드만 사용;2.생성 시 커널 스레드 자동 생성;3.병렬 실행 불가;4.특정 스레드 바인딩 가능', 32),
 
-    (338, 'FILL_BLANK', 'Pthread에서 스레드를 생성하는 함수는 _____이다.', 'pthread_create()', '-', 32),
+    (338, 'FILL_BLANK', 'pthread_create()는 스레드를 _____하는 함수이다.', '생성', '-', 32),
 
     (339, 'FILL_BLANK', 'pthread_join(tid, 0)의 역할은 무엇인가? (pthread_t tid;)', '특정 스레드 종료까지 대기', '1.특정 스레드 종료까지 대기;2.현재 스레드 즉시 종료;3.스레드 속성 초기화;4.새 스레드 생성', 32),
 
@@ -735,6 +792,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit24 - 스케줄링 1 (Lesson ID: 33)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (347, 'SELECT_DESCRIPTION', '스케줄러가 스케줄링 결정을 내리는 시점 중 선점(preemption)이 발생하는 경우는?', '3', '1.running → waiting;2.프로세스 종료;3.running → ready;4.waiting → terminated', 33),
 
     (348, 'SELECT_DESCRIPTION', 'Dispatch Latency가 큰 경우 시스템에 미치는 주요 영향은?', '2', '1.CPU 사용률이 높아진다.;2.응답 시간이 느려진다.;3.보안성이 강화된다.;4.프로세스 동기화가 단순해진다.', 33),
@@ -757,6 +815,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit24 - 스케줄링 2 (Lesson ID: 34)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (357, 'SELECT_DESCRIPTION', 'CPU burst 시간이 긴 프로세스가 먼저 실행될 때 짧은 프로세스들이 오랫동안 대기하게 되는 현상을 무엇이라고 하는가?', '2', '1.Head-of-line blocking;2.Convoy effect;3.Starvation;4.Priority inversion', 34),
 
     (358, 'FILL_BLANK', 'SJF 스케줄링 알고리즘은 평균 _____ 시간을 최소화하는 최적 알고리즘으로 알려져 있다.', '대기, waiting', '-', 34),
@@ -775,6 +834,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit24 - 스케줄링 3 (Lesson ID: 35)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (365, 'SELECT_DESCRIPTION', '우선순위 스케줄링에서 기아(Starvation) 문제를 완화하기 위한 대표적인 방법은?', '2', '1.고정된 CPU burst 시간 사용;2.우선순위를 동적으로 조정하는 방법;3.더 긴 프로세스를 우선 실행;4.FIFO 큐 사용', 35),
 
     (366, 'FILL_BLANK', 'EDF(Earliest Deadline First) 스케줄링은 _____이 빠를수록 더 높은 우선순위를 가진다.', 'deadline, 마감기한', '-', 35),
@@ -801,6 +861,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit25 - 프로세스 동기화 1 (Lesson ID: 36)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (377, 'FILL_BLANK', 'CPU의 성능 향상은 주로 _____ 수의 증가와 클럭 속도 향상에 의해 이루어졌으나, 최근에는 클럭 속도 향상이 정체되어 코어 수의 증가로 발전 방향이 바뀌었다.', '트랜지스터', '-', 36),
 
     (378, 'SELECT_DESCRIPTION', 'Concurrency와 Parallelism의 차이를 올바르게 설명한 것은? (C - Concurrency, P - Parallelism)', '3', '1.C는 여러 코어에서 실행되고 P은 단일 코어에서 실행된다.;2.C는 동시에 실행되지만 P은 동시에 실행되지 않는다.;3.C는 시분할 실행, P은 멀티코어 실제 동시 실행.;4.C와 P은 완전히 동일한 개념이다.', 36),
@@ -819,6 +880,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit25 - 프로세스 동기화 2 (Lesson ID: 37)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (385, 'FILL_BLANK', 'Race Condition은 실행 결과가 실행 순서나 스케줄링에 따라 달라지므로, 오류가 _____적이다.', '비결정론적, nondeterministic', '-', 37),
 
     (386, 'FILL_BLANK', '공유 자원을 동시에 접근하지 않도록 보호해야 하는 코드 영역을 _____이라고 한다.', '임계구역, critical section', '-', 37),
@@ -837,7 +899,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (393, 'SELECT_DESCRIPTION', 'Spin Lock의 단점으로 옳은 것은?', '3', '1.문맥 전환 비용이 크다.;2.항상 성능이 높다.;3.공정성이 보장되지 않아 특정 스레드가 무한히 대기할 수 있다.;4.임계 구역을 보호하지 못한다.', 37),
 
-    (394, 'SELECT_DESCRIPTION', 'Multi-CPU(SMP) 환경에서 인터럽트를 disable해도 발생할 수 있는 문제는 무엇인가?', '3', '1.단일 스레드만 실행된다.;2.인터럽트가 아예 발생하지 않는다.;3.다른 CPU에서 동시에 데이터를 읽거나 쓸 수 있다.;4.캐시 동기화가 자동으로 이루어진다.', 37),
+    (394, 'SELECT_DESCRIPTION', 'Multi-CPU(SMP) 환경에서 인터럽트를 비활성화해도 발생할 수 있는 문제는 무엇인가?', '3', '1.단일 스레드만 실행된다.;2.인터럽트가 아예 발생하지 않는다.;3.다른 CPU에서 동시에 데이터를 읽거나 쓸 수 있다.;4.캐시 동기화가 자동으로 이루어진다.', 37),
 
     (395, 'SELECT_DESCRIPTION', '멀티코어 시스템에서 원자적 연산이 비싼 이유로 옳지 않은 것은?', '4', '1.캐시 flush 필수.;2.메모리 버스 lock 필수.;3.다른 CPU stall 가능성.;4.CPU 클럭 속도가 항상 낮아진다.', 37),
 
@@ -861,6 +923,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit25 - 프로세스 동기화 3 (Lesson ID: 38)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (405, 'FILL_BLANK', 'Deadlock이 발생하기 위한 네 가지 조건은 상호 배제, 점유와 대기, _____, 순환 대기.', '비선점', '-', 38),
 
     (406, 'SELECT_DESCRIPTION', 'Deadlock 발생 조건에 해당하지 않는 것은?', '4', '1.Mutual Exclusion;2.Hold and Wait;3.Circular Wait;4.Preemption of all resources', 38),
@@ -883,6 +946,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit26 - 메모리 관리 1 (Lesson ID: 39)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (415, 'FILL_BLANK', '운영체제는 보통 _____ 단위로 메모리를 동적 할당한다. (예: 4KB)', '페이지, page', '-', 39),
 
     (416, 'SELECT_DESCRIPTION', 'malloc() 함수와 free() 함수의 차이로 옳은 것은?', '2', '1.malloc()은 메모리를 해제하고, free()는 메모리를 할당한다.;2.malloc()은 원하는 크기의 메모리를 할당하고 free()는 이를 해제한다.;3.malloc()과 free()는 동일한 기능을 수행한다.;4.free()는 포인터가 아닌 크기를 인자로 받는다.', 39),
@@ -905,6 +969,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit26 - 메모리 관리 2 (Lesson ID: 40)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (425, 'SELECT_DESCRIPTION', 'Free List의 기본 구조는?', '2', '1.배열로 관리한다.;2.연결 리스트로 관리하며 각 노드에 크기를 기록한다.;3.트리 구조로 관리한다.;4.해시 테이블로 관리한다.', 40),
 
     (426, 'SELECT_DESCRIPTION', 'Free List에서 첫 번째 충분히 큰 블록을 선택하는 전략은?', '1', '1.First-Fit;2.Best-Fit;3.Next-Fit;4.Round-Fit', 40),
@@ -927,6 +992,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit26 - 메모리 관리 3 (Lesson ID: 41)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (435, 'SELECT_DESCRIPTION', '메모리 할당 시 Binning 기법의 장점으로 옳은 것은?', '2', '1.항상 가장 작은 블록을 고른다.;2.크기별로 미리 리스트를 나누어 탐색 시간을 줄인다.;3.내부 단편화를 완전히 없앤다.;4.외부 단편화를 항상 제거한다.', 41),
 
     (436, 'FILL_BLANK', 'malloc() 성능을 높이기 위해 크기를 2의 거듭제곱 단위로 올리는 것을 _____라고 한다.', '라운딩', '-', 41),
@@ -949,6 +1015,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit27 - 가상 메모리 1 (Lesson ID: 42)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (445, 'FILL_BLANK', '가상 메모리는 프로세스마다 독립적인 _____ 공간을 제공한다.', '주소', '-', 42),
 
     (446, 'SELECT_DESCRIPTION', '가상 메모리의 주요 목적이 아닌 것은?', '4', '1.메모리 보호;2.프로세스 간 격리;3.실제 메모리보다 큰 주소 공간 제공;4.CPU 클럭 속도를 높인다.', 42),
@@ -971,6 +1038,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit27 - 가상 메모리 2 (Lesson ID: 43)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (455, 'SELECT_DESCRIPTION', '페이징의 주요 목적은?', '1', '1.외부 단편화를 줄인다.;2.프로세스의 주소 공간을 고정 크기 블록으로 나눈다.;3.항상 내부 단편화를 제거한다.;4.CPU 속도를 높인다.', 43),
 
     (456, 'FILL_BLANK', '페이징에서 가상 주소는 페이지 번호와 페이지 내 _____으로 나뉜다.', '오프셋', '-', 43),
@@ -993,6 +1061,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit27 - 가상 메모리 3 (Lesson ID: 44)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (465, 'FILL_BLANK', '메모리에서 디스크로 페이지를 내보내는 작업을 _____라고 한다.', '스와핑', '-', 44),
 
     (466, 'SELECT_DESCRIPTION', '스와핑이 필요한 이유는?', '3', '1.CPU 속도를 높이기 위해.;2.캐시 크기를 줄이기 위해.;3.물리 메모리가 한정되어 있어 부족할 때 디스크를 활용하기 위해.;4.프로그램을 항상 같은 주소에 배치하기 위해.', 44),
@@ -1019,6 +1088,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit28 - 파일 시스템 & 저장장치 1 (Lesson ID: 45)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (477, 'FILL_BLANK', '하드 디스크의 데이터 최소 단위는 _____이며, 보통 512바이트 또는 4096바이트이다.', '섹터', '-', 45),
 
     (478, 'SELECT_DESCRIPTION', '실린더(cylinder)를 올바르게 설명한 것은?', '3', '1.디스크의 회전 속도를 의미한다.;2.단일 플래터의 하나의 트랙을 의미한다.;3.여러 플래터의 같은 트랙 위치를 모은 집합이다.;4.섹터를 묶어놓은 집합이다.', 45),
@@ -1043,6 +1113,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit28 - 파일 시스템 & 저장장치 2 (Lesson ID: 46)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (488, 'SELECT_DESCRIPTION', 'FCFS 디스크 스케줄링의 특징은?', '1', '1.요청 순서대로 처리해 공정성은 높으나 성능이 낮다.;2.탐색 시간을 최소화한다.;3.헤드 이동을 최소화한다.;4.특정 요청을 무한히 지연시킬 수 있다.', 46),
 
     (489, 'FILL_BLANK', 'SSTF는 _____ Seek Time First의 약자이다.', 'shortest', '-', 46),
@@ -1065,6 +1136,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit28 - 파일 시스템 & 저장장치 3 (Lesson ID: 47)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (498, 'SELECT_DESCRIPTION', 'SSD에서 쓰기 증폭(write amplification)이 발생하는 원인은?', '2', '1.캐시 크기가 작아서;2.페이지 단위 쓰기와 블록 단위 삭제 차이 때문에;3.RPM이 너무 낮아서;4.CPU 클럭이 낮아서', 47),
 
     (499, 'FILL_BLANK', 'SSD에서 쓰여진 페이지를 지우려면 전체 _____을 삭제해야 한다.', '블록, block', '-', 47),
@@ -1089,6 +1161,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit01 - 데이터베이스 시스템 1 (Lesson ID: 48)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (509, 'FILL_BLANK', '데이터는 처리되지 않은 _____의 집합이다.', '사실', '-', 48),
 
     (510, 'FILL_BLANK', '3단계 스키마에서 사용자별 뷰를 정의하는 것은 _____ 스키마이다.', '1', '1.외부(External);2.개념(Conceptual);3.내부(Internal);4.전역(Global)', 48),
@@ -1115,6 +1188,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit01 - 데이터베이스 시스템 2 (Lesson ID: 49)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (521, 'FILL_BLANK', '3단계 스키마는 외부(External), _____, 내부(Internal) 스키마로 구성된다.', '1', '1.개념(Conceptual);2.물리(Physical);3.전역(Global);4.논리(Logical)', 49),
 
     (522, 'SELECT_DESCRIPTION', '물리적 데이터 독립성을 가장 잘 설명하는 것은?', '2', '1.외부 스키마 변경이 내부에 전파됨;2.내부 저장 구조 변경이 외부 스키마에 영향을 주지 않음;3.개념 스키마 변경이 내부 스키마를 고정함;4.사용자 뷰가 테이블을 자동 생성함', 49),
@@ -1141,6 +1215,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit01 - 데이터베이스 시스템 3 (Lesson ID: 50)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (533, 'SELECT_DESCRIPTION', '다음 중 DBA의 주요 역할로 가장 거리가 먼 것은?', '3', '1.권한 관리;2.백업/복구;3.쿼리 옵티마이저 개발;4.성능 모니터링', 50),
 
     (534, 'SELECT_DESCRIPTION', 'CREATE TABLE, ALTER TABLE, DROP VIEW는 각각 어떤 범주의 언어인가?', '1', '1.모두 DDL;2.모두 DML;3.모두 DCL;4.모두 TCL', 50),
@@ -1167,6 +1242,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit02 - 관계형 모델 1 (Lesson ID: 51)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (545, 'SELECT_DESCRIPTION', '다음 중 릴레이션의 기본 구성 요소가 아닌 것은?', '4', '1.속성(Attribute);2.튜플(Tuple);3.카디널리티(Cardinality);4.인덱스(Index)', 51),
 
     (546, 'FILL_BLANK', '릴레이션의 _____는 속성의 개수, _____는 튜플의 개수를 의미한다.', '1', '1.차수-카디널리티;2.카디널리티-차수;3.도메인-슈퍼키;4.슈퍼키-도메인', 51),
@@ -1193,6 +1269,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit02 - 관계형 모델 2 (Lesson ID: 52)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (557, 'SELECT_DESCRIPTION', '엔터티 무결성(Entity Integrity) 규칙으로 옳은 것은?', '3', '1.기본키는 NULL 가능;2.기본키는 중복 가능;3.기본키는 NULL 불가·유일해야 한다;4.외래키는 반드시 기본키여야 한다', 52),
 
     (558, 'FILL_BLANK', '세 가지 무결성은 엔티티 무결성, 참조 무결성, _____ 무결성이다.', '도메인', '-', 52),
@@ -1219,6 +1296,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit03 - 관계대수 1 (Lesson ID: 53)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (569, 'SELECT_DESCRIPTION', 'A={1,2,3}, B={3,4,5}일 때 A∪B는?', '3', '1.{1, 2, 3};2.{3};3.{1,2,3,4,5};4.{4, 5}', 53),
 
     (570, 'SELECT_DESCRIPTION', 'A={a,b,c}, B={b,c,d}일 때 A와 B의 교집합은?', '2', '1.{a,d};2.{b,c};3.{a,b,c,d};4.{}', 53),
@@ -1245,6 +1323,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit03 - 관계대수 2 (Lesson ID: 54)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (581, 'SELECT_DESCRIPTION', 'Student(sid, name, dept) 스키마가 있을 때, "CS 학과 학생들의 이름만"에 해당하는 식은?', '1', '1.π name ( σ dept=''CS'' ( Student ) );2.σ dept=''CS'' ( π name ( Student ) );3.π dept ( σ name=''CS'' ( Student ) );4.π name ( Student ▷◁ Course )', 54),
 
     (582, 'SELECT_DESCRIPTION', 'Enroll(sid, cid) 스키마가 있을 때, "DB101을 수강한 학생 sid 목록"에 해당하는 식은?', '1', '1.π sid ( σ cid=''DB101'' ( Enroll ) );2.σ cid=''DB101'' ( π sid ( Enroll ) );3.π name ( σ cid=''DB101'' ( Enroll ) );4.π cid ( σ sid=''DB101'' ( Enroll ) )', 54),
@@ -1271,6 +1350,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - SQL 1-1 (Lesson ID: 55)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (593, 'FILL_BLANK', 'Users(id, name, status) 스키마가 있을 때, 활성 사용자 이름만 조회하려 한다. 빈칸에 들어갈 컬럼을 고르시오. \nSELECT _____ FROM Users WHERE status=''ACTIVE'';', '2', '1.id;2.name;3.*;4.id, name', 55),
 
     (594, 'SELECT_DESCRIPTION', 'Users(id, dept, active) 스키마가 있을 때, "CS 또는 EE 학과이면서 active=1"을 정확히 표현한 WHERE는?', '2', '1.WHERE dept=''CS'' OR dept=''EE'' AND active=1;2.WHERE (dept=''CS'' OR dept=''EE'') AND active=1;3.WHERE dept IN (''CS'',''EE'' AND active=1);4.WHERE (dept=''CS'' AND dept=''EE'') OR active=1', 55),
@@ -1297,6 +1377,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - SQL 1-2 (Lesson ID: 56)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (605, 'SELECT_DESCRIPTION', 'Users(user_id, nickname) 스키마가 있을 때, 사용자 표시명을 닉네임이 있으면 닉네임으로, 없으면 ''user#'' || user_id로 보여주려면?', '2', '1.SELECT NVL(nickname, ''user#'' || user_id) AS display_name FROM Users;2.SELECT COALESCE(nickname, ''user#'' || user_id) AS display_name FROM Users;3.SELECT IFNULL(nickname, CONCAT(''user#'', user_id)) AS display_name FROM Users;4.SELECT CASE WHEN nickname IS NULL THEN ''user#'' || user_id END AS display_name FROM Users', 56),
 
     (606, 'SELECT_DESCRIPTION', 'Orders(order_id, amount, created_at) 스키마가 있을 때, ''월별'' 매출 합계를 집계하려고 한다. 올바른 GROUP BY는?', '2', '1.SELECT SUM(amount), created_at FROM Orders GROUP BY created_at;2.SELECT EXTRACT(YEAR FROM created_at) AS y, EXTRACT(MONTH FROM created_at) AS m, SUM(amount) FROM Orders GROUP BY EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at);3.SELECT TO_CHAR(created_at, ''YYYY-MM'') ym, SUM(amount) FROM Orders GROUP BY ym;4.SELECT SUM(amount) FROM Orders GROUP BY 1', 56),
@@ -1323,6 +1404,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit04 - SQL 1-3 (Lesson ID: 57)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (617, 'SELECT_DESCRIPTION', 'Users(id, level, created_at) 스키마가 있을 때, level 내림차순, 동점이면 created_at 내림차순, 그래도 같으면 id 오름차순으로 정렬하라. 올바른 ORDER BY는?', '3', '1.ORDER BY level, created_at DESC, id;2.ORDER BY level DESC, created_at, id ASC;3.ORDER BY level DESC, created_at DESC, id ASC;4.ORDER BY level DESC, id ASC, created_at DESC', 57),
 
     (618, 'SELECT_DESCRIPTION', 'Posts(id, title, created_at, pinned_at) 스키마가 있을 때, 고정 글(pinned_at NOT NULL)을 먼저, 그 다음 비고정 글을, 각 그룹 내에서는 최신(created_at DESC) 순으로 정렬하라.', '2', '1.ORDER BY pinned_at DESC, created_at DESC;2.ORDER BY CASE WHEN pinned_at IS NULL THEN 1 ELSE 0 END, created_at DESC;3.ORDER BY pinned_at, created_at DESC;4.ORDER BY created_at DESC', 57),
@@ -1349,6 +1431,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - SQL 2-1 (Lesson ID: 58)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (629, 'SELECT_DESCRIPTION', 'Departments(id, name), Employees(id, name, dept_id NULL 허용) 스키마가 있을 때, "직원이 없어도 모든 부서를 포함해 조회"하려면 어떤 조인이 적절한가?', '2', '1.INNER JOIN;2.LEFT JOIN (Departments → Employees);3.RIGHT JOIN (Employees → Departments);4.NATURAL JOIN', 58),
 
     (630, 'FILL_BLANK', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, "부서가 존재하는 직원만" 조회하는 빈칸을 채우시오. \nSELECT e.* \nFROM Employees e _____ JOIN Departments d \nON d.id = e.dept_id;', '1', '1.INNER;2.LEFT;3.RIGHT;4.FULL OUTER', 58),
@@ -1375,6 +1458,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - SQL 2-2 (Lesson ID: 59)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (641, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문이 있는 고객"만 조회. 빈칸을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);3.c.id IN (SELECT o.id FROM Orders o);4.-', 59),
 
     (642, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, 아래 IN을 JOIN으로 바꿀 때, 조인 종류를 채우시오. \nSELECT c.id FROM Customers c WHERE c.id IN (SELECT o.customer_id FROM Orders o) \n→ \nSELECT DISTINCT c.id \nFROM Customers c _____ JOIN Orders o \nON o.customer_id = c.id;', '2', '1.LEFT;2.INNER;3.RIGHT;4.FULL OUTER', 59),
@@ -1401,6 +1485,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit05 - SQL 2-3 (Lesson ID: 60)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (653, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블의 id를 중복 없이 합치려면 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '1', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
     (654, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블을 합칠 때 중복 허용 + 빠른 경로를 선택하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '2', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
@@ -1427,6 +1512,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - SQL 3-1 (Lesson ID: 61)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (665, 'FILL_BLANK', 'Users 테이블 생성 시 id를 기본키로 지정하라. 빈칸을 채우시오. \nCREATE TABLE Users ( \n  id BIGINT _____ , \n  email VARCHAR(255) \n);', '1', '1.PRIMARY KEY;2.UNIQUE;3.FOREIGN KEY;4.UNION', 61),
 
     (666, 'FILL_BLANK', 'email을 유니크 제약으로 추가하라. 빈칸을 채우시오. \nALTER TABLE Users \nADD CONSTRAINT ux_users_email _____ (email);', '2', '1.PRIMARY KEY;2.UNIQUE;3.FOREIGN KEY;4.UNION', 61),
@@ -1453,6 +1539,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - SQL 3-2 (Lesson ID: 62)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (677, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, email 값을 생략하고 기본값으로 INSERT 하라. 빈칸을 채우시오. INSERT INTO Users(email) VALUES _____ ;', '1', '1.DEFAULT;2.NULL;3.'''';4.NOT NULL', 62),
 
     (678, 'FILL_BLANK', 'Orders(id PK, user_id BIGINT NOT NULL, FOREIGN KEY (user_id) REFERENCES Users(id)) 스키마가 있을 때, FK 위반 없이 주문을 삽입하려면 user_id에 무엇이 들어가야 하는가? 빈칸을 채우시오. INSERT INTO Orders(user_id) VALUES _____ ;', '4', '1.NOT NULL;2.NULL;3.음수;4.존재하는 Users.id', 62),
@@ -1479,6 +1566,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
 -- Unit06 - SQL 3-3 (Lesson ID: 63)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
     (689, 'FILL_BLANK', '트랜잭션을 시작하고 변경을 확정할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \n-- DML … \n_____ ;', '1', '1.COMMIT;2.ROLLBACK;3.SAVEPOINT sp;4.TRANSACTION', 63),
 
     (690, 'FILL_BLANK', '트랜잭션 내 변경을 모두 취소할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \n-- DML … \n_____ ;', '2', '1.COMMIT;2.ROLLBACK;3.SAVEPOINT sp;4.TRANSACTION', 63),
@@ -1502,3 +1590,729 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
     (699, 'FILL_BLANK', 'T에 UNIQUE 키가 존재할 때, 중복키가 발생하면 해당 행을 건너뛰고 계속 적재하려면 다음 SQL 문의 빈칸을 채우시오. \nLOAD DATA INFILE ''f.csv'' \nINTO TABLE T _____ ;', '4', '1.UPDATE;2.REPLACE;3.UPSERT;4.IGNORE', 63),
 
     (700, 'FILL_BLANK', '자식 테이블이 FK를 보유할 때, 대량 적재 전후 FK 검사를 제어하고, 하나의 트랜잭션으로 원자적으로 처리하려면 다음 SQL 문의 빈칸을 채우시오. \nSET FOREIGN_KEY_CHECKS = 0; \nSTART TRANSACTION; \n-- LOAD DATA … \nCOMMIT; \nSET FOREIGN_KEY_CHECKS = _____ ;', '2', '1.0;2.1;3.DEFAULT;4.UNIQUE', 63);
+
+-- Chapter 6: 보안
+-- Unit 1 - Lesson 1: 입력 검증 & 신뢰 경계 Concept (Lesson ID: 64)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (701, 'SELECT_DESCRIPTION', '다음 중 ''입력 검증''의 주된 목적을 가장 정확히 설명한 것은?', '2', '1.들어온 값을 자동 보정해 최대한 통과시킨다;2.규정된 형식·범위·타입을 만족하지 않으면 거부한다;3.출력 시 특수문자를 치환한다;4.암호화로 기밀성을 보장한다', 64),
+
+    (702, 'SELECT_DESCRIPTION', '신뢰 경계(Trust Boundary)에 대한 설명으로 가장 적절한 것은?', '2', '1.동일 프로세스 내부 함수 간 호출 지점이다;2.데이터가 서로 다른 보안 영역을 넘어가는 지점이다;3.코드 리뷰가 필요한 라인이다;4.암호화를 수행하는 위치이다', 64),
+
+    (703, 'FILL_BLANK', '데이터를 컴퓨터가 이해할 수 있는 바이너리 형식으로 변환하는 것을 _____라고 하며 XSS 방어의 기본이다.', '인코딩', '-', 64),
+
+    (704, 'SELECT_DESCRIPTION', '입력 검증보다 ''출력 인코딩''이 핵심이 되는 상황은?', '3', '1.숫자 범위 체크;2.파일 크기 제한;3.사용자 이름을 HTML에 출력;4.비밀번호 길이 검사', 64),
+
+    (705, 'FILL_BLANK', '허용 가능한 값의 집합만 통과시키는 검증 방식을 _____라고 한다.', '허용목록', '-', 64),
+
+    (706, 'SELECT_DESCRIPTION', '다음 중 ''싱크(sink)''에 해당하는 예시는?', '2', '1.입력 폼 placeholder;2.문자열을 SQL 쿼리에 이어붙여 실행;3.디버그 로그에 값 출력;4.toUpperCase 변환', 64),
+
+    (707, 'FILL_BLANK', 'SQL·HTML·셸은 서로 다른 _____에 속하므로 동일한 필터로 모두를 방어할 수 없다.', '컨텍스트', '-', 64),
+
+    (708, 'SELECT_DESCRIPTION', '신뢰 경계 관점에서 일반적으로 가장 위험한 입력 소스는?', '3', '1.서버 상수;2.내부 구성 파일;3.사용자가 제어하는 HTTP 헤더/바디;4.컴파일 타임 상수', 64);
+
+-- Unit 1 - Lesson 2: 입력 검증 & 신뢰 경계 Exploit (Lesson ID: 65)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (709, 'SELECT_DESCRIPTION', '입력 검증이 부재한 경우 발생 가능한 일로 가장 적절한 것은?', '3', '1.CPU 온도 상승;2.UI 글꼴 붕괴;3.SQL/OS/스크립트 인젝션 발생;4.자동 백업 실패', 65),
+
+    (710, 'FILL_BLANK', '사용자 제공 파일 경로를 이용해 상위 디렉터리로 이동하는 공격을 _____라고 한다.', '디렉터리트래버설', '-', 65),
+
+    (711, 'SELECT_DESCRIPTION', '다중 컨텍스트를 악용해 필터를 우회하는 사례는?', '2', '1.정수 범위 초과;2.JSON 안의 HTML 안의 스크립트 삽입;3.잘못된 시간대 파싱;4.큰 이미지 로딩 지연', 65),
+
+    (712, 'FILL_BLANK', '여러 컨텍스트가 얽힌 입력 문제를 줄이려면 우선 각 _____를 구분해 처리해야 한다.', '컨텍스트', '-', 65),
+
+    (713, 'SELECT_DESCRIPTION', '공격자가 가장 자주 악용하는 전송 요소는?', '1', '1.HTTP 헤더/바디;2.서버 환경변수;3.컴파일 옵션;4.타임존', 65),
+
+    (714, 'FILL_BLANK', '공격 표면을 줄이는 기본 수단 중 하나는 입력 길이 _____이다.', '제한', '-', 65),
+
+    (715, 'SELECT_DESCRIPTION', '입력값이 로깅만 되고 실행 경로에 들어가지 않도록 해야 하는 이유는?', '3', '1.디스크 사용량 증가;2.개인정보 보호법 위반;3.로그 주입/탈출 위험 차단;4.성능 저하', 65),
+
+    (716, 'SELECT_DESCRIPTION', '확장자·MIME·매직넘버를 교차 검증하지 않으면 어떤 취약점이 발생하기 쉬운가?', '2', '1.중간자 공격;2.형식우회(포맷 스푸핑);3.세션 고정;4.클릭재킹', 65);
+
+-- Unit 1 - Lesson 3: 입력 검증 & 신뢰 경계 Exploit (Lesson ID: 66)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (717, 'SELECT_DESCRIPTION', '서버 측 검증과 클라이언트 측 검증의 관계로 가장 적절한 것은?', '2', '1.클라이언트 검증만 있으면 충분하다;2.서버 검증이 필수이고, 클라이언트는 사용자 편의용 보조다;3.서버 검증은 성능 저하로 지양한다;4.둘 다 불필요하다', 66),
+
+    (718, 'FILL_BLANK', '국가 코드 입력에는 ^[A-Z]{2}$ 같은 _____ 기반 검증이 적절하다.', '정규식', '-', 66),
+
+    (719, 'SELECT_DESCRIPTION', '출력 인코딩을 적용해야 할 시점으로 가장 적절한 것은?', '3', '1.DB 저장 직전;2.네트워크 송신 직전;3.렌더링 대상 컨텍스트에 출력하기 직전;4.사용자가 입력할 때', 66),
+
+    (720, 'FILL_BLANK', '파일 업로드 보안에서는 Content-Type과 파일 _____(예: 매직넘버)을 교차 검증해야 한다.', '시그니처', '-', 66),
+
+    (721, 'SELECT_DESCRIPTION', '숫자 ID를 입력받는 엔드포인트의 안전한 처리로 가장 적절한 것은?', '3', '1.정규식으로 숫자인지만 확인;2.클라이언트에서 버튼 숨김;3.서버에서 소유권/권한을 함께 검증;4.프론트에서만 필터링', 66),
+
+    (722, 'FILL_BLANK', '위험한 함수 호출 전 유해 문자를 제거·치환하여 안전하게 만드는 과정을 _____라고 한다.', '세니타이즈', '-', 66),
+
+    (723, 'SELECT_DESCRIPTION', 'JSON API에서 Mass Assignment 취약점을 막기 위한 입력 검증 전략으로 가장 적절한 것은?', '2', '1.민감 필드만 블랙리스트로 차단한다;2.서버에서 DTO/스키마에 명시된 필드만 허용(allowlist)하고 나머지는 거부한다;3.민감 필드는 프런트엔드에서 숨긴다;4.허용되지 않은 필드는 로그만 남기고 그대로 처리한다', 66),
+
+    (724, 'FILL_BLANK', '로그에는 민감정보를 남기지 말고 _____ 처리를 적용해야 한다.', '마스킹', '-', 66);
+
+-- Unit 2 - Lesson 4: Broken Access Control Concept (Lesson ID: 67)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (725, 'FILL_BLANK', '사용자가 애플리케이션에 제공하는 입력값을 통해 시스템의 객체(파일, 데이터베이스 레코드 등)에 직접 접근할 때, 권한이 없는 사용자도 해당 객체에 접근할 수 있게 되는 취약점을 _____라고 한다.', 'idor', '-', 67),
+
+    (726, 'SELECT_DESCRIPTION', '기능 수준 권한 실패에 대한 설명으로 가장 적절한 것은?', '2', '1.다른 테넌트 데이터가 섞이는 문제;2.관리자 기능이 일반 사용자에게 노출되는 문제;3.로그인 실패 시 메시지 노출;4.비밀번호 재사용 문제', 67),
+
+    (727, 'FILL_BLANK', '클라이언트에서 버튼을 숨기는 것만으로 권한을 통제하는 것은 ''_____''에 의한 보안으로 취약하다.', '은폐', '-', 67),
+
+    (728, 'SELECT_DESCRIPTION', '/api/admin/delete?id=1 이 인증만 확인하고 인가를 확인하지 않는 경우의 문제는?', '2', '1.인증 우회;2.권한 상승/기능 수준 접근제어 실패;3.XSS;4.세션 고정', 67),
+
+    (729, 'FILL_BLANK', '권한 확인은 항상 _____ 측에서 수행되어야 하며, 클라이언트 검증은 보조 수단이다.', '서버', '-', 67),
+
+    (730, 'SELECT_DESCRIPTION', '다음 중 객체 수준 권한 검증이 핵심인 사례는?', '1', '1.GET /api/invoices/123;2.POST /api/admin/users;3.POST /api/auth/login;4.GET /api/metrics', 67),
+
+    (731, 'FILL_BLANK', '다중 테넌트 시스템에서는 모든 조회·변경에 _____ ID 바인딩을 강제해야 한다.', '테넌트', '-', 67),
+
+    (732, 'SELECT_DESCRIPTION', '객체 수준과 기능 수준 권한의 차이에 대한 설명으로 옳은 것은?', '2', '1.둘은 동일하다;2.객체는 데이터 레코드, 기능은 엔드포인트/행동;3.객체는 UI, 기능은 DB;4.객체는 캐시, 기능은 CDN', 67);
+
+-- Unit 2 - Lesson 5: Broken Access Control Exploit (Lesson ID: 68)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (733, 'SELECT_DESCRIPTION', 'IDOR 공격의 전형적 절차로 가장 적절한 것은?', '2', '1.암호 추측→브루트포스;2.리소스 식별자 예측/변경→응답 비교→소유권 우회;3.이미지 업로드→용량 초과;4.쿠키 삭제→로그아웃', 68),
+
+    (734, 'FILL_BLANK', '1001, 1002처럼 예측 가능한 연속 번호를 _____ 식별자라고 하며 IDOR 위험을 키운다.', '순차', '-', 68),
+
+    (735, 'SELECT_DESCRIPTION', '객체 수준 권한 실패의 영향이 특히 큰 메서드는?', '2', '1.GET;2.PUT/DELETE;3.OPTIONS;4.HEAD', 68),
+
+    (736, 'FILL_BLANK', '권한 상승 테스트에서는 ''일반 사용자 → _____ 사용자''로의 기능 접근 시도가 핵심이다.', '관리자', '-', 68),
+
+    (737, 'SELECT_DESCRIPTION', '다중 테넌트 시스템에서 가장 먼저 확인해야 할 취약 지점은?', '2', '1.환경 변수 이름;2.테넌트 ID 바인딩 누락;3.로고 파일 크기;4.CDN 캐시 만료', 68),
+
+    (738, 'FILL_BLANK', '클라이언트가 전송한 role, isAdmin 같은 필드는 _____ 대상이 아니므로 신뢰하면 안 된다.', '권위', '-', 68),
+
+    (739, 'SELECT_DESCRIPTION', '리소스 URL의 예측 가능성을 낮추는 좋은 방법은?', '2', '1.숫자 증가 ID;2.UUID v4;3.해시 없는 슬러그;4.연속 문자열', 68),
+
+    (740, 'FILL_BLANK', '중요 기능은 _____ 경로나 전용 서브도메인으로 분리해 네트워크 정책을 분리한다.', '관리', '-', 68);
+
+-- Unit 2 - Lesson 6: Broken Access Control Exploit (Lesson ID: 69)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (741, 'SELECT_DESCRIPTION', '리소스 소유권 검증에 반드시 필요한 정보는?', '3', '1.사용자 선호 언어;2.로그인 시간대;3.주체ID와 리소스 소유자 매핑;4.브라우저 종류', 69),
+
+    (742, 'FILL_BLANK', '엔드포인트 보호는 allowlist 기반 _____ 정책으로 구현하는 것이 기본이다.', '인가', '-', 69),
+
+    (743, 'SELECT_DESCRIPTION', '순차 ID 대신 불투명 식별자(예: UUID v4)를 쓰는 주요 이점은?', '2', '1.저장공간 절약;2.예측 가능성 감소로 IDOR 위험 완화;3.네트워크 단절;4.캐시 무효화', 69),
+
+    (744, 'FILL_BLANK', '권한 검사 실패 시 돌려줄 HTTP 상태 코드는 보안상 _____가 적절하다.', '403', '-', 69),
+
+    (745, 'SELECT_DESCRIPTION', '권한 정책 설계로 가장 적절한 것은?', '2', '1.모든 사용자에게 모든 엔드포인트 허용;2.RBAC/ABAC로 최소권한 적용;3.UI에서만 버튼 숨김;4.로그 레벨만 높임', 69),
+
+    (746, 'FILL_BLANK', '감사 가능성을 높이기 위해 접근 거부 이벤트에는 사용자ID와 _____를 함께 로그로 남긴다.', '요청id', '-', 69),
+
+    (747, 'SELECT_DESCRIPTION', '다중 테넌트에서 { "role": "admin" }가 온 요청을 안전하게 처리하는 방법은?', '3', '1.본문 role 신뢰;2.JWT role만 확인;3.서명·클레임 검증 후 서버측 권한·테넌트 소유 검증;4.프런트 버튼만 숨김', 69),
+
+    (748, 'FILL_BLANK', 'URL·바디·헤더 어디에 있든 _____ 기반으로 권한을 평가해야 일관성이 보장된다.', '주체', '-', 69);
+
+-- Unit 3 - Lesson 7: Authentication & Session Concept (Lesson ID: 70)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (749, 'FILL_BLANK', '인증(Authentication)은 ''누구인가''를 확인하는 절차이며, 인가(Authorization)는 _____을 결정하는 절차다.', '권한', '-', 70),
+
+    (750, 'SELECT_DESCRIPTION', '다음 중 인증 요소로 분류되지 않는 것은?', '4', '1.소지(토큰/기기);2.지식(비밀번호/PIN);3.생체(지문/얼굴);4.화면 해상도', 70),
+
+    (751, 'FILL_BLANK', '세션 고정(Session Fixation)은 공격자가 미리 _____ 값을 정해두고 피해자가 그 값으로 로그인하게 만드는 공격이다.', '세션id, 세션아이디, sessionid', '-', 70),
+
+    (752, 'SELECT_DESCRIPTION', '비밀번호 저장의 올바른 설명은?', '3', '1.단순 SHA-256 해시;2.솔트 없이 MD5;3.솔트+워크팩터 있는 해시 사용;4.평문 암호화 저장', 70),
+
+    (753, 'FILL_BLANK', '쿠키 기반 세션 보호를 위해서는 HttpOnly, Secure, _____ 속성을 적절히 설정해야 한다.', 'samesite', '-', 70),
+
+    (754, 'SELECT_DESCRIPTION', 'JWT의 ''서명'' 목적은?', '2', '1.기밀성 제공;2.무결성/진위 확인;3.압축;4.세션 무효화', 70),
+
+    (755, 'FILL_BLANK', 'TOTP는 _____ 기반 일회용 비밀번호 방식이다.', '시간', '-', 70),
+
+    (756, 'SELECT_DESCRIPTION', '세션 타임아웃 설정의 주요 목적은?', '3', '1.UX 향상;2.리소스 절약;3.장기 미사용 세션 위험 감소;4.로그 축소', 70);
+
+-- Unit 3 - Lesson 8: Authentication & Session Exploit (Lesson ID: 71)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (757, 'SELECT_DESCRIPTION', '인증 우회 시 흔히 시도되지 않는 것은?', '4', '1.약한 비밀번호 정책 악용;2.계정 잠금 우회;3.세션 만료 강제;4.UI 테마 변경', 71),
+
+    (758, 'FILL_BLANK', '로그인 시도 무차별 대입에 대응하지 않으면 _____ 공격(credential stuffing)에 취약해진다.', '브루트포스', '-', 71),
+
+    (759, 'SELECT_DESCRIPTION', '세션 탈취의 전제조건으로 보기 어려운 것은?', '4', '1.세션 ID 노출;2.전송 구간 평문;3.XSS 등 실행 컨텍스트;4.정적 파일 압축', 71),
+
+    (760, 'FILL_BLANK', '동일 브라우저 내 스크립트가 쿠키를 읽지 못하게 하려면 쿠키에 _____ 속성을 설정해야 한다.', 'httponly', '-', 71),
+
+    (761, 'SELECT_DESCRIPTION', 'MFA 구성에서 보안성이 가장 높은 조합은?', '3', '1.비밀번호+메일 링크;2.비밀번호+SMS;3.비밀번호+TOTP/하드웨어 키;4.비밀번호만', 71),
+
+    (762, 'FILL_BLANK', '패스워드 재사용 방지를 위해 금지 목록과 최소 _____ 정책이 권장된다.', '길이', '-', 71),
+
+    (763, 'SELECT_DESCRIPTION', '세션 하이재킹과 거리가 먼 시나리오는?', '3', '1.공용 PC 자동 로그인;2.피싱 통한 토큰 탈취;3.CSS 스프라이트 깨짐;4.XSS로 세션 읽기', 71),
+
+    (764, 'FILL_BLANK', '계정 탈취 시도 탐지를 위해 실패 로그인 횟수와 _____ 주소를 함께 모니터링한다.', 'ip', '-', 71);
+
+-- Unit 3 - Lesson 9: Authentication & Session Exploit (Lesson ID: 72)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (765, 'SELECT_DESCRIPTION', '세션 관리 베스트 프랙티스가 아닌 것은?', '3', '1.로그인 직후 세션 ID 재발급;2.로그아웃 시 세션 무효화;3.장기 미활동에도 세션 유지;4.민감 요청 시 재인증', 72),
+
+    (766, 'FILL_BLANK', '로그인 실패 횟수 제한, 지연 삽입 등은 _____ 방어 기법에 해당한다.', '브루트포스', '-', 72),
+
+    (767, 'SELECT_DESCRIPTION', '비밀번호 정책으로 가장 적절한 것은?', '2', '1.복잡도만 높이고 길이는 6자;2.길이 우선 정책과 금지 목록;3.30일마다 강제 변경;4.특수문자 3개 필수', 72),
+
+    (768, 'FILL_BLANK', 'HOTP는 _____ 기반 일회용 비밀번호 방식으로, 서버와 클라이언트의 카운터가 증가할 때마다 코드가 생성된다.', '카운터', '-', 72),
+
+    (769, 'SELECT_DESCRIPTION', '쿠키 SameSite 값 설명으로 가장 맞는 것은?', '2', '1.None은 완전 차단;2.Lax는 대부분의 내비게이션에 쿠키 전송 제한;3.Strict는 크로스사이트 요청에도 전송;4.None은 HTTPS 불필요', 72),
+
+    (770, 'FILL_BLANK', '비밀번호 재설정 링크는 충분히 무작위이며 만료가 짧은 _____ 토큰이어야 한다.', '일회용', '-', 72),
+
+    (771, 'SELECT_DESCRIPTION', '세션 고정 방어의 핵심은?', '2', '1.로그인 전 세션 유지;2.로그인 직후 세션 ID 재발급;3.쿠키 삭제 금지;4.토큰 로컬 저장', 72),
+
+    (772, 'FILL_BLANK', '민감한 상태 변경 요청에는 MFA나 _____ 확인(재인증)을 요구한다.', '본인', '-', 72);
+
+-- Unit 4 - Lesson 10: SQL Injection Concept (Lesson ID: 73)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (773, 'FILL_BLANK', 'SQL 인젝션의 핵심 원인은 값과 _____ 구조의 분리가 이뤄지지 않는 데 있다.', '쿼리', '-', 73),
+
+    (774, 'SELECT_DESCRIPTION', '다음 중 SQLi 유형 설명으로 적절하지 않은 것은?', '4', '1.Boolean 기반;2.시간 기반;3.UNION 기반;4.네이티브 앱이면 안전', 73),
+
+    (775, 'FILL_BLANK', '입력 데이터를 쿼리 파라미터로 바인딩하는 ''_____''가 기본 방어다.', '프리페어드', '-', 73),
+
+    (776, 'SELECT_DESCRIPTION', '최소 권한 원칙으로 올바른 것은?', '2', '1.DB 소유자 권한 사용;2.읽기 전용 작업은 읽기 계정만 사용;3.모든 권한 부여 후 감시;4.루트 계정 통합', 73),
+
+    (777, 'FILL_BLANK', 'ORM을 사용하더라도 _____ 쿼리(문자열 이어붙이기)는 지양해야 한다.', '동적', '-', 73),
+
+    (778, 'SELECT_DESCRIPTION', '에러 메시지 노출의 위험은?', '2', '1.UX 향상;2.정보 노출;3.캐시 증가;4.정렬 개선', 73),
+
+    (779, 'FILL_BLANK', '바인딩되지 않은 입력은 _____절의 논리를 임의로 바꿀 수 있다.', 'where', '-', 73),
+
+    (780, 'SELECT_DESCRIPTION', '검색 API에서 안전한 방법은?', '2', '1.문자열로 WHERE 조립;2.바인딩 변수와 허용 컬럼 리스트;3.클라이언트만 필터;4.관리자만 접근', 73),
+
+    -- Unit 4 - Lesson 11: SQL Injection Exploit (Lesson ID: 74)
+    (781, 'SELECT_DESCRIPTION', 'SQLi 탐지와 관련 없는 신호는?', '3', '1.예외 메시지 노출;2.비정상적 응답 지연;3.정적 파일 캐시 적중 증가;4.결과 행 수 급변', 74),
+
+    (782, 'FILL_BLANK', '데이터베이스 에러 메시지 과다 노출은 _____을 유발하여 공격 난이도를 낮춘다.', '정보노출', '-', 74),
+
+    (783, 'SELECT_DESCRIPTION', '검색 조건에 사용자 입력을 직접 이어붙이는 패턴의 위험은?', '3', '1.인덱스 미사용;2.문자열 정렬 오류;3.논리 조작 통한 조건 우회;4.캐시 미스', 74),
+
+    (784, 'FILL_BLANK', 'SQLi는 입력 검증만으로 충분하지 않으며 반드시 _____화가 필요하다.', '매개변수', '-', 74),
+
+    (785, 'SELECT_DESCRIPTION', '스토어드 프로시저가 항상 안전하지 않은 이유는?', '2', '1.느림;2.내부에서 동적 쿼리 문자열을 만들 수 있음;3.트랜잭션 불가;4.인덱스 없음', 74),
+
+    (786, 'FILL_BLANK', 'Blind SQLi에서는 응답 지연을 유발하는 _____ 기반 기법이 사용된다.', '시간', '-', 74),
+
+    (787, 'SELECT_DESCRIPTION', 'UNION 기반 공격의 전제조건은?', '1', '1.컬럼 수와 타입 일치;2.관리자 권한;3.트랜잭션 사용;4.뷰 존재', 74),
+
+    (788, 'FILL_BLANK', '주입 지점 식별에는 특수문자 주입과 응답 _____ 비교가 유용하다.', '차이', '-', 74);
+
+-- Unit 4 - Lesson 12: SQL Injection Exploit (Lesson ID: 75)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (789, 'SELECT_DESCRIPTION', '입력 검증의 목적은?', '2', '1.모든 공격 차단;2.형식 제약으로 의도치 않은 입력 감소;3.DB 성능 튜닝;4.캐시 최적화', 75),
+
+    (790, 'FILL_BLANK', 'DB 계정은 기능별로 분리하고 필요 최소 권한만 부여하는 _____ 원칙을 따른다.', '최소권한', '-', 75),
+
+    (791, 'SELECT_DESCRIPTION', '로깅 시 주의사항으로 맞지 않는 것은?', '3', '1.민감정보 마스킹;2.실패 쿼리 패턴 기록;3.평문 비밀번호 저장;4.의심 IP/요청ID 기록', 75),
+
+    (792, 'FILL_BLANK', '에러 응답은 내부 정보를 숨기는 _____ 메시지로 변환해 제공해야 한다.', '일반', '-', 75),
+
+    (793, 'SELECT_DESCRIPTION', '쿼리 안전성 검증에 도움이 되는 것은?', '1', '1.정적 분석/리뷰;2.이미지 최적화;3.CDN 추가;4.폰트 서브셋', 75),
+
+    (794, 'FILL_BLANK', '애플리케이션은 DB 루트 대신 제한된 _____ 계정을 사용해야 한다.', 'role', '-', 75),
+
+    (795, 'SELECT_DESCRIPTION', '입력값 화이트리스트의 장점은?', '2', '1.우회 패턴에 취약;2.정의된 값만 허용;3.모든 값 허용;4.가독성 저하', 75),
+
+    (796, 'SELECT_DESCRIPTION', 'Prepared Statement의 플레이스홀더에 바인딩할 수 있는 것은?', '1', '1.데이터 값(리터럴);2.테이블 이름;3.컬럼 이름;4.SQL 키워드(ORDER BY)', 75);
+
+-- Unit 5 - Lesson 13: XSS Concept (Lesson ID: 76)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (797, 'FILL_BLANK', 'XSS는 신뢰되지 않은 입력이 브라우저에서 _____로 실행되는 문제를 의미한다.', '스크립트', '-', 76),
+
+    (798, 'SELECT_DESCRIPTION', 'Stored XSS의 특징은?', '2', '1.응답에 즉시 반사;2.서버에 저장되어 다수에게 전파;3.DOM 조작 없이 발생;4.CSP와 무관', 76),
+
+    (799, 'FILL_BLANK', '출력 컨텍스트에 맞는 _____(HTML/속성/URL/JS)이 XSS 방어의 기본이다.', '인코딩', '-', 76),
+
+    (800, 'SELECT_DESCRIPTION', 'DOM XSS 설명으로 맞는 것은?', '2', '1.서버 템플릿에서만 발생;2.클라이언트 JS가 위험한 싱크에 값을 주입;3.DB 저장 필수;4.쿠키 설정과만 관련', 76),
+
+    (801, 'FILL_BLANK', '스크립트 출처를 통제하는 보안 헤더는 _____이다.', 'csp', '-', 76),
+
+    (802, 'SELECT_DESCRIPTION', 'Reflected XSS의 일반적 특징은?', '2', '1.지속성;2.즉시 반사;3.서버 저장 필요;4.오프라인만', 76),
+
+    (803, 'FILL_BLANK', '속성 값 컨텍스트에는 _____ 인코딩을 적용해야 한다.', '속성', '-', 76),
+
+    (804, 'SELECT_DESCRIPTION', 'URL 컨텍스트에서 안전하지 않은 것은?', '3', '1.encodeURIComponent 사용;2.URL 스킴 화이트리스트;3.문자열 연결로 href 생성;4.안전 템플릿', 76);
+
+-- Unit 5 - Lesson 14: XSS Exploit (Lesson ID: 77)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (805, 'SELECT_DESCRIPTION', 'XSS 악용과 직접 관련이 적은 것은?', '3', '1.세션 탈취;2.DOM 조작;3.클릭재킹;4.키로깅', 77),
+
+    (806, 'FILL_BLANK', 'DOM XSS는 신뢰되지 않은 데이터를 위험한 _____(예: innerHTML)에 주입할 때 발생한다.', '싱크', '-', 77),
+
+    (807, 'SELECT_DESCRIPTION', 'Stored XSS 탐지에 도움 되는 것은?', '2', '1.입력 즉시 응답만 확인;2.저장 후 다양한 뷰 경로 확인;3.정적 파일 해시;4.폰트 캐시', 77),
+
+    (808, 'FILL_BLANK', 'URL 생성 시 프로토콜을 제한하는 것은 _____ 방어에 해당한다.', '스킴화이트리스트', '-', 77),
+
+    (809, 'SELECT_DESCRIPTION', '이벤트 핸들러 속성에 직접 문자열을 바인딩하는 패턴은?', '3', '1.안전;2.경고;3.위험;4.무관', 77),
+
+    (810, 'FILL_BLANK', '템플릿 자동 이스케이프를 끄면 기본 _____ 방어가 해제된다.', 'xss', '-', 77),
+
+    (811, 'SELECT_DESCRIPTION', '쿠키 탈취를 방지하기 위한 설정은?', '2', '1.SameSite=None만;2.HttpOnly;3.도메인 제거;4.Max-Age=0', 77),
+
+    (812, 'FILL_BLANK', '마크다운/HTML 입력 허용 시 일부 태그/속성만 허용하는 _____ 파서가 권장된다.', '화이트리스트', '-', 77);
+
+-- Unit 5 - Lesson 15: XSS Exploit (Lesson ID: 78)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (813, 'SELECT_DESCRIPTION', '프레임워크 템플릿의 자동 이스케이프를 끄면 안 되는 이유는?', '3', '1.성능 저하;2.다국어 미지원;3.기본 XSS 방어 해제;4.CSS 오류', 78),
+
+    (814, 'FILL_BLANK', '스크립트 인라인을 제한하려면 CSP의 _____-src 지시자를 사용한다.', 'script', '-', 78),
+
+    (815, 'SELECT_DESCRIPTION', '안전한 DOM 조작은?', '2', '1.innerHTML 삽입;2.텍스트 노드로 삽입;3.document.write 사용;4.이벤트 핸들러 문자열', 78),
+
+    (816, 'FILL_BLANK', '사용자 생성 콘텐츠를 보여줄 때는 허용 태그 _____를 따르는 파서를 사용한다.', '화이트리스트', '-', 78),
+
+    (817, 'SELECT_DESCRIPTION', 'URL 컨텍스트 안전화를 위한 필수는?', '1', '1.encodeURIComponent 사용;2.decodeURI 사용;3.문자열 연결;4.raw HTML', 78),
+
+    (818, 'FILL_BLANK', 'HTML 텍스트를 그대로 출력할 때는 _____ API(createTextNode 등)를 사용한다.', '텍스트', '-', 78),
+
+    (819, 'SELECT_DESCRIPTION', 'CSP에서 외부 스크립트 출처를 통제하는 것은?', '2', '1.style-src;2.script-src;3.img-src;4.connect-src', 78),
+
+    (820, 'FILL_BLANK', 'DOM XSS를 유발하는 위험한 속성의 대표 예는 _____이다.', 'innerhtml', '-', 78);
+
+-- Unit 6 - Lesson 16: CSRF Concept (Lesson ID: 79)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+    (821, 'FILL_BLANK', 'CSRF는 사용자의 _____를 악용해 원치 않는 상태 변경 요청을 타 사이트에서 발생시키는 공격이다.', '인증', '-', 79),
+
+    (822, 'SELECT_DESCRIPTION', 'CSRF가 특히 문제 되는 요청 유형은?', '2', '1.GET 정적 리소스;2.상태 변이 POST/PUT/DELETE;3.OPTIONS;4.HEAD', 79),
+
+    (823, 'FILL_BLANK', '_____ 토큰은 폼/요청마다 포함되어 서버에서 검증되는 CSRF 방어 기법이다.', 'csrf', '-', 79),
+
+    (824, 'SELECT_DESCRIPTION', 'SameSite=Lax의 설명으로 맞는 것은?', '2', '1.모든 크로스사이트 요청에 쿠키 전송;2.대부분의 내비게이션 요청에서 쿠키 미전송;3.모든 요청 차단;4.HTTPS 미요구', 79),
+
+    (825, 'FILL_BLANK', '토큰 검증 외에 _____/Origin 헤더 확인은 보조적 방어 수단이 된다.', 'referer', '-', 79),
+
+    (826, 'SELECT_DESCRIPTION', '더블 서브밋 쿠키 패턴의 핵심은?', '2', '1.토큰을 서버 저장;2.쿠키와 요청 내부 토큰 비교;3.헤더만 검사;4.로컬스토리지 저장', 79),
+
+    (827, 'FILL_BLANK', '중요 요청은 GET이 아닌 _____ 메서드로 처리해야 한다.', '상태변이', '-', 79),
+
+    (828, 'SELECT_DESCRIPTION', 'SPA에서 CSRF 방어로 적절한 것은?', '2', '1.토큰을 로컬스토리지;2.쿠키+서버 검증 토큰 조합;3.프론트만 체크;4.GET으로 변경', 79);
+
+-- Unit 6 - Lesson 17: CSRF Exploit (Lesson ID: 80)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (829, 'SELECT_DESCRIPTION', 'CSRF 성공의 전제조건이 아닌 것은?', '4', '1.피해자 로그인 상태;2.쿠키 자동 전송;3.토큰/검증 부재;4.이미지 최적화 실패', 80),
+
+    (830, 'FILL_BLANK', 'CSRF는 브라우저가 크로스사이트 요청에도 자동으로 _____를 첨부하는 성질을 악용한다.', '쿠키', '-', 80),
+
+    (831, 'SELECT_DESCRIPTION', '읽기 전용 GET 요청에 CSRF가 덜 치명적인 이유는?', '2', '1.캐시됨;2.상태 변경이 없어야 함이 원칙;3.HTTPS면 안전;4.이미지라서', 80),
+
+    (832, 'FILL_BLANK', '폼 제출 외에도 스크립트 없는 HTML 요소로 요청을 유발할 수 있어 _____이 필요하다.', '서버검증', '-', 80),
+
+    (833, 'SELECT_DESCRIPTION', 'CSRF 취약 가능성이 높은 설계는?', '4', '1.상태 변경에 토큰 요구;2.SameSite=Lax 사용;3.Referer/Origin 확인;4.중요 요청을 GET으로 처리', 80),
+
+    (834, 'FILL_BLANK', '쿠키 SameSite=None 사용 시 반드시 _____ 속성을 요구해야 한다.', 'secure', '-', 80),
+
+    (835, 'SELECT_DESCRIPTION', 'OAuth 리디렉트 기반 CSRF 완화책은?', '1', '1.state 파라미터 검증;2.scope 줄이기;3.로깅만;4.HTTP 사용', 80),
+
+    (836, 'FILL_BLANK', '토큰은 충분히 _____하고 예측 불가능해야 한다.', '무작위', '-', 80);
+
+-- Unit 6 - Lesson 18: CSRF Exploit (Lesson ID: 81)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (837, 'SELECT_DESCRIPTION', '토큰 기반 방어에서 필수가 아닌 항목은?', '4', '1.토큰 무작위성;2.세션/사용자에 고유;3.서버 측 검증;4.클라이언트만 체크', 81),
+
+    (838, 'FILL_BLANK', '더블 서브밋은 쿠키 값과 요청 내 토큰 값을 _____하는 방식이다.', '비교', '-', 81),
+
+    (839, 'SELECT_DESCRIPTION', 'API에서 CSRF 영향이 낮아지는 경우는?', '2', '1.쿠키 인증;2.헤더 기반 토큰 인증;3.폼 인증;4.자동 로그인', 81),
+
+    (840, 'FILL_BLANK', '민감 요청에는 토큰 외에 _____을 요구할 수 있다.', '재인증', '-', 81),
+
+    (841, 'SELECT_DESCRIPTION', 'SameSite=None의 필수 전제는?', '2', '1.HTTP 허용;2.HTTPS 전용;3.도메인 미설정;4.만료 연장', 81),
+
+    (842, 'FILL_BLANK', '토큰 탈취를 줄이기 위해 토큰 _____/회전을 적용한다.', '폐기', '-', 81),
+
+    (843, 'SELECT_DESCRIPTION', 'SSR 애플리케이션에서 토큰 삽입의 안전한 위치는?', '2', '1.URL 쿼리;2.숨김 폼 필드;3.쿠키 없는 로컬스토리지;4.이미지 alt', 81),
+
+    (844, 'FILL_BLANK', '참조자 검사 실패 시 요청을 _____하는 로직을 포함한다.', '거부', '-', 81);
+
+-- Unit 7 - Lesson 19: File Upload Concept (Lesson ID: 82)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (845, 'FILL_BLANK', '업로드 처리의 핵심 위험은 경로 조작, 콘텐츠 _____ 속이기, 실행 가능 파일 저장 등이다.', '타입', '-', 82),
+
+    (846, 'SELECT_DESCRIPTION', '안전한 업로드 설계는?', '2', '1.확장자만 검사;2.MIME/매직넘버/확장자 교차검증;3.클라이언트 검사만;4.웹루트에 저장', 82),
+
+    (847, 'FILL_BLANK', '파일 이름은 사용자 입력 대신 _____ 파일명으로 바꿔 충돌과 추측을 방지한다.', '무작위', '-', 82),
+
+    (848, 'SELECT_DESCRIPTION', '이미지 처리 시 권장되는 것은?', '2', '1.원본 그대로 보관;2.서버 재인코딩/메타데이터 제거;3.EXIF 유지;4.클라 리사이즈만', 82),
+
+    (849, 'FILL_BLANK', '업로드 파일은 실행 가능 경로가 아닌 _____ 외부 저장소에 보관한다.', '웹루트', '-', 82),
+
+    (850, 'SELECT_DESCRIPTION', '경로 조작과 직접 관련이 적은 것은?', '4', '1.상위 디렉터리 참조;2.심볼릭 링크 오용;3.파일 이름 정규화 부재;4.이미지 압축률', 82),
+
+    (851, 'FILL_BLANK', 'Content-Type을 속여 전송하면 서버의 _____만 믿는 경우 위험하다.', '헤더', '-', 82),
+
+    (852, 'SELECT_DESCRIPTION', '확장자 우회에 취약한 경우는?', '2', '1.화이트리스트;2.블랙리스트로 금지 확장자만 차단;3.서버 재인코딩;4.저장소 격리', 82);
+
+-- Unit 7 - Lesson 20: File Upload Exploit (Lesson ID: 83)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (853, 'SELECT_DESCRIPTION', '파일 업로드 후 바로 공개하지 말아야 하는 이유는?', '2', '1.성능 저하;2.승인/검증 전 노출 위험;3.UX 악화;4.CDN 비용 증가', 83),
+
+    (854, 'FILL_BLANK', '업로드 후 바로 공개하지 말고 백엔드에서 _____를 거쳐 안전한 링크만 노출한다.', '승인', '-', 83),
+
+    (855, 'SELECT_DESCRIPTION', '이미지 처리 라이브러리 취약점을 줄이는 방법은?', '2', '1.외부 입력 신뢰;2.최신 버전 유지/자원 제한;3.루트 권한 실행;4.로그 비활성화', 83),
+
+    (856, 'FILL_BLANK', '파일 이름 정규화(normalization)로 _____를 제거해 예상 경로만 허용한다.', '상위참조', '-', 83),
+
+    (857, 'SELECT_DESCRIPTION', '공개 URL 발급 방식으로 안전한 것은?', '2', '1.무기한 공개;2.서명된 URL/만료 시간;3.디렉터리 인덱싱;4.링크 추측 허용', 83),
+
+    (858, 'FILL_BLANK', '콘텐츠 타입 검증 시 헤더뿐 아니라 파일 _____(매직 넘버)를 확인한다.', '시그니처', '-', 83),
+
+    (859, 'SELECT_DESCRIPTION', '업로드 디렉토리에 실행 권한 부여의 위험은?', '2', '1.없음;2.임의 코드 실행;3.캐시 미스;4.색인 실패', 83),
+
+    (860, 'FILL_BLANK', '대용량 업로드는 서비스 _____ 위험을 낮추기 위해 크기/시간 제한을 둔다.', '거부', '-', 83);
+
+-- Unit 7 - Lesson 21: File Upload Exploit (Lesson ID: 84)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (861, 'SELECT_DESCRIPTION', '저장소 설계로 안전한 것은?', '2', '1.웹루트 내부 저장;2.별도 버킷/도메인에서 서빙;3.DB BLOB만 사용;4.CDN 없이 직접 서빙', 84),
+
+    (862, 'FILL_BLANK', '업로드 기본 원칙은 ''검증·재인코딩·격리·_____''이다.', '최소공개', '-', 84),
+
+    (863, 'SELECT_DESCRIPTION', '썸네일 생성 시 안전한 방법은?', '2', '1.사용자 제공 경로 실행;2.안전 API 사용 및 명령 호출 지양;3.쉘 호출;4.임시 파일 공개', 84),
+
+    (864, 'FILL_BLANK', '파일 경로 입력에 대한 안전한 검증은 정규화 후 _____ 화이트리스트를 적용하는 것이다.', '허용디렉토리', '-', 84),
+
+    (865, 'SELECT_DESCRIPTION', '악성 파일 업로드 탐지에 도움 되는 것은?', '2', '1.랜덤 파일명 비활성화;2.안티바이러스/샌드박스 연계;3.클라이언트 신뢰;4.공개 폴더 자동 노출', 84),
+
+    (866, 'FILL_BLANK', '서명된 URL은 만료 시간과 _____을 포함으로 추측 난이도를 높인다.', '서명', '-', 84),
+
+    (867, 'SELECT_DESCRIPTION', '콘텐츠 스니핑을 막는 헤더는?', '2', '1.X-Frame-Options;2.X-Content-Type-Options;3.Referrer-Policy;4.Content-Security-Policy', 84),
+
+    (868, 'FILL_BLANK', '이미지 재인코딩은 스테가노그래피/악성 페이로드 _____에 도움이 된다.', '제거', '-', 84);
+
+-- Unit 8 - Lesson 22: Command Injection Concept (Lesson ID: 85)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (869, 'FILL_BLANK', '명령 인젝션은 사용자 입력이 쉘/OS _____로 해석되어 의도치 않은 명령 실행으로 이어지는 문제다.', '명령', '-', 85),
+
+    (870, 'SELECT_DESCRIPTION', '명령 인젝션과 직접 관련이 적은 것은?', '4', '1.쉘 메타문자;2.인자 분리 실패;3.안전 API 부재;4.이미지 CDN 캐시', 85),
+
+    (871, 'FILL_BLANK', '외부 프로세스 호출 대신 라이브러리/_____사용이 바람직하다.', '시스템api', '-', 85),
+
+    (872, 'SELECT_DESCRIPTION', '허용 리스트 기반 입력 검증의 예는?', '2', '1.모든 문자열 허용;2.소문자 a~z와 숫자만 허용;3.블랙리스트로 금지 문자만 차단;4.길이만 제한', 85),
+
+    (873, 'FILL_BLANK', '프로세스 격리를 위해 컨테이너/샌드박스/제한된 _____로 실행하는 것도 방어에 도움 된다.', '권한', '-', 85),
+
+    (874, 'SELECT_DESCRIPTION', '명령 인젝션의 전형적 전제조건이 아닌 것은?', '3', '1.입력이 인자로 직접 연결;2.쉘을 통해 실행;3.인자 이스케이프 적절;4.검증 부재', 85),
+
+    (875, 'FILL_BLANK', '공백·세미콜론 등 _____가 명령 체이닝을 유발할 수 있다.', '메타문자', '-', 85),
+
+    (876, 'SELECT_DESCRIPTION', '외부 도구 호출이 필요한 경우 안전한 방법은?', '2', '1.쉘 문자열 조립;2.인자 배열로 안전 API 호출;3.사용자 입력을 그대로 옵션에 삽입;4.루트로 실행', 85);
+
+-- Unit 8 - Lesson 23: Command Injection Exploit (Lesson ID: 86)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (877, 'SELECT_DESCRIPTION', '가장 영향이 큰 케이스는?', '2', '1.비동기 실패;2.임의 명령 실행으로 서버 권한 획득;3.로그레벨 변경;4.테마 전환', 86),
+
+    (878, 'FILL_BLANK', '경로/파일명 등을 연결해 외부 명령을 만들면 _____ 우회 위험이 높아진다.', '검증', '-', 86),
+
+    (879, 'SELECT_DESCRIPTION', '환경 변수 오염으로 이어질 수 있는 취약점은?', '2', '1.경로 하드코딩;2.PATH 조작;3.정적 링크;4.정렬 오류', 86),
+
+    (880, 'FILL_BLANK', '임시 파일 이름 예측 가능성은 _____ 위험을 키운다.', '경쟁조건', '-', 86),
+
+    (881, 'SELECT_DESCRIPTION', '셸 해석을 피하기 위해 필요한 것은?', '2', '1.문자열 합성;2.인자 분리 전달;3.환경 공유;4.작업 디렉터리 미지정', 86),
+
+    (882, 'FILL_BLANK', '출력 캡처 시 쉘 리다이렉션 대신 _____를 사용한다.', '파이프', '-', 86),
+
+    (883, 'SELECT_DESCRIPTION', '권한 상승 위험을 낮추는 실행은?', '2', '1.루트 실행;2.기본 사용자 실행;3.SUID 바이너리 사용;4.CAP_SYS_ADMIN 추가', 86),
+
+    (884, 'FILL_BLANK', '실행 전 환경을 통제해 예측 가능한 _____에서만 동작하게 한다.', '컨텍스트', '-', 86);
+
+-- Unit 8 - Lesson 24: Command Injection Exploit (Lesson ID: 87)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (885, 'SELECT_DESCRIPTION', '가장 우선 고려해야 할 방어 전략은?', '1', '1.외부 명령 호출 회피;2.로그만 강화;3.UI 경고;4.캐시 비활성화', 87),
+
+    (886, 'FILL_BLANK', '불가피한 경우 인자를 문자열이 아닌 _____으로 분리해 전달한다.', '배열', '-', 87),
+
+    (887, 'SELECT_DESCRIPTION', '런타임 격리로 적절하지 않은 것은?', '4', '1.chroot/네임스페이스;2.seccomp-bpf;3.불필요한 Capabilities 제거;4.루트 권한 상향', 87),
+
+    (888, 'FILL_BLANK', '환경 변수/작업 디렉터리 등 실행 _____을 통제한다.', '환경', '-', 87),
+
+    (889, 'SELECT_DESCRIPTION', '로깅/모니터링으로 적절한 것은?', '2', '1.명령 문자열 전체 평문 저장;2.호출 API/인자/결과 코드 기록(민감정보 마스킹);3.로그 비활성화;4.실패만 기록', 87),
+
+    (890, 'FILL_BLANK', '컨테이너 실행 시 불필요한 Linux _____를 제거(cap_drop)는 공격면 축소에 유효하다.', 'capabilities', '-', 87),
+
+    (891, 'SELECT_DESCRIPTION', '파일 경로 입력 검증으로 안전한 것은?', '2', '1.블랙리스트만;2.정규화 후 허용 디렉터리 화이트리스트;3.길이만 제한;4.클라 체크만', 87),
+
+    (892, 'FILL_BLANK', '외부 도구 호출이 꼭 필요하면 전용 _____/권한 격리 환경에서 실행한다.', '샌드박스', '-', 87);
+
+-- Chapter 7: 소프트웨어 공학
+
+-- Unit 1 - Lesson 1: 소프트웨어와 하드웨어의 이해 (Lesson ID: 88)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (893, 'SELECT_DESCRIPTION', '소프트웨어가 하드웨어와 구분되는 가장 큰 특징으로 옳지 않은 것은?', '3', '1.소프트웨어는 시간이 지나도 마모되지 않는다.;2.소프트웨어는 높은 유연성을 가진다.;3.소프트웨어는 물리적인 제약이 크다.;4.소프트웨어 개발은 논리적 오류에 취약하다.', 88),
+
+    (894, 'SELECT_DESCRIPTION', '하드웨어와 소프트웨어의 수정(업데이트) 방식에 대한 설명으로 올바른 것은?', '3', '1.하드웨어는 업데이트만으로 모든 기능을 개선할 수 있다.;2.소프트웨어는 부품을 교체해야만 수정이 가능하다.;3.소프트웨어는 주로 패치, 업데이트를 통해 개선된다.;4.하드웨어와 소프트웨어 모두 물리적으로 업그레이드해야 한다.', 88),
+
+    (895, 'FILL_BLANK', '소프트웨어는 외부환경에 의해 _____않지만 시간이 지날수록 품질이 점점 나빠진다.', '마모되지', '-', 88),
+
+    (896, 'FILL_BLANK', '소프트웨어는 시간이 지나면서 변경과 수정이 이루어질수록 _____ 현상이 생겨 품질이 저하된다.', '소프트웨어 노화', '-', 88),
+
+    (897, 'FILL_BLANK', '소프트웨어는 물리적 자원이 아닌 코드와 _____로 이루어져 있기 때문에 물리적으로 마모되지 않는다.', '데이터, data', '-', 88),
+
+    (898, 'SELECT_DESCRIPTION', '소프트웨어가 비물질적인 산출물인 이유는?', '3', '1.시간이 지나면서 물리적 마모가 발생해서;2.전자 장치에만 저장 가능해서;3.물리적 실체가 없이 코드와 데이터의 집합으로 존재해서;4.물리적 형태로 항상 출력되기 때문에', 88),
+
+    (899, 'FILL_BLANK', '소프트웨어의 높은 유연성은 사용자의 요구 변화에 대응을 쉽게 하지만, 변화가 빈번해질 경우 _____가 복잡해질 수 있다.', '유지보수', '-', 88),
+
+    (900, 'SELECT_DESCRIPTION', '다음 중 소프트웨어 유지보수가 어려운 이유로 가장 적절한 것은?', '1', '1.개발 팀과 유지보수 팀이 다르고 시스템 구조와 업무 프로세스를 완전히 이해해야 하기 때문;2.소프트웨어가 물리적인 마모로 인해 자주 고장 나기 때문;3.유지보수는 새로운 소프트웨어를 처음부터 개발하는 것보다 비용이 적게 들기 때문;4.소프트웨어는 항상 최신 기술로 자동 업데이트되기 때문', 88),
+
+    (901, 'FILL_BLANK', '소프트웨어 설계와 구현 과정에서 사람의 실수로 _____ 오류가 발생할 수 있으며, 이는 소프트웨어의 결함이나 고장으로 이어진다.', '논리적', '-', 88),
+
+    (902, 'SELECT_DESCRIPTION', '소프트웨어 생명주기(Software Life Cycle)에서 소프트웨어가 하드웨어와 다른 특징으로 올바른 것은?', '1', '1.소프트웨어는 초기 결함률이 낮고 시간이 지나면서 결함률이 증가한다.;2.소프트웨어는 물리적 마모로 인해 사용 기간이 제한된다.;3.소프트웨어는 Bath Tub Curve를 따라 결함률이 변화한다.;4.소프트웨어는 시간이 지나도 성능 저하가 발생하지 않는다.', 88),
+
+    (903, 'FILL_BLANK', '소프트웨어는 물리적 부품이 아니라 전자적 형태로 존재하기 때문에 추가 비용 없이 쉽게 _____할 수 있다.', '복제', '-', 88),
+
+    (904, 'SELECT_DESCRIPTION', '소프트웨어 개발에서 발생하는 오류의 특성으로 옳지 않은 것은?', '3', '1.논리적 오류는 주로 설계나 구현 단계에서 발생한다.;2.소프트웨어 오류는 대부분 사람의 실수로 인해 발생한다.;3.소프트웨어 오류는 물리적 마모로 인해 시간이 지나면서 증가한다.;4.논리적 오류는 테스팅을 통해 발견하고 수정할 수 있다.', 88);
+
+-- Unit 1 - Lesson 2: 소프트웨어 위기와 소프트웨어 공학의 등장 (Lesson ID: 89)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (905, 'SELECT_DESCRIPTION', '다음 중 소프트웨어 위기 현상이 아닌 것은 무엇인가?', '5', '1.개발 일정이 계획보다 지연된다.;2.초과 비용이 발생한다.;3.제품의 신뢰도가 결여된다.;4.빈번하게 명세와 불일치하는 부분이 나타난다.;5.프로젝트 팀원 간 원활한 의사소통이 이루어진다.', 89),
+
+    (906, 'SELECT_DESCRIPTION', '다음 중 소프트웨어 위기 현상이 아닌 것은 무엇인가?', '3', '1.개발 일정 지연;2.초과 비용 발생;3.상세한 요구가 추상적 프로그램으로 바뀜;4.소프트웨어 품질 저하;5.유지보수의 어려움', 89),
+
+    (907, 'FILL_BLANK', '소프트웨어 공학의 궁극적인 목표는 고품질의 소프트웨어를 _____으로 개발하고 유지보수하는 것이다.', '효율적', '-', 89),
+
+    (908, 'SELECT_DESCRIPTION', '소프트웨어의 비가시성(Invisibility)이 개발 과정에 미치는 영향은?', '1', '1.설계 및 개발의 복잡성 증가;2.오류 발견과 관리 용이;3.작업 속도 향상;4.요구사항 감소', 89),
+
+    (909, 'SELECT_DESCRIPTION', '소프트웨어 위험의 대표적 특성으로 짝지어진 것 중 가장 적합한 것은?', '2', '1.연쇄작용, 확실성;2.불확실성, 손실;3.연쇄작용, 예측;4.확실성, 예측', 89),
+
+    (910, 'SELECT_DESCRIPTION', '공학적으로 잘 작성된 소프트웨어의 특성에 관한 설명으로 가장 옳지 않은 것은?', '3', '1.소프트웨어는 신뢰성이 높아야 하며 효율적이어야 한다.;2.소프트웨어는 사용자가 원하는 대로 동작해야 한다.;3.소프트웨어는 편리성이나 유지보수성에 점차 비중을 적게 두는 경향이 있다.;4.소프트웨어는 잠재적인 오류가 가능한 적어야 하며 유지보수가 용이해야 한다.', 89),
+
+    (911, 'SELECT_DESCRIPTION', 'Software Reengineering의 필요성이 대두된 가장 주된 이유는?', '4', '1.구현의 문제;2.설계의 문제;3.요구사항 분석의 문제;4.유지보수의 문제', 89),
+
+    (912, 'SELECT_DESCRIPTION', '공학적 관점에서 좋은 소프트웨어에 대한 설명으로 적합하지 않은 것은?', '3', '1.사용법, 구조의 설명, 성능, 기능이 이해하기 쉬워야 한다.;2.사용자 수준에 따른 적당한 사용자 인터페이스를 제공한다.;3.실행 속도가 빠르고, 소요 기억 용량을 많이 차지할수록 좋다.;4.유지보수가 용이해야 한다.', 89),
+
+    (913, 'SELECT_DESCRIPTION', '소프트웨어 개발의 생산성에 영향을 미치는 요소로 가장 거리가 먼 것은?', '4', '1.프로그래머의 능력;2.팀 의사 전달;3.제품의 복잡도;4.소프트웨어 사용자의 능력', 89),
+
+    (914, 'SELECT_DESCRIPTION', '소프트웨어 공학에 대한 설명으로 가장 적합한 것은?', '1', '1.소프트웨어의 제작부터 운영까지 생산성을 높이기 위해 기술적, 인간적인 요소에 대한 방법론을 제공한다.;2.소프트웨어의 설계, 제작, 운영에 있어서 인간적인 요소를 배제한 프로그래밍 자체에 대한 공학적 연구를 의미한다.;3.소프트웨어의 공학적이고 기술적인 영향을 사회 경제적인 시각에서만 설명한다.;4.소프트웨어의 위기를 해결하기 위해서 현재 이미 해결된 문제들에 대해서 역사적 관점을 설명한다.', 89),
+
+    (915, 'SELECT_DESCRIPTION', '다음 중 공학적으로 잘 작성된 소프트웨어가 갖는 특성으로 가장 적합한 것은?', '4', '1.원하는 요구사항 중에 중요한 사항만 반영한다.;2.유지보수 비용이 많이 들어간다.;3.신뢰성이 떨어지더라도 효율성이 높다.;4.사용자가 손쉽게 사용할 수 있다.', 89),
+
+    (916, 'SELECT_DESCRIPTION', 'Software Engineering의 Engineering이 가지는 의미와 가장 관계없는 것은?', '1', '1.예술성;2.경제성;3.보편타당성;4.적시성', 89);
+
+-- Unit 1 - Lesson 3: 소프트웨어 개발 프로세스 (Lesson ID: 90)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+(917, 'SELECT_DESCRIPTION', '소프트웨어 개발 모델 중 나선형 모델의 네 가지 주요활동이 순서대로 나열된 것은?', '2', '1.Ⓐ-Ⓑ-Ⓓ-Ⓒ 순으로 반복;2.Ⓐ-Ⓓ-Ⓒ-Ⓑ 순으로 반복;3.Ⓐ-Ⓑ-Ⓒ-Ⓓ 순으로 반복;4.Ⓐ-Ⓒ-Ⓑ-Ⓓ 순으로 반복', 90),
+
+(918, 'SELECT_DESCRIPTION', '프로토타이핑 모형(Prototyping Model)에 대한 설명으로 옳지 않은 것은?', '1', '1.개발단계에서 오류 수정이 불가하므로 유지보수 비용이 많이 발생한다.;2.최종 결과물이 만들어지기 전에 의뢰자가 최종 결과물의 일부 또는 모형을 볼 수 있다.;3.프로토타입은 발주자나 개발자 모두에게 공동의 참조 모델을 제공한다.;4.프로토타입은 구현단계의 구현 골격이 될 수 있다.', 90),
+
+(919, 'SELECT_DESCRIPTION', '다음 설명에 해당하는 생명주기 모형으로 가장 옳은 것은?\n가장 오래된 모형으로 많은 적용 사례가 있지만 요구사항의 변경이 어려우며, 각 단계의 결과가 확인되어야지만 다음 단계로 넘어간다. 선형 순차적 모형으로 고전적 생명주기 모형이라고도 한다.', '3', '1.프로토타입 모형(Prototype Model);2.코코모 모형(Cocomo Model);3.폭포수 모형(Waterfall Model);4.점진적 모형(Spiral Model)', 90),
+
+(920, 'SELECT_DESCRIPTION', '나선형 모형의 각 개발 단계에 대한 설명으로 가장 옳은 것은?', '4', '1.Planning(계획) 단계에서는 위험 요소와 타당성을 분석하여 프로젝트의 추진 여부를 결정한다.;2.Development(개발) 단계에서는 선택된 기능을 수행하는 프로토 타입을 개발한다.;3.Risk Analysis(위험분석) 단계에서는 개발 목적과 기능 선택, 제약 조건 등을 결정하고 분석한다.;4.Evaluation(평가) 단계에서는 고객 평가와 검증 과정을 수행하여 개발된 결과를 평가한다.', 90),
+
+(921, 'SELECT_DESCRIPTION', '프로토타입 모형에 대한 설명으로 가장 옳지 않은 것은?', '2', '1.개발 단계 안에서 유지보수가 이루어지는 것으로 볼 수 있다.;2.최종 결과물이 만들어지는 소프트웨어 개발 완료시점에 최초로 오류 발견이 가능하다.;3.발주자나 개발자 모두에게 공동의 참조모델을 제공한다.;4.사용자나 요구사항을 충실히 반영할 수 있다.', 90),
+
+(922, 'SELECT_DESCRIPTION', '프로토타입 모형의 장점으로 가장 적절한 것은?', '3', '1.비용과 시간의 절감;2.책임 한계의 명백한 구분;3.요구사항의 충실 반영;4.프로젝트 관리의 용이', 90),
+
+(923, 'SELECT_DESCRIPTION', '소프트웨어 생명주기 모형 중 Spiral Model(나선형모델)에 대한 설명으로 가장 옳지 않은 것은?', '4', '1.대규모 시스템에 적합하다.;2.개발 순서는 계획 및 정의, 위험 분석, 공학적 개발, 고객 평가 순으로 진행된다.;3.소프트웨어를 개발하면서 발생할 수 있는 위험을 관리하고 최소화하는 것을 목적으로 한다.;4.개발 과정의 앞 단계가 완료되어야만 다음 단계로 넘어갈 수 있는 선형 순차적 모형이다.', 90),
+
+(924, 'SELECT_DESCRIPTION', '소프트웨어 프로젝트 관리를 효율적으로 수행하기 위한 3P 중 소프트웨어 프로젝트를 수행하기 위한 Task Framework의 고려와 가장 연관되는 것은?', '4', '1.People;2.Problem;3.Product;4.Process', 90),
+
+(925, 'SELECT_DESCRIPTION', 'V-모델의 주요 특징으로 옳지 않은 것은?', '3', '1.개발과 테스트가 병행되어 결함을 조기에 발견할 수 있다.;2.각 단계별 요구사항과 설계가 올바른지 지속적으로 검증할 수 있다.;3.요구사항 변경 시에도 모든 단계를 유연하게 재수행한다.;4.각 개발 단계에 대응하는 테스트 단계가 명확하게 존재한다.', 90),
+
+(926, 'SELECT_DESCRIPTION', '애자일 방법론의 기본 특징으로 옳지 않은 것을 고르시오', '2', '1.프로젝트 요구사항은 기능 중심으로 정의한다.;2.문서 중심의 개발을 중요시한다.;3.개인과 상호작용을 절차와 도구보다 중요하게 생각한다.;4.고객과의 피드백을 중요하게 생각한다.', 90),
+
+(927, 'SELECT_DESCRIPTION', '소프트웨어 개발 중 가장 많은 비용이 요구되는 단계는?', '4', '1.분석;2.설계;3.구현;4.유지보수', 90),
+
+(928, 'SELECT_DESCRIPTION', '소프트웨어 재사용에 대한 설명으로 가장 옳은 것은?', '4', '1.프로젝트 실패의 위험을 증가시킨다.;2.소프트웨어를 재사용함으로써 유지보수 비용이 높아진다.;3.모든 소프트웨어를 재사용해야 한다.;4.소프트웨어의 개발 생산성과 품질을 높이려는 주요 방법이다.', 90);
+
+-- Unit 2 - Lesson 1: 요구사항 수집, 분석, 명세 (Lesson ID: 91)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (929, 'SELECT_DESCRIPTION', '사용자 요구사항의 분석 작업이 어려운 이유로 가장 거리가 먼 것은?', '3', '1.개발자와 사용자 간의 지식이나 표현의 차이가 커서 상호 이해가 쉽지 않다.;2.사용자의 요구사항이 모호하고 부정확하며, 불완전하다.;3.사용자의 요구사항은 거의 예외가 없어 열거와 구조화가 용이하다.;4.개발하고자 하는 시스템 자체가 복잡하다.', 91),
+
+    (930, 'SELECT_DESCRIPTION', '자료 사전에서 기호"{ }"의 의미는?', '2', '1."comment"(주석);2."iteration of"(반복);3."is composed of"(정의);4."optional"(생략)', 91),
+
+    (931, 'SELECT_DESCRIPTION', '자료 사전에서 기호 "{ }"의 의미는?', '3', '1.정의;2.생략;3.반복;4.선택', 91),
+
+    (932, 'SELECT_DESCRIPTION', '데이터 흐름도(DFD)의 구성요소에 포함되지 않는 것은?', '2', '1.data flow;2.data dictionary;3.process;4.data store', 91),
+
+    (933, 'SELECT_DESCRIPTION', 'DFD(data flow diagram)에 대한 설명으로 거리가 먼 것은?', '3', '1.자료 흐름 그래프 또는 버블(bubble)차트라고도 한다.;2.구조적 분석 기법에 이용된다.;3.시간 흐름의 개념을 명확하게 표현할 수 있다.;4.DFD의 요소는 화살표, 원, 사각형, 직선(단선/이중선)으로 표시한다.', 91),
+
+    (934, 'SELECT_DESCRIPTION', '세분화된 자료흐름도에서 최하위 단계 프로세스의 처리 절차를 설명한 것은?', '2', '1.ERD;2.Mini-spec;3.DD;4.STD', 91),
+
+    (935, 'SELECT_DESCRIPTION', '자료 사전에서 자료의 생략을 의미하는 기호는?', '4', '1.{ };2.*;3.=;4.()', 91),
+
+    (936, 'SELECT_DESCRIPTION', '자료 흐름도(DFD)에서 "Process"의 표기 형태는?', '1', '1.원;2.화살표;3.사각형;4.직선(단선, 이중선)', 91),
+
+    (937, 'SELECT_DESCRIPTION', '자료 사전에서 기호 "( )"의 의미는?', '2', '1.정의;2.생략;3.선택;4.반복', 91),
+
+    (938, 'SELECT_DESCRIPTION', '자료사전에서 자료의 연결("and")을 나타내는 기호는?', '1', '1.+;2.=;3.( );4.{ }', 91),
+
+    (939, 'SELECT_DESCRIPTION', '구조적 분석에서 자료 사전(Data Dictionary)작성 시 고려할 사항으로 옳지 않은 것은?', '2', '1.갱신하기 쉬워야 한다.;2.이름이 중복되어야 한다.;3.이름으로 정의를 쉽게 찾을 수 있어야 한다.;4.정의하는 방식이 명확해야 한다.', 91),
+
+    (940, 'SELECT_DESCRIPTION', '자료흐름도(DFD)의 각 요소별 표기 형태의 연결이 옳지 않은 것은?', '3', '1.Process : 원;2.Data Flow : 화살표;3.Data Store : 삼각형;4.Terminator : 사각형', 91);
+
+-- Unit 3 - Lesson 1: 소프트웨어 설계 (Lesson ID: 92)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (941, 'SELECT_DESCRIPTION', '럼바우(Rumbaugh)의 객체지향 분석에서 사용되는 분석 활동을 가장 옳게 나열한 것은?', '2', '1.객체 모델링, 동적 모델링, 정적 모델링;2.객체 모델링, 동적 모델링, 기능 모델링;3.동적 모델링, 기능 모델링, 정적 모델링;4.정적 모델링, 객체 모델링, 기능 모델링', 92),
+
+    (942, 'SELECT_DESCRIPTION', '객체에 대한 특성을 설명한 것으로 가장 옳지 않은 것은?', '4', '1.객체마다 각각의 상태를 갖고 있다.;2.식별성을 가진다.;3.행위에 대하여 그 특징을 나타낼 수 있다.;4.일정한 기억장소를 가지고 있지 않다.', 92),
+
+    (943, 'SELECT_DESCRIPTION', '한 모듈 내의 각 구성 요소들이 공통의 목적을 달성하기 위하여 서로 얼마나 관련이 있는지의 기능적 연관의 정도를 나타내는 것은?', '1', '1.cohesion(응집도) : 높을수록 좋음;2.coupling(결합도) : 모듈 간의 상호 의존성 정도를 나타내는 개념. 낮을수록 좋음;3.structure;4.unity', 92),
+
+    (944, 'SELECT_DESCRIPTION', '객체지향에서 정보 은닉과 가장 밀접한 관계가 있는 것은?', '1', '1.Encapsulation(캡슐화);2.Class;3.Method;4.Instance', 92),
+
+    (945, 'SELECT_DESCRIPTION', '결합도(Coupling) 단계를 약한 순서에서 강한 순서로 가장 옳게 표시한 것은?', '4', '1.stamp → data → control → common → content;2.control → data → stamp → common → content;3.content → stamp → control → common → data;4.data → stamp → control → common → content', 92),
+
+    (946, 'SELECT_DESCRIPTION', '객체지향 기법에서 다음 설명에 해당하는 것으로 가장 옳은 것은?\n다른 객체에게 자신의 정보를 숨기고 자신의 연산만을 통하여 접근한다.\n유지보수와 소프트웨어 확장 시 오류를 최소화할 수 있다.', '3', '1.Abstraction(추상화);2.Inheritance(상속);3.Information Hiding(정보은닉);4.Polymorphism(다형성)', 92),
+
+    (947, 'SELECT_DESCRIPTION', '모듈의 응집도(Cohesion)에 대한 설명으로 틀린 것은?', '2', '1.모듈의 응집도란 모듈안의 요소들이 서로 관련되어 있는 정도를 말한다.;2.기능적 응집도(Functional Cohesion)는 한 모듈 내부의 한 기능 요소에 의한 출력 자료가 다음 기능 원소의 입력 자료로서 제공되는 형태이다.;3.교환적 응집도(Communication Cohesion)는 동일한 입력과 출력을 사용하는 소작업들이 모인 모듈에서 볼 수 있다.;4.논리적 응집도(Logical Cohesion)는 유사한 성격을 갖거나 특정형태로 분류되는 처리요소들로 하나의 모듈이 형성되는 경우이다.', 92),
+
+    (948, 'SELECT_DESCRIPTION', '설계 기법 중 하향식 설계 방법과 상향식 설계 방법에 대한 비교 설명으로 가장 옳지 않은 것은?', '2', '1.하향식 설계에서는 통합 검사 시 인터페이스가 이미 정의 되어 있어 통합이 간단하다.;2.하향식 설계에서 레벨이 낮은 데이터 구조의 세부 사항은 설계 초기 단계에서 필요하다.;3.상향식 설계는 최하위 수준에서 각각의 모듈들을 설계하고 이러한 모듈이 완성되면 이들을 결합하여 검사한다.;4.상향식 설계에서는 인터페이스가 이미 성립되어 있지 않더라도 기능 추가가 쉽다.', 92),
+
+    (949, 'SELECT_DESCRIPTION', '객체 지향 기법에서 하나 이상의 유사한 객체들을 묶어서 하나의 공통된 특성을 표현한 것은?', '2', '1.메시지;2.클래스;3.추상화;4.메소드', 92),
+
+    (950, 'SELECT_DESCRIPTION', '다음 중 가장 약한 결합도(Coupling)는?', '4', '1.Common(공통) Coupling;2.Control(제어) Coupling;3.External Coupling;4.Stamp(스탬프) Coupling', 92),
+
+    (951, 'SELECT_DESCRIPTION', '효과적인 모듈화 설계 방법으로 가장 거리가 먼 것은?', '1', '1.Coupling은 강하게 Cohesion는 약하게 설계한다.;2.Complexity(복잡성)와 Redundancy(중복성)를 최대한 줄일 수 있도록 설계한다.;3.Maintenance(유지보수)가 용이하도록 설계한다.;4.Module 크기는 시스템의 전반적인 기능과 구조를 이해하기 쉬운 크기로 설계한다.', 92),
+
+    (952, 'SELECT_DESCRIPTION', '럼바우(Rumbaugh) 분석기법에서 정보 모델링이라고도 하며, 시스템에서 요구되는 객체를 찾아내어 속성과 연산 식별 및 객체들 간의 관계를 규정하여 그래픽 다이어그램으로 표시하는 모델링은?', '1', '1.Object;2.Dynamic;3.Function;4.Static', 92);
+
+-- Unit 3 - Lesson 2: 객체 지향 설계 (Lesson ID: 93)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (953, 'SELECT_DESCRIPTION', '객체지향 기법에서 객체가 메시지를 받아 실행해야 할 객체의 구체적인 연산을 정의한 것은?', '2', '1.Entity;2.Method;3.Instance;4.Class', 93),
+
+    (954, 'SELECT_DESCRIPTION', '럼바우의 객체지향 분석 기법에서 상태다이어그램을 사용하여 시스템의 행위를 기술하는 모델링은?', '1', '1.dynamic modeling(동적모델링) : 상태다이어그램;2.object modeling(객체모델링) : 클래스와 클래스 사이의 관련;3.functional modeling(기능모델링) : 자료흐름도(DFD);4.static modeling(정적모델링)', 93),
+
+    (955, 'SELECT_DESCRIPTION', 'Rumbaugh의 모델링에서 상태도와 자료흐름도는 각각 어떤 모델링과 가장 관련이 있는가?', '1', '1.상태도 – 동적 모델링, 자료흐름도 – 기능 모델링;2.상태도 – 기능 모델링, 자료흐름도 – 동적 모델링;3.상태도 – 객체 모델링, 자료흐름도 – 기능 모델링;4.상태도 – 객체 모델링, 자료흐름도 – 동적 모델링', 93),
+
+    (956, 'SELECT_DESCRIPTION', '객체지향의 캡슐화에 대한 설명으로 가장 옳지 않은 것은?', '4', '1.결합도가 낮아진다.;2.재사용이 용이하다.;3.인터페이스를 단순화 시킬 수 있다.;4.변경이 발생할 때 오류의 파급효과가 크다.', 93),
+
+    (957, 'SELECT_DESCRIPTION', '객체 지향 설계 및 분석단계에 대한 설명으로 틀린 것은?', '2', '1.분석 단계에서는 주어진 문제 안에서 객체들을 발견하고 객체들의 상관관계를 분석한다.;2.분석 설계 및 구현 단계들 사이에 의미적 갭(semantic gap)이 크다.;3.설계 단계에서는 객체들을 클래스로 정의하고 상관관계를 상속단계로 정의한다.;4.구현단계에서는 정의된 클래스들에 대해 특정언어를 이용하여 1:1로 정의한다.', 93),
+
+    (958, 'SELECT_DESCRIPTION', '객체지향 개발 과정에 대한 설명으로 가장 거리가 먼 것은?', '3', '1.분석 단계에서는 객체의 이름과 상태, 행위들을 개념적으로 파악한다.;2.설계 단계에서는 객체의 속성과 연산으로 정의하고 접근 방법을 구체화한다.;3.구현 단계에서는 클래스를 절차적 프로그래밍 언어로 기술한다.;4.테스트 단계에서는 클래스 단위 테스트와 시스템 테스트를 진행한다.', 93),
+
+    (959, 'SELECT_DESCRIPTION', '럼바우의 분석 기법 중 자료 흐름도(DFD)를 이용하는 것은?', '1', '1.기능 모델링;2.동적 모델링;3.객체 모델링;4.정적모델링', 93),
+
+    (960, 'SELECT_DESCRIPTION', '다음 중 가장 높은 응집도(Cohesion)에 해당하는 것은?', '1', '1.순서적(순차적) 응집도(Sequential Cohesion);2.시간적 응집도(Temporal Cohesion);3.논리적 응집도(Logical Cohesion);4.절차적 응집도(Procedural Cohesion)', 93),
+
+    (961, 'SELECT_DESCRIPTION', '시스템에서 모듈 사이의 결합도(Coupling)에 대한 설명으로 옳은 것은?', '3', '1.한 모듈 내에 있는 처리요소를 사이의 기능적인 연관 정도를 나타낸다.;2.결합도가 높으면 시스템 구현 및 유지보수가 용이하다.;3.모듈간의 결합도를 약하게 하면 모듈 독립성이 향상된다.;4.자료(data)결합도는 내용(content)결합도 보다 결합도가 높다.', 93),
+
+    (962, 'SELECT_DESCRIPTION', '객체에게 어떤 행위를 하도록 지시하는 명령은?', '4', '1.Class;2.Instance;3.Object;4.Message', 93),
+
+    (963, 'SELECT_DESCRIPTION', '객체들 간에 메시지를 주고받을 때 각 객체의 세부내용은 알 필요가 없으므로 인터페이스가 단순해지고 데이터와 데이터를 처리하는 함수를 하나로 묶는 것을 의미하는 것은?', '3', '1.abstraction(추상화);2.class;3.encapsulation(캡슐화);4.Inheritance(상속)', 93),
+
+    (964, 'SELECT_DESCRIPTION', '다음 중 독립적인 모듈이 되기 위해서 가장 좋은 결합도 상태는?', '2', '1.control coupling;2.stamp coupling;3.common coupling;4.content coupling', 93);
+
+-- Unit 3 - Lesson 3: UML & 디자인 패턴 (Lesson ID: 94)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (965, 'SELECT_DESCRIPTION', 'UML에서 시퀀스 다이어그램의 구성 항목에 해당하지 않는 것은?', '3', '1.생명선;2.실행;3.확장;4.메시지', 94),
+
+    (966, 'SELECT_DESCRIPTION', 'UML 다이어그램 중 정적 다이어그램이 아닌 것은?', '3', '1.컴포넌트 다이어그램;2.배치 다이어그램;3.순차 다이어그램;4.패키지 다이어그램', 94),
+
+    (967, 'SELECT_DESCRIPTION', 'UML 다이어그램 중 순차 다이어그램에 대한 설명으로 틀린 것은?', '2', '1.객체 간의 동적 상호작용을 시간 개념을 중심으로 모델링 하는 것이다.;2.주로 시스템의 정적 측면을 모델링 하기 위해 사용한다.;3.일반적으로 다이어그램의 수직 방향이 시간의 흐름을 나타낸다.;4.회귀 메시지(Self-Message), 제어블록(Statement block) 등으로 구성된다.', 94),
+
+    (968, 'SELECT_DESCRIPTION', '유스케이스(Use Case)의 구성 요소 간의 관계에 포함되지 않는 것은?', '3', '1.연관;2.확장;3.구체화;4.일반화', 94),
+
+    (969, 'SELECT_DESCRIPTION', '유스케이스 다이어그램(Use Case Diagram)에 관련된 내용으로 틀린 것은?', '1', '1.시스템과 상호작용하는 외부 시스템은 액터로 파악해서는 안된다.;2.유스케이스는 사용자 측면에서의 요구사항으로, 사용자가 원하는 목표를 달성하기 위해 수행할 내용을 기술 한다.;3.시스템 액터는 다른 프로젝트에서 이미 개발되어 사용되고 있으며, 본 시스템과 데이터를 주고받는 등 서로 연동되는 시스템을 말한다.;4.액터가 인식할 수 없는 시스템 내부의 기능을 하나의 유스케이스로 파악해서는 안된다.', 94),
+
+    (970, 'SELECT_DESCRIPTION', 'GoF(Gang of Four)의 디자인 패턴에서 행위 패턴에 속하는 것은?', '2', '1.Builder;2.Visitor;3.Prototype;4.Bridge', 94),
+
+    (971, 'SELECT_DESCRIPTION', '디자인 패턴 중에서 행위적 패턴에 속하지 않는 것은?', '3', '1.커맨드(Command) 패턴;2.옵저버(Observer) 패턴;3.프로토타입(Prototype) 패턴;4.상태(State) 패턴', 94),
+
+    (972, 'SELECT_DESCRIPTION', 'GoF(Gang of Four) 디자인 패턴을 생성, 구조, 행동 패턴의 세 그룹으로 분류할 때, 구조 패턴이 아닌 것은?', '3', '1.Adapter 패턴;2.Bridge 패턴;3.Builder 패턴;4.Proxy 패턴', 94),
+
+    (973, 'SELECT_DESCRIPTION', 'GoF(Gangs of Four) 디자인 패턴 분류에 해당하지 않는 것은?', '4', '1.생성 패턴;2.구조 패턴;3.행위 패턴;4.추상 패턴', 94),
+
+    (974, 'FILL_BLANK', 'UML 시퀀스 다이어그램의 메시지 종류 3가지를 쓰시오.', '동기 메시지, 비동기 메시지, 자체 메시지', '-', 94),
+
+    (975, 'FILL_BLANK', 'UML 시퀀스 다이어그램에서 객체가 메시지를 처리하는 구간을 나타내는 직사각형을 무엇이라 하는가?', '실행 상자', '-', 94),
+
+    (976, 'FILL_BLANK', 'UML 시퀀스 다이어그램에서 객체가 메모리 내 존재하는 기간을 나타내는 선은 무엇인가?', '생명선', '-', 94);
+
+-- Unit 4 - Lesson 1: 소프트웨어 테스트 기법 및 법칙 (Lesson ID: 95)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (977, 'SELECT_DESCRIPTION', 'Alpha test, Beta test와 관계있는 검사 방법은?', '4', '1.Unit(단위테스트) : 독립적으로 테스트 가능한 가장 작은 구성 요소;2.Integration(통합테스트) : 개별적으로 테스트된 구성 요소들이 함께 작동하는 것을 확인하는 단계;3.System(시스템테스트) : 완전한 소프트웨어 시스템을 대상으로 수행되는 테스트;4.Validation(검증) : 개발된 소프트웨어가 사용자의 요구사항을 충족하는지 확인하는 과정', 95),
+
+    (978, 'SELECT_DESCRIPTION', '필드 테스팅(field testing)이라고도 불리며 개발자 없이 고객의 사용 환경에 소프트웨어를 설치하여 검사를 수행하는 인수검사 기법은?', '1', '1.베타 검사;2.알파 검사;3.형상 검사;4.복구 검사', 95),
+
+    (979, 'SELECT_DESCRIPTION', '소프트웨어 테스트에서 오류의 80%는 전체 모듈의 20% 내에서 발견된다는 법칙은?', '3', '1.Brooks의 법칙;2.Boehm의 법칙;3.Pareto의 법칙;4.Jackson의 법칙', 95),
+
+    (980, 'SELECT_DESCRIPTION', '다음 중 검증 시험(Validation Test)과 거리가 먼 것은?', '4', '1.알파(Alpha) 테스트;2.베타(Beta) 테스트;3.블랙박스(Black-Box) 테스트;4.화이트박스(White-Box) 테스트', 95),
+
+    (981, 'SELECT_DESCRIPTION', '화이트박스 테스트에 대한 설명으로 가장 옳지 않은 것은?', '4', '1.제품의 내부 요소들이 명세서에 따라 수행되고 충분히 실행되는가를 보장하기 위한 검사이다.;2.모듈 안의 작동을 직접 관찰한다.;3.프로그램 원시 코드의 논리적인 구조를 커버하도록 테스트 케이스를 설계한다.;4.화이트박스 테스트 기법에는 조건 검사, 루프 검사, 비교 검사 등이 있다.', 95),
+
+    (982, 'SELECT_DESCRIPTION', '블랙박스 검사 기법에 해당하는 것으로만 짝지어진 것은?\n가 - 데이터 흐름 검사\n나 - 루프 검사\n다 - 동치 분할 검사\n라 - 경계값 분석\n마 - 원인- 효과 그래프 기법', '4', '1.가, 나;2.가, 라, 마, 바;3.나, 라, 마, 바;4.다, 라, 마, 바', 95),
+
+    (983, 'SELECT_DESCRIPTION', '검증(Validation) 검사 기법 중 개발자의 장소에서 사용자가 개발자 앞에서 행해지며, 오류와 사용상의 문제점을 사용자와 개발자가 함께 확인하면서 검사하는 기법은?', '4', '1.디버깅 검사;2.형상 검사;3.베타 검사;4.알파 검사', 95),
+
+    (984, 'SELECT_DESCRIPTION', 'White Box Testing의 설명으로 옳지 않은 것은?', '1', '1.Base Path Testing, Boundary Value Analysis가 대표적인 기법이다.;2.Source Code의 모든 문장을 한번 이상 수행함으로써 진행된다.;3.모듈 안의 작동을 직접 관찰할 수 있다.;4.산출물의 각 기능별로 적절한 프로그램의 제어구조에 따라 선택, 반복 등의 부분들을 수행함으로써 논리적 경로를 점검한다.', 95),
+
+    (985, 'SELECT_DESCRIPTION', '블랙박스 테스트 기법 중 여러 버전의 프로그램에 동일한 검사 자료를 제공하여 동일한 결과가 출력되는지 검사하는 것은?', '1', '1.Comparison Testing(비교테스트);2.Boundary Value Analysis;3.Cause Effect Graphing Testing;4.Equivalence Partitioning Testing', 95),
+
+    (986, 'SELECT_DESCRIPTION', '블랙박스 테스트 기법에 해당하는 내용을 모두 고르면?\nⒶ 소프트웨어 인터페이스에서 실시되는 검사로 설계된 모든 기능들이 정상적으로 수행되는지 확인한다.\nⒷ 소프트웨어의 기능이 의도대로 작동하고 있는 지, 입력은 적절하게 받아들였는지, 출력은 정확하게 생성 되는지를 보여주는데 사용된다.\nⒸ Equivalence Partitioning Testing, Boundary Value Analysis 등이 이 기법에 해당한다.', '4', '1.Ⓐ;2.Ⓐ, Ⓒ;3.Ⓑ, Ⓒ;4.Ⓐ, Ⓑ, Ⓒ', 95),
+
+    (987, 'SELECT_DESCRIPTION', '블랙박스 테스트의 유형으로 틀린 것은?', '4', '1.경계값 분석;2.오류 예측;3.동등 분할 기법;4.조건, 루프 검사', 95),
+
+    (988, 'SELECT_DESCRIPTION', '테스트 케이스에 일반적으로 포함되는 항목이 아닌 것은?', '3', '1.테스트 조건;2.테스트 데이터, data;3.테스트 비용;4.예상 결과', 95);
+
+-- Unit 5 - Lesson 1: 유지보수 (Lesson ID: 96)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (989, 'SELECT_DESCRIPTION', '소프트웨어 시스템 명세서의 유지 보수에 대한 설명으로 가장 거리가 먼 것은?', '4', '1.명세서의 유지 보수란 명세서를 항상 최신의 상태로 만드는 것을 말한다.;2.소프트웨어는 계속 수정 보완되기 때문에 명세서도 따라서 보완되지 않으면 일관성을 유지하기 어렵다.;3.최신의 명세서는 필요한 경우 즉시 사용자에게 배포해야 한다.;4.시스템 개발자와 사용자는 동일한 명세서를 사용하기 때문에 시스템의 구조를 사용자도 잘 알고 있어야 한다.', 96),
+
+    (990, 'SELECT_DESCRIPTION', '유지보수의 종류 중 소프트웨어 테스팅 동안 밝혀지지 않은 모든 잠재적인 오류를 수정하기 위한 보수 형태로서 오류의 수정과 진단 과정이 포함되는 것은?', '4', '1.Perfective maintenance(완전 유지보수);2.Adaptive maintenance(적응 유지보수);3.Preventive maintenance(예방 유지보수);4.Corrective maintenance(수정 유지보수)', 96),
+
+    (991, 'SELECT_DESCRIPTION', '외계인코드(Alien Code)를 가장 잘 설명한 것은?', '4', '1.프로그램의 로직이 복잡하여 이해하기 어려운 프로그램을 말한다.;2.오류가 없어 디버깅 과정이 필요 없는 프로그램을 의미한다.;3.사용자가 직접 작성한 프로그램을 의미한다.;4.아주 오래되거나 참고문서 또는 개발자가 없어 유지보수 작업이 어려운 프로그램을 의미한다.', 96),
+
+    (992, 'SELECT_DESCRIPTION', '소프트웨어 형상 관리(Configuration management)의 의미로 가장 적절한 것은?', '2', '1.비용에 관한 사항을 효율적으로 관리하는 것;2.개발 과정의 변경 사항을 관리하는 것;3.테스트 과정에서 소프트웨어를 통합하는 것;4.개발 인력을 관리하는 것', 96),
+
+    (993, 'SELECT_DESCRIPTION', 'S/W 유지보수 작업의 목적이 아닌 것은?', '1', '1.설계수정;2.예방조치;3.환경적응;4.하자보수', 96),
+
+    (994, 'SELECT_DESCRIPTION', '소프트웨어 형상 관리(Configuration Management)에 대한 설명으로 가장 타당한 것은?', '2', '1.개발 인력을 관리하는 것;2.개발 과정의 변화되는 사항을 관리 하는 것;3.개발 일정을 관리 하는것;4.테스트과정에서 소프트웨어를 통합하는 것', 96),
+
+    (995, 'SELECT_DESCRIPTION', 'S/W를 운용하는 환경 변화에 대응하여 S/W를 변경하는 경우로 써, O/S와 Compiler 같은 개발환경의 변화 또는 Peripheral Device, System Component, element가 향상되거나 변경될 경우에 대처 가능한 Maintenance의 형태는?', '4', '1.Corrective(수정);2.Perfective(완전);3.Preventive(예방);4.Adaptive(적응)', 96),
+
+    (996, 'SELECT_DESCRIPTION', '아주 오래되거나 참고문서 또는 개발자가 없어 유지보수 작업이 아주 어려운 프로그램을 의미하는 것은?', '1', '1.Alien Code;2.Title Code;3.Object Code;4.Source Code', 96),
+
+    (997, 'SELECT_DESCRIPTION', '소프트웨어 개발 중 가장 많은 비용이 요구되는 단계는?', '4', '1.분석;2.설계;3.구현;4.유지보수', 96),
+
+    (998, 'SELECT_DESCRIPTION', '장래의 유지보수성 또는 신뢰성을 개선하거나 소프트웨어의 오류발생에 대비하여 미리 예방수단을 강구해 두는 경우의 유지보수 형태는?', '3', '1.Corrective maintenance(수정);2.Perfective maintenance(완전);3.Preventive maintenance(예방);4.Adaptive maintenance(적응)', 96),
+
+    (999, 'SELECT_DESCRIPTION', '유지보수의 활동 종류로 볼 수 없는 것은?', '1', '1.Interfere Maintenance(방해);2.Adaptive Maintenance(적응);3.Perfective Maintenance(완전);4.Preventive Maintenance(예방)', 96),
+
+    (1000, 'SELECT_DESCRIPTION', 'S/W 재공학 관점에서 가장 연관 깊은 유지보수 유형은?', '2', '1.Adaptive maintenance(적응);2.Perfective maintenance(완전);3.Corrective maintenance(수정);4.Preventive maintenance(예방)', 96);
+
+-- Unit 6 - Lesson 1: 품질 및 프로세스 개선 (Lesson ID: 97)
+INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
+
+    (1001, 'SELECT_DESCRIPTION', '소프트웨어 품질 측정을 위해 개발자 관점에서 고려해야 할 항목으로 거리가 먼 것은?', '4', '1.정확성;2.무결성;3.사용성;4.간결성', 97),
+
+    (1002, 'SELECT_DESCRIPTION', 'SPICE 모델의 프로세스 수행능력 수준의 단계별 설명이 틀린 것은?', '1', '1.수준 7 - 미완성 단계;2.수준 5 - 최적화 단계;3.수준 4 - 예측 단계;4.수준 3 - 확립 단계', 97),
+
+    (1003, 'SELECT_DESCRIPTION', 'ISO 12207 표준의 기본 생명주기의 주요 프로세스에 해당하지 않는 것은?', '3', '1.획득 프로세스, process;2.개발 프로세스, process;3.성능평가 프로세스, process;4.유지보수 프로세스, process', 97),
+
+    (1004, 'SELECT_DESCRIPTION', '소프트웨어 품질 관련 국제 표준인 ISO/IEC 25000에 관한 설명으로 옳지 않은 것은?', '3', '1.소프트웨어 품질 평가를 위한 소프트웨어 품질평가 통합모델 표준이다.;2.System and Software Quality Requirements and Evaluation으로 줄여서 SQuaRE라고도 한다.;3.ISO/IEC 2501n에서는 소프트웨어의 내부 측정, 외부측정, 사용품질 측정, 품질 측정 요소 등을 다룬다.;4.기존 소프트웨어 품질 평가 모델과 소프트웨어 평가 절차 모델인 ISO/IEC 9126과 ISO/IEC 14598을 통합하였다.', 97),
+
+    (1005, 'SELECT_DESCRIPTION', '보기에서 설명하는 소프트웨어 품질 요소를 옳게 짝지은 것은? ( ㈎ - ㈏ - ㈐ 순)\n보기:\n㈎ 사용자의 요구사항을 만족시키는 정도\n㈏ 프로그램 수행을 위한 자원의 최적화 정도\n㈐ 다른 시스템에 결합시키는 데 요구되는 노력의 정도', '3', '1.유지보수성(maintainability) - 상호운영성(interoperability) - 정확성(correctness);2.정확성(correctness) - 상호운영성(interoperability) - 효율성(efficiency);3.정확성(correctness) - 효율성(efficiency) - 상호운영성(interoperability);4.상호운영성(interoperability) - 효율성(efficiency) - 유지보수성(maintainability)', 97),
+
+    (1006, 'SELECT_DESCRIPTION', 'ISO의 소프트웨어 프로세스 평가를 위한 국제 표준인 SPICE에 대한 설명이다. 이에 해당하는 프로세스 범주는?\n시스템과 소프트웨어 제품을 개발하는 모든 프로세스, 즉 요구사항 분석(명세화), 설계, 구현, 테스트 등이 이 범주에 속한다.', '2', '1.조직 프로세스(Organization Process);2.공학 프로세스(Engineering Process);3.고객－공급 프로세스(Customer-Supplier Process);4.지원 프로세스(Support Process)', 97),
+
+    (1007, 'SELECT_DESCRIPTION', 'CMM(Capability Maturity Model) 모델의 레벨로 옳지 않은 것은?', '4', '1.최적단계;2.관리단계;3.정의단계;4.계획단계', 97),
+
+    (1008, 'SELECT_DESCRIPTION', '소프트웨어 품질 보증(SQA)의 주요 목적이 아닌 것은?', '2', '1.제품의 품질을 보장하기 위해 체계적인 프로세스를 운영한다.;2.개발 단계 이후에만 품질 검증을 수행한다.;3.개발 및 유지보수 시간과 비용을 절감한다.;4.프로젝트 리스크를 줄이는 데 기여한다.', 97),
+
+    (1009, 'SELECT_DESCRIPTION', '소프트웨어 프로세스 개선의 주요 활동을 올바르게 나열한 것은?', '1', '1.현황 분석 - 변경 및 개선 적용 - 성과 측정과 지속적 관리;2.코드 최적화 - 서버 증설 - 신규 인력 채용;3.요구사항 추가 - UI 개편 - 홍보 강화;4.DB 튜닝 - 네트워크 확장 - 로깅 레벨 상향', 97),
+
+    (1010, 'SELECT_DESCRIPTION', 'ISO/IEC 9126 품질 모델에서 소프트웨어의 수정 및 변경 용이성을 나타내는 품질 특성은?', '2', '1.신뢰성;2.유지보수성;3.이식성;4.효율성', 97),
+
+    (1011, 'SELECT_DESCRIPTION', '소프트웨어 품질보증 활동에 포함되지 않는 것은?', '3', '1.형상관리: 변경 사항 추적 및 관리;2.문서관리: 작성, 보관, 폐기 절차 수립;3.무결성 검사: 모든 데이터의 보안 강제;4.시정조치: 결함 해결 방안 수립 및 조치', 97),
+
+    (1012, 'SELECT_DESCRIPTION', '소프트웨어 품질 보증 활동에 포함되는 항목으로 옳지 않은 것은?', '4', '1.테스트 계획 수립 및 실행;2.소프트웨어 구성 관리;3.품질 관련 문서 작성과 검토;4.코드 최적화 및 성능 개선', 97);
