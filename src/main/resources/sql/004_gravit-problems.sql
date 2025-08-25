@@ -1540,29 +1540,29 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit06 - SQL 3-2 (Lesson ID: 62)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (677, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, email 값을 생략하고 기본값으로 INSERT 하라. 빈칸을 채우시오. INSERT INTO Users(email) VALUES _____ ;', '1', '1.DEFAULT;2.NULL;3.'''';4.NOT NULL', 62),
+    (677, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, \nemail 값을 생략하고 기본값으로 INSERT 하라. 빈칸을 채우시오. \nINSERT INTO Users(email) VALUES _____ ;', '1', '1.DEFAULT;2.NULL;3.'''';4.NOT NULL', 62),
 
-    (678, 'FILL_BLANK', 'Orders(id PK, user_id BIGINT NOT NULL, FOREIGN KEY (user_id) REFERENCES Users(id)) 스키마가 있을 때, FK 위반 없이 주문을 삽입하려면 user_id에 무엇이 들어가야 하는가? 빈칸을 채우시오. INSERT INTO Orders(user_id) VALUES _____ ;', '4', '1.NOT NULL;2.NULL;3.음수;4.존재하는 Users.id', 62),
+    (678, 'FILL_BLANK', 'Orders(id PK, user_id BIGINT NOT NULL, FOREIGN KEY (user_id) REFERENCES Users(id)) 스키마가 있을 때, \nFK 위반 없이 주문을 삽입하려면 user_id에 무엇이 들어가야 하는가? 빈칸을 채우시오. \nINSERT INTO Orders(user_id) VALUES _____ ;', '4', '1.NOT NULL;2.NULL;3.음수;4.존재하는 Users.id', 62),
 
-    (679, 'FILL_BLANK', 'Orders(user_id BIGINT _____ , FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL) 스키마가 있을 때, SET NULL이 오류 없이 동작하도록 user_id 정의의 빈칸을 채우시오.', '3', '1.UNIQUE;2.NOT NULL;3.NULL;4.-', 62),
+    (679, 'FILL_BLANK', 'Orders(user_id BIGINT _____ , FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE SET NULL) 스키마가 있을 때, \nSET NULL이 오류 없이 동작하도록 user_id 정의의 빈칸을 채우시오.', '3', '1.UNIQUE;2.NOT NULL;3.NULL;4.-', 62),
 
-    (680, 'FILL_BLANK', 'Orders(user_id FK → Users(id) ON UPDATE CASCADE) 스키마가 있을 때, 사용자 PK가 100→200으로 바뀔 때 참조도 함께 갱신되게 하라. 빈칸을 채우시오. UPDATE Users SET id = _____ WHERE id = 100;', '1', '1.200;2.NULL;3.DEFAULT;4.NOT NULL', 62),
+    (680, 'FILL_BLANK', 'Orders(user_id FK → Users(id) ON UPDATE CASCADE) 스키마가 있을 때, \n사용자 PK가 100→200으로 바뀔 때 참조도 함께 갱신되게 하라. 빈칸을 채우시오. \nUPDATE Users SET id = _____ WHERE id = 100;', '1', '1.200;2.NULL;3.DEFAULT;4.NOT NULL', 62),
 
-    (681, 'FILL_BLANK', 'Users(email UNIQUE, signups INT NOT NULL DEFAULT 0) 스키마가 있을 때, 같은 email이면 signups를 +1 하도록 UPSERT 하라. 빈칸을 채우시오. INSERT INTO Users(email, signups) VALUES(:email, 1) _____ signups = signups + 1;', '1', '1.ON DUPLICATE KEY UPDATE;2.ON CONFLICT DO UPDATE;3.REPLACE;4.-', 62),
+    (681, 'FILL_BLANK', 'Users(email UNIQUE, signups INT NOT NULL DEFAULT 0) 스키마가 있을 때, \n같은 email이면 signups를 +1 하도록 UPSERT 하라. 빈칸을 채우시오. \nINSERT INTO Users(email, signups) \nVALUES(:email, 1) _____ signups = signups + 1;', '1', '1.ON DUPLICATE KEY UPDATE;2.ON CONFLICT DO UPDATE;3.REPLACE;4.-', 62),
 
     (682, 'FILL_BLANK', 'REPLACE는 키 충돌 시 기존 행을 _____ 한 뒤 새로 INSERT 한다.', '4', '1.SELECT;2.UPDATE;3.LOCK;4.DELETE', 62),
 
-    (683, 'FILL_BLANK', 'Products(id PK, price DECIMAL(10,2), CHECK (price > 0)) 스키마가 있을 때, 제약을 위반하지 않게 INSERT 하라. 빈칸을 채우시오. INSERT INTO Products(price) VALUES _____ ;', '3', '1.-10;2.0;3.10;4.-10.0', 62),
+    (683, 'FILL_BLANK', 'Products(id PK, price DECIMAL(10,2), CHECK (price > 0)) 스키마가 있을 때, \n제약을 위반하지 않게 INSERT 하라. 빈칸을 채우시오. \nINSERT INTO Products(price) VALUES _____ ;', '3', '1.-10;2.0;3.10;4.-10.0', 62),
 
-    (684, 'FILL_BLANK', '대량 적재 중 FK 검사를 끄고 다시 켜라. 두 빈칸을 채우시오. SET _____ = 0; -- 적재 전 SET _____ = 1; -- 적재 후', '1', '1.FOREIGN_KEY_CHECKS;2.UNIQUE_CHECKS;3.SQL_SAFE_UPDATES;4.-', 62),
+    (684, 'FILL_BLANK', '대량 적재 중 FK 검사를 끄고 다시 켜라. 두 빈칸을 채우시오. \nSET _____ = 0; -- 적재 전 \nSET _____ = 1; -- 적재 후', '1', '1.FOREIGN_KEY_CHECKS;2.UNIQUE_CHECKS;3.SQL_SAFE_UPDATES;4.-', 62),
 
-    (685, 'FILL_BLANK', 'Orders(user_id FK → Users(id) ON DELETE RESTRICT) 스키마가 있을 때, 사용자 10과 그 주문들을 삭제하라(에러 없이). 빈칸을 채우시오. DELETE FROM Orders WHERE user_id = :uid; DELETE FROM Users WHERE id = _____ ;', '1', '1.:uid;2.NULL;3.:order_id;4.-', 62),
+    (685, 'FILL_BLANK', 'Orders(user_id FK → Users(id) ON DELETE RESTRICT) 스키마가 있을 때, \n사용자 10과 그 주문들을 삭제하라(에러 없이). 빈칸을 채우시오. \nDELETE FROM Orders \nWHERE user_id = :uid; \nDELETE FROM Users \nWHERE id = _____ ;', '1', '1.:uid;2.NULL;3.:order_id;4.-', 62),
 
-    (686, 'FILL_BLANK', 'Users(email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, email을 기본값으로 되돌리려면? 빈칸을 채우시오. UPDATE Users SET email = _____ WHERE id = :id;', '1', '1.DEFAULT(email);2.'''';3.NULL;4.-', 62),
+    (686, 'FILL_BLANK', 'Users(email VARCHAR(255) NOT NULL DEFAULT ''guest@example.com'') 스키마가 있을 때, \nemail을 기본값으로 되돌리려면? 빈칸을 채우시오. \nUPDATE Users SET email = _____ WHERE id = :id;', '1', '1.DEFAULT(email);2.'''';3.NULL;4.-', 62),
 
-    (687, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email UNIQUE) 스키마가 있을 때, 자동 증가 값을 사용해 삽입하라(모든 환경에서 안전). 빈칸을 채우시오. INSERT INTO Users(id, email) VALUES( _____ , ''a@b.com'');', '1', '1.DEFAULT;2.NULL;3.0;4.1', 62),
+    (687, 'FILL_BLANK', 'Users(id BIGINT PK AUTO_INCREMENT, email UNIQUE) 스키마가 있을 때, \n자동 증가 값을 사용해 삽입하라(모든 환경에서 안전). 빈칸을 채우시오. \nINSERT INTO Users(id, email) \nVALUES( _____ , ''a@b.com'');', '1', '1.DEFAULT;2.NULL;3.0;4.1', 62),
 
-    (688, 'FILL_BLANK', 'Orders(id PK, user_id FK → Users(id)), Users(id PK, email) 스키마가 있을 때, 스팸 도메인 사용자 주문만 삭제하라. 빈칸을 채우시오. DELETE o FROM Orders o _____ Users u ON u.id = o.user_id WHERE u.email LIKE ''%@spam.com'';', '3', '1.CROSS JOIN;2.LEFT JOIN;3.INNER JOIN;4.-', 62);
+    (688, 'FILL_BLANK', 'Orders(id PK, user_id FK → Users(id)), Users(id PK, email) 스키마가 있을 때, \n스팸 도메인 사용자 주문만 삭제하라. 빈칸을 채우시오. \nDELETE o FROM Orders o _____ Users u ON u.id = o.user_id \nWHERE u.email LIKE ''%@spam.com'';', '3', '1.CROSS JOIN;2.LEFT JOIN;3.INNER JOIN;4.-', 62);
 
 -- Unit06 - SQL 3-3 (Lesson ID: 63)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
