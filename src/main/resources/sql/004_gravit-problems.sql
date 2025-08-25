@@ -1405,29 +1405,29 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit04 - SQL 1-3 (Lesson ID: 57)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (617, 'SELECT_DESCRIPTION', 'Users(id, level, created_at) 스키마가 있을 때, level 내림차순, 동점이면 created_at 내림차순, 그래도 같으면 id 오름차순으로 정렬하라. 올바른 ORDER BY는?', '3', '1.ORDER BY level, created_at DESC, id;2.ORDER BY level DESC, created_at, id ASC;3.ORDER BY level DESC, created_at DESC, id ASC;4.ORDER BY level DESC, id ASC, created_at DESC', 57),
+    (617, 'SELECT_DESCRIPTION', 'Users(id, level, created_at) 스키마가 있을 때, \nlevel 내림차순, 동점이면 created_at 내림차순, 그래도 같으면 id 오름차순으로 정렬하라. 올바른 ORDER BY는?', '3', '1.ORDER BY level, created_at DESC, id;2.ORDER BY level DESC, created_at, id ASC;3.ORDER BY level DESC, created_at DESC, id ASC;4.ORDER BY level DESC, id ASC, created_at DESC', 57),
 
-    (618, 'SELECT_DESCRIPTION', 'Posts(id, title, created_at, pinned_at) 스키마가 있을 때, 고정 글(pinned_at NOT NULL)을 먼저, 그 다음 비고정 글을, 각 그룹 내에서는 최신(created_at DESC) 순으로 정렬하라.', '2', '1.ORDER BY pinned_at DESC, created_at DESC;2.ORDER BY CASE WHEN pinned_at IS NULL THEN 1 ELSE 0 END, created_at DESC;3.ORDER BY pinned_at, created_at DESC;4.ORDER BY created_at DESC', 57),
+    (618, 'SELECT_DESCRIPTION', 'Posts(id, title, created_at, pinned_at) 스키마가 있을 때, \n고정 글(pinned_at NOT NULL)을 먼저, 그 다음 비고정 글을, 각 그룹 내에서는 최신(created_at DESC) 순으로 정렬하라.', '2', '1.ORDER BY pinned_at DESC, created_at DESC;2.ORDER BY CASE WHEN pinned_at IS NULL THEN 1 ELSE 0 END, created_at DESC;3.ORDER BY pinned_at, created_at DESC;4.ORDER BY created_at DESC', 57),
 
-    (619, 'FILL_BLANK', 'Posts(id, created_at) 스키마가 있을 때, 최신순으로 2페이지(page=2, size=20)를 조회하려고 한다. 빈칸을 채우시오. \nSELECT id FROM Posts \nORDER BY created_at DESC, id DESC \nLIMIT :size OFFSET _____ ;', '2', '1.:page * :size;2.(:page - 1) * :size;3.:page + :size;4.:size - :page', 57),
+    (619, 'FILL_BLANK', 'Posts(id, created_at) 스키마가 있을 때, \n최신순으로 2페이지(page=2, size=20)를 조회하려고 한다. 빈칸을 채우시오. \nSELECT id FROM Posts \nORDER BY created_at DESC, id DESC \nLIMIT :size OFFSET _____ ;', '2', '1.:page * :size;2.(:page - 1) * :size;3.:page + :size;4.:size - :page', 57),
 
-    (620, 'SELECT_DESCRIPTION', 'Orders(id, created_at) 스키마가 있을 때, Oracle에서 "최신 10건"을 올바르게 가져오는 쿼리는?', '2', '1.SELECT * FROM Orders WHERE ROWNUM <= 10 ORDER BY created_at DESC;2.SELECT * FROM (SELECT * FROM Orders ORDER BY created_at DESC) WHERE ROWNUM <= 10;3.SELECT * FROM Orders ORDER BY created_at DESC FETCH FIRST 10 ROWS ONLY;4.SELECT * FROM Orders WHERE ROWNUM BETWEEN 1 AND 10 ORDER BY created_at DESC', 57),
+    (620, 'SELECT_DESCRIPTION', 'Orders(id, created_at) 스키마가 있을 때, \nOracle에서 "최신 10건"을 올바르게 가져오는 쿼리는?', '2', '1.SELECT * FROM Orders WHERE ROWNUM <= 10 ORDER BY created_at DESC;2.SELECT * FROM (SELECT * FROM Orders ORDER BY created_at DESC) WHERE ROWNUM <= 10;3.SELECT * FROM Orders ORDER BY created_at DESC FETCH FIRST 10 ROWS ONLY;4.SELECT * FROM Orders WHERE ROWNUM BETWEEN 1 AND 10 ORDER BY created_at DESC', 57),
 
-    (621, 'SELECT_DESCRIPTION', 'Posts(id, created_at, category) 스키마가 있을 때, 최신순 키셋 페이지네이션으로 "커서(created_at=:c_at, id=:c_id) 이전" 20개를 가져올 올바른 조건은?', '2', '1.WHERE created_at <= :c_at AND id < :c_id ORDER BY created_at DESC, id DESC LIMIT 20;2.WHERE (created_at, id) < (:c_at, :c_id) ORDER BY created_at DESC, id DESC LIMIT 20;3.WHERE created_at < :c_at OR id < :c_id ORDER BY created_at DESC, id DESC LIMIT 20;4.WHERE created_at < :c_at ORDER BY id DESC LIMIT 20', 57),
+    (621, 'SELECT_DESCRIPTION', 'Posts(id, created_at, category) 스키마가 있을 때, \n최신순 키셋 페이지네이션으로 "커서(created_at=:c_at, id=:c_id) 이전" 20개를 가져올 올바른 조건은?', '2', '1.WHERE created_at <= :c_at AND id < :c_id ORDER BY created_at DESC, id DESC LIMIT 20;2.WHERE (created_at, id) < (:c_at, :c_id) ORDER BY created_at DESC, id DESC LIMIT 20;3.WHERE created_at < :c_at OR id < :c_id ORDER BY created_at DESC, id DESC LIMIT 20;4.WHERE created_at < :c_at ORDER BY id DESC LIMIT 20', 57),
 
-    (622, 'SELECT_DESCRIPTION', 'Posts(id, category, is_public, created_at) 스키마가 있을 때, 카테고리=''news'' AND is_public=TRUE 조건의 전체 행 수(페이지네이션 총 건수)를 구하는 쿼리는?', '1', '1.SELECT COUNT(*) FROM Posts WHERE category=''news'' AND is_public=TRUE;2.SELECT COUNT(*) OVER() FROM Posts WHERE category=''news'' AND is_public=TRUE LIMIT 1;3.SELECT COUNT(id) FROM Posts GROUP BY category, is_public;4.SELECT SUM(1) FROM Posts', 57),
+    (622, 'SELECT_DESCRIPTION', 'Posts(id, category, is_public, created_at) 스키마가 있을 때, \n카테고리=''news'' AND is_public=TRUE 조건의 전체 행 수(페이지네이션 총 건수)를 구하는 쿼리는?', '1', '1.SELECT COUNT(*) FROM Posts WHERE category=''news'' AND is_public=TRUE;2.SELECT COUNT(*) OVER() FROM Posts WHERE category=''news'' AND is_public=TRUE LIMIT 1;3.SELECT COUNT(id) FROM Posts GROUP BY category, is_public;4.SELECT SUM(1) FROM Posts', 57),
 
     (623, 'SELECT_DESCRIPTION', '페이지네이션에서 신규 행 삽입으로 인한 중복/누락을 줄이는 데 더 안전한 방식은?', '2', '1.OFFSET/LIMIT;2.키셋 페이지네이션(커서 방식: WHERE (k1,k2) < (:cursor...));3.-;4.-', 57),
 
     (624, 'SELECT_DESCRIPTION', '1부터 시작하는 페이지 번호 p와 페이지 크기 s가 있을 때 OFFSET을 구하는 수식은?', '3', '1.p * s;2.(p - 1) + s;3.(p - 1) * s;4.p + s', 57),
 
-    (625, 'SELECT_DESCRIPTION', 'Orders(id, user_id, amount, created_at) 스키마가 있을 때, created_at 값이 같은 행들 사이에서도 결과 정렬이 항상 결정되도록 하려면?', '2', '1.ORDER BY created_at DESC;2.ORDER BY created_at DESC, id DESC;3.ORDER BY id DESC;4.ORDER BY created_at', 57),
+    (625, 'SELECT_DESCRIPTION', 'Orders(id, user_id, amount, created_at) 스키마가 있을 때, \ncreated_at 값이 같은 행들 사이에서도 결과 정렬이 항상 결정되도록 하려면?', '2', '1.ORDER BY created_at DESC;2.ORDER BY created_at DESC, id DESC;3.ORDER BY id DESC;4.ORDER BY created_at', 57),
 
-    (626, 'SELECT_DESCRIPTION', 'Posts(id, category, created_at) 스키마가 있을 때, WHERE category=:cat AND ORDER BY created_at DESC, id DESC 쿼리를 가속하기 좋은 인덱스는?', '2', '1.INDEX ON Posts(created_at);2.INDEX ON Posts(category, created_at DESC, id DESC);3.INDEX ON Posts(id, created_at);4.INDEX ON Posts(category)', 57),
+    (626, 'SELECT_DESCRIPTION', 'Posts(id, category, created_at) 스키마가 있을 때, \nWHERE category=:cat AND ORDER BY created_at DESC, id DESC 쿼리를 가속하기 좋은 인덱스는?', '2', '1.INDEX ON Posts(created_at);2.INDEX ON Posts(category, created_at DESC, id DESC);3.INDEX ON Posts(id, created_at);4.INDEX ON Posts(category)', 57),
 
-    (627, 'SELECT_DESCRIPTION', 'Products(id, price, updated_at) 스키마가 있을 때, 가격 높은 순으로 상위 5개를 가져오는 올바른 쿼리는?', '1', '1.SELECT * FROM Products ORDER BY price DESC FETCH FIRST 5 ROWS ONLY;2.SELECT * FROM Products WHERE ROWNUM <= 5 ORDER BY price DESC;3.SELECT * FROM (SELECT * FROM Products ORDER BY price) WHERE ROWNUM <= 5;4.SELECT TOP 5 * FROM Products ORDER BY price DESC', 57),
+    (627, 'SELECT_DESCRIPTION', 'Products(id, price, updated_at) 스키마가 있을 때, \n가격 높은 순으로 상위 5개를 가져오는 올바른 쿼리는?', '1', '1.SELECT * FROM Products ORDER BY price DESC FETCH FIRST 5 ROWS ONLY;2.SELECT * FROM Products WHERE ROWNUM <= 5 ORDER BY price DESC;3.SELECT * FROM (SELECT * FROM Products ORDER BY price) WHERE ROWNUM <= 5;4.SELECT TOP 5 * FROM Products ORDER BY price DESC', 57),
 
-    (628, 'FILL_BLANK', 'Posts(id, created_at) 스키마가 있을 때, 윈도우 함수로 21~40번째(페이지 2, size 20) 최신 글을 구하는 쿼리의 빈칸을 채우시오. \nSELECT id FROM \n( SELECT id, ROW_NUMBER() OVER (ORDER BY created_at DESC, id DESC) AS rn \n  FROM Posts ) t \nWHERE _____ ;', '4', '1.rn BETWEEN 20 AND 40;2.rn > 20;3.rn <= 40;4.rn >= 21 AND rn <= 40', 57);
+    (628, 'FILL_BLANK', 'Posts(id, created_at) 스키마가 있을 때, \n윈도우 함수로 21~40번째(페이지 2, size 20) 최신 글을 구하는 쿼리의 빈칸을 채우시오. \nSELECT id FROM \n( SELECT id, ROW_NUMBER() OVER (ORDER BY created_at DESC, id DESC) AS rn \n  FROM Posts ) t \nWHERE _____ ;', '4', '1.rn BETWEEN 20 AND 40;2.rn > 20;3.rn <= 40;4.rn >= 21 AND rn <= 40', 57);
 
 -- Unit05 - SQL 2-1 (Lesson ID: 58)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
