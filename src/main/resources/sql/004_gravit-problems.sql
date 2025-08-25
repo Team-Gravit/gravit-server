@@ -1575,11 +1575,11 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (692, 'FILL_BLANK', '세이브포인트 sp1을 해제할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION; \nSAVEPOINT sp1; \n-- DML … \n_____ SAVEPOINT sp1; \nCOMMIT;', '1', '1.RELEASE;2.ROLLBACK TO;3.DELETE;4.COMMIT TO', 63),
 
-    (693, 'FILL_BLANK', '세션에서 자동 커밋을 끄고 수동으로 제어하려면 다음 SQL 문의 빈칸을 채우시오. _____ autocommit = 0;', '3', '1.SHOW;2.ALTER;3.SET;4.TABLE', 63),
+    (693, 'FILL_BLANK', '세션에서 자동 커밋을 끄고 수동으로 제어하려면 다음 SQL 문의 빈칸을 채우시오. \n _____ autocommit = 0;', '3', '1.SHOW;2.ALTER;3.SET;4.TABLE', 63),
 
-    (694, 'FILL_BLANK', '세션 격리수준을 READ COMMITTED로 바꿀 때, 다음 SQL 문의 빈칸을 채우시오. SET SESSION TRANSACTION ISOLATION LEVEL _____ ;', '1', '1.READ COMMITTED;2.REPEATABLE READ;3.SERIALIZABLE;4.-', 63),
+    (694, 'FILL_BLANK', '세션 격리수준을 READ COMMITTED로 바꿀 때, 다음 SQL 문의 빈칸을 채우시오. \nSET SESSION TRANSACTION ISOLATION LEVEL _____ ;', '1', '1.READ COMMITTED;2.REPEATABLE READ;3.SERIALIZABLE;4.-', 63),
 
-    (695, 'FILL_BLANK', 'InnoDB에서 일관 스냅샷을 잡아 읽기 트랜잭션을 시작할 때, 다음 SQL 문의 빈칸을 채우시오. START TRANSACTION _____ ;', '1', '1.WITH CONSISTENT SNAPSHOT;2.READ ONLY;3.FOR UPDATE;4.START TRANSACTION', 63),
+    (695, 'FILL_BLANK', 'InnoDB에서 일관 스냅샷을 잡아 읽기 트랜잭션을 시작할 때, 다음 SQL 문의 빈칸을 채우시오. \nSTART TRANSACTION _____ ;', '1', '1.WITH CONSISTENT SNAPSHOT;2.READ ONLY;3.FOR UPDATE;4.START TRANSACTION', 63),
 
     (696, 'FILL_BLANK', 'Accounts(id PK) 스키마가 있을 때, 특정 행을 업데이트 전 선점 잠금으로 읽으려면 다음 SQL 문의 빈칸을 채우시오. \nSELECT * FROM Accounts WHERE id = :id _____ ;', '3', '1.LOCK IN SHARE MODE;2.FOR SHARE;3.FOR UPDATE;4.LOCK', 63),
 
