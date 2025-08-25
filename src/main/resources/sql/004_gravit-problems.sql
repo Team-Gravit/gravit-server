@@ -1521,21 +1521,21 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (668, 'FILL_BLANK', 'Users의 nickname 컬럼을 handle로 이름 변경. 빈칸을 채우시오. \nALTER TABLE Users _____ nickname TO handle;', '1', '1.RENAME COLUMN;2.CHANGE COLUMN;3.RENAME TO;4.MODIFY', 61),
 
-    (669, 'FILL_BLANK', 'Orders.user_id → Users(id) 외래키를 추가하며, 사용자 삭제 시 주문도 삭제되게 하라. 빈칸을 채우시오. ALTER TABLE Orders ADD CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE _____ ;', '3', '1.SET NULL;2.RESTRICT;3.CASCADE;4.NO ACTION', 61),
+    (669, 'FILL_BLANK', 'Orders.user_id → Users(id) 외래키를 추가하며, 사용자 삭제 시 주문도 삭제되게 하라. 빈칸을 채우시오. \nALTER TABLE Orders ADD CONSTRAINT fk_orders_user \nFOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE _____ ;', '3', '1.SET NULL;2.RESTRICT;3.CASCADE;4.NO ACTION', 61),
 
-    (670, 'FILL_BLANK', '다른 객체가 참조 중이어도 강제로 Users의 old_col 컬럼을 삭제. 빈칸을 채우시오. ALTER TABLE Users DROP COLUMN old_col _____ ;', '1', '1.CASCADE;2.RESTRICT;3.SET NULL;4.-', 61),
+    (670, 'FILL_BLANK', '다른 객체가 참조 중이어도 강제로 Users의 old_col 컬럼을 삭제. 빈칸을 채우시오. \nALTER TABLE Users DROP COLUMN old_col _____ ;', '1', '1.CASCADE;2.RESTRICT;3.SET NULL;4.-', 61),
 
-    (671, 'FILL_BLANK', 'Orders의 모든 행을 빠르게 지우고, 스키마는 유지하라. 빈칸을 채우시오. _____ TABLE Orders;', '1', '1.TRUNCATE;2.DROP;3.DELETE;4.-', 61),
+    (671, 'FILL_BLANK', 'Orders의 모든 행을 빠르게 지우고, 스키마는 유지하라. 빈칸을 채우시오. \n _____ TABLE Orders;', '1', '1.TRUNCATE;2.DROP;3.DELETE;4.-', 61),
 
-    (672, 'FILL_BLANK', 'Users.email에 유니크 인덱스를 생성하라. 빈칸을 채우시오. CREATE _____ INDEX ux_users_email ON Users(email);', '1', '1.UNIQUE;2.PRIMARY;3.FOREIGN;4.-', 61),
+    (672, 'FILL_BLANK', 'Users.email에 유니크 인덱스를 생성하라. 빈칸을 채우시오. \nCREATE _____ INDEX ux_users_email ON Users(email);', '1', '1.UNIQUE;2.PRIMARY;3.FOREIGN;4.-', 61),
 
-    (673, 'FILL_BLANK', 'Products.price가 0보다 커야 한다. 빈칸을 채우시오. ALTER TABLE Products ADD CONSTRAINT chk_price_pos CHECK (price _____ 0);', '1', '1.>;2.>=;3.<>;4.<', 61),
+    (673, 'FILL_BLANK', 'Products.price가 0보다 커야 한다. 빈칸을 채우시오. \nALTER TABLE Products ADD CONSTRAINT chk_price_pos CHECK (price _____ 0);', '1', '1.>;2.>=;3.<>;4.<', 61),
 
-    (674, 'FILL_BLANK', 'MySQL에서 Users.bio 타입을 VARCHAR(255)로 변경. 빈칸을 채우시오. ALTER TABLE Users _____ bio VARCHAR(255);', '2', '1.TYPE;2.MODIFY;3.CHANGE;4.ALTER', 61),
+    (674, 'FILL_BLANK', 'MySQL에서 Users.bio 타입을 VARCHAR(255)로 변경. 빈칸을 채우시오. \nALTER TABLE Users _____ bio VARCHAR(255);', '2', '1.TYPE;2.MODIFY;3.CHANGE;4.ALTER', 61),
 
-    (675, 'FILL_BLANK', 'OldName 테이블을 NewName으로 변경. 빈칸을 채우시오. ALTER TABLE OldName _____ NewName;', '1', '1.RENAME;2.RENAME TABLE;3.CHANGE TO;4.-', 61),
+    (675, 'FILL_BLANK', 'OldName 테이블을 NewName으로 변경. 빈칸을 채우시오. \nALTER TABLE OldName _____ NewName;', '1', '1.RENAME;2.RENAME TABLE;3.CHANGE TO;4.-', 61),
 
-    (676, 'FILL_BLANK', 'Users 테이블이 존재할 때만 삭제. 빈칸을 채우시오. DROP TABLE _____ Users;', '3', '1.RESTRICT;2.CASCADE;3.IF EXISTS;4.NOT NULL', 61);
+    (676, 'FILL_BLANK', 'Users 테이블이 존재할 때만 삭제. 빈칸을 채우시오. \nDROP TABLE _____ Users;', '3', '1.RESTRICT;2.CASCADE;3.IF EXISTS;4.NOT NULL', 61);
 
 -- Unit06 - SQL 3-2 (Lesson ID: 62)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
