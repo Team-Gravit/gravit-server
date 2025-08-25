@@ -1459,29 +1459,29 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit05 - SQL 2-2 (Lesson ID: 59)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (641, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문이 있는 고객"만 조회. 빈칸을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);3.c.id IN (SELECT o.id FROM Orders o);4.-', 59),
+    (641, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, \n"주문이 있는 고객"만 조회. 빈칸을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);3.c.id IN (SELECT o.id FROM Orders o);4.-', 59),
 
-    (642, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, 아래 IN을 JOIN으로 바꿀 때, 조인 종류를 채우시오. \nSELECT c.id FROM Customers c WHERE c.id IN (SELECT o.customer_id FROM Orders o) \n→ \nSELECT DISTINCT c.id \nFROM Customers c _____ JOIN Orders o \nON o.customer_id = c.id;', '2', '1.LEFT;2.INNER;3.RIGHT;4.FULL OUTER', 59),
+    (642, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, \n아래 IN을 JOIN으로 바꿀 때, 조인 종류를 채우시오. \nSELECT c.id \nFROM Customers c \nWHERE c.id IN (SELECT o.customer_id FROM Orders o) \n→ \nSELECT DISTINCT c.id \nFROM Customers c _____ JOIN Orders o ON o.customer_id = c.id;', '2', '1.LEFT;2.INNER;3.RIGHT;4.FULL OUTER', 59),
 
-    (643, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id NULL 허용) 스키마가 있을 때, NULL 함정 없이 "주문이 없는 고객"을 안전하게 구하는 조건을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '3', '1.c.id NOT IN (SELECT customer_id FROM Orders);2.c.id NOT IN (SELECT customer_id FROM Orders WHERE customer_id IS NOT NULL);3.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);4.-', 59),
+    (643, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id NULL 허용) 스키마가 있을 때, \nNULL 함정 없이 "주문이 없는 고객"을 안전하게 구하는 조건을 채우시오. \nSELECT c.* \nFROM Customers c \nWHERE _____ ;', '3', '1.c.id NOT IN (SELECT customer_id FROM Orders);2.c.id NOT IN (SELECT customer_id FROM Orders WHERE customer_id IS NOT NULL);3.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);4.-', 59),
 
     (644, 'SELECT_DESCRIPTION', 'IN 서브쿼리에 중복이 많아도 결과는 바뀌지 않는다.', '1', '1.참;2.거짓;3.경우에 따라 다름;4.-', 59),
 
-    (645, 'FILL_BLANK', 'Employees(id, salary), DeptSalaries(dept_id, salary) 스키마가 있을 때, salary > ANY(SELECT salary FROM DeptSalaries WHERE dept_id = :d)와 동치인 집계 표현을 채우시오. \nsalary > _____ (SELECT salary FROM DeptSalaries WHERE dept_id = :d)', '1', '1.MIN;2.MAX;3.AVG;4.-', 59),
+    (645, 'FILL_BLANK', 'Employees(id, salary), DeptSalaries(dept_id, salary) 스키마가 있을 때, \nsalary > ANY(SELECT salary FROM DeptSalaries WHERE dept_id = :d)와 동치인 집계 표현을 채우시오. \nsalary > _____ (SELECT salary FROM DeptSalaries WHERE dept_id = :d)', '1', '1.MIN;2.MAX;3.AVG;4.-', 59),
 
-    (646, 'FILL_BLANK', 'Products(id, price) 스키마가 있을 때, price < ALL(SELECT price FROM Products WHERE id <> :id)와 동치인 집계 표현은? \nprice < _____ (SELECT price FROM Products WHERE id <> :id)', '1', '1.MIN;2.MAX;3.SUM;4.-', 59),
+    (646, 'FILL_BLANK', 'Products(id, price) 스키마가 있을 때, \nprice < ALL(SELECT price FROM Products WHERE id <> :id)와 동치인 집계 표현은? \nprice < _____ (SELECT price FROM Products WHERE id <> :id)', '1', '1.MIN;2.MAX;3.SUM;4.-', 59),
 
-    (647, 'FILL_BLANK', 'Products(id, price), CompetitorPrices(product_id, price) 스키마가 있을 때, p.price > ANY(...)를 EXISTS로 바꿀 때 비교 연산자를 채우시오. \nSELECT p.id \nFROM Products p \nWHERE EXISTS ( \n  SELECT 1 FROM CompetitorPrices cp \n  WHERE cp.product_id = p.id AND p.price _____ cp.price \n);', '3', '1.<;2.=;3.>;4.=', 59),
+    (647, 'FILL_BLANK', 'Products(id, price), CompetitorPrices(product_id, price) 스키마가 있을 때,\n p.price > ANY(...)를 EXISTS로 바꿀 때 비교 연산자를 채우시오. \nSELECT p.id \nFROM Products p \nWHERE EXISTS ( \n  SELECT 1 FROM CompetitorPrices cp \n  WHERE cp.product_id = p.id AND p.price _____ cp.price \n);', '3', '1.<;2.=;3.>;4.=', 59),
 
-    (648, 'FILL_BLANK', 'Products(id, price), CompetitorPrices(product_id, price) 스키마가 있을 때, p.price >= ALL(서브쿼리)와 동치인 NOT EXISTS 조건을 채우시오. NOT EXISTS ( SELECT 1 FROM CompetitorPrices cp WHERE cp.product_id = p.id AND p.price _____ cp.price )', '2', '1.<=;2.<;3.>;4.=', 59),
+    (648, 'FILL_BLANK', 'Products(id, price), CompetitorPrices(product_id, price) 스키마가 있을 때, \np.price >= ALL(서브쿼리)와 동치인 NOT EXISTS 조건을 채우시오. \nNOT EXISTS ( SELECT 1 \n  FROM CompetitorPrices cp \n  WHERE cp.product_id = p.id AND p.price _____ cp.price \n)', '2', '1.<=;2.<;3.>;4.=', 59),
 
-    (649, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id, created_at) 스키마가 있을 때, "2025년에 주문이 없는 고객"을 LEFT JOIN으로 구한다. 빈칸을 채우시오. SELECT c.id FROM Customers c LEFT JOIN Orders o ON o.customer_id = c.id AND o.created_at >= DATE ''2025-01-01'' AND o.created_at < DATE ''2026-01-01'' WHERE _____ ;', '3', '1.o.customer_id IS NOT NULL;2.c.id IS NULL;3.o.id IS NULL;4.-', 59),
+    (649, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id, created_at) 스키마가 있을 때, \n"2025년에 주문이 없는 고객"을 LEFT JOIN으로 구한다. 빈칸을 채우시오. \nSELECT c.id \nFROM Customers c LEFT JOIN Orders o \nON o.customer_id = c.id AND o.created_at >= DATE ''2025-01-01'' AND o.created_at < DATE ''2026-01-01'' \nWHERE _____ ;', '3', '1.o.customer_id IS NOT NULL;2.c.id IS NULL;3.o.id IS NULL;4.-', 59),
 
-    (650, 'FILL_BLANK', 'A(a1, a2), B(b1, b2) 스키마가 있을 때, (a1, a2) IN (SELECT b1, b2 FROM B)를 EXISTS로 바꿀 때 조건을 채우시오. EXISTS (SELECT 1 FROM B b WHERE _____ )', '1', '1.b.b1 = a.a1 AND b.b2 = a.a2;2.b.b1 = a.a2 AND b.b2 = a.a1;3.b.b1 = a.a1 OR b.b2 = a.a2;4.-', 59),
+    (650, 'FILL_BLANK', 'A(a1, a2), B(b1, b2) 스키마가 있을 때, \n(a1, a2) IN (SELECT b1, b2 FROM B)를 EXISTS로 바꿀 때 조건을 채우시오. \nEXISTS (SELECT 1 FROM B b WHERE _____ )', '1', '1.b.b1 = a.a1 AND b.b2 = a.a2;2.b.b1 = a.a2 AND b.b2 = a.a1;3.b.b1 = a.a1 OR b.b2 = a.a2;4.-', 59),
 
-    (651, 'FILL_BLANK', 'OrderItems(order_id, price) 스키마가 있을 때, oi.price > ALL(SELECT price FROM OrderItems WHERE order_id = :x)와 동치인 집계 표현은? oi.price > _____ (SELECT price FROM OrderItems WHERE order_id = :x)', '2', '1.MIN;2.MAX;3.AVG', 59),
+    (651, 'FILL_BLANK', 'OrderItems(order_id, price) 스키마가 있을 때, \noi.price > ALL(SELECT price FROM OrderItems WHERE order_id = :x)와 동치인 집계 표현은? \noi.price > _____ (SELECT price FROM OrderItems WHERE order_id = :x)', '2', '1.MIN;2.MAX;3.AVG', 59),
 
-    (652, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, IN을 JOIN으로 바꿀 때, IN과 같은 "고객 중복 제거"를 위해 SELECT에 채워야 할 키워드는? SELECT _____ c.id FROM Customers c INNER JOIN Orders o ON o.customer_id = c.id;', '1', '1.DISTINCT;2.UNIQUE;3.TOP 1;4.-', 59);
+    (652, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, \nIN을 JOIN으로 바꿀 때, IN과 같은 "고객 중복 제거"를 위해 SELECT에 채워야 할 키워드는? \nSELECT _____ c.id \nFROM Customers c INNER JOIN Orders o ON o.customer_id = c.id;', '1', '1.DISTINCT;2.UNIQUE;3.TOP 1;4.-', 59);
 
 -- Unit05 - SQL 2-3 (Lesson ID: 60)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
