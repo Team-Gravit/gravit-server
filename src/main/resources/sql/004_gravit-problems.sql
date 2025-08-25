@@ -1324,56 +1324,56 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit03 - 관계대수 2 (Lesson ID: 54)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (581, 'SELECT_DESCRIPTION', 'Student(sid, name, dept) 스키마가 있을 때, "CS 학과 학생들의 이름만"에 해당하는 식은?', '1', '1.π name ( σ dept=''CS'' ( Student ) );2.σ dept=''CS'' ( π name ( Student ) );3.π dept ( σ name=''CS'' ( Student ) );4.π name ( Student ▷◁ Course )', 54),
+    (581, 'SELECT_DESCRIPTION', 'Student(sid, name, dept) 스키마가 있을 때, \n"CS 학과 학생들의 이름만"에 해당하는 식은?', '1', '1.π name ( σ dept=''CS'' ( Student ) );2.σ dept=''CS'' ( π name ( Student ) );3.π dept ( σ name=''CS'' ( Student ) );4.π name ( Student ▷◁ Course )', 54),
 
-    (582, 'SELECT_DESCRIPTION', 'Enroll(sid, cid) 스키마가 있을 때, "DB101을 수강한 학생 sid 목록"에 해당하는 식은?', '1', '1.π sid ( σ cid=''DB101'' ( Enroll ) );2.σ cid=''DB101'' ( π sid ( Enroll ) );3.π name ( σ cid=''DB101'' ( Enroll ) );4.π cid ( σ sid=''DB101'' ( Enroll ) )', 54),
+    (582, 'SELECT_DESCRIPTION', 'Enroll(sid, cid) 스키마가 있을 때, \n"DB101을 수강한 학생 sid 목록"에 해당하는 식은?', '1', '1.π sid ( σ cid=''DB101'' ( Enroll ) );2.σ cid=''DB101'' ( π sid ( Enroll ) );3.π name ( σ cid=''DB101'' ( Enroll ) );4.π cid ( σ sid=''DB101'' ( Enroll ) )', 54),
 
-    (583, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, "수강한 학생 이름과 과목 제목(title)"을 얻는 식의 빈칸을 채우시오. π name, title ( ( Student _____ Enroll ) _____ Course )', '1', '1.▷◁ , ▷◁;2.▷◁ , ÷;3.÷ , ▷◁;4.▷◁ , σ', 54),
+    (583, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, \n"수강한 학생 이름과 과목 제목(title)"을 얻는 식의 빈칸을 채우시오. \nπ name, title ( ( Student _____ Enroll ) _____ Course )', '1', '1.▷◁ , ▷◁;2.▷◁ , ÷;3.÷ , ▷◁;4.▷◁ , σ', 54),
 
-    (584, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid, grade) 스키마가 있을 때, "A학점을 받은 학생 이름"을 σ, π, ▷◁로만 표현하시오. → π name ( Student _____ σ grade=''A'' ( Enroll ) )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
+    (584, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid, grade) 스키마가 있을 때, \n"A학점을 받은 학생 이름"을 σ, π, ▷◁로만 표현하시오. \n→ π name ( Student _____ σ grade=''A'' ( Enroll ) )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
 
-    (585, 'SELECT_DESCRIPTION', 'Teaches(pid, cid, term), Course(cid, title) 스키마가 있을 때, "pid=10 교수가 2025S 학기에 가르친 과목 제목(title)"은?', '1', '1.π title ( σ pid=10 ∧ term=''2025S'' ( Teaches ) ▷◁ Course );2.π title ( Teaches ▷◁ σ pid=10 ( Course ) );3.σ pid=10 ( π title ( Teaches ▷◁ Course ) );4.π cid ( σ pid=10 ∧ term=''2025S'' ( Teaches ) )', 54),
+    (585, 'SELECT_DESCRIPTION', 'Teaches(pid, cid, term), Course(cid, title) 스키마가 있을 때, \n"pid=10 교수가 2025S 학기에 가르친 과목 제목(title)"은?', '1', '1.π title ( σ pid=10 ∧ term=''2025S'' ( Teaches ) ▷◁ Course );2.π title ( Teaches ▷◁ σ pid=10 ( Course ) );3.σ pid=10 ( π title ( Teaches ▷◁ Course ) );4.π cid ( σ pid=10 ∧ term=''2025S'' ( Teaches ) )', 54),
 
-    (586, 'FILL_BLANK', 'Enroll(sid, cid), Course(cid, dept) 스키마가 있을 때, "CS 학과에서 개설된 모든 과목을 수강한 학생 sid"를 ÷로 표현하시오. Enroll _____ π cid ( σ dept=''CS'' ( Course ) )', '4', '1.▷◁;2.π;3.σ;4.÷', 54),
+    (586, 'FILL_BLANK', 'Enroll(sid, cid), Course(cid, dept) 스키마가 있을 때, \n"CS 학과에서 개설된 모든 과목을 수강한 학생 sid"를 ÷로 표현하시오. \nEnroll _____ π cid ( σ dept=''CS'' ( Course ) )', '4', '1.▷◁;2.π;3.σ;4.÷', 54),
 
-    (587, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Req(cid) 스키마가 있을 때, "Req의 모든 과목을 수강한 학생 sid"에 해당하는 가장 직접적인 식은?', '1', '1.Enroll ÷ Req;2.π sid ( Enroll ▷◁ Req );3.π sid ( σ cid∈Req ( Enroll ) );4.π sid ( Enroll )', 54),
+    (587, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Req(cid) 스키마가 있을 때, \n"Req의 모든 과목을 수강한 학생 sid"에 해당하는 가장 직접적인 식은?', '1', '1.Enroll ÷ Req;2.π sid ( Enroll ▷◁ Req );3.π sid ( σ cid∈Req ( Enroll ) );4.π sid ( Enroll )', 54),
 
-    (588, 'FILL_BLANK', 'Enroll(sid, cid, grade), Student(sid, name) 스키마가 있을 때, 다음 두 식이 동치가 되도록 빈칸에 들어갈 곳을 고르시오. π name ( σ grade=''A'' ( Enroll ) ▷◁ Student ) = π name ( Student ▷◁ _____ )', '1', '1.σ grade=''A'' ( Enroll );2.π sid ( Enroll );3.σ name=''A'' ( Student );4.Enroll ÷ σ grade=''A'' ( Enroll )', 54),
+    (588, 'FILL_BLANK', 'Enroll(sid, cid, grade), Student(sid, name) 스키마가 있을 때, \n다음 두 식이 동치가 되도록 빈칸에 들어갈 곳을 고르시오. \nπ name ( σ grade=''A'' ( Enroll ) ▷◁ Student ) = π name ( Student ▷◁ _____ )', '1', '1.σ grade=''A'' ( Enroll );2.π sid ( Enroll );3.σ name=''A'' ( Student );4.Enroll ÷ σ grade=''A'' ( Enroll )', 54),
 
-    (589, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, "학생 sid와 수강 과목 title 쌍"을 가장 간단히 나타내는 식은?', '1', '1.π sid, title ( Enroll ▷◁ Course );2.π name, title ( Student ▷◁ Course );3.π sid, title ( Student ▷◁ Course );4.π sid, title ( σ dept=''CS'' ( Enroll ) )', 54),
+    (589, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, \n"학생 sid와 수강 과목 title 쌍"을 가장 간단히 나타내는 식은?', '1', '1.π sid, title ( Enroll ▷◁ Course );2.π name, title ( Student ▷◁ Course );3.π sid, title ( Student ▷◁ Course );4.π sid, title ( σ dept=''CS'' ( Enroll ) )', 54),
 
-    (590, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid), Course(cid, title, dept) 스키마가 있을 때, "학생이 자신의 학과(dept)의 과목을 수강한 (sid, name, title)"을 표현하시오. → π sid, name, title ( Student ▷◁ Enroll _____ Course )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
+    (590, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid), Course(cid, title, dept) 스키마가 있을 때, \n"학생이 자신의 학과(dept)의 과목을 수강한 (sid, name, title)"을 표현하시오. → π sid, name, title ( Student ▷◁ Enroll _____ Course )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
 
-    (591, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid) 스키마가 있을 때, 다음 식에서 빈칸에 맞는 연산을 고르시오. π name ( _____ ( Student ) ▷◁ Enroll ) = "CS 학과이면서 수강 경험이 있는 학생 이름"', '1', '1.σ dept=''CS'';2.π dept;3.÷ Req;4.σ name=''CS''', 54),
+    (591, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid) 스키마가 있을 때, \n다음 식에서 빈칸에 맞는 연산을 고르시오. \nπ name ( _____ ( Student ) ▷◁ Enroll ) = "CS 학과이면서 수강 경험이 있는 학생 이름"', '1', '1.σ dept=''CS'';2.π dept;3.÷ Req;4.σ name=''CS''', 54),
 
-    (592, 'FILL_BLANK', 'Teaches(pid, cid), Req(cid) 스키마가 있을 때, 다음 식에서 빈칸에 들어갈 가장 알맞은 표현을 고르시오. π pid ( _____ ) = "필수 과목 Req를 모두 가르친 교수 pid"', '1', '1.Teaches ÷ Req;2.π pid ( Teaches ▷◁ Req );3.σ cid IN π cid(Req) ( Teaches );4.π pid,cid ( Teaches ) ▷◁ Req', 54);
+    (592, 'FILL_BLANK', 'Teaches(pid, cid), Req(cid) 스키마가 있을 때, \n다음 식에서 빈칸에 들어갈 가장 알맞은 표현을 고르시오. \nπ pid ( _____ ) = "필수 과목 Req를 모두 가르친 교수 pid"', '1', '1.Teaches ÷ Req;2.π pid ( Teaches ▷◁ Req );3.σ cid IN π cid(Req) ( Teaches );4.π pid,cid ( Teaches ) ▷◁ Req', 54);
 
 -- Unit04 - SQL 1-1 (Lesson ID: 55)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (593, 'FILL_BLANK', 'Users(id, name, status) 스키마가 있을 때, 활성 사용자 이름만 조회하려 한다. 빈칸에 들어갈 컬럼을 고르시오. \nSELECT _____ FROM Users WHERE status=''ACTIVE'';', '2', '1.id;2.name;3.*;4.id, name', 55),
+    (593, 'FILL_BLANK', 'Users(id, name, status) 스키마가 있을 때, \n활성 사용자 이름만 조회하려 한다. 빈칸에 들어갈 컬럼을 고르시오. \nSELECT _____ FROM Users WHERE status=''ACTIVE'';', '2', '1.id;2.name;3.*;4.id, name', 55),
 
-    (594, 'SELECT_DESCRIPTION', 'Users(id, dept, active) 스키마가 있을 때, "CS 또는 EE 학과이면서 active=1"을 정확히 표현한 WHERE는?', '2', '1.WHERE dept=''CS'' OR dept=''EE'' AND active=1;2.WHERE (dept=''CS'' OR dept=''EE'') AND active=1;3.WHERE dept IN (''CS'',''EE'' AND active=1);4.WHERE (dept=''CS'' AND dept=''EE'') OR active=1', 55),
+    (594, 'SELECT_DESCRIPTION', 'Users(id, dept, active) 스키마가 있을 때, \n"CS 또는 EE 학과이면서 active=1"을 정확히 표현한 WHERE는?', '2', '1.WHERE dept=''CS'' OR dept=''EE'' AND active=1;2.WHERE (dept=''CS'' OR dept=''EE'') AND active=1;3.WHERE dept IN (''CS'',''EE'' AND active=1);4.WHERE (dept=''CS'' AND dept=''EE'') OR active=1', 55),
 
-    (595, 'FILL_BLANK', 'Orders(id, amount) 스키마가 있을 때, 결제 금액이 100 이상 200 이하인 주문을 조회한다. 빈칸에 올바른 연산자를 고르시오. SELECT id FROM Orders WHERE amount _____ 100 AND 200;', '1', '1.BETWEEN;2.IN;3.LIKE;4.EXISTS', 55),
+    (595, 'FILL_BLANK', 'Orders(id, amount) 스키마가 있을 때, \n결제 금액이 100 이상 200 이하인 주문을 조회한다. 빈칸에 올바른 연산자를 고르시오. \nSELECT id FROM Orders WHERE amount _____ 100 AND 200;', '1', '1.BETWEEN;2.IN;3.LIKE;4.EXISTS', 55),
 
-    (596, 'FILL_BLANK', 'Customers(id, name, phone) 스키마가 있을 때, 연락처가 없는 고객을 찾는 WHERE 조건으로 맞는 것은?', '3', '1.WHERE phone = NULL;2.WHERE phone == NULL;3.WHERE phone IS NULL;4.WHERE ISNULL(phone)', 55),
+    (596, 'FILL_BLANK', 'Customers(id, name, phone) 스키마가 있을 때, \n연락처가 없는 고객을 찾는 WHERE 조건으로 맞는 것은?', '3', '1.WHERE phone = NULL;2.WHERE phone == NULL;3.WHERE phone IS NULL;4.WHERE ISNULL(phone)', 55),
 
-    (597, 'FILL_BLANK', 'Articles(id, title) 스키마가 있을 때, 제목이 ''SQL''로 시작하는 글을 찾는 LIKE 패턴은? SELECT id FROM Articles WHERE title LIKE _____ ;', '1', '1.''SQL%'';2.''%SQL'';3.''%SQL%'';4.''SQL_''', 55),
+    (597, 'FILL_BLANK', 'Articles(id, title) 스키마가 있을 때, \n제목이 ''SQL''로 시작하는 글을 찾는 LIKE 패턴은? \nSELECT id FROM Articles WHERE title LIKE _____ ;', '1', '1.''SQL%'';2.''%SQL'';3.''%SQL%'';4.''SQL_''', 55),
 
-    (598, 'SELECT_DESCRIPTION', 'Users(u_id), Orders(o_id, user_id) 스키마가 있을 때, "주문이 없는 사용자"를 안전하게 구하는 WHERE는? (서브쿼리에 NULL이 포함될 수 있음)', '2', '1.WHERE u_id NOT IN (SELECT user_id FROM Orders);2.WHERE NOT EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = u.u_id);3.WHERE u_id IN (SELECT user_id FROM Orders) = FALSE;4.WHERE user_id IS NULL', 55),
+    (598, 'SELECT_DESCRIPTION', 'Users(u_id), Orders(o_id, user_id) 스키마가 있을 때, \n"주문이 없는 사용자"를 안전하게 구하는 WHERE는? (서브쿼리에 NULL이 포함될 수 있음)', '2', '1.WHERE u_id NOT IN (SELECT user_id FROM Orders);2.WHERE NOT EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = u.u_id);3.WHERE u_id IN (SELECT user_id FROM Orders) = FALSE;4.WHERE user_id IS NULL', 55),
 
-    (599, 'SELECT_DESCRIPTION', 'Users(id), Orders(id, user_id) 스키마가 있을 때, "주문이 있는 사용자만"을 가장 간결히 표현한 WHERE는?', '3', '1.WHERE id IN (SELECT user_id FROM Orders);2.WHERE EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = Users.id);3.1)과 2) 모두 가능;4.WHERE id = ANY (SELECT id FROM Orders)', 55),
+    (599, 'SELECT_DESCRIPTION', 'Users(id), Orders(id, user_id) 스키마가 있을 때, \n"주문이 있는 사용자만"을 가장 간결히 표현한 WHERE는?', '3', '1.WHERE id IN (SELECT user_id FROM Orders);2.WHERE EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = Users.id);3.1)과 2) 모두 가능;4.WHERE id = ANY (SELECT id FROM Orders)', 55),
 
-    (600, 'SELECT_DESCRIPTION', 'Sales(id, created_at) 스키마가 있을 때, 2025-08-01 당일 데이터만 정확히(시분초 포함) 조회하려면?', '3', '1.WHERE DATE(created_at) = ''2025-08-01'';2.WHERE created_at BETWEEN ''2025-08-01'' AND ''2025-08-01 23:59:59'';3.WHERE created_at >= ''2025-08-01'' AND created_at < ''2025-08-02'';4.WHERE created_at LIKE ''2025-08-01%''', 55),
+    (600, 'SELECT_DESCRIPTION', 'Sales(id, created_at) 스키마가 있을 때, \n2025-08-01 당일 데이터만 정확히(시분초 포함) 조회하려면?', '3', '1.WHERE DATE(created_at) = ''2025-08-01'';2.WHERE created_at BETWEEN ''2025-08-01'' AND ''2025-08-01 23:59:59'';3.WHERE created_at >= ''2025-08-01'' AND created_at < ''2025-08-02'';4.WHERE created_at LIKE ''2025-08-01%''', 55),
 
-    (601, 'SELECT_DESCRIPTION', 'Items(id, price, qty) 스키마가 있을 때, 합계(total)=price*qty가 1000 초과인 행을 고를 때 올바른 WHERE는?', '2', '1.SELECT id, price*qty AS total FROM Items WHERE total > 1000;;2.SELECT id FROM Items WHERE price*qty > 1000;;3.SELECT id FROM Items WHERE qty > 1000/price AS total;;4.SELECT id, total FROM Items WHERE price*qty > 1000;', 55),
+    (601, 'SELECT_DESCRIPTION', 'Items(id, price, qty) 스키마가 있을 때, \n합계(total)=price*qty가 1000 초과인 행을 고를 때 올바른 WHERE는?', '2', '1.SELECT id, price*qty AS total FROM Items WHERE total > 1000;;2.SELECT id FROM Items WHERE price*qty > 1000;;3.SELECT id FROM Items WHERE qty > 1000/price AS total;;4.SELECT id, total FROM Items WHERE price*qty > 1000;', 55),
 
-    (602, 'FILL_BLANK', 'Employees(id, role) 스키마가 있을 때, ADMIN 또는 MANAGER만 조회하는 WHERE 절에서 빈칸에 알맞는 내용을 작성하라. WHERE role _____ (''ADMIN'', ''MANAGER'')', 'in', '-', 55),
+    (602, 'FILL_BLANK', 'Employees(id, role) 스키마가 있을 때, \nADMIN 또는 MANAGER만 조회하는 WHERE 절에서 빈칸에 알맞는 내용을 작성하라. \nWHERE role _____ (''ADMIN'', ''MANAGER'')', 'in', '-', 55),
 
-    (603, 'SELECT_DESCRIPTION', 'Employees(id, bonus) 스키마가 있을 때, 보너스가 0보다 큰 직원만 찾는 WHERE로 ANSI 표준에 맞는 것은?', '3', '1.WHERE IFNULL(bonus,0) > 0;2.WHERE NVL(bonus,0) > 0;3.WHERE COALESCE(bonus,0) > 0;4.WHERE ISNULL(bonus,0) > 0', 55),
+    (603, 'SELECT_DESCRIPTION', 'Employees(id, bonus) 스키마가 있을 때, \n보너스가 0보다 큰 직원만 찾는 WHERE로 ANSI 표준에 맞는 것은?', '3', '1.WHERE IFNULL(bonus,0) > 0;2.WHERE NVL(bonus,0) > 0;3.WHERE COALESCE(bonus,0) > 0;4.WHERE ISNULL(bonus,0) > 0', 55),
 
-    (604, 'SELECT_DESCRIPTION', 'Users(id, country, status) 스키마가 있을 때, ''활성'' 사용자들의 서로 다른 ''국가'' 목록만 가져오는 올바른 SELECT는?', '2', '1.SELECT country FROM Users WHERE status=''ACTIVE'';;2.SELECT DISTINCT country FROM Users WHERE status=''ACTIVE'';;3.SELECT country FROM Users GROUP BY status=''ACTIVE'';;4.SELECT DISTINCT country FROM Users;', 55);
+    (604, 'SELECT_DESCRIPTION', 'Users(id, country, status) 스키마가 있을 때, \n''활성'' 사용자들의 서로 다른 ''국가'' 목록만 가져오는 올바른 SELECT는?', '2', '1.SELECT country FROM Users WHERE status=''ACTIVE'';;2.SELECT DISTINCT country FROM Users WHERE status=''ACTIVE'';;3.SELECT country FROM Users GROUP BY status=''ACTIVE'';;4.SELECT DISTINCT country FROM Users;', 55);
 
 -- Unit04 - SQL 1-2 (Lesson ID: 56)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
