@@ -1278,21 +1278,21 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (560, 'SELECT_DESCRIPTION', '잘못된 선지를 골라주세요.', '1', '1.WHERE col = NULL은 참인 행을 찾는다.;2.COUNT(col)은 NULL을 제외한다.;3.WHERE col <> 5는 col이 NULL인 행은 잡아내지 않는다.;4.COUNT(DISTINCT col)은 NULL을 제외한다.', 52),
 
-    (561, 'SELECT_DESCRIPTION', 'Product(category_id FK → Category.id)에서 카테고리 삭제 시 상품은 남기되, 소속만 제거하려면?', '3', '1.ON DELETE RESTRICT + category_id NOT NULL;2.ON DELETE CASCADE + category_id NOT NULL;3.ON DELETE SET NULL + category_id NULL 허용;4.ON DELETE NO ACTION + category_id NOT NULL', 52),
+    (561, 'SELECT_DESCRIPTION', 'Product(category_id FK → Category.id)에서 \n카테고리 삭제 시 상품은 남기되, 소속만 제거하려면?', '3', '1.ON DELETE RESTRICT + category_id NOT NULL;2.ON DELETE CASCADE + category_id NOT NULL;3.ON DELETE SET NULL + category_id NULL 허용;4.ON DELETE NO ACTION + category_id NOT NULL', 52),
 
-    (562, 'SELECT_DESCRIPTION', '다음 쿼리가 결과를 전혀 반환하지 않는다. 이유와 올바른 대안은? (Blacklist.user_id에 NULL이 하나라도 있으면 어떤 문제가?) SELECT * FROM Order o WHERE o.user_id NOT IN (SELECT user_id FROM Blacklist);', '2', '1.NOT IN은 NULL과 상관없다;2.NOT EXISTS로 바꾸거나 서브 쿼리에서 WHERE user_id IS NOT NULL을 추가;3.IN으로 바꾸면 된다;4.IS NOT NULL만 쓰면 된다', 52),
+    (562, 'SELECT_DESCRIPTION', '다음 쿼리가 결과를 전혀 반환하지 않는다. 이유와 올바른 대안은? (Blacklist.user_id에 NULL이 하나라도 있으면 어떤 문제가?) \nSELECT * FROM Order o \nWHERE o.user_id NOT IN (SELECT user_id FROM Blacklist);', '2', '1.NOT IN은 NULL과 상관없다;2.NOT EXISTS로 바꾸거나 서브 쿼리에서 WHERE user_id IS NOT NULL을 추가;3.IN으로 바꾸면 된다;4.IS NOT NULL만 쓰면 된다', 52),
 
     (563, 'SELECT_DESCRIPTION', '일반적인 RDBMS에서 UNIQUE(email) 제약의 동작으로 옳은 것은?', '2', '1.email = NULL은 한 행만 허용;2.email = NULL은 여러 행도 허용될 수 있다;3.UNIQUE는 항상 NULL을 금지;4.DB에 따라 UNIQUE가 중복도 허용', 52),
 
     (564, 'SELECT_DESCRIPTION', 'price가 0보다 커야 하고 비어 있으면 안 된다. 가장 적절한 제약 조합은?', '3', '1.CHECK (price > 0);2.price NOT NULL;3.price NOT NULL CHECK (price > 0);4.DEFAULT 0만 지정', 52),
 
-    (565, 'SELECT_DESCRIPTION', 'Subscription(start_date DATE NOT NULL, end_date DATE NULL)에서 "진행중 구독은 end_date가 NULL이고, 종료된 구독은 end_date ≥ start_date여야 한다." 올바른 CHECK는?', '2', '1.CHECK (end_date >= start_date);2.CHECK (end_date IS NULL OR end_date >= start_date);3.CHECK (end_date IS NOT NULL AND end_date >= start_date);4.CHECK (start_date <= end_date OR end_date = '')', 52),
+    (565, 'SELECT_DESCRIPTION', 'Subscription(start_date DATE NOT NULL, end_date DATE NULL)에서 \n"진행중 구독은 end_date가 NULL이고, 종료된 구독은 end_date ≥ start_date여야 한다." 올바른 CHECK는?', '2', '1.CHECK (end_date >= start_date);2.CHECK (end_date IS NULL OR end_date >= start_date);3.CHECK (end_date IS NOT NULL AND end_date >= start_date);4.CHECK (start_date <= end_date OR end_date = '')', 52),
 
-    (566, 'SELECT_DESCRIPTION', '다음 테이블에서 어떤 INSERT가 실패할까? CREATE TABLE T( a INT, b INT, PRIMARY KEY (a,b) );', '4', '1.INSERT INTO T(a,b) VALUES (1,1);2.INSERT INTO T(a,b) VALUES (1,NULL);3.INSERT INTO T(a,b) VALUES (NULL,1);4.2)와 3) 모두', 52),
+    (566, 'SELECT_DESCRIPTION', '다음 테이블에서 어떤 INSERT가 실패할까? \nCREATE TABLE T( a INT, b INT, PRIMARY KEY (a,b) );', '4', '1.INSERT INTO T(a,b) VALUES (1,1);2.INSERT INTO T(a,b) VALUES (1,NULL);3.INSERT INTO T(a,b) VALUES (NULL,1);4.2)와 3) 모두', 52),
 
-    (567, 'SELECT_DESCRIPTION', '다음 정의에서 어떤 문제가 있는가? CREATE TABLE UserProfile( user_id BIGINT NOT NULL, profile_img_url TEXT, FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL );', '2', '1.FK가 PK를 참조하지 않는다;2.ON DELETE SET NULL이지만 user_id가 NOT NULL;3.profile_img_url은 NULL이면 안 된다;4.FOREIGN KEY에는 UNIQUE가 필요', 52),
+    (567, 'SELECT_DESCRIPTION', '다음 정의에서 어떤 문제가 있는가? \nCREATE TABLE UserProfile(\n  user_id BIGINT NOT NULL,\n  profile_img_url TEXT,\n  FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE SET NULL\n);', '2', '1.FK가 PK를 참조하지 않는다;2.ON DELETE SET NULL이지만 user_id가 NOT NULL;3.profile_img_url은 NULL이면 안 된다;4.FOREIGN KEY에는 UNIQUE가 필요', 52),
 
-    (568, 'SELECT_DESCRIPTION', '기본값과 NULL에 관한 설명으로 옳은 것은? CREATE TABLE Log( level INT NOT NULL DEFAULT 1 );', '2', '1.INSERT INTO Log(level) VALUES (NULL);는 DEFAULT가 적용된다;2.INSERT INTO Log DEFAULT VALUES;는 level=1로 들어간다;3.INSERT INTO Log(level) VALUES (2);는 에러;4.DEFAULT는 SELECT시에만 적용', 52);
+    (568, 'SELECT_DESCRIPTION', '기본값과 NULL에 관한 설명으로 옳은 것은? \nCREATE TABLE Log( level INT NOT NULL DEFAULT 1 );', '2', '1.INSERT INTO Log(level) VALUES (NULL);는 DEFAULT가 적용된다;2.INSERT INTO Log DEFAULT VALUES;는 level=1로 들어간다;3.INSERT INTO Log(level) VALUES (2);는 에러;4.DEFAULT는 SELECT시에만 적용', 52);
 
 -- Unit03 - 관계대수 1 (Lesson ID: 53)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
