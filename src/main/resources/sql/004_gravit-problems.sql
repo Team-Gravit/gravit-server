@@ -789,7 +789,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (371, 'SELECT_DESCRIPTION', 'Priority Boost의 주요 목적을 가장 적절히 설명한 것은?', '3', '1.높은 우선순위 프로세스를 더 빨리 끝내기 위해;2.CPU 바운드 작업을 항상 최상위 큐에 두기 위해;3.기아를 방지하고 동적 프로세스 변화를 반영하기 위해;4.모든 프로세스를 무조건 같은 우선순위로 만들기 위해', 35),
 
-    (372, 'FILL_BLANK', ''총 CPU 사용 시간을 기준으로 우선순위 강등'은 MLFQ의 _____ 방지를 위해 수정된 Rule 4 규칙이다.', 'cheat', '-', 35),
+    (372, 'FILL_BLANK', '총 CPU 사용 시간을 기준으로 우선순위 강등은 MLFQ의 _____ 방지를 위해 수정된 Rule 4 규칙이다.', 'cheat', '-', 35),
 
     (373, 'FILL_BLANK', 'Lottery 스케줄링은 각 프로세스에 여러 장의 _____을 주고, 매 타임 슬라이스마다 추첨을 통해 실행할 프로세스를 정한다.', '티켓, ticket', '-', 35),
 
