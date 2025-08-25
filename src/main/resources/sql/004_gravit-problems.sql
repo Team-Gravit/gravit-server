@@ -1486,27 +1486,27 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit05 - SQL 2-3 (Lesson ID: 60)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (653, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블의 id를 중복 없이 합치려면 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '1', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+    (653, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, \n두 테이블의 id를 중복 없이 합치려면 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '1', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
-    (654, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블을 합칠 때 중복 허용 + 빠른 경로를 선택하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '2', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+    (654, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, \n두 테이블을 합칠 때 중복 허용 + 빠른 경로를 선택하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '2', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
-    (655, 'FILL_BLANK', 'Customers(id), Orders(customer_id) 스키마가 있을 때, 주문이 없는 고객 id를 집합 연산으로 구하라(Oracle: MINUS, PostgreSQL: EXCEPT). 빈칸을 채우시오. \nSELECT id FROM Customers \n_____ \nSELECT customer_id FROM Orders;', '4', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+    (655, 'FILL_BLANK', 'Customers(id), Orders(customer_id) 스키마가 있을 때, \n주문이 없는 고객 id를 집합 연산으로 구하라(Oracle: MINUS, PostgreSQL: EXCEPT). 빈칸을 채우시오. \nSELECT id FROM Customers \n_____ \nSELECT customer_id FROM Orders;', '4', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
-    (656, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블에 공통으로 존재하는 id만 구하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+    (656, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, \n두 테이블에 공통으로 존재하는 id만 구하라. 빈칸을 채우시오. \nSELECT id FROM A \n_____ \nSELECT id FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
-    (657, 'SELECT_DESCRIPTION', 'A(id), B(id) 스키마가 있을 때, 집합 연산 결과를 id 오름차순 정렬하려면 ORDER BY는 어디에 둬야 하는가?', '1', '1.마지막 SELECT 뒤 한 번만;2.각 SELECT마다;3.UNION ALL 사이사이;4.MINUS 앞', 60),
+    (657, 'SELECT_DESCRIPTION', 'A(id), B(id) 스키마가 있을 때, \n집합 연산 결과를 id 오름차순 정렬하려면 ORDER BY는 어디에 둬야 하는가?', '1', '1.마지막 SELECT 뒤 한 번만;2.각 SELECT마다;3.UNION ALL 사이사이;4.MINUS 앞', 60),
 
-    (658, 'FILL_BLANK', 'A(id, active), B(id, active) 스키마가 있을 때, active=''Y'' 조건을 집합 전에 밀어 넣어 비용을 줄여라. 빈칸을 채우시오. SELECT id FROM A WHERE active=''Y'' _____ SELECT id FROM B WHERE active=''Y'';', '1', '1.UNION;2.CONCAT;3.INTERSECT;4.MINUS/EXCEPT', 60),
+    (658, 'FILL_BLANK', 'A(id, active), B(id, active) 스키마가 있을 때, \nactive=''Y'' 조건을 집합 전에 밀어 넣어 비용을 줄여라. 빈칸을 채우시오. \nSELECT id FROM A \nWHERE active=''Y'' _____ SELECT id FROM B WHERE active=''Y'';', '1', '1.UNION;2.CONCAT;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
-    (659, 'SELECT_DESCRIPTION', 'T(x 인덱스 존재), 조건: x IN (:a, :b) 스키마가 있을 때, 인덱스 활용 측면에서 유리한 형태는?', '2', '1.SELECT * FROM T WHERE x=:a OR x=:b;2.SELECT * FROM T WHERE x=:a UNION ALL SELECT * FROM T WHERE x=:b;3.SELECT * FROM T WHERE x IN (:a,:b) ORDER BY 1;4.-', 60),
+    (659, 'SELECT_DESCRIPTION', 'T(x 인덱스 존재), 조건: x IN (:a, :b) 스키마가 있을 때, \n인덱스 활용 측면에서 유리한 형태는?', '2', '1.SELECT * FROM T WHERE x=:a OR x=:b;2.SELECT * FROM T WHERE x=:a UNION ALL SELECT * FROM T WHERE x=:b;3.SELECT * FROM T WHERE x IN (:a,:b) ORDER BY 1;4.-', 60),
 
-    (660, 'SELECT_DESCRIPTION', 'A(id), B(id) 스키마가 있을 때, 두 테이블의 중복 포함 합계 건수를 가장 간단히 구하라.', '2', '1.SELECT COUNT(*) FROM (SELECT id FROM A UNION SELECT id FROM B);2.SELECT COUNT(*) FROM (SELECT id FROM A UNION ALL SELECT id FROM B);3.SELECT COUNT(DISTINCT id) FROM (SELECT id FROM A UNION ALL SELECT id FROM B);4.-', 60),
+    (660, 'SELECT_DESCRIPTION', 'A(id), B(id) 스키마가 있을 때, \n두 테이블의 중복 포함 합계 건수를 가장 간단히 구하라.', '2', '1.SELECT COUNT(*) FROM (SELECT id FROM A UNION SELECT id FROM B);2.SELECT COUNT(*) FROM (SELECT id FROM A UNION ALL SELECT id FROM B);3.SELECT COUNT(DISTINCT id) FROM (SELECT id FROM A UNION ALL SELECT id FROM B);4.-', 60),
 
-    (661, 'FILL_BLANK', 'A(a1,a2), B(b1,b2) 스키마가 있을 때, (a1,a2) 교집합을 구하라. 빈칸을 채우시오. SELECT a1, a2 FROM A _____ SELECT b1, b2 FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+    (661, 'FILL_BLANK', 'A(a1,a2), B(b1,b2) 스키마가 있을 때, \n(a1,a2) 교집합을 구하라. 빈칸을 채우시오. \nSELECT a1, a2 FROM A _____ SELECT b1, b2 FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
-    (662, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 두 테이블에서 중복으로 나타나는 id만 골라라(교집합 값 목록). 빈칸을 채우시오. SELECT id FROM A _____ SELECT id FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
+    (662, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, \n두 테이블에서 중복으로 나타나는 id만 골라라(교집합 값 목록). 빈칸을 채우시오. \nSELECT id FROM A _____ SELECT id FROM B;', '3', '1.UNION;2.UNION ALL;3.INTERSECT;4.MINUS/EXCEPT', 60),
 
-    (663, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, 다음 MINUS/EXCEPT를 NOT EXISTS로 바꿀 때 괄호 안을 채우시오. SELECT id FROM A MINUS/EXCEPT SELECT id FROM B; → SELECT a.id FROM A a WHERE NOT EXISTS (SELECT 1 FROM B b WHERE _____ );', '1', '1.b.id = a.id;2.b.id <> a.id;3.a.id IS NULL;4.-', 60),
+    (663, 'FILL_BLANK', 'A(id), B(id) 스키마가 있을 때, \n다음 MINUS/EXCEPT를 NOT EXISTS로 바꿀 때 괄호 안을 채우시오. \nSELECT id FROM A MINUS/EXCEPT SELECT id FROM B; \n→ \nSELECT a.id FROM A a WHERE NOT EXISTS (\n SELECT 1 FROM B b WHERE _____ \n);', '1', '1.b.id = a.id;2.b.id <> a.id;3.a.id IS NULL;4.-', 60),
 
     (664, 'SELECT_DESCRIPTION', '괄호 없이 A UNION B INTERSECT C의 평가 순서는?', '2', '1.(A UNION B) INTERSECT C;2.A UNION (B INTERSECT C);3.(A INTERSECT B) UNION C;4.-', 60);
 
