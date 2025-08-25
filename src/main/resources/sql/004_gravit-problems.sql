@@ -1432,29 +1432,29 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit05 - SQL 2-1 (Lesson ID: 58)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (629, 'SELECT_DESCRIPTION', 'Departments(id, name), Employees(id, name, dept_id NULL 허용) 스키마가 있을 때, "직원이 없어도 모든 부서를 포함해 조회"하려면 어떤 조인이 적절한가?', '2', '1.INNER JOIN;2.LEFT JOIN (Departments → Employees);3.RIGHT JOIN (Employees → Departments);4.NATURAL JOIN', 58),
+    (629, 'SELECT_DESCRIPTION', 'Departments(id, name), Employees(id, name, dept_id NULL 허용) 스키마가 있을 때, \n"직원이 없어도 모든 부서를 포함해 조회"하려면 어떤 조인이 적절한가?', '2', '1.INNER JOIN;2.LEFT JOIN (Departments → Employees);3.RIGHT JOIN (Employees → Departments);4.NATURAL JOIN', 58),
 
-    (630, 'FILL_BLANK', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, "부서가 존재하는 직원만" 조회하는 빈칸을 채우시오. \nSELECT e.* \nFROM Employees e _____ JOIN Departments d \nON d.id = e.dept_id;', '1', '1.INNER;2.LEFT;3.RIGHT;4.FULL OUTER', 58),
+    (630, 'FILL_BLANK', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, \n"부서가 존재하는 직원만" 조회하는 빈칸을 채우시오. \nSELECT e.* \nFROM Employees e _____ JOIN Departments d \nON d.id = e.dept_id;', '1', '1.INNER;2.LEFT;3.RIGHT;4.FULL OUTER', 58),
 
     (631, 'SELECT_DESCRIPTION', 'NATURAL JOIN에 대한 설명으로 가장 정확한 것은?', '1', '1.동일한 이름의 모든 컬럼에 대해 자동으로 동등 조인한다.;2.기본키 컬럼만 자동으로 조인한다.;3.USING(id)와 항상 동일하다.;4.스키마 변경에 강하다.', 58),
 
-    (632, 'FILL_BLANK', 'Employees(id, name, manager_id) 스키마가 있을 때, 직원과 그 매니저 이름을 함께 조회하되, 매니저가 없는 직원도 포함하라. \nSELECT e.name AS emp, m.name AS manager \nFROM Employees e \nLEFT JOIN Employees m \nON _____ ;', '1', '1.e.manager_id = m.id;2.e.id = m.manager_id;3.e.dept_id = m.dept_id;4.e.manager_id <> m.id', 58),
+    (632, 'FILL_BLANK', 'Employees(id, name, manager_id) 스키마가 있을 때, \n직원과 그 매니저 이름을 함께 조회하되, 매니저가 없는 직원도 포함하라. \nSELECT e.name AS emp, m.name AS manager \nFROM Employees e \nLEFT JOIN Employees m \nON _____ ;', '1', '1.e.manager_id = m.id;2.e.id = m.manager_id;3.e.dept_id = m.dept_id;4.e.manager_id <> m.id', 58),
 
-    (633, 'SELECT_DESCRIPTION', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, 다음 RIGHT JOIN을 LEFT JOIN으로 동치 변환한 것은? \nSELECT d.id, e.id \nFROM Employees e \nRIGHT JOIN Departments d \nON d.id = e.dept_id;', '1', '1.Departments d LEFT JOIN Employees e ON e.dept_id = d.id;2.Departments d INNER JOIN Employees e ON e.dept_id = d.id;3.Employees e LEFT JOIN Departments d ON d.id = e.dept_id;4.Employees e FULL OUTER JOIN Departments d ON d.id = e.dept_id', 58),
+    (633, 'SELECT_DESCRIPTION', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, \n다음 RIGHT JOIN을 LEFT JOIN으로 동치 변환한 것은? \nSELECT d.id, e.id \nFROM Employees e \nRIGHT JOIN Departments d \nON d.id = e.dept_id;', '1', '1.Departments d LEFT JOIN Employees e ON e.dept_id = d.id;2.Departments d INNER JOIN Employees e ON e.dept_id = d.id;3.Employees e LEFT JOIN Departments d ON d.id = e.dept_id;4.Employees e FULL OUTER JOIN Departments d ON d.id = e.dept_id', 58),
 
-    (634, 'SELECT_DESCRIPTION', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문 유무와 상관없이 모든 고객과 모든 주문을 한 번에 나열(양쪽 모두 보존)"하려면?', '4', '1.INNER JOIN;2.LEFT JOIN;3.RIGHT JOIN;4.FULL OUTER JOIN', 58),
+    (634, 'SELECT_DESCRIPTION', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, \n"주문 유무와 상관없이 모든 고객과 모든 주문을 한 번에 나열(양쪽 모두 보존)"하려면?', '4', '1.INNER JOIN;2.LEFT JOIN;3.RIGHT JOIN;4.FULL OUTER JOIN', 58),
 
-    (635, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, "주문이 없는 고객"을 의도에 가장 안전하게 구하라. 빈칸을 채우시오. SELECT c.* FROM Customers c WHERE _____ ;', '1', '1.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.o.id IS NULL;3.c.id NOT IN (SELECT customer_id FROM Orders);4.-', 58),
+    (635, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id) 스키마가 있을 때, \n"주문이 없는 고객"을 의도에 가장 안전하게 구하라. 빈칸을 채우시오. \nSELECT c.* FROM Customers c WHERE _____ ;', '1', '1.NOT EXISTS (SELECT 1 FROM Orders o WHERE o.customer_id = c.id);2.o.id IS NULL;3.c.id NOT IN (SELECT customer_id FROM Orders);4.-', 58),
 
-    (636, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id), OrderItems(order_id, product_id) 스키마가 있을 때, "상품 :pid를 주문한 고객만(중복 없이)"을 구하라. 빈칸을 채우시오. SELECT c.* FROM Customers c WHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o JOIN OrderItems oi ON oi.order_id = o.id WHERE o.customer_id = c.id AND oi.product_id = :pid);2.c.id IN (SELECT o.customer_id FROM Orders o JOIN OrderItems oi ON oi.order_id = o.id WHERE oi.product_id = :pid);3.NATURAL JOIN으로 모두 결합 후 WHERE product_id = :pid;4.-', 58),
+    (636, 'FILL_BLANK', 'Customers(id), Orders(id, customer_id), OrderItems(order_id, product_id) 스키마가 있을 때, \n"상품 :pid를 주문한 고객만(중복 없이)"을 구하라. 빈칸을 채우시오. \nSELECT c.* FROM Customers c WHERE _____ ;', '1', '1.EXISTS (SELECT 1 FROM Orders o JOIN OrderItems oi ON oi.order_id = o.id WHERE o.customer_id = c.id AND oi.product_id = :pid);2.c.id IN (SELECT o.customer_id FROM Orders o JOIN OrderItems oi ON oi.order_id = o.id WHERE oi.product_id = :pid);3.NATURAL JOIN으로 모두 결합 후 WHERE product_id = :pid;4.-', 58),
 
-    (637, 'FILL_BLANK', 'Departments(id, active), Employees(id, dept_id, active) 스키마가 있을 때, "활성 부서는 모두 보이고, 활성 직원만 매칭"되도록 빈칸을 채우시오. SELECT d.id, e.id FROM Departments d LEFT JOIN Employees e ON e.dept_id = d.id _____ WHERE d.active = ''Y'';', '3', '1.AND d.active = ''Y'';2.WHERE e.active = ''Y'';3.AND e.active = ''Y'';4.-', 58),
+    (637, 'FILL_BLANK', 'Departments(id, active), Employees(id, dept_id, active) 스키마가 있을 때, \n"활성 부서는 모두 보이고, 활성 직원만 매칭"되도록 빈칸을 채우시오. \nSELECT d.id, e.id \nFROM Departments d LEFT JOIN Employees e ON e.dept_id = d.id _____ \nWHERE d.active = ''Y'';', '3', '1.AND d.active = ''Y'';2.WHERE e.active = ''Y'';3.AND e.active = ''Y'';4.-', 58),
 
-    (638, 'FILL_BLANK', 'Posts(id), Comments(id, post_id), Likes(id, post_id) 스키마가 있을 때, "댓글 ≥1 AND 좋아요 ≥1" 포스트 개수를 중복 없이 구하라. 빈칸을 채우시오. SELECT COUNT(*) FROM Posts p WHERE _____ AND _____ ;', '2', '1.(1) p.id IN (SELECT post_id FROM Comments) (2) p.id IN (SELECT post_id FROM Likes);2.(1) EXISTS (SELECT 1 FROM Comments c WHERE c.post_id = p.id) (2) EXISTS (SELECT 1 FROM Likes l WHERE l.post_id = p.id);3.(1) JOIN Comments (2) JOIN Likes;4.-', 58),
+    (638, 'FILL_BLANK', 'Posts(id), Comments(id, post_id), Likes(id, post_id) 스키마가 있을 때, \n"댓글 ≥1 AND 좋아요 ≥1" 포스트 개수를 중복 없이 구하라. 빈칸을 채우시오. \nSELECT COUNT(*) \nFROM Posts p \nWHERE _____ AND _____ ;', '2', '1.(1) p.id IN (SELECT post_id FROM Comments) (2) p.id IN (SELECT post_id FROM Likes);2.(1) EXISTS (SELECT 1 FROM Comments c WHERE c.post_id = p.id) (2) EXISTS (SELECT 1 FROM Likes l WHERE l.post_id = p.id);3.(1) JOIN Comments (2) JOIN Likes;4.-', 58),
 
-    (639, 'FILL_BLANK', 'Users(id, name), Profiles(user_id, name, photo_url) 스키마가 있을 때, NATURAL JOIN 대신 의도 컬럼만 명시하라. 빈칸을 채우시오. SELECT * FROM Users u JOIN Profiles p ON _____ ;', '1', '1.p.user_id = u.id;2.p.name = u.name;3.USING (id);4.-', 58),
+    (639, 'FILL_BLANK', 'Users(id, name), Profiles(user_id, name, photo_url) 스키마가 있을 때, \nNATURAL JOIN 대신 의도 컬럼만 명시하라. 빈칸을 채우시오. \nSELECT * \nFROM Users u JOIN Profiles p ON _____ ;', '1', '1.p.user_id = u.id;2.p.name = u.name;3.USING (id);4.-', 58),
 
-    (640, 'SELECT_DESCRIPTION', 'Employees(id, name, dept_id) 스키마가 있을 때, 같은 부서의 "동료 페어(본인은 제외)"를 구하는 조인 조건은?', '2', '1.e1.dept_id = e2.dept_id AND e1.id = e2.id;2.e1.dept_id = e2.dept_id AND e1.id <> e2.id;3.e1.dept_id <> e2.dept_id AND e1.id <> e2.id;4.e1.dept_id = e2.id', 58);
+    (640, 'SELECT_DESCRIPTION', 'Employees(id, name, dept_id) 스키마가 있을 때, \n같은 부서의 "동료 페어(본인은 제외)"를 구하는 조인 조건은?', '2', '1.e1.dept_id = e2.dept_id AND e1.id = e2.id;2.e1.dept_id = e2.dept_id AND e1.id <> e2.id;3.e1.dept_id <> e2.dept_id AND e1.id <> e2.id;4.e1.dept_id = e2.id', 58);
 
 -- Unit05 - SQL 2-2 (Lesson ID: 59)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
