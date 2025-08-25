@@ -1182,7 +1182,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (518, 'FILL_BLANK', '스키마를 정의하는 언어는 _____이고, 데이터를 조작하는 언어는 _____이다.', '4', '1.TCL·DCL;2.DML·DDL;3.DCL·DDL;4.DDL·DML', 48),
 
-    (519, 'FILL_BLANK', 'DBMS의 쿼리 처리기에는 파서와 _____가/이 포함되어 있다.', '옵티마이저, optimizer', '-', 48),
+    (519, 'FILL_BLANK', 'DBMS의 쿼리 처리기에는 파서와 _____가/이 포함되어 있다.', '1', '1.옵티마이저;2.버퍼 매니저;3.트랜잭션 관리자;4.스토리지 관리자', 48),
 
     (520, 'FILL_BLANK', '트랜잭션의 ACID에서 C(일관성)는 트랜잭션 전후로 _____이/가 유지됨을 의미한다.', '2', '1.동시 실행 수;2.무결성 제약;3.로그 크기;4.캐시 적중률', 48);
 
