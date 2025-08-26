@@ -2,6 +2,8 @@ package gravit.code.domain.friend.infrastructure;
 
 import gravit.code.domain.friend.dto.response.PageSearchUserResponse;
 import gravit.code.domain.friend.dto.response.SearchUser;
+import gravit.code.domain.friend.infrastructure.sql.FriendsCountQuerySql;
+import gravit.code.domain.friend.infrastructure.sql.FriendsSearchQuerySql;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -43,30 +45,29 @@ public class FriendSearchRepository {
 
         final boolean enableContains = norm.length() >= MIN_CONTAINS_LEN;
 
-        final String filter = buildFilterSql(enableContains);
-        final String selectSql = buildSelectSql(filter, enableContains);
-        final String countSql = buildCountSql(filter);
+        final String selectSql = enableContains
+                ? FriendsSearchQuerySql.SELECT_WITH_CONTAINS
+                : FriendsSearchQuerySql.SELECT_NO_CONTAINS;
+        final String countSql  = enableContains
+                ? FriendsCountQuerySql.COUNT_WITH_CONTAINS
+                : FriendsCountQuerySql.COUNT_NO_CONTAINS;
 
         final MapSqlParameterSource params = buildParams(requesterId, norm, page, size, enableContains);
 
         final long total = queryTotal(countSql, params);
-
         if (total == 0L) {
             log.info("[FriendSearch] no results (q='{}')", norm);
             return PageSearchUserResponse.empty();
         }
 
         List<SearchUser> rows = jdbcTemplate.query(selectSql, params, MAPPER);
-
         return PageSearchUserResponse.of(page, size, total, rows);
     }
 
     private MapSqlParameterSource buildParams(long requesterId, String norm, int page, int size, boolean enableContains) {
-        // --- 파라미터 ---
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("me", requesterId)
                 .addValue("q", norm)
-                .addValue("q_prefix", norm + "%")
                 .addValue("limit", size)
                 .addValue("offset", page * size);
         if (enableContains) {
@@ -75,52 +76,6 @@ public class FriendSearchRepository {
         return params;
     }
 
-    private String buildFilterSql(boolean enableContains) {
-        String filter = """
-            from users u
-            where u.id <> :me
-              and (
-                    u.handle = :q
-                 or u.handle like :q_prefix
-            """;
-        if (enableContains) {
-            filter += "     or u.handle like :q_contains\n";
-        }
-        filter += "     )\n";
-        return filter;
-    }
-
-    private String buildCountSql(String filter) {
-        return "select count(*) " + filter;
-    }
-
-    private String buildSelectSql(String filter, boolean enableContains) {
-        String selectSql = """
-            select
-              u.id as user_id,
-              u.profile_img_number,
-              u.nickname,
-              concat('@', u.handle) as handle,
-              exists(select 1
-                       from friends f
-                      where f.follower_id = :me
-                        and f.followee_id = u.id) as is_following,
-              case
-                when u.handle = :q then 3
-                when u.handle like :q_prefix then 2
-            """;
-        if (enableContains) {
-            selectSql += "    when u.handle like :q_contains then 1\n";
-        }
-        selectSql += """
-                else 0
-              end as w
-            """ + filter + """
-            order by w desc, u.handle asc, u.id asc
-            limit :limit offset :offset
-            """;
-        return selectSql;
-    }
 
     private long queryTotal(String countSql, MapSqlParameterSource params) {
         Long totalBox = jdbcTemplate.queryForObject(countSql, params, Long.class);

@@ -1,4 +1,4 @@
-@auth_token = qwe123
+@auth_token = eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImV4cCI6MTc1NjIwMDMyNSwiaWF0IjoxNzU2MTkzMTI1fQ.8uUl_h3XFpQz4sWZB6YfrgGvzM1qW3bwxYQfzjo0FDM
 
 ### 리그 랭킹 조회 (페이징)
 GET http://localhost:8080/api/v1/rank/leagues/1/page/0

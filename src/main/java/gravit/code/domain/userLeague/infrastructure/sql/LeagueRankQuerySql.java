@@ -4,7 +4,6 @@ public final class LeagueRankQuerySql {
     private LeagueRankQuerySql() {
     }
 
-
     public static final String FIND_RANKING_SQL = """
             WITH r AS MATERIALIZED (
               SELECT ul.user_id,
