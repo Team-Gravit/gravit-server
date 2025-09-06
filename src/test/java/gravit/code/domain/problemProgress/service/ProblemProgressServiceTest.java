@@ -1,8 +1,9 @@
 package gravit.code.domain.problemProgress.service;
 
-import gravit.code.domain.problem.dto.request.ProblemResultRequest;
-import gravit.code.domain.problemProgress.domain.ProblemProgress;
-import gravit.code.domain.problemProgress.domain.ProblemProgressRepository;
+import gravit.code.domain.learning.dto.request.ProblemResultRequest;
+import gravit.code.domain.progress.domain.ProblemProgress;
+import gravit.code.domain.progress.domain.ProblemProgressRepository;
+import gravit.code.domain.progress.service.ProblemProgressService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

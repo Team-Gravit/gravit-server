@@ -1,9 +1,10 @@
 package gravit.code.domain.unitProgress.domain;
 
-import gravit.code.domain.unit.domain.Unit;
-import gravit.code.domain.unit.infrastructure.UnitJpaRepository;
-import gravit.code.domain.unitProgress.dto.response.UnitProgressDetailResponse;
-import gravit.code.domain.unitProgress.infrastructure.UnitProgressJpaRepository;
+import gravit.code.domain.learning.domain.Unit;
+import gravit.code.domain.learning.infrastructure.UnitJpaRepository;
+import gravit.code.domain.progress.domain.UnitProgress;
+import gravit.code.domain.progress.dto.response.UnitProgressDetailResponse;
+import gravit.code.domain.progress.infrastructure.UnitProgressJpaRepository;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
