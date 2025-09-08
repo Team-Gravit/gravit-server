@@ -5,6 +5,7 @@ import gravit.code.domain.recentLearning.service.RecentLearningService;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
+import gravit.code.domain.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserLevelResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
@@ -36,16 +37,20 @@ public class UserService {
     public UserResponse onboarding(Long userId, OnboardingRequest request) {
         User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        if(user.isOnboarded()){
-            throw new RestApiException(CustomErrorCode.ALREADY_ONBOARDING);
-        }
-
         user.onboard(request.nickname(), request.profilePhotoNumber());
-        user.checkOnboarded();
 
         recentLearningService.initRecentLearning(userId);
 
         publisher.publishEvent(new OnboardingUserLeagueEvent(user.getId()));
+
+        return UserResponse.from(user);
+    }
+
+    @Transactional
+    public UserResponse updateUserProfile(Long userId, UserProfileUpdateRequest request){
+        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        user.updateProfile(request.nickname(), request.profilePhotoNumber());
 
         return UserResponse.from(user);
     }
@@ -55,6 +60,8 @@ public class UserService {
         return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }
 
+
+    @Transactional
     public UserLevelResponse updateUserLevelAndXp(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
@@ -64,6 +71,9 @@ public class UserService {
         return UserLevelResponse.create(user.getLevel(), user.getXp());
     }
 
+
+
+    @Transactional(readOnly = true)
     public MainPageUserSummaryResponse getMainPageUserSummary(Long userId){
         return userRepository.findUserMainPageSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
