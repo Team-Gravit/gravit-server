@@ -4,6 +4,7 @@ import gravit.code.domain.recentLearning.service.RecentLearningService;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
+import gravit.code.domain.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
 import gravit.code.global.event.OnboardingUserLeagueEvent;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -164,15 +166,39 @@ class UserServiceTest {
         String testNickname = "kang";
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
-        testUser.checkOnboarded();
+        User testUser = User.create("test@test.com", testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        testUser.onboard("test", 1);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
         // when
         // then
         assertThrows(RestApiException.class, ()-> userService.onboarding(userId, request));
+    }
+
+    @Test
+    void 유저_프로필_업데이트_성공_테스트(){
+        // given
+        Long userId = 1L;
+        String testNickname = "kang";
+        int testProfilePhotoNumber = 1;
+        String testProviderId = "kakao123123";
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        UserProfileUpdateRequest request = new UserProfileUpdateRequest(testNickname, testProfilePhotoNumber);
+
+        // when
+        UserResponse result = userService.updateUserProfile(userId, request);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.providerId()).isEqualTo(testUser.getProviderId());
+            softly.assertThat(result.nickname()).isEqualTo(testNickname);
+            softly.assertThat(result.profileImgNumber()).isEqualTo(testProfilePhotoNumber);
+        });
     }
 
     @Test
