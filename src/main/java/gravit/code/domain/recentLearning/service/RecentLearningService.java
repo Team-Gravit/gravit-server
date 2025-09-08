@@ -1,6 +1,6 @@
 package gravit.code.domain.recentLearning.service;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
+import gravit.code.domain.progress.dto.response.ChapterSummaryResponse;
 import gravit.code.domain.recentLearning.domain.RecentLearning;
 import gravit.code.domain.recentLearning.domain.RecentLearningRepository;
 import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryResponse;

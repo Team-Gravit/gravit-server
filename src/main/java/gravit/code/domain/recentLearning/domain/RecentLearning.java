@@ -1,6 +1,6 @@
 package gravit.code.domain.recentLearning.domain;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
+import gravit.code.domain.progress.dto.response.ChapterSummaryResponse;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
