@@ -1,7 +1,7 @@
 package gravit.code.domain.recentLearning.service;
 
-import gravit.code.domain.chapterProgress.dto.response.ChapterSummaryResponse;
-import gravit.code.domain.chapterProgress.service.ChapterProgressService;
+import gravit.code.domain.progress.dto.response.ChapterSummaryResponse;
+import gravit.code.domain.progress.service.ChapterProgressService;
 import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
