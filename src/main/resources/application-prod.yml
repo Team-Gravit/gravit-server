@@ -9,27 +9,22 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
 
-    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
         show_sql: true
     open-in-view: false
 
-  sql:
-    init:
-      mode: always
-      data-locations:
-        - classpath:sql/001_gravit-chapters.sql
-        - classpath:sql/002_gravit-units.sql
-        - classpath:sql/003_gravit-lessons.sql
-        - classpath:sql/004_gravit-problems.sql
-        - classpath:sql/005_gravit-leagues.sql
-        - classpath:sql/006_gravit-user-leagues.sql
-      continue-on-error: false
-      encoding: UTF-8
+  flyway:
+    enabled: true
+    user: ${POSTGRESQL_USERNAME}
+    password: ${POSTGRESQL_PASSWORD}
+    baseline-on-migrate: true
+    baseline-version: 1
+    locations:
+      - classpath:db/migration
 
   security:
     oauth2:
