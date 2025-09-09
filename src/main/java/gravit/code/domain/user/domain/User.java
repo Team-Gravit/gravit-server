@@ -71,19 +71,38 @@ public class User {
                 .build();
     }
 
-    public void checkOnboarded(){
+    public void onboard(String nickname, int profileImgNumber){
+        validateOnboard(nickname, profileImgNumber);
+        this.nickname = nickname;
+        this.profileImgNumber = profileImgNumber;
+        completeOnboarding();
+    }
+
+    public void completeOnboarding(){
         this.isOnboarded = true;
     }
 
-    public void onboard(String nickname, int profileImgNumber){
-        validateOnboard(nickname, profileImgNumber);
+    public void updateProfile(String nickname, int profileImgNumber){
+        validateUpdateProfile(nickname, profileImgNumber);
         this.nickname = nickname;
         this.profileImgNumber = profileImgNumber;
     }
 
     private void validateOnboard(String nickname, int profileImgNumber) {
+        validateIsOnboarded();
         validateNickname(nickname);
         validateProfileImgNum(profileImgNumber);
+    }
+
+    private void validateUpdateProfile(String nickname, int profileImgNumber) {
+        validateNickname(nickname);
+        validateProfileImgNum(profileImgNumber);
+    }
+
+    private void validateIsOnboarded(){
+        if(this.isOnboarded()){
+            throw new RestApiException(CustomErrorCode.ALREADY_ONBOARDING);
+        }
     }
 
     private void validateProfileImgNum(int profileImgNumber) {

@@ -3,6 +3,7 @@ package gravit.code.domain.user.controller;
 import gravit.code.auth.oauth.LoginUser;
 import gravit.code.domain.user.controller.docs.UserControllerDocs;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
+import gravit.code.domain.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.domain.user.dto.response.MyPageResponse;
 import gravit.code.domain.user.dto.response.UserResponse;
 import gravit.code.domain.user.service.UserService;
@@ -25,14 +26,21 @@ public class UserController implements UserControllerDocs {
         return ResponseEntity.ok(userResponse);
     }
 
-    @PatchMapping("/onboarding")
+    @PostMapping("/me/onboarding")
     public ResponseEntity<UserResponse> onboardUser(@AuthenticationPrincipal LoginUser loginUser,
                                                     @Valid @RequestBody OnboardingRequest request) {
         UserResponse userResponse = userService.onboarding(loginUser.getId(), request);
         return ResponseEntity.ok(userResponse);
     }
 
-    @GetMapping("/my-page")
+    @PatchMapping("/me")
+    public ResponseEntity<UserResponse> updateProfile(@AuthenticationPrincipal LoginUser loginUser,
+                                                      @Valid @RequestBody UserProfileUpdateRequest request) {
+        UserResponse userResponse = userService.updateUserProfile(loginUser.getId(), request);
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/me/my-page")
     public ResponseEntity<MyPageResponse> getMyPage(@AuthenticationPrincipal LoginUser loginUser) {
         MyPageResponse myPageResponse = userService.getMyPage(loginUser.getId());
         return ResponseEntity.ok(myPageResponse);

@@ -7,16 +7,15 @@ import gravit.code.domain.friend.domain.FriendRepository;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.domain.UserRepository;
 import gravit.code.domain.user.dto.request.OnboardingRequest;
+import gravit.code.domain.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.domain.user.service.UserService;
 import gravit.code.domain.userLeague.service.UserLeagueService;
-import jakarta.persistence.EntityListeners;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,8 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -105,7 +103,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(patch("/api/v1/users/onboarding")
+        mockMvc.perform(post("/api/v1/users/me/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isOk())
@@ -131,7 +129,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(patch("/api/v1/users/onboarding")
+        mockMvc.perform(post("/api/v1/users/me/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -156,7 +154,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(patch("/api/v1/users/onboarding")
+        mockMvc.perform(post("/api/v1/users/me/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -181,7 +179,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(patch("/api/v1/users/onboarding")
+        mockMvc.perform(post("/api/v1/users/me/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -206,7 +204,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(patch("/api/v1/users/onboarding")
+        mockMvc.perform(post("/api/v1/users/me/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -214,6 +212,36 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.error").value("GLOBAL_4001"))
                 .andExpect(jsonPath("$.message[0]").value("[ profilePhotoNumber ][ 프로필 사진 번호는 1 이상이어야 합니다. ][ " + testProfileImgNumber + " ]"));
     }
+
+    @Test
+    @WithMockLoginUser
+    void 유저_프로필_업데이트를_진행합니다() throws Exception {
+        // given
+        Long userId = 1L;
+        int testProfileImgNumber = 1;
+        String testEmail = "test@test.com";
+        String testNickname = "kang";
+        String testProviderId = "kakao123123";
+        String testHandle = "@qwe123";
+
+        UserProfileUpdateRequest userProfileUpdateRequest = new UserProfileUpdateRequest(testNickname, testProfileImgNumber);
+
+
+        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
+        userRepository.save(user);
+
+        // when
+        // then
+        mockMvc.perform(patch("/api/v1/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userProfileUpdateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.profileImgNumber").value(testProfileImgNumber))
+                .andExpect(jsonPath("$.nickname").value(testNickname))
+                .andExpect(jsonPath("$.providerId").value(testProviderId));
+    }
+
 
     @Test
     @WithMockLoginUser
@@ -235,7 +263,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(get("/api/v1/users/my-page"))
+        mockMvc.perform(get("/api/v1/users/me/my-page"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value(testNickname))
                 .andExpect(jsonPath("$.profileImgNumber").value(testProfileImgNumber))
