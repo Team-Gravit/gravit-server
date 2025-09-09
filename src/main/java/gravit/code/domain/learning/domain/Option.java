@@ -15,31 +15,31 @@ public class Option {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "text", nullable = false)
+    private String content;
+
     @Column(columnDefinition = "text",  nullable = false)
     private String explanation;
 
     @Column(nullable = false)
     private Boolean isAnswer;
 
-    @Column(columnDefinition = "smallint", nullable = false)
-    private Integer order;
-
     @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
     private Long problemId;
 
     @Builder
-    private Option(String explanation, Boolean isAnswer, Integer order, Long problemId) {
+    private Option(String content, String explanation, Boolean isAnswer, Long problemId) {
+        this.content = content;
         this.explanation = explanation;
         this.isAnswer = isAnswer;
-        this.order = order;
         this.problemId = problemId;
     }
 
-    public static Option create(String explanation, Boolean isAnswer, Integer order, Long problemId) {
+    public static Option create(String content, String explanation, Boolean isAnswer, Long problemId) {
         return Option.builder()
+                .content(content)
                 .explanation(explanation)
                 .isAnswer(isAnswer)
-                .order(order)
                 .problemId(problemId)
                 .build();
     }

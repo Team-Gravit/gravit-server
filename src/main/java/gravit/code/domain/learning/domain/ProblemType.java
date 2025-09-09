@@ -11,8 +11,8 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum ProblemType {
 
-    SUBJECTIVE("subjective"),
-    OBJECTIVE("objective");
+    SUBJECTIVE("SUBJECTIVE"),
+    OBJECTIVE("OBJECTIVE");
 
     @JsonValue
     private final String type;
