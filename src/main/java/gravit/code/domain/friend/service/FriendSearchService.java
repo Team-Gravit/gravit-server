@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 public class FriendSearchService {
     private final FriendSearchRepository friendSearchRepository;
 
-    public PageSearchUserResponse searchUsersForFollowing(Long requesterId, String handleQuery, int page){
-        int p = Math.max(0, page);
-        log.info("p : {} ", p);
-        return friendSearchRepository.searchByHandle(requesterId, handleQuery, p);
+    public PageSearchUserResponse searchUsersForFollowing(Long requesterId, String queryText, int page){
+        int safePage = Math.max(0, page);
+        return friendSearchRepository.searchUsersByQueryText(requesterId, queryText, safePage);
     }
 }
