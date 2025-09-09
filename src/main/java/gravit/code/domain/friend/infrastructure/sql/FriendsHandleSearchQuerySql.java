@@ -1,13 +1,13 @@
 package gravit.code.domain.friend.infrastructure.sql;
 
-public final class FriendsSearchQuerySql {
-    private FriendsSearchQuerySql() {
+public final class FriendsHandleSearchQuerySql {
+    private FriendsHandleSearchQuerySql() {
     }
 
     // --- Search: contains 포함 버전 ---
     public static final String SELECT_WITH_CONTAINS = """
             WITH p AS (
-              SELECT :me::bigint AS me, :q::text AS q, :limit::int AS lim, :offset::int AS off
+              SELECT :me::bigint AS me, :q::text AS q, :q_prefix::text AS q_prefix, :q_contains::text AS q_contains, :limit::int AS lim, :offset::int AS off
             ),
             exact AS MATERIALIZED (
               SELECT u.* FROM p
@@ -25,8 +25,7 @@ public final class FriendsSearchQuerySql {
                 SELECT id, profile_img_number, nickname, handle
                 FROM users
                 WHERE id <> p.me
-                  AND handle >= p.q
-                  AND handle <  p.q || '{'
+                  AND handle LIKE p.q_prefix
                   AND handle <> p.q
                 ORDER BY handle, id
                 LIMIT p.lim + p.off
@@ -44,7 +43,6 @@ public final class FriendsSearchQuerySql {
             need_contains AS (
               SELECT GREATEST(0, (SELECT lim+off FROM p) - (SELECT c FROM cnt_exact) - (SELECT c FROM cnt_prefix)) AS need
             ),
-            -- '%q%' 포함: id만 먼저 뽑고 → PK 조인
             contains_ids AS MATERIALIZED (
               SELECT u.id
               FROM p
@@ -52,9 +50,9 @@ public final class FriendsSearchQuerySql {
                 SELECT id
                 FROM users
                 WHERE id <> p.me
-                  AND handle LIKE :q_contains
+                  AND handle LIKE p.q_contains
                   AND handle <> p.q
-                  AND handle NOT LIKE p.q || '%%'
+                  AND handle NOT LIKE p.q_prefix
                 LIMIT GREATEST(1, (SELECT need FROM need_contains)) * 3
               ) u
             ),
@@ -88,7 +86,7 @@ public final class FriendsSearchQuerySql {
     // --- Search: contains 없는 버전 ---
     public static final String SELECT_NO_CONTAINS = """
             WITH p AS (
-              SELECT :me::bigint AS me, :q::text AS q, :limit::int AS lim, :offset::int AS off
+              SELECT :me::bigint AS me, :q::text AS q, :q_prefix::text AS q_prefix, :limit::int AS lim, :offset::int AS off
             ),
             exact AS MATERIALIZED (
               SELECT u.* FROM p
@@ -106,8 +104,7 @@ public final class FriendsSearchQuerySql {
                 SELECT id, profile_img_number, nickname, handle
                 FROM users
                 WHERE id <> p.me
-                  AND handle >= p.q
-                  AND handle <  p.q || '{'
+                  AND handle LIKE p.q_prefix
                   AND handle <> p.q
                 ORDER BY handle, id
                 LIMIT p.lim + p.off
