@@ -63,6 +63,7 @@ public enum CustomErrorCode implements ErrorCode {
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),
     UNABLE_FOLLOWING_YOURSELF(HttpStatus.BAD_REQUEST,"FRIEND_4001", "자기 자신에게 팔로잉은 불가능합니다"),
     FRIEND_CONFLICT(HttpStatus.CONFLICT, "FRIEND_4091","이미 팔로잉을 한 유저입니다."),
+    FRIEND_QUERY_STRATEGY_TYPE_INVALID(HttpStatus.BAD_REQUEST, "FRIEND_4002", "친구 조회에 유효한 전략 타입이 없습니다."),
 
     // LEAGUE
     LEAGUE_NOT_FOUND(HttpStatus.NOT_FOUND, "LEAGUE_4041", "리그 조회에 실패하였습니다."),

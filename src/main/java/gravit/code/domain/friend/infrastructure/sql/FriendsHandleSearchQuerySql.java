@@ -1,13 +1,19 @@
 package gravit.code.domain.friend.infrastructure.sql;
 
-public final class FriendsHandleSearchQuerySql {
-    private FriendsHandleSearchQuerySql() {
-    }
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class FriendsHandleSearchQuerySql {
 
     // --- Search: contains 포함 버전 ---
-    public static final String SELECT_WITH_CONTAINS = """
+    public static final String SELECT_USER_WITH_CONTAINS_BY_HANDLE = """
             WITH p AS (
-              SELECT :me::bigint AS me, :q::text AS q, :q_prefix::text AS q_prefix, :q_contains::text AS q_contains, :limit::int AS lim, :offset::int AS off
+              SELECT :me::bigint AS me,
+              :q::text AS q,
+              :q_prefix::text AS q_prefix,
+              :q_contains::text AS q_contains,
+              :limit::int AS lim,
+              :offset::int AS off
             ),
             exact AS MATERIALIZED (
               SELECT u.* FROM p
@@ -84,9 +90,13 @@ public final class FriendsHandleSearchQuerySql {
             """;
 
     // --- Search: contains 없는 버전 ---
-    public static final String SELECT_NO_CONTAINS = """
+    public static final String SELECT_USER_NO_CONTAINS_BY_HANDLE = """
             WITH p AS (
-              SELECT :me::bigint AS me, :q::text AS q, :q_prefix::text AS q_prefix, :limit::int AS lim, :offset::int AS off
+              SELECT :me::bigint AS me,
+              :q::text AS q,
+              :q_prefix::text AS q_prefix,
+              :limit::int AS lim,
+              :offset::int AS off
             ),
             exact AS MATERIALIZED (
               SELECT u.* FROM p
