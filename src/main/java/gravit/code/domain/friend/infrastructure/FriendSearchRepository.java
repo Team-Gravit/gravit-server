@@ -2,8 +2,8 @@ package gravit.code.domain.friend.infrastructure;
 
 import gravit.code.domain.friend.dto.response.PageSearchUserResponse;
 import gravit.code.domain.friend.dto.response.SearchUser;
-import gravit.code.domain.friend.infrastructure.sql.FriendsCountQuerySql;
-import gravit.code.domain.friend.infrastructure.sql.FriendsSearchQuerySql;
+import gravit.code.domain.friend.infrastructure.sql.FriendsHandleCountQuerySql;
+import gravit.code.domain.friend.infrastructure.sql.FriendsHandleSearchQuerySql;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -46,11 +46,11 @@ public class FriendSearchRepository {
         final boolean enableContains = norm.length() >= MIN_CONTAINS_LEN;
 
         final String selectSql = enableContains
-                ? FriendsSearchQuerySql.SELECT_WITH_CONTAINS
-                : FriendsSearchQuerySql.SELECT_NO_CONTAINS;
+                ? FriendsHandleSearchQuerySql.SELECT_WITH_CONTAINS
+                : FriendsHandleSearchQuerySql.SELECT_NO_CONTAINS;
         final String countSql  = enableContains
-                ? FriendsCountQuerySql.COUNT_WITH_CONTAINS
-                : FriendsCountQuerySql.COUNT_NO_CONTAINS;
+                ? FriendsHandleCountQuerySql.COUNT_WITH_CONTAINS
+                : FriendsHandleCountQuerySql.COUNT_NO_CONTAINS;
 
         final MapSqlParameterSource params = buildParams(requesterId, norm, page, size, enableContains);
 
@@ -68,6 +68,7 @@ public class FriendSearchRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("me", requesterId)
                 .addValue("q", norm)
+                .addValue("q_prefix", norm + "%")
                 .addValue("limit", size)
                 .addValue("offset", page * size);
         if (enableContains) {
