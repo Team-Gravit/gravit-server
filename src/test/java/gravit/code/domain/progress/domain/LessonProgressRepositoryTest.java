@@ -1,10 +1,9 @@
-package gravit.code.domain.lessonProgress.domain;
+package gravit.code.domain.progress.domain;
 
 import gravit.code.domain.learning.domain.Lesson;
 import gravit.code.domain.learning.infrastructure.LessonJpaRepository;
 import gravit.code.domain.progress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.domain.progress.infrastructure.LessonProgressJpaRepository;
-import gravit.code.domain.progress.domain.LessonProgress;
 import gravit.code.domain.user.domain.User;
 import gravit.code.domain.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;

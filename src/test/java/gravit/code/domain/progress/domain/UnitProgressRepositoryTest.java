@@ -1,8 +1,7 @@
-package gravit.code.domain.unitProgress.domain;
+package gravit.code.domain.progress.domain;
 
 import gravit.code.domain.learning.domain.Unit;
 import gravit.code.domain.learning.infrastructure.UnitJpaRepository;
-import gravit.code.domain.progress.domain.UnitProgress;
 import gravit.code.domain.progress.dto.response.UnitProgressDetailResponse;
 import gravit.code.domain.progress.infrastructure.UnitProgressJpaRepository;
 import gravit.code.domain.user.domain.User;

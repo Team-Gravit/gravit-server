@@ -1,9 +1,8 @@
-package gravit.code.domain.problem.service;
+package gravit.code.domain.learning.service;
 
 import gravit.code.domain.learning.domain.ProblemRepository;
 import gravit.code.domain.learning.domain.ProblemType;
 import gravit.code.domain.learning.dto.response.ProblemResponse;
-import gravit.code.domain.learning.service.ProblemService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;

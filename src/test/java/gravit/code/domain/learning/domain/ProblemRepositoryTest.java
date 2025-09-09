@@ -1,7 +1,5 @@
-package gravit.code.domain.problem.domain;
+package gravit.code.domain.learning.domain;
 
-import gravit.code.domain.learning.domain.Problem;
-import gravit.code.domain.learning.domain.ProblemType;
 import gravit.code.domain.learning.dto.response.ProblemResponse;
 import gravit.code.domain.learning.infrastructure.ProblemJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
