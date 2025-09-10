@@ -254,9 +254,9 @@ class LearningControllerTest {
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
                     .andExpect(jsonPath("$.problems[0].problemId").value(1L))
-                    .andExpect(jsonPath("$.problems[0].problemType").value("FILL_BLANK"))
+                    .andExpect(jsonPath("$.problems[0].problemType").value("SUBJECTIVE"))
                     .andExpect(jsonPath("$.problems[0].question").value("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다."))
-                    .andExpect(jsonPath("$.problems[0].options").value("-"))
+                    .andExpect(jsonPath("$.problems[0].content").value("-"))
                     .andExpect(jsonPath("$.problems[0].answer").value("LIFO"))
                     .andExpect(jsonPath("$.totalProblems").value(8));
         }
