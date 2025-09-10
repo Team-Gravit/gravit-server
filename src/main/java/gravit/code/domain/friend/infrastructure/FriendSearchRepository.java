@@ -1,9 +1,9 @@
 package gravit.code.domain.friend.infrastructure;
 
+import gravit.code.domain.friend.dto.SearchPlan;
+import gravit.code.domain.friend.dto.SearchUser;
 import gravit.code.domain.friend.dto.response.PageSearchUserResponse;
-import gravit.code.domain.friend.dto.response.SearchUser;
-import gravit.code.domain.friend.infrastructure.sql.FriendsCountQuerySql;
-import gravit.code.domain.friend.infrastructure.sql.FriendsSearchQuerySql;
+import gravit.code.domain.friend.infrastructure.strategy.FriendsSearchFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,10 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.text.Normalizer;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Repository
@@ -22,9 +19,10 @@ import java.util.regex.Pattern;
 public class FriendSearchRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final FriendsSearchFactory searchFactory;
+
     private static final int PAGE_SIZE = 10;
-    private static final int MIN_CONTAINS_LEN = 2;
-    private static final Pattern NON_ALLOWED = Pattern.compile("[^a-z0-9]");
+
     private static final RowMapper<SearchUser> MAPPER = (rs, i) ->
             new SearchUser(
                     rs.getLong("user_id"),
@@ -34,66 +32,64 @@ public class FriendSearchRepository {
                     rs.getBoolean("is_following")
             );
 
-    public PageSearchUserResponse searchByHandle(long requesterId, String handleQuery, int page) {
-        final int size = PAGE_SIZE;
+    public PageSearchUserResponse searchUsersByQueryText(long requesterId, String queryText, int page) {
 
-        final String norm = normalize(handleQuery);
-        if (norm.isBlank()) {
-            log.info("검색할 handle 이 비어있습니다 : {}", norm);
+        // 1. nickname, handle 에 맞는 쿼리 가져오기
+        SearchPlan plan = searchFactory.buildPlan(requesterId, queryText, page, PAGE_SIZE);
+        boolean isEmpty = plan.isEmpty();
+
+        // 정규화된 queryText 가 유효한 길이가 아닐때
+        if(isEmpty){
             return PageSearchUserResponse.empty();
         }
 
-        final boolean enableContains = norm.length() >= MIN_CONTAINS_LEN;
+        String cleanText = plan.cleanText();
+        boolean isQueryNeedContains = plan.isQueryNeedContains();
+        String selectSql = plan.selectSql();
+        String countSql = plan.countSql();
 
-        final String selectSql = enableContains
-                ? FriendsSearchQuerySql.SELECT_WITH_CONTAINS
-                : FriendsSearchQuerySql.SELECT_NO_CONTAINS;
-        final String countSql  = enableContains
-                ? FriendsCountQuerySql.COUNT_WITH_CONTAINS
-                : FriendsCountQuerySql.COUNT_NO_CONTAINS;
+        log.info("selectSql: {}", selectSql);
+        log.info("countSql: {}", countSql);
 
-        final MapSqlParameterSource params = buildParams(requesterId, norm, page, size, enableContains);
+        // 2. 매개변수 만들기
+        final MapSqlParameterSource params = buildParams(requesterId, cleanText, page, isQueryNeedContains);
 
+        // 3. 총 카운트 수 구하기(페이징)
         final long total = queryTotal(countSql, params);
-        if (total == 0L) {
-            log.info("[FriendSearch] no results (q='{}')", norm);
-            return PageSearchUserResponse.empty();
-        }
 
+        // 4. 총 카운트 수가 0이면 조회된 결과가 없으니 빈값 리턴
+        if (isQueryCountResultZero(total, cleanText)) return PageSearchUserResponse.empty();
+
+        // 5. 10명 페이징 조회
         List<SearchUser> rows = jdbcTemplate.query(selectSql, params, MAPPER);
-        return PageSearchUserResponse.of(page, size, total, rows);
+
+        return PageSearchUserResponse.of(page, PAGE_SIZE, total, rows);
     }
 
-    private MapSqlParameterSource buildParams(long requesterId, String norm, int page, int size, boolean enableContains) {
+    private static boolean isQueryCountResultZero(long total, String cleanText) {
+        if (total == 0L) {
+            log.info("[FriendSearch] no results (q='{}')", cleanText);
+            return true;
+        }
+        return false;
+    }
+
+    private MapSqlParameterSource buildParams(long requesterId, String cleanText, int page, boolean enableContains) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("me", requesterId)
-                .addValue("q", norm)
-                .addValue("limit", size)
-                .addValue("offset", page * size);
+                .addValue("q", cleanText)
+                .addValue("q_prefix", cleanText + "%")
+                .addValue("limit", PAGE_SIZE)
+                .addValue("offset", page * PAGE_SIZE);
         if (enableContains) {
-            params.addValue("q_contains", "%" + norm + "%");
+            params.addValue("q_contains", "%" + cleanText + "%");
         }
         return params;
     }
-
 
     private long queryTotal(String countSql, MapSqlParameterSource params) {
         Long totalBox = jdbcTemplate.queryForObject(countSql, params, Long.class);
         return (totalBox != null) ? totalBox : 0L;
     }
 
-    // 입력 정규화: 앞의 '@' 제거 + trim + 소문자
-    private static String normalize(String raw) {
-        if (raw == null || raw.isBlank()) return "";
-        String q = Normalizer.normalize(raw, Normalizer.Form.NFKC).strip(); //유니코드 정규화
-
-        int i = 0;
-        while(i < q.length() && q.charAt(i) == '@') i++;
-        if(i > 0) q = q.substring(i);
-
-        q = q.toLowerCase(Locale.ROOT);
-        q = NON_ALLOWED.matcher(q).replaceAll(""); // 알파벳, 숫자 빼고 전부 제거
-
-        return q;
-    }
 }

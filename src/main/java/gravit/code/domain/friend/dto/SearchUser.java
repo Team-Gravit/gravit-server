@@ -1,4 +1,4 @@
-package gravit.code.domain.friend.dto.response;
+package gravit.code.domain.friend.dto;
 
 public record SearchUser(
         Long userId,
