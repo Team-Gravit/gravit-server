@@ -30,7 +30,7 @@ public class ProblemService {
         if(problems.isEmpty())
             throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
 
-        // 선지 조회, 객관식 문제에 대해서만
+        // 선지 조회, 객관식 문제에 대해서만 선지를 조회
         Map<Long, List<OptionResponse>> optionResponseMap = optionRepository
                 .findAllByProblemIdInIds(problems.stream()
                         .filter(problem -> problem.getProblemType().equals(ProblemType.OBJECTIVE))
@@ -38,6 +38,9 @@ public class ProblemService {
                 )
                 .stream()
                 .collect(Collectors.groupingBy(OptionResponse::problemId));
+
+        if(optionResponseMap.isEmpty())
+            throw new RestApiException(CustomErrorCode.OPTION_NOT_FOUND);
 
         // 문제 + 선지 조합해서 반환
         return problems.stream()
