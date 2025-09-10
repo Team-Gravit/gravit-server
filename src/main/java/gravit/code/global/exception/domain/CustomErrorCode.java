@@ -18,6 +18,7 @@ public enum CustomErrorCode implements ErrorCode {
     NICKNAME_LENGTH_INVALID(HttpStatus.BAD_REQUEST,"USER_4003", "유효하지 않은 닉네임 길이 입니다."),
     NICKNAME_PATTERN_INVALID(HttpStatus.BAD_REQUEST,"USER_4004", "유효하지 않은 닉네임 패턴 입니다."),
     PROFILE_IMG_NUM_INVALID(HttpStatus.BAD_REQUEST,"USER_4005","유효하지 않은 프로필 이미지 번호입니다."),
+    USER_STATUS_NOT_VALID(HttpStatus.BAD_REQUEST, "USER_4006", "유저 삭제하기 위한 상태가 유효하지 않습니다."),
 
     // Auth
     PROVIDER_INVALID(HttpStatus.BAD_REQUEST, "AUTH_4001","유효하지 않은 OAuth 제공자 이름입니다."),

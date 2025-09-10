@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at IS NULL") // 기본은 활성만
+@SQLDelete(sql = "UPDATE users SET deleted_at = NOW(), status = 'DELETED' WHERE id = ?")
 public class User {
 
     @Id
@@ -41,11 +45,18 @@ public class User {
     @Column(name = "created_at",  nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Column(name = "profile_img_number", nullable = false)
     private int profileImgNumber;
 
     @Column(name = "is_onboarded")
     private boolean isOnboarded;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private UserStatus status;
 
     @Builder
     private User(String email, String providerId, String nickname, String handle, int profileImgNumber, LocalDateTime createdAt) {
@@ -57,7 +68,9 @@ public class User {
         this.level = 1;
         this.xp = 0;
         this.createdAt = createdAt;
+        this.deletedAt = null;
         this.isOnboarded = false;
+        this.status = UserStatus.ACTIVE;
     }
 
     public static User create(String email, String providerId, String nickname, String handle, int profileImgNumber, LocalDateTime createdAt) {
@@ -86,6 +99,13 @@ public class User {
         validateUpdateProfile(nickname, profileImgNumber);
         this.nickname = nickname;
         this.profileImgNumber = profileImgNumber;
+    }
+
+    public void requestDelete(){
+        if(!this.status.equals(UserStatus.ACTIVE)){
+            throw new RestApiException(CustomErrorCode.USER_STATUS_NOT_VALID);
+        }
+        this.status = UserStatus.INACTIVE;
     }
 
     private void validateOnboard(String nickname, int profileImgNumber) {

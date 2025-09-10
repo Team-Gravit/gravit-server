@@ -60,7 +60,6 @@ public class UserService {
         return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }
 
-
     @Transactional
     public UserLevelResponse updateUserLevelAndXp(Long userId){
         User user = userRepository.findById(userId)
@@ -71,11 +70,16 @@ public class UserService {
         return UserLevelResponse.create(user.getLevel(), user.getXp());
     }
 
-
-
     @Transactional(readOnly = true)
     public MainPageUserSummaryResponse getMainPageUserSummary(Long userId){
         return userRepository.findUserMainPageSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional
+    public void deleteUser(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        user.requestDelete();
     }
 }
