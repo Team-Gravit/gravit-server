@@ -1,4 +1,4 @@
-package gravit.code.domain.friend.infrastructure.sql;
+package gravit.code.domain.friend.infrastructure.sql.select;
 
 import lombok.experimental.UtilityClass;
 

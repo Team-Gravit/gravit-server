@@ -2,12 +2,11 @@ package gravit.code.domain.userLeague.service;
 
 import gravit.code.domain.userLeague.dto.response.LeagueRankRow;
 import gravit.code.domain.userLeague.infrastructure.UserLeagueRankQueryRepository;
+import gravit.code.global.dto.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,13 +16,15 @@ public class UserLeagueRankService {
     private final UserLeagueRankQueryRepository rankQueryRepository;
 
     @Transactional(readOnly = true)
-    public List<LeagueRankRow> getLeagueRanks(Long leagueId, int page){
-        return rankQueryRepository.findLeagueRanks(leagueId, page);
+    public SliceResponse<LeagueRankRow> getLeagueRanks(Long leagueId, int page){
+        int safePage = Math.max(0, page);
+        return rankQueryRepository.findLeagueRanks(leagueId, safePage);
     }
 
     @Transactional(readOnly = true)
-    public List<LeagueRankRow> getUserLeagueRanks(Long userId, int page){
-        return rankQueryRepository.findUserLeagueRanks(userId, page);
+    public SliceResponse<LeagueRankRow> getUserLeagueRanks(Long userId, int page){
+        int safePage = Math.max(0, page);
+        return rankQueryRepository.findUserLeagueRanks(userId, safePage);
     }
 
 }

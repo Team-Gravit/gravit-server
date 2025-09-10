@@ -2,6 +2,7 @@ package gravit.code.domain.userLeague.infrastructure;
 
 
 import gravit.code.domain.userLeague.dto.response.LeagueRankRow;
+import gravit.code.global.dto.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,16 +20,17 @@ public class UserLeagueRankQueryRepository {
 
     private static final int PAGE_SIZE = 10;
 
-    public List<LeagueRankRow> findLeagueRanks(Long leagueId, int page) {
-        int offset = Math.max(page, 0) * PAGE_SIZE;
+    public SliceResponse<LeagueRankRow> findLeagueRanks(Long leagueId, int safePage) {
+        int pagePlusOneForNextPage = PAGE_SIZE + 1;
+        int offset = safePage * PAGE_SIZE;
 
         Map<String, Object> p = Map.of(
                 "leagueId", leagueId,
-                "limit", PAGE_SIZE,
+                "limit", pagePlusOneForNextPage,
                 "offset", offset
         );
 
-        return jdbcTemplate.query(FIND_RANKING_SQL, p, (rs, i) ->
+        List<LeagueRankRow> rows = jdbcTemplate.query(FIND_RANKING_SQL, p, (rs, i) ->
                 new LeagueRankRow(
                         rs.getInt("rank"),
                         rs.getLong("user_id"),
@@ -38,19 +40,29 @@ public class UserLeagueRankQueryRepository {
                         rs.getInt("level")
                 )
         );
+
+        boolean hasNextPage = rows.size() > PAGE_SIZE;
+        List<LeagueRankRow> contents = hasNextPage ? rows.subList(0, PAGE_SIZE) : rows;
+
+        if(contents.isEmpty()) {
+            return SliceResponse.empty();
+        }
+
+        return SliceResponse.of(hasNextPage, contents);
 
     }
 
-    public List<LeagueRankRow> findUserLeagueRanks(Long userId, int page) {
-        int offset = Math.max(page, 0) * PAGE_SIZE;
+    public SliceResponse<LeagueRankRow> findUserLeagueRanks(Long userId, int safePage) {
+        int pagePlusOneForNextPage = PAGE_SIZE + 1;
+        int offset = safePage * PAGE_SIZE;
 
         Map<String, Object> params = Map.of(
                 "userId", userId,
-                "limit", PAGE_SIZE,
+                "limit", pagePlusOneForNextPage,
                 "offset", offset
         );
 
-        return jdbcTemplate.query(FIND_RANKING_BY_USER_SQL, params, (rs, i) ->
+        List<LeagueRankRow> rows = jdbcTemplate.query(FIND_RANKING_BY_USER_SQL, params, (rs, i) ->
                 new LeagueRankRow(
                         rs.getInt("rank"),
                         rs.getLong("user_id"),
@@ -60,5 +72,14 @@ public class UserLeagueRankQueryRepository {
                         rs.getInt("level")
                 )
         );
+
+        boolean hasNextPage = rows.size() > PAGE_SIZE;
+        List<LeagueRankRow> contents = hasNextPage ? rows.subList(0, PAGE_SIZE) : rows;
+
+        if(contents.isEmpty()) {
+            return SliceResponse.empty();
+        }
+
+        return SliceResponse.of(hasNextPage, contents);
     }
 }
