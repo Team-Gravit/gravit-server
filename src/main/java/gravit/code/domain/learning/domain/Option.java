@@ -21,7 +21,7 @@ public class Option {
     @Column(columnDefinition = "text",  nullable = false)
     private String explanation;
 
-    @Column(nullable = false)
+    @Column(name = "is_answer", nullable = false)
     private Boolean isAnswer;
 
     @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
