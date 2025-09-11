@@ -1,8 +1,11 @@
 package gravit.code.domain.learning.dto.response;
 
+import gravit.code.domain.learning.domain.Problem;
 import gravit.code.domain.learning.domain.ProblemType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+
+import java.util.List;
 
 @Builder
 @Schema(description = "문제 정보 Response")
@@ -16,35 +19,42 @@ public record ProblemResponse(
 
         @Schema(
                 description = "문제 타입",
-                example = "FILL_BLANK"
+                example = "SUBJECTIVE / OBJECTIVE"
         )
         ProblemType problemType,
 
         @Schema(
-                description = "문제지",
-                example = "이진 탐색 트리에서 중위 순회(In-order traversal)를 수행하면 노드들이 ( )된 순서로 방문됩니다."
+                description = "제목",
+                example = "빈칸에 들어갈 단어를 고르시오."
         )
         String question,
 
         @Schema(
-                description = "선택지",
-                example = "1. 삽입, 2. 오름차순 정렬, 3. 내림차순 정렬, 4. 무작위"
+                description = "본문",
+                example = "큐에 2, 9, 7, 4를 순차적으로 넣었을 때, 원소 삭제시 반환되는 값은?"
         )
-        String options,
+        String content,
 
         @Schema(
-                description = "답안지",
-                example = "1"
+                description = "정답",
+                example = "객관식일 경우 option의 order, 주관식일 경우 일반 답안"
         )
-        String answer
+        String answer,
+
+        @Schema(
+                description = "선지(주관식일 경우 빈 리스트 반환)"
+        )
+        List<OptionResponse> options
+
 ) {
-        public static ProblemResponse create(Long problemId, ProblemType problemType, String question, String options, String answer) {
+        public static ProblemResponse create(Problem problem, List<OptionResponse> options) {
                 return ProblemResponse.builder()
-                        .problemId(problemId)
-                        .problemType(problemType)
-                        .question(question)
+                        .problemId(problem.getId())
+                        .problemType(problem.getProblemType())
+                        .question(problem.getQuestion())
+                        .content(problem.getContent())
+                        .answer(problem.getAnswer())
                         .options(options)
-                        .answer(answer)
                         .build();
         }
 }
