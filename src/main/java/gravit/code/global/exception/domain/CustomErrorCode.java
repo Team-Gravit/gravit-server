@@ -3,7 +3,6 @@ package gravit.code.global.exception.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.w3c.dom.html.HTMLParagraphElement;
 
 @Getter
 @RequiredArgsConstructor
@@ -58,6 +57,9 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Problem
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 조회에 실패하였습니다."),
+
+    // Option
+    OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION_4041", "옵션 조회에 실패하였습니다."),
 
     // Friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),

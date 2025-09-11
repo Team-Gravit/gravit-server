@@ -1,4 +1,4 @@
-package gravit.code.domain.chapterProgress.service;
+package gravit.code.domain.progress.service;
 
 import gravit.code.domain.learning.domain.Chapter;
 import gravit.code.domain.learning.domain.ChapterRepository;
@@ -6,7 +6,6 @@ import gravit.code.domain.progress.domain.ChapterProgress;
 import gravit.code.domain.progress.domain.ChapterProgressRepository;
 import gravit.code.domain.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.domain.progress.dto.response.ChapterSummaryResponse;
-import gravit.code.domain.progress.service.ChapterProgressService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
