@@ -2,8 +2,9 @@ package gravit.code.domain.friend.controller;
 
 import gravit.code.auth.oauth.LoginUser;
 import gravit.code.domain.friend.controller.docs.FriendSearchControllerDocs;
-import gravit.code.domain.friend.dto.response.PageSearchUserResponse;
+import gravit.code.domain.friend.dto.SearchUser;
 import gravit.code.domain.friend.service.FriendSearchService;
+import gravit.code.global.dto.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,11 @@ public class FriendSearchController implements FriendSearchControllerDocs {
     private final FriendSearchService friendSearchService;
 
     @GetMapping
-    public ResponseEntity<PageSearchUserResponse> search(@AuthenticationPrincipal LoginUser loginUser,
-                                                         @RequestParam String queryText,
-                                                         @RequestParam(defaultValue = "0") int page){
-        PageSearchUserResponse pageSearchUserResponse = friendSearchService.searchUsersForFollowing(loginUser.getId(), queryText, page);
-        return ResponseEntity.ok(pageSearchUserResponse);
+    public ResponseEntity<SliceResponse<SearchUser>> search(@AuthenticationPrincipal LoginUser loginUser,
+                                                            @RequestParam String queryText,
+                                                            @RequestParam(defaultValue = "0") int page){
+        SliceResponse<SearchUser> pageResponse = friendSearchService.searchUsersForFollowing(loginUser.getId(), queryText, page);
+        return ResponseEntity.ok(pageResponse);
     }
 
 }
