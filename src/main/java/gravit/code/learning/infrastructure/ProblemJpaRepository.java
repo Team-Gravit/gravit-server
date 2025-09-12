@@ -1,6 +1,6 @@
-package gravit.code.domain.learning.infrastructure;
+package gravit.code.learning.infrastructure;
 
-import gravit.code.domain.learning.domain.Problem;
+import gravit.code.learning.domain.Problem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

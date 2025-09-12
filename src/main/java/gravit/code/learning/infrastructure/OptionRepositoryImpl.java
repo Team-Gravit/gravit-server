@@ -1,8 +1,8 @@
-package gravit.code.domain.learning.infrastructure;
+package gravit.code.learning.infrastructure;
 
-import gravit.code.domain.learning.domain.Option;
-import gravit.code.domain.learning.domain.OptionRepository;
-import gravit.code.domain.learning.dto.response.OptionResponse;
+import gravit.code.learning.domain.Option;
+import gravit.code.learning.domain.OptionRepository;
+import gravit.code.learning.dto.response.OptionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
-package gravit.code.domain.learning.dto.response;
+package gravit.code.learning.dto.response;
 
-import gravit.code.domain.learning.domain.Problem;
-import gravit.code.domain.learning.domain.ProblemType;
+import gravit.code.learning.domain.Problem;
+import gravit.code.learning.domain.ProblemType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

@@ -1,4 +1,4 @@
-package gravit.code.domain.learning.domain;
+package gravit.code.learning.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

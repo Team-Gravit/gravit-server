@@ -1,11 +1,11 @@
-package gravit.code.domain.learning.service;
+package gravit.code.learning.service;
 
-import gravit.code.domain.learning.domain.OptionRepository;
-import gravit.code.domain.learning.domain.Problem;
-import gravit.code.domain.learning.domain.ProblemRepository;
-import gravit.code.domain.learning.domain.ProblemType;
-import gravit.code.domain.learning.dto.response.OptionResponse;
-import gravit.code.domain.learning.dto.response.ProblemResponse;
+import gravit.code.learning.domain.OptionRepository;
+import gravit.code.learning.domain.Problem;
+import gravit.code.learning.domain.ProblemRepository;
+import gravit.code.learning.domain.ProblemType;
+import gravit.code.learning.dto.response.OptionResponse;
+import gravit.code.learning.dto.response.ProblemResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;

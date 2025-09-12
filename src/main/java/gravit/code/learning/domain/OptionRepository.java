@@ -1,6 +1,6 @@
-package gravit.code.domain.learning.domain;
+package gravit.code.learning.domain;
 
-import gravit.code.domain.learning.dto.response.OptionResponse;
+import gravit.code.learning.dto.response.OptionResponse;
 
 import java.util.List;
 

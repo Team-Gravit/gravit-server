@@ -1,7 +1,7 @@
-package gravit.code.domain.learning.infrastructure;
+package gravit.code.learning.infrastructure;
 
-import gravit.code.domain.learning.domain.Problem;
-import gravit.code.domain.learning.domain.ProblemRepository;
+import gravit.code.learning.domain.Problem;
+import gravit.code.learning.domain.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
