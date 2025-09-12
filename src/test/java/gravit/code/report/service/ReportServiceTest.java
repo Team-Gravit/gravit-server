@@ -40,14 +40,11 @@ class ReportServiceTest {
         void withInvalidProblemId(){
             //given
             Long userId = 1L;
-            Long chapterId = 1L; Long unitId = 1L; Long lessonId = 1L; Long problemId = 1L;
+            Long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
                     ReportType.TYPO_ERROR,
                     "문제에 오탈자가 있습니다.",
-                    chapterId,
-                    unitId,
-                    lessonId,
                     problemId
             );
 
@@ -64,14 +61,11 @@ class ReportServiceTest {
         void withAlreadySubmittedData(){
             //given
             Long userId = 1L;
-            Long chapterId = 1L; Long unitId = 1L; Long lessonId = 1L; Long problemId = 1L;
+            Long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
                     ReportType.TYPO_ERROR,
                     "문제에 오탈자가 있습니다.",
-                    chapterId,
-                    unitId,
-                    lessonId,
                     problemId
             );
 
@@ -90,14 +84,11 @@ class ReportServiceTest {
         void withValidRequestData(){
             //given
             Long userId = 1L;
-            Long chapterId = 1L; Long unitId = 1L; Long lessonId = 1L; Long problemId = 1L;
+            Long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
                     ReportType.TYPO_ERROR,
                     "문제에 오탈자가 있습니다.",
-                    chapterId,
-                    unitId,
-                    lessonId,
                     problemId
             );
 

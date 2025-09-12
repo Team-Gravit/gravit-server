@@ -25,15 +25,6 @@ public class Report {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(name = "chapter_id", columnDefinition = "bigint", nullable = false)
-    private Long chapterId;
-
-    @Column(name = "unit_id", columnDefinition = "bigint", nullable = false)
-    private Long unitId;
-
-    @Column(name = "lesson_id", columnDefinition = "bigint", nullable = false)
-    private Long lessonId;
-
     @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
     private Long problemId;
 
@@ -47,25 +38,19 @@ public class Report {
     private LocalDateTime submittedAt;
 
     @Builder
-    private Report(ReportType reportType, String content, Long chapterId, Long unitId, Long lessonId, Long problemId, Long userId) {
+    private Report(ReportType reportType, String content, Long problemId, Long userId) {
         this.reportType = reportType;
         this.content = content;
-        this.chapterId = chapterId;
-        this.unitId = unitId;
-        this.lessonId = lessonId;
         this.problemId = problemId;
         this.userId = userId;
         this.isResolved = false;
         this.submittedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
-    public static Report create(ReportType reportType, String content, Long chapterId, Long unitId, Long lessonId, Long problemId, Long userId){
+    public static Report create(ReportType reportType, String content, Long problemId, Long userId){
         return Report.builder()
                 .reportType(reportType)
                 .content(content)
-                .chapterId(chapterId)
-                .unitId(unitId)
-                .lessonId(lessonId)
                 .problemId(problemId)
                 .userId(userId)
                 .build();
