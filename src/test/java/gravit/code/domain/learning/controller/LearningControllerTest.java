@@ -231,14 +231,14 @@ class LearningControllerTest {
             //given
             Long lessonId = 1L;
             List<ProblemResponse> problemResponses = List.of(
-                    ProblemResponse.create(1L, ProblemType.FILL_BLANK, "스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다.", "-", "LIFO"),
-                    ProblemResponse.create(2L, ProblemType.SELECT_DESCRIPTION, "스택의 주요 연산이 아닌 것은?", "1. push, 2. pop, 3. peek, 4. enqueue", "4"),
-                    ProblemResponse.create(3L, ProblemType.FILL_BLANK, "큐에서 데이터가 삽입되는 곳을 ( ), 삭제되는 곳을 ( )라고 합니다.", "-", "rear, front"),
-                    ProblemResponse.create(4L, ProblemType.SELECT_DESCRIPTION, "다음 중 큐의 특성을 가장 잘 설명한 것은?", "1. LIFO 구조, 2. FIFO 구조, 3. 랜덤 접근, 4. 양방향 접근", "2"),
-                    ProblemResponse.create(5L, ProblemType.FILL_BLANK, "이진 탐색 트리에서 중위 순회를 수행하면 노드들이 ( )된 순서로 방문됩니다.", "-", "오름차순 정렬"),
-                    ProblemResponse.create(6L, ProblemType.SELECT_DESCRIPTION, "해시 테이블에서 충돌을 해결하는 방법이 아닌 것은?", "1. 체이닝, 2. 개방 주소법, 3. 이중 해싱, 4. 순차 탐색", "4"),
-                    ProblemResponse.create(7L, ProblemType.FILL_BLANK, "연결 리스트에서 각 노드는 데이터와 다음 노드를 가리키는 ( )로 구성됩니다.", "-", "포인터"),
-                    ProblemResponse.create(8L, ProblemType.SELECT_DESCRIPTION, "힙 자료구조의 특징이 아닌 것은?", "1. 완전 이진 트리, 2. 부모가 자식보다 크거나 작음, 3. 중위 순회시 정렬됨, 4. 우선순위 큐 구현", "3")
+                    ProblemResponse.builder().problemId(1L).problemType(ProblemType.SUBJECTIVE).question("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다.").content("-").answer("LIFO").options(List.of()).build(),
+                    ProblemResponse.builder().problemId(2L).problemType(ProblemType.OBJECTIVE).question("스택의 주요 연산이 아닌 것은?").content("1. push, 2. pop, 3. peek, 4. enqueue").answer("4").options(List.of()).build(),
+                    ProblemResponse.builder().problemId(3L).problemType(ProblemType.SUBJECTIVE).question("큐에서 데이터가 삽입되는 곳을 ( ), 삭제되는 곳을 ( )라고 합니다.").content("-").answer("rear, front").options(List.of()).build(),
+                    ProblemResponse.builder().problemId(4L).problemType(ProblemType.OBJECTIVE).question("다음 중 큐의 특성을 가장 잘 설명한 것은?").content("1. LIFO 구조, 2. FIFO 구조, 3. 랜덤 접근, 4. 양방향 접근").answer("2").options(List.of()).build(),
+                    ProblemResponse.builder().problemId(5L).problemType(ProblemType.SUBJECTIVE).question("이진 탐색 트리에서 중위 순회를 수행하면 노드들이 ( )된 순서로 방문됩니다.").content("-").answer("오름차순 정렬").options(List.of()).build(),
+                    ProblemResponse.builder().problemId(6L).problemType(ProblemType.OBJECTIVE).question("해시 테이블에서 충돌을 해결하는 방법이 아닌 것은?").content("1. 체이닝, 2. 개방 주소법, 3. 이중 해싱, 4. 순차 탐색").answer("4").options(List.of()).build(),
+                    ProblemResponse.builder().problemId(7L).problemType(ProblemType.SUBJECTIVE).question("연결 리스트에서 각 노드는 데이터와 다음 노드를 가리키는 ( )로 구성됩니다.").content("-").answer("포인터").options(List.of()).build(),
+                    ProblemResponse.builder().problemId(8L).problemType(ProblemType.OBJECTIVE).question("힙 자료구조의 특징이 아닌 것은?").content("1. 완전 이진 트리, 2. 부모가 자식보다 크거나 작음, 3. 중위 순회시 정렬됨, 4. 우선순위 큐 구현").answer("3").options(List.of()).build()
             );
 
             LessonResponse lessonResponse = LessonResponse.create(problemResponses);
@@ -255,9 +255,9 @@ class LearningControllerTest {
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
                     .andExpect(jsonPath("$.problems[0].problemId").value(1L))
-                    .andExpect(jsonPath("$.problems[0].problemType").value("FILL_BLANK"))
+                    .andExpect(jsonPath("$.problems[0].problemType").value("SUBJECTIVE"))
                     .andExpect(jsonPath("$.problems[0].question").value("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다."))
-                    .andExpect(jsonPath("$.problems[0].options").value("-"))
+                    .andExpect(jsonPath("$.problems[0].content").value("-"))
                     .andExpect(jsonPath("$.problems[0].answer").value("LIFO"))
                     .andExpect(jsonPath("$.totalProblems").value(8));
         }

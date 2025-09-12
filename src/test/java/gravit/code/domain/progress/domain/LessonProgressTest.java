@@ -1,6 +1,5 @@
-package gravit.code.domain.lessonProgress.domain;
+package gravit.code.domain.progress.domain;
 
-import gravit.code.progress.domain.LessonProgress;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -11,8 +11,8 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum ProblemType {
 
-    FILL_BLANK("FILL_BLANK"), // 빈칸 문제
-    SELECT_DESCRIPTION("SELECT_DESCRIPTION"); // 설명에 대한 답 작성/선택 문제
+    SUBJECTIVE("SUBJECTIVE"),
+    OBJECTIVE("OBJECTIVE");
 
     @JsonValue
     private final String type;

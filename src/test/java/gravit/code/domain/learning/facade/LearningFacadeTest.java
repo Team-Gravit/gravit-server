@@ -1,24 +1,25 @@
 package gravit.code.domain.learning.facade;
 
-import gravit.code.learning.facade.LearningFacade;
-import gravit.code.progress.domain.ChapterProgress;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.progress.service.ChapterProgressService;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.dto.request.RecentLearningEventDto;
-import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.progress.service.LessonProgressService;
-import gravit.code.learning.domain.ProblemType;
-import gravit.code.learning.dto.request.ProblemResultRequest;
-import gravit.code.learning.dto.response.ProblemResponse;
-import gravit.code.learning.service.ProblemService;
-import gravit.code.progress.service.ProblemProgressService;
-import gravit.code.progress.domain.UnitProgress;
-import gravit.code.progress.dto.response.UnitPageResponse;
-import gravit.code.progress.dto.response.UnitProgressDetailResponse;
-import gravit.code.progress.service.UnitProgressService;
-import gravit.code.user.service.UserService;
+import gravit.code.domain.learning.domain.Problem;
+import gravit.code.domain.progress.domain.ChapterProgress;
+import gravit.code.domain.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.domain.progress.service.ChapterProgressService;
+import gravit.code.domain.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.domain.learning.dto.request.RecentLearningEventDto;
+import gravit.code.domain.learning.dto.response.LessonResponse;
+import gravit.code.domain.progress.dto.response.LessonProgressSummaryResponse;
+import gravit.code.domain.progress.service.LessonProgressService;
+import gravit.code.domain.learning.domain.ProblemType;
+import gravit.code.domain.learning.dto.request.ProblemResultRequest;
+import gravit.code.domain.learning.dto.response.OptionResponse;
+import gravit.code.domain.learning.dto.response.ProblemResponse;
+import gravit.code.domain.learning.service.ProblemService;
+import gravit.code.domain.progress.service.ProblemProgressService;
+import gravit.code.domain.progress.domain.UnitProgress;
+import gravit.code.domain.progress.dto.response.UnitPageResponse;
+import gravit.code.domain.progress.dto.response.UnitProgressDetailResponse;
+import gravit.code.domain.progress.service.UnitProgressService;
+import gravit.code.domain.user.service.UserService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
@@ -185,23 +187,61 @@ class LearningFacadeTest {
     @DisplayName("특정 레슨의 모든 문제를 조회할 때,")
     class GetAllProblemInLesson{
 
-        private final List<ProblemResponse> problemResponses = List.of(
-                ProblemResponse.create(1L, ProblemType.FILL_BLANK, "스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다.", "-", "LIFO"),
-                ProblemResponse.create(2L, ProblemType.SELECT_DESCRIPTION, "스택의 주요 연산이 아닌 것은?", "1. push, 2. pop, 3. peek, 4. enqueue", "4"),
-                ProblemResponse.create(3L, ProblemType.FILL_BLANK, "큐에서 데이터가 삽입되는 곳을 ( ), 삭제되는 곳을 ( )라고 합니다.", "-", "rear, front"),
-                ProblemResponse.create(4L, ProblemType.SELECT_DESCRIPTION, "다음 중 큐의 특성을 가장 잘 설명한 것은?", "1. LIFO 구조, 2. FIFO 구조, 3. 랜덤 접근, 4. 양방향 접근", "2"),
-                ProblemResponse.create(5L, ProblemType.FILL_BLANK, "이진 탐색 트리에서 중위 순회(In-order traversal)를 수행하면 노드들이 ( )된 순서로 방문됩니다.", "-", "오름차순 정렬"),
-                ProblemResponse.create(6L, ProblemType.SELECT_DESCRIPTION, "트리에서 루트 노드의 높이는?", "1. 0, 2. 1, 3. 트리의 깊이, 4. 노드 개수", "1"),
-                ProblemResponse.create(7L, ProblemType.FILL_BLANK, "해시 테이블에서 서로 다른 키가 동일한 해시 값을 가지는 현상을 ( )라고 합니다.", "-", "충돌"),
-                ProblemResponse.create(8L, ProblemType.SELECT_DESCRIPTION, "해시 충돌을 해결하는 방법이 아닌 것은?", "1. 체이닝, 2. 개방 주소법, 3. 이중 해싱, 4. 순차 탐색", "4"),
-                ProblemResponse.create(9L, ProblemType.FILL_BLANK, "연결 리스트에서 각 노드는 데이터와 다음 노드를 가리키는 ( )로 구성됩니다.", "-", "포인터"),
-                ProblemResponse.create(10L, ProblemType.SELECT_DESCRIPTION, "다음 중 시간 복잡도가 O(log n)인 연산은?", "1. 배열에서 순차 탐색, 2. 연결 리스트 삽입, 3. 이진 탐색 트리 탐색, 4. 해시 테이블 충돌시 탐색", "3")
-        );
+        private final List<ProblemResponse> problemResponses;
+        
+        {
+            Problem problem1 = Problem.create(ProblemType.OBJECTIVE, "스택의 기본 동작 원리는?", "스택 자료구조에 대한 문제입니다.", "1", 1L);
+            ReflectionTestUtils.setField(problem1, "id", 1L);
+            
+            Problem problem2 = Problem.create(ProblemType.OBJECTIVE, "큐의 특징으로 올바른 것은?", "큐 자료구조에 대한 문제입니다.", "2", 1L);
+            ReflectionTestUtils.setField(problem2, "id", 2L);
+            
+            Problem problem3 = Problem.create(ProblemType.OBJECTIVE, "연결 리스트의 장점은?", "연결 리스트에 대한 문제입니다.", "3", 1L);
+            ReflectionTestUtils.setField(problem3, "id", 3L);
+            
+            Problem problem4 = Problem.create(ProblemType.OBJECTIVE, "배열의 시간 복잡도는?", "배열 접근에 대한 문제입니다.", "1", 1L);
+            ReflectionTestUtils.setField(problem4, "id", 4L);
+            
+            Problem problem5 = Problem.create(ProblemType.SUBJECTIVE, "스택을 구현하는 방법을 설명하시오.", "스택 구현에 대한 문제입니다.", "배열이나 연결리스트로 구현 가능", 1L);
+            ReflectionTestUtils.setField(problem5, "id", 5L);
+            
+            Problem problem6 = Problem.create(ProblemType.SUBJECTIVE, "큐와 스택의 차이점을 설명하시오.", "자료구조 비교 문제입니다.", "큐는 FIFO, 스택은 LIFO", 1L);
+            ReflectionTestUtils.setField(problem6, "id", 6L);
+            
+            problemResponses = List.of(
+                    ProblemResponse.create(problem1, List.of(
+                            OptionResponse.create(1L, "LIFO (Last In First Out)", "스택은 마지막에 들어간 데이터가 먼저 나오는 구조입니다.", true),
+                            OptionResponse.create(1L, "FIFO (First In First Out)", "이는 큐의 특징입니다.", false),
+                            OptionResponse.create(1L, "랜덤 접근 가능", "스택은 순차 접근만 가능합니다.", false),
+                            OptionResponse.create(1L, "정렬된 데이터 저장", "스택은 정렬과 무관합니다.", false)
+                    )),
+                    ProblemResponse.create(problem2, List.of(
+                            OptionResponse.create(2L, "FIFO (First In First Out)", "큐는 먼저 들어간 데이터가 먼저 나오는 구조입니다.", true),
+                            OptionResponse.create(2L, "LIFO (Last In First Out)", "이는 스택의 특징입니다.", false),
+                            OptionResponse.create(2L, "이진 탐색 가능", "큐는 탐색 자료구조가 아닙니다.", false),
+                            OptionResponse.create(2L, "인덱스 접근 가능", "큐는 양 끝에서만 접근 가능합니다.", false)
+                    )),
+                    ProblemResponse.create(problem3, List.of(
+                            OptionResponse.create(3L, "동적 크기 조절", "연결 리스트는 실행 시간에 크기를 조절할 수 있습니다.", true),
+                            OptionResponse.create(3L, "빠른 랜덤 접근", "배열의 장점입니다.", false),
+                            OptionResponse.create(3L, "메모리 연속성", "배열의 장점입니다.", false),
+                            OptionResponse.create(3L, "캐시 효율성", "배열의 장점입니다.", false)
+                    )),
+                    ProblemResponse.create(problem4, List.of(
+                            OptionResponse.create(4L, "O(1)", "배열은 인덱스로 상수 시간에 접근 가능합니다.", true),
+                            OptionResponse.create(4L, "O(log n)", "이진 탐색의 시간 복잡도입니다.", false),
+                            OptionResponse.create(4L, "O(n)", "선형 탐색의 시간 복잡도입니다.", false),
+                            OptionResponse.create(4L, "O(n log n)", "정렬 알고리즘의 평균 시간 복잡도입니다.", false)
+                    )),
+                    ProblemResponse.create(problem5, List.of()),
+                    ProblemResponse.create(problem6, List.of())
+            );
+        }
 
         private final LessonResponse lessonResponse = LessonResponse.create(problemResponses);
 
         @Test
-        @DisplayName("빈 리스트가 조회되면 예외를 반환한다.")
+        @DisplayName("Problem의 리스트가 비어있으면 예외를 반환한다.")
         void withInvalidLessonId(){
             //given
             Long lessonId = 1L;
@@ -212,6 +252,20 @@ class LearningFacadeTest {
             assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("Problem의 리스트가 비어있으면 예외를 반환한다.")
+        void withFailedAtGetOptions(){
+            //given
+            Long lessonId = 1L;
+
+            when(problemService.getAllProblem(lessonId)).thenThrow(new RestApiException(CustomErrorCode.OPTION_NOT_FOUND));
+
+            //when&then
+            assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
+                    .isInstanceOf(RestApiException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.OPTION_NOT_FOUND);
         }
 
         @Test

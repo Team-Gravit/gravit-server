@@ -1,10 +1,8 @@
-package gravit.code.learning.infrastructure;
+package gravit.code.domain.learning.infrastructure;
 
-import gravit.code.learning.dto.response.ProblemResponse;
-import gravit.code.learning.domain.Problem;
-import gravit.code.learning.domain.ProblemRepository;
+import gravit.code.domain.learning.domain.Problem;
+import gravit.code.domain.learning.domain.ProblemRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,8 +19,8 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     }
 
     @Override
-    public List<ProblemResponse> findAllProblemByLessonId(@Param("lessonId") Long lessonId){
-        return problemJpaRepository.findAllProblemByLessonId(lessonId);
+    public List<Problem> findAllProblemByLessonId(Long lessonId){
+        return problemJpaRepository.findAllByLessonId(lessonId);
     }
 
 }
