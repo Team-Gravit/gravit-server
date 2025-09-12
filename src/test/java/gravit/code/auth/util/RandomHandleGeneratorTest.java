@@ -1,6 +1,6 @@
 package gravit.code.auth.util;
 
-import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

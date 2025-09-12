@@ -1,8 +1,8 @@
 package gravit.code.auth.jwt;
 
 import gravit.code.auth.oauth.LoginUser;
-import gravit.code.domain.user.domain.User;
-import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import io.jsonwebtoken.*;
