@@ -15,6 +15,7 @@ import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.progress.dto.response.UnitProgressDetailResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
+import gravit.code.report.service.ReportService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,6 +50,9 @@ class LearningControllerTest {
 
     @MockitoBean
     private LearningFacade learningFacade;
+
+    @MockitoBean
+    private ReportService reportService;
 
     @Nested
     @DisplayName("모든 챕터를 조회할 때,")
@@ -393,7 +397,7 @@ class LearningControllerTest {
             //given
             Long userId = 1L;
 
-            when(learningFacade.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -414,7 +418,7 @@ class LearningControllerTest {
             //given
             Long userId = 1L;
 
-            when(learningFacade.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -435,7 +439,7 @@ class LearningControllerTest {
             //given
             Long userId = 1L;
 
-            when(learningFacade.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT));
+            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT));
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -456,7 +460,7 @@ class LearningControllerTest {
             //given
             Long userId = 1L;
 
-            when(learningFacade.submitProblemReport(userId, validRequest)).thenReturn(true);
+            when(reportService.submitProblemReport(userId, validRequest)).thenReturn(true);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
