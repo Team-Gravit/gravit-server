@@ -23,4 +23,9 @@ public class ProblemRepositoryImpl implements ProblemRepository {
         return problemJpaRepository.findAllByLessonId(lessonId);
     }
 
+    @Override
+    public boolean existsProblemById(Long problemId){
+        return problemJpaRepository.existsProblemById(problemId);
+    }
+
 }
