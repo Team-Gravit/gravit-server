@@ -12,9 +12,9 @@ public record ProblemReportSubmitRequest(
                 description = "신고 유형",
                 example = "TYPO_ERROR/CONTENT_ERROR/ANSWER_ERROR/OTHER_ERROR"
         )
-        @NotNull(message = "신고 유형이 비어있습니다.")
-        @Enum(target = ReportType.class, message = "유효하지 않은 신고 타입입니다.")
-        ReportType reportType,
+        @NotBlank(message = "신고 유형이 비어있습니다.")
+        @Enum(target = ReportType.class, message = "유효하지 않은 신고 유형입니다.")
+        String reportType,
 
         @Schema(
                 description = "신고 사유(입력이 없을 경우 \"-\" 이렇게 보내주세요.)",

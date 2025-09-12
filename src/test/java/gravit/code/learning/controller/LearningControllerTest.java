@@ -2,19 +2,20 @@ package gravit.code.learning.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.common.auth.WithMockLoginUser;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.facade.LearningFacade;
-import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.learning.domain.ProblemType;
-import gravit.code.learning.dto.request.ProblemResultRequest;
-import gravit.code.learning.dto.response.ProblemResponse;
-import gravit.code.progress.dto.response.UnitPageResponse;
-import gravit.code.progress.dto.response.UnitProgressDetailResponse;
-import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.learning.domain.ProblemType;
+import gravit.code.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.learning.dto.request.ProblemResultRequest;
+import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.learning.facade.LearningFacade;
+import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
+import gravit.code.progress.dto.response.UnitPageResponse;
+import gravit.code.progress.dto.response.UnitProgressDetailResponse;
+import gravit.code.report.dto.request.ProblemReportSubmitRequest;
+import gravit.code.user.dto.response.UserLevelResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -350,6 +351,124 @@ class LearningControllerTest {
             resultActions
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful());
+        }
+    }
+
+    @Nested
+    @DisplayName("문제 신고를 제출할 때,")
+    class SubmitProblemReport{
+
+        private final ProblemReportSubmitRequest invalidRequest = new ProblemReportSubmitRequest(
+                null,
+                "문제에 오탈자가 있습니다.",
+                1L
+        );
+
+        private final ProblemReportSubmitRequest validRequest = new ProblemReportSubmitRequest(
+                "TYPO_ERROR",
+                "문제에 오탈자가 있습니다.",
+                1L
+        );
+
+        @Test
+        @WithMockLoginUser
+        @DisplayName("RequestBody가 유효하지 않으면 예외를 반환한다.")
+        void withInvalidRequestBody() throws Exception {
+            //when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest))
+                    .with(csrf()));
+
+            //then
+            resultActions
+                    .andDo(print())
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        @WithMockLoginUser
+        @DisplayName("유저 아이디가 유효하지 않으면 예외를 반환한다.")
+        void withInvalidUserId() throws Exception{
+            //given
+            Long userId = 1L;
+
+            when(learningFacade.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+            //when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(validRequest))
+                    .with(csrf()));
+
+            //then
+            resultActions
+                    .andDo(print())
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        @WithMockLoginUser
+        @DisplayName("문제가 존재하지 않으면 예외를 반환한다.")
+        void withInvalidProblemId() throws Exception{
+            //given
+            Long userId = 1L;
+
+            when(learningFacade.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+
+            //when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(validRequest))
+                    .with(csrf()));
+
+            //then
+            resultActions
+                    .andDo(print())
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        @WithMockLoginUser
+        @DisplayName("이미 제출된 신고라면 예외를 반환한다.")
+        void withAlreadySubmittedReport() throws Exception{
+            //given
+            Long userId = 1L;
+
+            when(learningFacade.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT));
+
+            //when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(validRequest))
+                    .with(csrf()));
+
+            //then
+            resultActions
+                    .andDo(print())
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        @WithMockLoginUser
+        @DisplayName("RequestBody와 유저 아이디가 유효하면 정상적으로 제출한다.")
+        void withValidRequestBodyAndUserId() throws Exception{
+            //given
+            Long userId = 1L;
+
+            when(learningFacade.submitProblemReport(userId, validRequest)).thenReturn(true);
+
+            //when
+            ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(validRequest))
+                    .with(csrf()));
+
+            //then
+            resultActions
+                    .andDo(print())
+                    .andExpect(status().is2xxSuccessful())
+                    .andExpect(jsonPath("$").value(true));
         }
     }
 

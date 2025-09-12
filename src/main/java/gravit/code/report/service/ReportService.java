@@ -5,6 +5,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.ProblemRepository;
 import gravit.code.report.domain.Report;
 import gravit.code.report.domain.ReportRepository;
+import gravit.code.report.domain.ReportType;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,8 @@ public class ReportService {
             throw new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT);
 
         reportRepository.save(Report.create(
-                request.reportType(),
+                ReportType.from(request.reportType()),
                 request.content(),
-                request.chapterId(),
-                request.unitId(),
-                request.lessonId(),
                 request.problemId(),
                 userId
         ));

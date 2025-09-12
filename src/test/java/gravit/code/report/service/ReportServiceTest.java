@@ -4,7 +4,6 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.ProblemRepository;
 import gravit.code.report.domain.ReportRepository;
-import gravit.code.report.domain.ReportType;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +42,7 @@ class ReportServiceTest {
             Long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
-                    ReportType.TYPO_ERROR,
+                    "TYPO_ERROR",
                     "문제에 오탈자가 있습니다.",
                     problemId
             );
@@ -64,7 +63,7 @@ class ReportServiceTest {
             Long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
-                    ReportType.TYPO_ERROR,
+                    "TYPO_ERROR",
                     "문제에 오탈자가 있습니다.",
                     problemId
             );
@@ -87,7 +86,7 @@ class ReportServiceTest {
             Long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
-                    ReportType.TYPO_ERROR,
+                    "TYPO_ERROR",
                     "문제에 오탈자가 있습니다.",
                     problemId
             );
