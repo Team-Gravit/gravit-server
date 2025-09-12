@@ -1,12 +1,12 @@
 package gravit.code.domain.chapterProgress.domain;
 
-import gravit.code.domain.learning.domain.Chapter;
-import gravit.code.domain.learning.infrastructure.ChapterJpaRepository;
-import gravit.code.domain.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.domain.progress.infrastructure.ChapterProgressJpaRepository;
-import gravit.code.domain.progress.domain.ChapterProgress;
-import gravit.code.domain.user.domain.User;
-import gravit.code.domain.user.infrastructure.UserJpaRepository;
+import gravit.code.learning.domain.Chapter;
+import gravit.code.learning.infrastructure.ChapterJpaRepository;
+import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.progress.infrastructure.ChapterProgressJpaRepository;
+import gravit.code.progress.domain.ChapterProgress;
+import gravit.code.user.domain.User;
+import gravit.code.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

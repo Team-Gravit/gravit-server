@@ -1,6 +1,6 @@
 package gravit.code.domain.problemProgress.domain;
 
-import gravit.code.domain.progress.domain.ProblemProgress;
+import gravit.code.progress.domain.ProblemProgress;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

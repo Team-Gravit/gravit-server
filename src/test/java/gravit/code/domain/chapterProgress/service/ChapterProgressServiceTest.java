@@ -1,12 +1,12 @@
 package gravit.code.domain.chapterProgress.service;
 
-import gravit.code.domain.learning.domain.Chapter;
-import gravit.code.domain.learning.domain.ChapterRepository;
-import gravit.code.domain.progress.domain.ChapterProgress;
-import gravit.code.domain.progress.domain.ChapterProgressRepository;
-import gravit.code.domain.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.domain.progress.dto.response.ChapterSummaryResponse;
-import gravit.code.domain.progress.service.ChapterProgressService;
+import gravit.code.learning.domain.Chapter;
+import gravit.code.learning.domain.ChapterRepository;
+import gravit.code.progress.domain.ChapterProgress;
+import gravit.code.progress.domain.ChapterProgressRepository;
+import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.progress.dto.response.ChapterSummaryResponse;
+import gravit.code.progress.service.ChapterProgressService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;

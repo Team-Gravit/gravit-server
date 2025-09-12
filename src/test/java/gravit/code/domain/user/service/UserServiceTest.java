@@ -1,15 +1,15 @@
 package gravit.code.domain.user.service;
 
-import gravit.code.domain.recentLearning.service.RecentLearningService;
-import gravit.code.domain.user.domain.User;
-import gravit.code.domain.user.domain.UserRepository;
-import gravit.code.domain.user.dto.request.OnboardingRequest;
-import gravit.code.domain.user.dto.request.UserProfileUpdateRequest;
-import gravit.code.domain.user.dto.response.MyPageResponse;
-import gravit.code.domain.user.dto.response.UserResponse;
+import gravit.code.recentLearning.service.RecentLearningService;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserRepository;
+import gravit.code.user.dto.request.OnboardingRequest;
+import gravit.code.user.dto.request.UserProfileUpdateRequest;
+import gravit.code.user.dto.response.MyPageResponse;
+import gravit.code.user.dto.response.UserResponse;
 import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.RestApiException;
-import org.apache.catalina.core.ApplicationPushBuilder;
+import gravit.code.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

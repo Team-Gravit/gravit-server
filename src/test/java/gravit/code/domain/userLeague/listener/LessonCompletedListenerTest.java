@@ -1,8 +1,8 @@
 package gravit.code.domain.userLeague.listener;
 
-import gravit.code.domain.league.infrastructure.LeagueRepository;
-import gravit.code.domain.userLeague.domain.UserLeague;
-import gravit.code.domain.userLeague.domain.UserLeagueRepository;
+import gravit.code.league.infrastructure.LeagueRepository;
+import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.domain.UserLeagueRepository;
 import gravit.code.global.event.LessonCompletedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

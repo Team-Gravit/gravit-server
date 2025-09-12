@@ -1,12 +1,13 @@
 package gravit.code.domain.friend.service;
 
-import gravit.code.domain.friend.domain.Friend;
-import gravit.code.domain.friend.domain.FriendRepository;
-import gravit.code.domain.friend.dto.response.FollowerResponse;
-import gravit.code.domain.friend.dto.response.FollowingResponse;
-import gravit.code.domain.friend.dto.response.FriendResponse;
-import gravit.code.domain.user.domain.User;
-import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.friend.domain.Friend;
+import gravit.code.friend.domain.FriendRepository;
+import gravit.code.friend.dto.response.FollowerResponse;
+import gravit.code.friend.dto.response.FollowingResponse;
+import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.friend.service.FriendService;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

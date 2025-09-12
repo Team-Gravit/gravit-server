@@ -1,6 +1,6 @@
 package gravit.code.domain.league.domain;
 
-import gravit.code.domain.league.domain.League;
+import gravit.code.league.domain.League;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,11 +1,12 @@
 package gravit.code.domain.recentLearning.service;
 
-import gravit.code.domain.progress.dto.response.ChapterSummaryResponse;
-import gravit.code.domain.recentLearning.domain.RecentLearning;
-import gravit.code.domain.recentLearning.domain.RecentLearningRepository;
-import gravit.code.domain.recentLearning.dto.response.RecentLearningSummaryResponse;
+import gravit.code.progress.dto.response.ChapterSummaryResponse;
+import gravit.code.recentLearning.domain.RecentLearning;
+import gravit.code.recentLearning.domain.RecentLearningRepository;
+import gravit.code.recentLearning.dto.response.RecentLearningSummaryResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.recentLearning.service.RecentLearningService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

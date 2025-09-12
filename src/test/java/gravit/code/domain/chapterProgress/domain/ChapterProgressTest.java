@@ -1,6 +1,6 @@
 package gravit.code.domain.chapterProgress.domain;
 
-import gravit.code.domain.progress.domain.ChapterProgress;
+import gravit.code.progress.domain.ChapterProgress;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

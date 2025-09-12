@@ -2,10 +2,10 @@ package gravit.code.domain.friend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.common.auth.WithMockLoginUser;
-import gravit.code.domain.friend.domain.Friend;
-import gravit.code.domain.friend.domain.FriendRepository;
-import gravit.code.domain.user.domain.User;
-import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.friend.domain.Friend;
+import gravit.code.friend.domain.FriendRepository;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

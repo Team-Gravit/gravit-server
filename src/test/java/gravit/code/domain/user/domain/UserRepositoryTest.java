@@ -1,6 +1,7 @@
 package gravit.code.domain.user.domain;
 
-import gravit.code.domain.user.infrastructure.UserJpaRepository;
+import gravit.code.user.domain.User;
+import gravit.code.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

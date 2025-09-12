@@ -1,8 +1,8 @@
 package gravit.code.auth.jwt;
 
 import gravit.code.auth.oauth.LoginUser;
-import gravit.code.domain.user.domain.User;
-import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;

@@ -1,13 +1,13 @@
 package gravit.code.domain.season.batch;
 
-import gravit.code.domain.league.domain.League;
-import gravit.code.domain.league.infrastructure.LeagueRepository;
-import gravit.code.domain.season.domain.Season;
-import gravit.code.domain.season.domain.SeasonStatus;
-import gravit.code.domain.season.infrastructure.SeasonRepository;
-import gravit.code.domain.userLeague.domain.UserLeagueRepository;
-import gravit.code.domain.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.league.domain.League;
+import gravit.code.league.infrastructure.LeagueRepository;
+import gravit.code.season.batch.SeasonBatchService;
+import gravit.code.season.domain.Season;
+import gravit.code.season.domain.SeasonStatus;
+import gravit.code.season.infrastructure.SeasonRepository;
+import gravit.code.userLeague.domain.UserLeagueRepository;
+import gravit.code.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,11 +1,11 @@
 package gravit.code.domain.unitProgress.service;
 
-import gravit.code.domain.learning.domain.Unit;
-import gravit.code.domain.learning.domain.UnitRepository;
-import gravit.code.domain.progress.domain.UnitProgress;
-import gravit.code.domain.progress.domain.UnitProgressRepository;
-import gravit.code.domain.progress.dto.response.UnitProgressDetailResponse;
-import gravit.code.domain.progress.service.UnitProgressService;
+import gravit.code.learning.domain.Unit;
+import gravit.code.learning.domain.UnitRepository;
+import gravit.code.progress.domain.UnitProgress;
+import gravit.code.progress.domain.UnitProgressRepository;
+import gravit.code.progress.dto.response.UnitProgressDetailResponse;
+import gravit.code.progress.service.UnitProgressService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;

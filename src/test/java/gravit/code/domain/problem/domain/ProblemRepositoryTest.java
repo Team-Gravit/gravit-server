@@ -1,9 +1,9 @@
 package gravit.code.domain.problem.domain;
 
-import gravit.code.domain.learning.domain.Problem;
-import gravit.code.domain.learning.domain.ProblemType;
-import gravit.code.domain.learning.dto.response.ProblemResponse;
-import gravit.code.domain.learning.infrastructure.ProblemJpaRepository;
+import gravit.code.learning.domain.Problem;
+import gravit.code.learning.domain.ProblemType;
+import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.learning.infrastructure.ProblemJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
