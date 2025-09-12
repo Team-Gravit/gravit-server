@@ -1,12 +1,13 @@
 package gravit.code.learning.controller;
 
 import gravit.code.auth.oauth.LoginUser;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.learning.controller.docs.LearningControllerSpecification;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.facade.LearningFacade;
 import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.learning.facade.LearningFacade;
+import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.UnitPageResponse;
+import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.user.dto.response.UserLevelResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,11 @@ public class LearningController implements LearningControllerSpecification {
     public ResponseEntity<UserLevelResponse> saveLearningResult(@AuthenticationPrincipal LoginUser loginUser,
                                                                 @Valid@RequestBody LearningResultSaveRequest request){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.saveLearningResult(loginUser.getId(), request));
+    }
+
+    @PostMapping("/reports")
+    public ResponseEntity<Boolean> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
+                                                       @Valid@RequestBody ProblemReportSubmitRequest request){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.submitProblemReport(loginUser.getId(),request));
     }
 }

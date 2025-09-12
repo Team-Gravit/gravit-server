@@ -38,7 +38,7 @@ class ProblemServiceTest {
 
     @Nested
     @DisplayName("모든 문제를 조회할 떄,")
-    class getAllProblems{
+    class GetAllProblems {
 
         private final List<Problem> problems;
         {

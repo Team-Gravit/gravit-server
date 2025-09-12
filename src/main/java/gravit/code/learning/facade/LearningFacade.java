@@ -1,22 +1,24 @@
 package gravit.code.learning.facade;
 
-import gravit.code.progress.domain.ChapterProgress;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.progress.service.ChapterProgressService;
+import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.request.RecentLearningEventDto;
 import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.progress.service.LessonProgressService;
 import gravit.code.learning.service.ProblemService;
-import gravit.code.progress.service.ProblemProgressService;
+import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.UnitProgress;
+import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.progress.dto.response.UnitProgressDetailResponse;
+import gravit.code.progress.service.ChapterProgressService;
+import gravit.code.progress.service.LessonProgressService;
+import gravit.code.progress.service.ProblemProgressService;
 import gravit.code.progress.service.UnitProgressService;
+import gravit.code.report.dto.request.ProblemReportSubmitRequest;
+import gravit.code.report.service.ReportService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
-import gravit.code.global.event.LessonCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class LearningFacade {
 
     private final UserService userService;
     private final ProblemService problemService;
+    private final ReportService reportService;
 
     private final ChapterProgressService chapterProgressService;
     private final UnitProgressService unitProgressService;
@@ -78,5 +81,10 @@ public class LearningFacade {
         publisher.publishEvent(new LessonCompletedEvent(userId, 20));
 
         return userService.updateUserLevelAndXp(userId);
+    }
+
+    @Transactional
+    public Boolean submitProblemReport(Long userId, ProblemReportSubmitRequest request){
+        return reportService.saveReport(userId, request);
     }
 }
