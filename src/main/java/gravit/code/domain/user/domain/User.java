@@ -17,30 +17,27 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at IS NULL") // 기본은 활성만
-@SQLDelete(sql = "UPDATE users SET deleted_at = NOW(), status = 'DELETED' WHERE id = ?")
+@SQLDelete(sql = "UPDATE users SET handle = NULL, deleted_at = NOW(), status = 'DELETED' WHERE id = ?")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "provider_id", nullable = false)
     private String providerId;
 
-    @Column(columnDefinition = "varchar(50)", nullable = false)
+    @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Column(columnDefinition = "varchar(50)", nullable = false, unique = true)
+    @Column(name = "handle", unique = true)
     private String handle;
 
-    @Column(columnDefinition = "integer", nullable = false)
-    private Integer level;
-
-    @Column(columnDefinition = "integer", nullable = false)
-    private Integer xp;
+    @Embedded
+    private UserLevel level;
 
     @Column(name = "created_at",  nullable = false)
     private LocalDateTime createdAt;
@@ -51,7 +48,7 @@ public class User {
     @Column(name = "profile_img_number", nullable = false)
     private int profileImgNumber;
 
-    @Column(name = "is_onboarded")
+    @Column(name = "is_onboarded", nullable = false)
     private boolean isOnboarded;
 
     @Enumerated(EnumType.STRING)
@@ -65,8 +62,7 @@ public class User {
         this.nickname = nickname;
         this.handle = handle;
         this.profileImgNumber = profileImgNumber;
-        this.level = 1;
-        this.xp = 0;
+        this.level = new UserLevel(1, 0);
         this.createdAt = createdAt;
         this.deletedAt = null;
         this.isOnboarded = false;
@@ -99,13 +95,6 @@ public class User {
         validateUpdateProfile(nickname, profileImgNumber);
         this.nickname = nickname;
         this.profileImgNumber = profileImgNumber;
-    }
-
-    public void requestDelete(){
-        if(!this.status.equals(UserStatus.ACTIVE)){
-            throw new RestApiException(CustomErrorCode.USER_STATUS_NOT_VALID);
-        }
-        this.status = UserStatus.INACTIVE;
     }
 
     private void validateOnboard(String nickname, int profileImgNumber) {
@@ -143,27 +132,5 @@ public class User {
         if (!nickname.matches("^[가-힣a-zA-Z0-9]+$")) {
             throw new RestApiException(CustomErrorCode.NICKNAME_PATTERN_INVALID);
         }
-    }
-
-    public void updateXp(Integer xp){
-        this.xp = xp;
-        updateLevel(this.xp);
-    }
-
-    private void updateLevel(Integer totalXp){
-        this.level = calculateLevel(totalXp);
-    }
-
-    private Integer calculateLevel(Integer totalXp){
-        if(totalXp < 100) return 1;
-        if(totalXp < 200) return 2;
-        if(totalXp < 400) return 3;
-        if(totalXp < 700) return 4;
-        if(totalXp < 1100) return 5;
-        if(totalXp < 1600) return 6;
-        if(totalXp < 2200) return 7;
-        if(totalXp < 2900) return 8;
-        if(totalXp < 3700) return 9;
-        else return 10;
     }
 }

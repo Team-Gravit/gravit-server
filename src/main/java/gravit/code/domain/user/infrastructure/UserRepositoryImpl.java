@@ -48,4 +48,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<MyPageResponse> findMyPageByUserId(Long userId) {
         return jpaRepository.findMyPageByUserId(userId);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaRepository.deleteById(id);
+    }
 }

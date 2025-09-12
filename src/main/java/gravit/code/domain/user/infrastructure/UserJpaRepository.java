@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     @Query("""
-        SELECT new gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse(u.nickname, u.level, u.xp)
+        SELECT new gravit.code.domain.mainPage.dto.response.MainPageUserSummaryResponse(u.nickname, u.level.level, u.level.xp)
         FROM User u
         WHERE u.id = :userId
     """)
@@ -36,4 +36,6 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         where u.id = :userId
     """)
     Optional<MyPageResponse> findMyPageByUserId(@Param("userId") Long userId);
+
+    void deleteById(Long id);
 }

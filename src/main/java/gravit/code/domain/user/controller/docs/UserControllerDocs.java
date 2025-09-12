@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "User API", description = "유저 관련 API")
@@ -168,4 +169,37 @@ public interface UserControllerDocs {
     })
     @GetMapping("/my-page")
     ResponseEntity<MyPageResponse> getMyPage(@AuthenticationPrincipal LoginUser loginUser);
+
+    @Operation(
+            summary = "유저 삭제(탈퇴)",
+            description = "로그인한 사용자를 탈퇴 처리합니다<br>" +
+                    "🔐 <strong>Jwt 필요</strong><br>"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 유저 삭제(탈퇴) 성공"),
+            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 조회 실패",
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외 발생",
+                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @PostMapping("/me/delete")
+    ResponseEntity<Void> deleteUser(@AuthenticationPrincipal LoginUser loginUser);
+
+
 }

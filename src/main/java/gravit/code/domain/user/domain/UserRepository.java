@@ -13,4 +13,5 @@ public interface UserRepository {
     Optional<MainPageUserSummaryResponse> findUserMainPageSummaryByUserId(Long userId);
     boolean existsByHandle(String handle);
     Optional<MyPageResponse> findMyPageByUserId(Long userId);
+    void deleteById(Long id);
 }
