@@ -22,29 +22,29 @@ public class Problem {
     private String question;
 
     @Column(columnDefinition = "text", nullable = false)
-    private String answer;
+    private String content;
 
     @Column(columnDefinition = "text", nullable = false)
-    private String options;
+    private String answer;
 
     @Column(name = "lesson_id", columnDefinition = "bigint", nullable = false)
     private Long lessonId;
 
     @Builder
-    private Problem(ProblemType problemType, String question, String answer, String options, Long lessonId) {
+    private Problem(ProblemType problemType, String question, String content, String answer, Long lessonId) {
         this.problemType = problemType;
         this.question = question;
+        this.content = content;
         this.answer = answer;
-        this.options = options;
         this.lessonId = lessonId;
     }
 
-    public static Problem create(ProblemType problemType, String question, String answer, String options, Long lessonId) {
+    public static Problem create(ProblemType problemType, String question, String content, String answer, Long lessonId) {
         return Problem.builder()
                 .problemType(problemType)
                 .question(question)
+                .content(content)
                 .answer(answer)
-                .options(options)
                 .lessonId(lessonId)
                 .build();
     }
