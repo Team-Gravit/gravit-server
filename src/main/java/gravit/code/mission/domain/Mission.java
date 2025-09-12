@@ -21,7 +21,7 @@ public class Mission {
     @Column(name = "progress_rate", columnDefinition = "double precision", nullable = false)
     private Double progressRate;
 
-    @Column(name = "user_id", columnDefinition = "bigint", nullable = false)
+    @Column(name = "user_id", columnDefinition = "bigint", nullable = false, unique = true)
     private Long userId;
 
     @Builder
