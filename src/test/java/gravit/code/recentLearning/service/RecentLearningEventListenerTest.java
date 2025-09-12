@@ -2,9 +2,8 @@ package gravit.code.recentLearning.service;
 
 import gravit.code.progress.dto.response.ChapterSummaryResponse;
 import gravit.code.progress.service.ChapterProgressService;
-import gravit.code.learning.dto.request.RecentLearningEventDto;
-import gravit.code.recentLearning.service.RecentLearningEventHandler;
-import gravit.code.recentLearning.service.RecentLearningService;
+import gravit.code.learning.dto.request.RecentLearningEvent;
+import gravit.code.recentLearning.listener.RecentLearningEventListener;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RecentLearningEventHandlerTest {
+class RecentLearningEventListenerTest {
 
     @Mock
     private ChapterProgressService chapterProgressService;
@@ -24,7 +23,7 @@ class RecentLearningEventHandlerTest {
     private RecentLearningService recentLearningService;
 
     @InjectMocks
-    private RecentLearningEventHandler recentLearningEventHandler;
+    private RecentLearningEventListener recentLearningEventHandler;
 
     @Test
     @DisplayName("최근 학습 업데이트 이밴트가 발행되면, 최근 학습 업데이트 메소드가 호출된다.")
@@ -33,7 +32,7 @@ class RecentLearningEventHandlerTest {
         Long userId = 1L;
         Long chapterId = 1L;
 
-        RecentLearningEventDto recentLearningEventDto = new RecentLearningEventDto(userId, chapterId);
+        RecentLearningEvent recentLearningEventDto = new RecentLearningEvent(userId, chapterId);
         ChapterSummaryResponse chapterSummaryResponse = mock(ChapterSummaryResponse.class);
 
         when(chapterProgressService.getChapterSummary(userId, chapterId)).thenReturn(chapterSummaryResponse);

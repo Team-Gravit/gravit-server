@@ -1,6 +1,6 @@
 package gravit.code.learning.dto.request;
 
-public record RecentLearningEventDto(
+public record RecentLearningEvent(
         Long userId,
         Long chapterId
 ) {

@@ -5,7 +5,7 @@ import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.service.ChapterProgressService;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.dto.request.RecentLearningEventDto;
+import gravit.code.learning.dto.request.RecentLearningEvent;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.progress.service.LessonProgressService;
@@ -291,7 +291,7 @@ class LearningFacadeTest {
 
         private final Long userId = 1L;
         private final LearningResultSaveRequest validRequest = new LearningResultSaveRequest(
-                1L, 2L, 3L,
+                1L, 2L, 3L, 150, 80,
                 List.of(
                         new ProblemResultRequest(1L, true, 0L),
                         new ProblemResultRequest(2L, false, 2L),
@@ -358,7 +358,7 @@ class LearningFacadeTest {
 
                 //then
                 verify(chapterProgressService, times(1)).updateChapterProgress(chapterProgress);
-                verify(publisher, times(1)).publishEvent(new RecentLearningEventDto(userId, validRequest.chapterId()));
+                verify(publisher, times(1)).publishEvent(new RecentLearningEvent(userId, validRequest.chapterId()));
                 verify(userService, times(1)).updateUserLevelAndXp(userId);
             }
 
@@ -382,7 +382,7 @@ class LearningFacadeTest {
 
                 //then
                 verify(chapterProgressService, never()).updateChapterProgress(any());
-                verify(publisher, times(1)).publishEvent(new RecentLearningEventDto(userId, validRequest.chapterId()));
+                verify(publisher, times(1)).publishEvent(new RecentLearningEvent(userId, validRequest.chapterId()));
                 verify(userService, times(1)).updateUserLevelAndXp(userId);
             }
         }

@@ -271,6 +271,8 @@ class LearningControllerTest {
                 null,
                 2L,
                 null,
+                null,
+                null,
                 List.of(
                         new ProblemResultRequest(null, true, 0L),
                         new ProblemResultRequest(2L, null, 2L),
@@ -282,6 +284,8 @@ class LearningControllerTest {
                 1L,
                 2L,
                 3L,
+                120,
+                85,
                 List.of(
                         new ProblemResultRequest(1L, true, 0L),
                         new ProblemResultRequest(2L, false, 2L),
