@@ -25,7 +25,7 @@ public class LessonProgressService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
 
         LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId)
-                .orElseGet(() -> LessonProgress.create(userId, targetLesson.getId(), false));
+                .orElseGet(() -> LessonProgress.create(userId, targetLesson.getId()));
 
         lessonProgress.updateStatus();
 

@@ -21,7 +21,6 @@ public class MissionEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCompleteLessonMission(LessonMissionEvent lessonMissionDto){
         try{
-            // TODO 같은 레슨을 반복해서 완료했을 때의 처리 -> lessonProgress 테이블 필드 추가
             missionService.handleLessonMission(lessonMissionDto);
         }catch(Exception e){
             log.error("Exception occurred while handling complete lesson mission event with {}", e.getMessage());

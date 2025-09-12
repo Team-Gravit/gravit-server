@@ -80,7 +80,7 @@ public class LearningFacade {
 
         publisher.publishEvent(new RecentLearningEvent(userId, request.chapterId()));
         publisher.publishEvent(new LessonCompletedEvent(userId, 20));
-        publisher.publishEvent(new LessonMissionEvent(userId, request.learningTime(), request.accuracy()));
+        publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
 
         return userService.updateUserLevelAndXp(userId);
     }

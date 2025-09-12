@@ -7,6 +7,8 @@ import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.dto.common.FollowMissionEvent;
 import gravit.code.mission.dto.common.LessonMissionEvent;
+import gravit.code.progress.domain.LessonProgress;
+import gravit.code.progress.domain.LessonProgressRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class MissionService {
 
     private final MissionRepository missionRepository;
+    private final LessonProgressRepository lessonProgressRepository;
     private final UserRepository userRepository;
 
     public void handleLessonMission(LessonMissionEvent lessonMissionDto){
@@ -29,10 +32,12 @@ public class MissionService {
 
         MissionType missionType = mission.getMissionType();
 
+        boolean isFirstAttempt = checkFirstAttemptLesson(lessonMissionDto.userId(), lessonMissionDto.lessonId());
+
         // 미션 타입에 맞게 진행도 업데이트
-        if(missionType.getType().startsWith("COMPLETE_LESSON")){
+        if(missionType.getType().startsWith("COMPLETE_LESSON") && isFirstAttempt){
             mission.updateCompleteLessonProgress();
-        }else if(missionType.getType().startsWith("PERFECT_LESSONS") && lessonMissionDto.accuracy() == 100){
+        }else if(missionType.getType().startsWith("PERFECT_LESSONS") && lessonMissionDto.accuracy() == 100 && isFirstAttempt){
             mission.updatePerfectLessonProgress();
         }else{
             mission.updateLearningMinutesProgress(lessonMissionDto.learningTime());
@@ -74,5 +79,12 @@ public class MissionService {
 
         user.updateXp(awardXp);
         userRepository.save(user);
+    }
+
+    private boolean checkFirstAttemptLesson(Long userId, Long lessonId){
+        LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(userId, lessonId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_PROGRESS_NOT_FOUND));
+
+        return lessonProgress.getAttemptCount() == 1;
     }
 }
