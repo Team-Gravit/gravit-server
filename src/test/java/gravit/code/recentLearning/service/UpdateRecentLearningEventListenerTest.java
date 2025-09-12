@@ -2,7 +2,7 @@ package gravit.code.recentLearning.service;
 
 import gravit.code.progress.dto.response.ChapterSummaryResponse;
 import gravit.code.progress.service.ChapterProgressService;
-import gravit.code.learning.dto.request.RecentLearningEvent;
+import gravit.code.recentLearning.dto.common.UpdateRecentLearningEvent;
 import gravit.code.recentLearning.listener.RecentLearningEventListener;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RecentLearningEventListenerTest {
+class UpdateRecentLearningEventListenerTest {
 
     @Mock
     private ChapterProgressService chapterProgressService;
@@ -32,7 +32,7 @@ class RecentLearningEventListenerTest {
         Long userId = 1L;
         Long chapterId = 1L;
 
-        RecentLearningEvent recentLearningEventDto = new RecentLearningEvent(userId, chapterId);
+        UpdateRecentLearningEvent recentLearningEventDto = new UpdateRecentLearningEvent(userId, chapterId);
         ChapterSummaryResponse chapterSummaryResponse = mock(ChapterSummaryResponse.class);
 
         when(chapterProgressService.getChapterSummary(userId, chapterId)).thenReturn(chapterSummaryResponse);

@@ -1,5 +1,6 @@
 package gravit.code.mission.listener;
 
+import gravit.code.mission.dto.common.CreateMissionEvent;
 import gravit.code.mission.dto.common.FollowMissionEvent;
 import gravit.code.mission.dto.common.LessonMissionEvent;
 import gravit.code.mission.service.MissionService;
@@ -34,6 +35,16 @@ public class MissionEventListener {
             missionService.handleFollowMission(followMissionDto);
         }catch(Exception e){
             log.error("Exception occurred while handling follow mission event with {}", e.getMessage());
+        }
+    }
+
+    @Async("missionAsync")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void createMission(CreateMissionEvent createMissionDto){
+        try{
+            missionService.createMission(createMissionDto);
+        }catch(Exception e){
+            log.error("Exception occurred while creating mission for new User with {}", e.getMessage());
         }
     }
 }

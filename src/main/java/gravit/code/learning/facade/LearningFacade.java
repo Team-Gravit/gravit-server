@@ -2,7 +2,7 @@ package gravit.code.learning.facade;
 
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.dto.request.RecentLearningEvent;
+import gravit.code.recentLearning.dto.common.UpdateRecentLearningEvent;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.learning.service.ProblemService;
 import gravit.code.mission.dto.common.LessonMissionEvent;
@@ -78,7 +78,7 @@ public class LearningFacade {
         if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(unitProgress)))
             chapterProgressService.updateChapterProgress(chapterProgress);
 
-        publisher.publishEvent(new RecentLearningEvent(userId, request.chapterId()));
+        publisher.publishEvent(new UpdateRecentLearningEvent(userId, request.chapterId()));
         publisher.publishEvent(new LessonCompletedEvent(userId, 20));
         publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
 

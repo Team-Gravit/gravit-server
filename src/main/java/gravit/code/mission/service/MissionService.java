@@ -5,8 +5,10 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
+import gravit.code.mission.dto.common.CreateMissionEvent;
 import gravit.code.mission.dto.common.FollowMissionEvent;
 import gravit.code.mission.dto.common.LessonMissionEvent;
+import gravit.code.mission.util.MissionUtil;
 import gravit.code.progress.domain.LessonProgress;
 import gravit.code.progress.domain.LessonProgressRepository;
 import gravit.code.user.domain.User;
@@ -71,6 +73,15 @@ public class MissionService {
         mission.updateFollowProgress();
 
         awardMissionXp(followMissionDto.userId(), mission.getMissionType().getAwardXp());
+    }
+
+    public void createMission(CreateMissionEvent createMissionDto){
+        Mission mission = Mission.builder()
+                .missionType(MissionUtil.getRandomMissionType())
+                .userId(createMissionDto.userId())
+                .build();
+
+        missionRepository.save(mission);
     }
 
     private void awardMissionXp(Long userId, Integer awardXp){
