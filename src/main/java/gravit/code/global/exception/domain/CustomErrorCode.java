@@ -64,6 +64,7 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Report
     REPORT_TYPE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
+    ALREADY_SUBMITTED_REPORT(HttpStatus.BAD_REQUEST, "REPORT_4002", "이미 제출된 신고입니다."),
 
     // Friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),

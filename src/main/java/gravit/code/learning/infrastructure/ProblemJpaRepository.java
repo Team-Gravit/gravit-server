@@ -16,4 +16,6 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
         ORDER BY p.id
     """)
     List<Problem> findAllByLessonId(@Param("lessonId")Long lessonId);
+
+    boolean existsProblemById(Long id);
 }
