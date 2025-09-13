@@ -17,7 +17,10 @@ public class LessonProgress {
     private Long id;
 
     @Column(name = "attempt_count", columnDefinition = "integer", nullable = false)
-    private Integer attemptCount;
+    private int attemptCount;
+
+    @Column(name = "learning_time", columnDefinition = "integer", nullable = false)
+    private int learningTime;
 
     @Column(name = "is_completed", columnDefinition = "boolean", nullable = false)
     private boolean isCompleted;
@@ -32,6 +35,7 @@ public class LessonProgress {
     private LessonProgress(Long userId, Long lessonId) {
         this.userId = userId;
         this.attemptCount = 0;
+        this.learningTime = 0;
         this.lessonId = lessonId;
         this.isCompleted = false;
     }
@@ -43,8 +47,9 @@ public class LessonProgress {
                 .build();
     }
 
-    public void updateStatus(){
-        this.isCompleted = true;
+    public void updateStatus(int learningTime){
         this.attemptCount += 1;
+        this.learningTime = learningTime;
+        this.isCompleted = true;
     }
 }

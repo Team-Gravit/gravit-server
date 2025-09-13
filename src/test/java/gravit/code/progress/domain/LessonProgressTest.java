@@ -17,7 +17,7 @@ class LessonProgressTest {
         Boolean isCompleted = false;
 
         // when
-        LessonProgress lessonProgress = LessonProgress.create(userId, lessonId, isCompleted);
+        LessonProgress lessonProgress = LessonProgress.create(userId, lessonId);
 
         // then
         assertThat(lessonProgress.getUserId()).isEqualTo(userId);
