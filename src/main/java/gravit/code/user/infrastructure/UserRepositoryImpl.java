@@ -30,8 +30,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByNickname(String nickname) {
-        return jpaRepository.existsByNickname(nickname);
+    public boolean existsById(Long id) {
+        return jpaRepository.existsById(id);
     }
 
     @Override

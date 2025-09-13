@@ -46,11 +46,4 @@ public class UserController implements UserControllerDocs {
         return ResponseEntity.ok(myPageResponse);
     }
 
-    @DeleteMapping("/me/delete")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal LoginUser loginUser){
-        Long userId = loginUser.getId();
-        userService.deleteUser(userId);
-        return ResponseEntity.ok().build();
-    }
-
 }

@@ -75,12 +75,4 @@ public class UserService {
         return userRepository.findUserMainPageSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
     }
-
-    @Transactional
-    public void deleteUser(Long userId){
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
-
-        userRepository.deleteById(user.getId());
-    }
 }
