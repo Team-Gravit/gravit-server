@@ -188,26 +188,26 @@ class LearningFacadeTest {
     class GetAllProblemInLesson{
 
         private final List<ProblemResponse> problemResponses;
-        
+
         {
             Problem problem1 = Problem.create(ProblemType.OBJECTIVE, "스택의 기본 동작 원리는?", "스택 자료구조에 대한 문제입니다.", "1", 1L);
             ReflectionTestUtils.setField(problem1, "id", 1L);
-            
+
             Problem problem2 = Problem.create(ProblemType.OBJECTIVE, "큐의 특징으로 올바른 것은?", "큐 자료구조에 대한 문제입니다.", "2", 1L);
             ReflectionTestUtils.setField(problem2, "id", 2L);
-            
+
             Problem problem3 = Problem.create(ProblemType.OBJECTIVE, "연결 리스트의 장점은?", "연결 리스트에 대한 문제입니다.", "3", 1L);
             ReflectionTestUtils.setField(problem3, "id", 3L);
-            
+
             Problem problem4 = Problem.create(ProblemType.OBJECTIVE, "배열의 시간 복잡도는?", "배열 접근에 대한 문제입니다.", "1", 1L);
             ReflectionTestUtils.setField(problem4, "id", 4L);
-            
+
             Problem problem5 = Problem.create(ProblemType.SUBJECTIVE, "스택을 구현하는 방법을 설명하시오.", "스택 구현에 대한 문제입니다.", "배열이나 연결리스트로 구현 가능", 1L);
             ReflectionTestUtils.setField(problem5, "id", 5L);
-            
+
             Problem problem6 = Problem.create(ProblemType.SUBJECTIVE, "큐와 스택의 차이점을 설명하시오.", "자료구조 비교 문제입니다.", "큐는 FIFO, 스택은 LIFO", 1L);
             ReflectionTestUtils.setField(problem6, "id", 6L);
-            
+
             problemResponses = List.of(
                     ProblemResponse.create(problem1, List.of(
                             OptionResponse.create(1L, "LIFO (Last In First Out)", "스택은 마지막에 들어간 데이터가 먼저 나오는 구조입니다.", true),
@@ -350,7 +350,7 @@ class LearningFacadeTest {
                 when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId);
+                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId, validRequest.learningTime());
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(true);
 
                 //when
@@ -374,7 +374,7 @@ class LearningFacadeTest {
                 when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId);
+                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId, validRequest.learningTime());
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(false);
 
                 //when
