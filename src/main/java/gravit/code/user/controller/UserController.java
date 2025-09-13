@@ -45,4 +45,5 @@ public class UserController implements UserControllerDocs {
         MyPageResponse myPageResponse = userService.getMyPage(loginUser.getId());
         return ResponseEntity.ok(myPageResponse);
     }
+
 }

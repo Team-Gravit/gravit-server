@@ -9,8 +9,9 @@ public interface UserRepository {
     Optional<User> findById(Long id);
     Optional<User> findByProviderId(String providerId);
     void save(User user);
-    boolean existsByNickname(String nickname);
+    boolean existsById(Long id);
     Optional<MainPageUserSummaryResponse> findUserMainPageSummaryByUserId(Long userId);
     boolean existsByHandle(String handle);
     Optional<MyPageResponse> findMyPageByUserId(Long userId);
+    void deleteById(Long id);
 }

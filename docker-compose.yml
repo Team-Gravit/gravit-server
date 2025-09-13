@@ -32,6 +32,25 @@ services:
       retries: 5
       start_period: 60s
 
+  # Redis
+  redis:
+    image: redis:7.0
+    container_name: redis-gravit
+    ports:
+      - "6386:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mogaktae_js-bridge
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+volumes:
+  redis_data:
+
 networks:
   mogaktae_js-bridge:
     external: true

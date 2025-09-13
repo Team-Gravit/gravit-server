@@ -74,7 +74,7 @@ CREATE TABLE problem
     options      TEXT         NOT NULL,
     answer       TEXT         NOT NULL,
     problem_type VARCHAR(255) NOT NULL
-        CHECK (problem_type IN ('FILL_BLANK', 'SELECT_DESCRIPTION'))
+        CHECK (problem_type IN ('SUBJECTIVE', 'OBJECTIVE'))
 );
 
 CREATE TABLE friends

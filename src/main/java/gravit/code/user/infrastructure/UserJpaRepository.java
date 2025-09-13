@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     @Query("""
-        SELECT new gravit.code.mainPage.dto.response.MainPageUserSummaryResponse(u.nickname, u.level, u.xp)
+        SELECT new gravit.code.mainPage.dto.response.MainPageUserSummaryResponse(u.nickname, u.level.level, u.level.xp)
         FROM User u
         WHERE u.id = :userId
     """)
@@ -20,7 +20,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByProviderId(String providerId);
 
-    boolean existsByNickname(String nickname);
+    boolean existsById(Long id);
 
     boolean existsByHandle(String handle);
 

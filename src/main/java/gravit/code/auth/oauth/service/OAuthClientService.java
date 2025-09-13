@@ -1,11 +1,10 @@
 package gravit.code.auth.oauth.service;
 
-import gravit.code.auth.oauth.RedirectHostConst;
+import gravit.code.global.consts.RedirectHostConst;
 import gravit.code.auth.oauth.dto.OAuthUserInfo;
 import gravit.code.auth.oauth.startegy.OAuthResponseFactory;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

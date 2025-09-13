@@ -68,6 +68,13 @@ dependencies {
     // Spring-Retry
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework:spring-aspects")
+
+    // Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Redis
+    implementation "org.springframework.boot:spring-boot-starter-data-redis"
+
 }
 
 tasks.named('test') {

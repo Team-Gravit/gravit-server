@@ -1,4 +1,4 @@
-package gravit.code.auth.oauth;
+package gravit.code.global.consts;
 
 import java.util.Map;
 

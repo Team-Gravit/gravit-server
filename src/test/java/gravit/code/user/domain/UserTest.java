@@ -1,6 +1,5 @@
 package gravit.code.user.domain;
 
-import gravit.code.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +31,8 @@ class UserTest {
         assertThat(user.getHandle()).isEqualTo(handle);
         assertThat(user.getProfileImgNumber()).isEqualTo(profileImgNumber);
         assertThat(user.getCreatedAt()).isEqualTo(createdAt);
-        assertThat(user.getLevel()).isEqualTo(1);
-        assertThat(user.getXp()).isEqualTo(0);
+        assertThat(user.getLevel().getLevel()).isEqualTo(1);
+        assertThat(user.getLevel().getXp()).isEqualTo(0);
         assertThat(user.isOnboarded()).isFalse();
     }
 }
