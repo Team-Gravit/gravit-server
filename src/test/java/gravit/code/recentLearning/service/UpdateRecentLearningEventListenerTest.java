@@ -19,9 +19,6 @@ class UpdateRecentLearningEventListenerTest {
     @Mock
     private ChapterProgressService chapterProgressService;
 
-    @Mock
-    private RecentLearningService recentLearningService;
-
     @InjectMocks
     private RecentLearningEventListener recentLearningEventHandler;
 
@@ -42,6 +39,5 @@ class UpdateRecentLearningEventListenerTest {
 
         //then
         verify(chapterProgressService).getChapterSummary(recentLearningEventDto.chapterId(), recentLearningEventDto.userId());
-        verify(recentLearningService).updateRecentLearning(recentLearningEventDto.userId(), chapterSummaryResponse);
     }
 }

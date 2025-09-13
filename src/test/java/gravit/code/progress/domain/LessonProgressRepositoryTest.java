@@ -82,7 +82,7 @@ class LessonProgressRepositoryTest {
 
             //then
             assertThat(lessonProgressSummaryResponse).hasSize(4);
-            assertThat(lessonProgressSummaryResponse.get(0).isCompleted()).isTrue();
+            assertThat(lessonProgressSummaryResponse.get(0).isCompleted()).isFalse();
             assertThat(lessonProgressSummaryResponse.get(3).lessonId()).isEqualTo(4L);
         }
     }

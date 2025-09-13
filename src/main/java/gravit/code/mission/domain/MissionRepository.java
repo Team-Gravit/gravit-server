@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface MissionRepository {
     Optional<Mission> findByUserId(Long userId);
     Mission save(Mission mission);
-    List<Mission> findAllWithPagination(Pageable pageable);
+    List<Mission> findAll(Pageable pageable);
 }

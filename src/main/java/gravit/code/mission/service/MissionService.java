@@ -96,7 +96,7 @@ public class MissionService {
 
         while(true){
             Pageable pageable = PageRequest.of(offset, size);
-            List<Mission> missions = missionRepository.findAllWithPagination(pageable);
+            List<Mission> missions = missionRepository.findAll(pageable);
 
             if(missions.isEmpty())
                 break;

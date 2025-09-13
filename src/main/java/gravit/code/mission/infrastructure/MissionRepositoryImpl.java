@@ -25,7 +25,7 @@ public class MissionRepositoryImpl implements MissionRepository {
     }
 
     @Override
-    public List<Mission> findAllWithPagination(Pageable pageable) {
-        return missionJpaRepository.findAllWithPagination(pageable);
+    public List<Mission> findAll(Pageable pageable) {
+        return missionJpaRepository.findAll(pageable).getContent();
     }
 }
