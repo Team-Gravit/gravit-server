@@ -34,13 +34,14 @@ services:
 
   # Redis
   redis:
-    profiles: [ "redis" ]
     image: redis:7.0
     container_name: redis-gravit
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - mogaktae_js-bridge
     deploy:
       resources:
         limits:
