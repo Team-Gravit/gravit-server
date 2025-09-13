@@ -9,7 +9,7 @@ public class MailHtmlRenderer {
         String safeDeleteLink = escapeHtml(deleteLink);
 
         return TEMPLATE
-                .replace("${DELETE_LINK}", safeDeleteLink)
+                .replace("${DELETE_LINK}", deleteLink)
                 .replace("${DELETE_LINK_PLAIN}", safeDeleteLink);
     }
 
@@ -35,7 +35,7 @@ public class MailHtmlRenderer {
                               <tr>
                                 <td style="font-family:Arial,'Noto Sans KR',sans-serif;color:#ffffff;font-weight:800;font-size:18px;letter-spacing:.3px;">
                                   <span style="display:inline-block;width:28px;height:28px;border-radius:8px;background:#ffffff;color:#7c3aed;text-align:center;line-height:28px;margin-right:8px;font-weight:900;">G</span>
-                                  Gravit
+                                  Gravit!
                                 </td>
                               </tr>
                               <tr>

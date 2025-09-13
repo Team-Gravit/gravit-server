@@ -1,13 +1,17 @@
 package gravit.code.user.infrastructure;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.service.port.MailAuthCodeStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 import java.util.Collections;
+
+import static gravit.code.user.util.RedisMailAuthCodeConstants.GETDEL_SCRIPT;
+import static gravit.code.user.util.RedisMailAuthCodeConstants.makeMailAuthCodeKeyW;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,46 +19,32 @@ public class RedisMailAuthCodeStore implements MailAuthCodeStore {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    private static final String KEY_PREFIX = "user:delete:code:";
-
-    // 원자적 GET+DEL (Redis 6.2+ 이면 하단 주석의 getDel 대체 가능)
-    private static final DefaultRedisScript<String> GETDEL_SCRIPT =
-            new DefaultRedisScript<>(
-                    """
-                    local v = redis.call('GET', KEYS[1])
-                    if v then
-                      redis.call('DEL', KEYS[1])
-                    end
-                    return v
-                    """,
-                    String.class
-            );
-
-    private String key(String code) { return KEY_PREFIX + code; }
-
     @Override
     public void save(String mailAuthCode, long userId, int expireTimeSeconds) {
         if (expireTimeSeconds <= 0) {
-            throw new IllegalArgumentException("expireTimeSeconds must be > 0");
+            throw new RestApiException(CustomErrorCode.REDIS_EXPIRE_TIME_INVALID);
         }
-        Boolean ok = redisTemplate.opsForValue()
+
+        // 만약 중복되는 키가 없으면 true, 중복 된다면 true
+        Boolean result = redisTemplate.opsForValue()
                 .setIfAbsent(
-                        key(mailAuthCode),
+                        makeMailAuthCodeKeyW(mailAuthCode),
                         Long.toString(userId),
                         Duration.ofSeconds(expireTimeSeconds)
-                ); // SET NX EX
+                );
 
-        if (!Boolean.TRUE.equals(ok)) {
-            // 극히 드문 충돌 대비: 상위 레벨에서 코드 재생성/재시도
-            throw new RuntimeException("이미 존재하는 인증 코드입니다: " + mailAuthCode);
+        // auth code 가 중복되면 예외 발생
+        if (!Boolean.TRUE.equals(result)) {
+            throw new RestApiException(CustomErrorCode.REDIS_MAIL_AUTH_DUPLICATE);
         }
     }
 
     @Override
     public Long consume(String mailAuthCode) {
+        // 한번 조회하고 나면 해당 키 삭제
         String userId = redisTemplate.execute(
                 GETDEL_SCRIPT,
-                Collections.singletonList(key(mailAuthCode))
+                Collections.singletonList(makeMailAuthCodeKeyW(mailAuthCode))
         );
         return Long.parseLong(userId);
     }

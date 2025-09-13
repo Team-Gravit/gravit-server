@@ -21,14 +21,11 @@ public class StmpMailSender implements MailSender {
     private final JavaMailSender mailSender;
 
     @Override
-    public void sendEmailWithMailAuthCodeAndHtml(String toEmail, String serviceEmail, String subject, String deleteLink) {
-        log.info("메일 센더 내부 들어옴");
+    public void sendEmailWithDeleteLink(String toEmail, String serviceEmail, String subject, String deleteLink) {
         try{
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message,true, UTF_8.name());
             String html = MailHtmlRenderer.buildAccountDeletionEmail(deleteLink);
-
-            log.info("html 생성 완료 : {}", html);
 
             helper.setTo(toEmail);
             helper.setSubject(subject);
@@ -36,7 +33,6 @@ public class StmpMailSender implements MailSender {
             helper.setText(html, true);
 
             mailSender.send(message);
-            log.info("mail send 완료");
         } catch (MessagingException e) {
             throw new RestApiException(CustomErrorCode.MAIL_SEND_ERROR);
         }
