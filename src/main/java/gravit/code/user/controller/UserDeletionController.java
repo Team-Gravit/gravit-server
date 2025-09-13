@@ -19,9 +19,10 @@ public class UserDeletionController implements UserDeletionControllerSpecificati
     private final UserDeletionService userDeleteWithMailService;
 
     @PostMapping("/request")
-    public ResponseEntity<Void> request(@AuthenticationPrincipal LoginUser loginUser){
+    public ResponseEntity<Void> request(@AuthenticationPrincipal LoginUser loginUser,
+                                        @RequestParam String dest){
         Long userId = loginUser.getId();
-        userDeleteWithMailService.requestDeleteMailWithMailAuthCode(userId);
+        userDeleteWithMailService.requestDeleteMailWithMailAuthCode(userId, dest);
         return ResponseEntity.accepted().build();
     }
 

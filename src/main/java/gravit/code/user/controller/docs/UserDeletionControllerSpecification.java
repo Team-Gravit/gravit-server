@@ -55,7 +55,8 @@ public interface UserDeletionControllerSpecification {
             )
     })
     @PostMapping("/request")
-    ResponseEntity<Void> request(@AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<Void> request(@AuthenticationPrincipal LoginUser loginUser,
+                                 @RequestParam String dest);
 
     @Operation(
             summary = "계정 삭제 확정(메일 인증 코드 확인)",
