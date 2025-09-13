@@ -73,7 +73,7 @@ public class LearningFacade {
 
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
-        lessonProgressService.updateLessonProgressStatus(request.lessonId(), userId, request.learningTime());
+        lessonProgressService.updateLessonProgressStatus(request.lessonId(), userId);
 
         if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(unitProgress)))
             chapterProgressService.updateChapterProgress(chapterProgress);

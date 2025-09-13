@@ -1,6 +1,5 @@
 package gravit.code.mission.domain;
 
-import gravit.code.mission.util.MissionUtil;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,16 +27,12 @@ public class Mission {
     @Column(name = "user_id", columnDefinition = "bigint", nullable = false, unique = true)
     private Long userId;
 
-    @Version
-    private Long version;
-
     @Builder
     private Mission(MissionType missionType, Long userId) {
         this.missionType = missionType;
         this.progressRate = 0.0;
         this.isCompleted = false;
         this.userId = userId;
-        this.version = 0L;
     }
 
     public static Mission create(MissionType missionType, Long userId) {
@@ -109,10 +104,5 @@ public class Mission {
     public void updateFollowProgress(){
         this.progressRate += 100.0;
         this.isCompleted = true;
-    }
-
-    public void reassignMission(){
-        this.missionType = MissionUtil.getRandomMissionType();
-        this.progressRate = 0.0;
     }
 }

@@ -3,10 +3,8 @@ package gravit.code.mission.infrastructure;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,10 +20,5 @@ public class MissionRepositoryImpl implements MissionRepository {
     @Override
     public Mission save(Mission mission){
         return missionJpaRepository.save(mission);
-    }
-
-    @Override
-    public List<Mission> findAllWithPagination(Pageable pageable) {
-        return missionJpaRepository.findAllWithPagination(pageable);
     }
 }

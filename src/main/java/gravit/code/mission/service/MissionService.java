@@ -14,12 +14,7 @@ import gravit.code.progress.domain.LessonProgressRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -87,26 +82,6 @@ public class MissionService {
                 .build();
 
         missionRepository.save(mission);
-    }
-
-    @Transactional
-    public void reassignMission(){
-        int size = 10;
-        int offset = 0;
-
-        while(true){
-            Pageable pageable = PageRequest.of(offset, size);
-            List<Mission> missions = missionRepository.findAllWithPagination(pageable);
-
-            if(missions.isEmpty())
-                break;
-
-            for(Mission mission : missions){
-                mission.reassignMission();
-            }
-
-            offset++;
-        }
     }
 
     private void awardMissionXp(Long userId, Integer awardXp){

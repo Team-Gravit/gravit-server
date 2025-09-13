@@ -350,7 +350,7 @@ class LearningFacadeTest {
                 when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId, validRequest.learningTime());
+                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId);
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(true);
 
                 //when
@@ -374,7 +374,7 @@ class LearningFacadeTest {
                 when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId, validRequest.learningTime());
+                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId);
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(false);
 
                 //when
