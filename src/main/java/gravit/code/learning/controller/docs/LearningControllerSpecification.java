@@ -1,12 +1,13 @@
 package gravit.code.learning.controller.docs;
 
 import gravit.code.auth.oauth.LoginUser;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.UnitPageResponse;
+import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.user.dto.response.UserLevelResponse;
-import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -181,4 +182,63 @@ public interface LearningControllerSpecification {
     @PostMapping("/results")
     ResponseEntity<UserLevelResponse> saveLearningResult(@AuthenticationPrincipal LoginUser loginUser,
                                                          @Valid @RequestBody LearningResultSaveRequest request);
+
+    @Operation(summary = "문제 신고 제출", description = "특정 문제에 대한 오류를 신고합니다<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 문제 신고 제출 성공"),
+            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 조회 실패",
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "문제 조회 실패",
+                                            value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "REPORT_DUPLICATE", description = "🚨 중복 신고",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "중복 신고",
+                                            value = "{\"error\" : \"REPORT_DUPLICATE\", \"message\" : \"이미 신고한 문제입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "GLOBAL_4001", description = "🚨 유효성 검사 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유효성 검사 실패",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외 발생",
+                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @PostMapping("/reports")
+    ResponseEntity<Boolean> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
+                                                @Valid @RequestBody ProblemReportSubmitRequest request);
 }
