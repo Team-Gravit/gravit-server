@@ -1,5 +1,8 @@
 package gravit.code.user.service;
 
+import gravit.code.global.event.OnboardingUserLeagueEvent;
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.recentLearning.dto.common.InitRecentLearningEvent;
 import gravit.code.recentLearning.service.RecentLearningService;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
@@ -7,9 +10,6 @@ import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserResponse;
-import gravit.code.global.event.OnboardingUserLeagueEvent;
-import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -55,7 +54,7 @@ class UserServiceTest {
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        doNothing().when(recentLearningService).initRecentLearning(any(Long.class));
+        doNothing().when(eventPublisher).publishEvent(any(InitRecentLearningEvent.class));
         doNothing().when(eventPublisher).publishEvent(any(OnboardingUserLeagueEvent.class));
 
 
