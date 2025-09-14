@@ -4,7 +4,7 @@ package gravit.code.userLeague.controller;
 import gravit.code.auth.oauth.LoginUser;
 import gravit.code.userLeague.controller.docs.UserLeagueRankControllerDocs;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
-import gravit.code.userLeague.service.UserLeagueRankService;
+import gravit.code.userLeague.service.LeagueRankingQueryService;
 import gravit.code.global.dto.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/rank")
+@RequestMapping("/api/v1/ranking")
 @RequiredArgsConstructor
-public class UserLeagueRankController implements UserLeagueRankControllerDocs {
-    private final UserLeagueRankService userLeagueRankService;
+public class LeagueRankingQueryController implements UserLeagueRankControllerDocs {
+    private final LeagueRankingQueryService leagueRankingQueryService;
 
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")
     public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRanking(@PathVariable("leagueId") Long leagueId,
                                                                          @PathVariable("pageNum") int pageNum){
-        SliceResponse<LeagueRankRow> sliceResponse = userLeagueRankService.getLeagueRanks(leagueId, pageNum);
+        SliceResponse<LeagueRankRow> sliceResponse = leagueRankingQueryService.findLeagueRanking(leagueId, pageNum);
         return ResponseEntity.ok(sliceResponse);
     }
 
@@ -33,7 +33,7 @@ public class UserLeagueRankController implements UserLeagueRankControllerDocs {
     public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRankingByUser(@PathVariable("pageNum") int pageNum,
                                                                                @AuthenticationPrincipal LoginUser loginUser){
         Long userId = loginUser.getId();
-        SliceResponse<LeagueRankRow> sliceResponse = userLeagueRankService.getUserLeagueRanks(userId, pageNum);
+        SliceResponse<LeagueRankRow> sliceResponse = leagueRankingQueryService.findLeagueRankingByUser(userId, pageNum);
         return ResponseEntity.ok(sliceResponse);
     }
 }
