@@ -2,8 +2,7 @@ package gravit.code.user.service;
 
 import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.recentLearning.dto.common.InitRecentLearningEvent;
-import gravit.code.recentLearning.service.RecentLearningService;
+import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -36,9 +35,6 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private RecentLearningService recentLearningService;
-
-    @Mock
     private ApplicationEventPublisher eventPublisher;
 
 
@@ -54,7 +50,7 @@ class UserServiceTest {
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        doNothing().when(eventPublisher).publishEvent(any(InitRecentLearningEvent.class));
+        doNothing().when(eventPublisher).publishEvent(any(CreateLearningEvent.class));
         doNothing().when(eventPublisher).publishEvent(any(OnboardingUserLeagueEvent.class));
 
 

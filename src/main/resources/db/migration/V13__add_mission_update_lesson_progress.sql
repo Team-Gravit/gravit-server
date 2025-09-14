@@ -1,4 +1,4 @@
--- V12__add_mission_update_lesson_progress.sql
+-- V13__add_mission_update_lesson_progress.sql
 
 -- 1) Mission 테이블 추가
 CREATE TABLE mission

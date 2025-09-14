@@ -42,9 +42,9 @@ public class MissionService {
         boolean isFirstAttempt = checkFirstAttemptLesson(lessonMissionDto.userId(), lessonMissionDto.lessonId());
 
         // 미션 타입에 맞게 진행도 업데이트
-        if(missionType.getType().startsWith("COMPLETE_LESSON") && isFirstAttempt){
+        if(missionType.name().startsWith("COMPLETE_LESSON") && isFirstAttempt){
             mission.updateCompleteLessonProgress();
-        }else if(missionType.getType().startsWith("PERFECT_LESSONS") && lessonMissionDto.accuracy() == 100 && isFirstAttempt){
+        }else if(missionType.name().startsWith("PERFECT_LESSONS") && lessonMissionDto.accuracy() == 100 && isFirstAttempt){
             mission.updatePerfectLessonProgress();
         }else{
             mission.updateLearningMinutesProgress(lessonMissionDto.learningTime());
