@@ -30,7 +30,7 @@ public interface UserLeagueRankControllerDocs {
                             description = "리그 ID",
                             in = ParameterIn.PATH,
                             required = true,
-                            example = "4"
+                            example = "1"
                     ),
                     @Parameter(
                             name = "pageNum",

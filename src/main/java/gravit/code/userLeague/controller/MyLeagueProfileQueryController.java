@@ -1,6 +1,7 @@
 package gravit.code.userLeague.controller;
 
 import gravit.code.auth.oauth.LoginUser;
+import gravit.code.userLeague.controller.docs.MyLeagueProfileQueryControllerDocs;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import gravit.code.userLeague.service.MyLeagueProfileQueryService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/ranking/me")
 @RequiredArgsConstructor
-public class MyLeagueProfileQueryController {
+public class MyLeagueProfileQueryController implements MyLeagueProfileQueryControllerDocs {
     private final MyLeagueProfileQueryService myLeagueInfoQueryService;
 
     @GetMapping
