@@ -1,6 +1,11 @@
 package gravit.code.user.service;
 
+import gravit.code.global.event.OnboardingUserLeagueEvent;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mainPage.dto.response.MainPageUserSummaryResponse;
+import gravit.code.mission.dto.common.CreateMissionEvent;
+import gravit.code.recentLearning.dto.common.InitRecentLearningEvent;
 import gravit.code.recentLearning.service.RecentLearningService;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
@@ -9,9 +14,6 @@ import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
-import gravit.code.global.event.OnboardingUserLeagueEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -39,9 +41,9 @@ public class UserService {
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
 
-        recentLearningService.initRecentLearning(userId);
-
+        publisher.publishEvent(new InitRecentLearningEvent(user.getId()));
         publisher.publishEvent(new OnboardingUserLeagueEvent(user.getId()));
+        publisher.publishEvent(new CreateMissionEvent(user.getId()));
 
         return UserResponse.from(user);
     }

@@ -16,6 +16,12 @@ public class LessonProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "attempt_count", columnDefinition = "integer", nullable = false)
+    private int attemptCount;
+
+    @Column(name = "learning_time", columnDefinition = "integer", nullable = false)
+    private int learningTime;
+
     @Column(name = "is_completed", columnDefinition = "boolean", nullable = false)
     private boolean isCompleted;
 
@@ -26,21 +32,24 @@ public class LessonProgress {
     private Long lessonId;
 
     @Builder
-    private LessonProgress(Long userId, Long lessonId, boolean isCompleted) {
+    private LessonProgress(Long userId, Long lessonId) {
         this.userId = userId;
+        this.attemptCount = 0;
+        this.learningTime = 0;
         this.lessonId = lessonId;
-        this.isCompleted = isCompleted;
+        this.isCompleted = false;
     }
 
-    public static LessonProgress create(Long userId, Long lessonId, boolean isCompleted) {
+    public static LessonProgress create(Long userId, Long lessonId) {
         return LessonProgress.builder()
                 .userId(userId)
                 .lessonId(lessonId)
-                .isCompleted(isCompleted)
                 .build();
     }
 
-    public void updateStatus(){
+    public void updateStatus(int learningTime){
+        this.attemptCount += 1;
+        this.learningTime = learningTime;
         this.isCompleted = true;
     }
 }

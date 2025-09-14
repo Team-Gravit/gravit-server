@@ -47,9 +47,9 @@ class LessonProgressRepositoryTest {
         Lesson lesson3 = lessonRepository.save(Lesson.create("스택 활용 문제", 12L, 1L));
         Lesson lesson4 = lessonRepository.save(Lesson.create("스택 심화 응용", 15L, 1L));
 
-        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson1.getId(), true));
-        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson2.getId(), true));
-        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson3.getId(), false));
+        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson1.getId()));
+        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson2.getId()));
+        lessonProgressRepository.save(LessonProgress.create(validUser.getId(), lesson3.getId()));
     }
 
     @Nested
@@ -82,7 +82,7 @@ class LessonProgressRepositoryTest {
 
             //then
             assertThat(lessonProgressSummaryResponse).hasSize(4);
-            assertThat(lessonProgressSummaryResponse.get(0).isCompleted()).isTrue();
+            assertThat(lessonProgressSummaryResponse.get(0).isCompleted()).isFalse();
             assertThat(lessonProgressSummaryResponse.get(3).lessonId()).isEqualTo(4L);
         }
     }
