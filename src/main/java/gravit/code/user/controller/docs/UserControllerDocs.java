@@ -17,9 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User API", description = "유저 관련 API")
 public interface UserControllerDocs {
@@ -168,4 +166,5 @@ public interface UserControllerDocs {
     })
     @GetMapping("/my-page")
     ResponseEntity<MyPageResponse> getMyPage(@AuthenticationPrincipal LoginUser loginUser);
+
 }

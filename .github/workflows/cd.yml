@@ -33,6 +33,8 @@ jobs:
           spring.flyway.user: ${{secrets.POSTGRESQL_USERNAME}}
           spring.flyway.password: ${{secrets.POSTGRESQL_PASSWORD}}
 
+          spring.mail.password: ${{secrets.STMP_PASSWORD}}
+
           spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           spring.security.oauth2.client.registration.google.redirect-uri: ${{ secrets.GOOGLE_REDIRECT_URI }}

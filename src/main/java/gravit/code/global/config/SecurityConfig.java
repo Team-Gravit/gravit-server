@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Swagger 관련 경로 허용
                 .requestMatchers("/api/v1/oauth/**").permitAll()
                 .requestMatchers("/api/v1/oauth/android").permitAll()
+                .requestMatchers("/api/v1/users/me/delete/confirm").permitAll()
                 .anyRequest().authenticated());
 
         // JwtFilter 추가

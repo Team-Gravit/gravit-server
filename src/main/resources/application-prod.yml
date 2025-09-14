@@ -17,6 +17,25 @@ spring:
         show_sql: true
     open-in-view: false
 
+  data:
+    redis:
+      host: redis-gravit
+      port: 6379
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: gravit4746@gmail.com
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail.smtp.debug: true # prod 에선 이 설정을 고민해야함(보안문제)
+      mail.smtp.auth: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.require: true
+
   flyway:
     enabled: true
     user: ${POSTGRESQL_USERNAME}
@@ -78,3 +97,8 @@ jwt:
 auth0:
   issuer: ${AUTH0_ISSUER}
   android-client-id: ${ANDROID_CLIENT_ID}
+
+user-delete-mail:
+  code-length: 16
+  expire-time: 180
+  service-email: gravit4746@gmail.com
