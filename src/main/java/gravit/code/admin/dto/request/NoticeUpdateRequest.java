@@ -3,9 +3,10 @@ package gravit.code.admin.dto.request;
 import gravit.code.notice.domain.NoticeStatus;
 
 public record NoticeUpdateRequest(
+        Long noticeId,
         String title,
         String content,
-        NoticeStatus noticeStatus,
+        NoticeStatus status,
         boolean pinned
 ) {
 }

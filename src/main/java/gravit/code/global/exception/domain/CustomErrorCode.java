@@ -92,7 +92,8 @@ public enum CustomErrorCode implements ErrorCode {
     NOTICE_SUMMARY_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4002", "공지 사항의 요약이 유효하지 않습니다."),
     NOTICE_CONTENT_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4003", "공지 사항의 내용이 유효하지 않습니다."),
     NOTICE_PINNED_MUST_BE_PUBLISHED(HttpStatus.BAD_REQUEST, "NOTICE_4004", "핀을 고정하려면 PUBLISHED 상태여야 합니다."),
-
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE_4041", "존재하지 않는 공지사항입니다."),
+    NOTICE_STATUS_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4005", "공지 사항의 상태가 PUBLISHED, ARCHIVED 에서 DRAFT 로 변경될 수 없습니다."),
 
     // Dest
     DEST_NOT_VALID(HttpStatus.BAD_REQUEST, "DEST_4001", "유효하지 않은 Dest 입니다. (local/prod 만 유효합니다.)"),

@@ -9,21 +9,24 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
+import static gravit.code.notice.domain.NoticeStatus.DRAFT;
+import static gravit.code.notice.domain.NoticeStatus.PUBLISHED;
 import static java.time.temporal.ChronoUnit.MICROS;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Slf4j
 public class Notice extends BaseEntity {
 
     private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
-    private static final int TITLE_MAX_SIZE = 200;
-    private static final int SUMMARY_MAX_SIZE = 300;
-
+    private static final int TITLE_MAX_SIZE = 50;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +34,8 @@ public class Notice extends BaseEntity {
 
     @Column(name = "title", nullable = false)
     private String title;
-
-    @Column(name = "summary", nullable = false)
-    private String summary;
-
+    
+    // SIZE 커지면 Lob 사용 고려
     @Column(name = "content", nullable = false)
     private String content;
 
@@ -52,15 +53,14 @@ public class Notice extends BaseEntity {
     private LocalDateTime publishedAt;
 
     @Builder
-    public Notice (String title,
-                   String summary,
-                   String content,
-                   User author,
-                   NoticeStatus status,
-                   boolean pinned,
-                   LocalDateTime publishedAt) {
+    private Notice (
+            String title,
+            String content,
+            User author,
+            NoticeStatus status,
+            boolean pinned,
+            LocalDateTime publishedAt) {
         this.title = title;
-        this.summary = summary;
         this.content = content;
         this.author = author;
         this.status = status;
@@ -68,19 +68,17 @@ public class Notice extends BaseEntity {
         this.publishedAt = publishedAt;
     }
 
-    public static Notice create(String title,
-                                String content,
-                                User author,
-                                NoticeStatus status,
-                                boolean pinned) {
+    public static Notice create(
+            String title,
+            String content,
+            User author,
+            NoticeStatus status,
+            boolean pinned) {
         validate(title, content, status, pinned);
         LocalDateTime publishedAt = getLocalDateTime(status);
-        String summary = generateSummary(content);
-        validateSummary(summary);
 
         return Notice.builder()
                 .title(title.trim())
-                .summary(summary)
                 .content(content)
                 .author(author)
                 .status(status)
@@ -89,32 +87,48 @@ public class Notice extends BaseEntity {
                 .build();
     }
 
+    public void update(
+            String title,
+            String content,
+            NoticeStatus status,
+            boolean pinned) {
+        validateTitle(title);
+        validateContent(content);
+        validateAndUpdateStatus(status);
+
+        this.title = title;
+        this.content = content;
+        this.status = status;
+        this.pinned = pinned;
+    }
+
+    private void validateAndUpdateStatus(NoticeStatus status) {
+        NoticeStatus prevStatus = this.status;
+
+        if(prevStatus != status) {
+            switch (status){
+                case PUBLISHED -> {
+                    this.publishedAt = LocalDateTime.now(SEOUL).truncatedTo(MICROS);
+                }
+                case DRAFT -> {
+                    throw new RestApiException(CustomErrorCode.NOTICE_STATUS_INVALID);
+                }
+            }
+        }
+    }
+
     private static LocalDateTime getLocalDateTime(NoticeStatus status) {
-        if(status.equals(NoticeStatus.PUBLISHED)) {
+        if(status.equals(PUBLISHED)) {
             return LocalDateTime.now(SEOUL).truncatedTo(MICROS);
         }
         return null;
     }
 
-    // 나중에 html 이나 이미지가 들어가면 외부로 빼자.
-    private static String generateSummary(String content) {
-        String plain = content.replaceAll("\\s+", " ").trim();
-
-        if(plain.length() <= SUMMARY_MAX_SIZE) return plain;
-
-        int end = SUMMARY_MAX_SIZE;
-        // 이모지 같은 2유닛 문자를 반으로 잘라버리는걸 방지
-        if(Character.isHighSurrogate(plain.charAt(end - 1))) {
-            end -= 1;
-        }
-
-        return plain.substring(0, end) + "...";
-    }
-
-    private static void validate(String title,
-                                 String content,
-                                 NoticeStatus status,
-                                 boolean pinned) {
+    private static void validate(
+            String title,
+            String content,
+            NoticeStatus status,
+            boolean pinned) {
         validateTitle(title);
         validateContent(content);
         validatePinned(status, pinned);
@@ -130,16 +144,6 @@ public class Notice extends BaseEntity {
         }
     }
 
-    private static void validateSummary(String summary) {
-        if(summary == null || summary.trim().isEmpty()){
-            throw new RestApiException(CustomErrorCode.NOTICE_SUMMARY_INVALID);
-        }
-
-        if(summary.trim().length() > SUMMARY_MAX_SIZE){
-            throw new RestApiException(CustomErrorCode.NOTICE_SUMMARY_INVALID);
-        }
-    }
-
     private static void validateContent(String content) {
         if(content == null || content.trim().isEmpty()){
             throw new RestApiException(CustomErrorCode.NOTICE_CONTENT_INVALID);
@@ -147,7 +151,7 @@ public class Notice extends BaseEntity {
     }
 
     private static void validatePinned(NoticeStatus status, boolean pinned) {
-        if(pinned && status != NoticeStatus.PUBLISHED){
+        if(pinned && status.equals(DRAFT)){
             throw new RestApiException(CustomErrorCode.NOTICE_PINNED_MUST_BE_PUBLISHED);
         }
     }
