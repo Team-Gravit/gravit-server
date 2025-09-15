@@ -22,4 +22,9 @@ public class LessonRepositoryImpl implements LessonRepository {
     public Optional<Lesson> findById(Long lessonId){
         return lessonJpaRepository.findById(lessonId);
     }
+
+    @Override
+    public Long count(){
+        return lessonJpaRepository.count();
+    }
 }

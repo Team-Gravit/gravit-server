@@ -43,7 +43,7 @@ public class Season {
         this.startsAt = startsAt;
         this.endsAt = endsAt;
         this.status = status;
-        this.tz = "Asia/Seoul";;
+        this.tz = "Asia/Seoul";
     }
 
     public static Season prep(String seasonKey, LocalDateTime startsAt, LocalDateTime endsAt){

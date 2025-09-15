@@ -24,4 +24,6 @@ public interface LessonProgressJpaRepository extends JpaRepository<LessonProgres
         ORDER BY l.id
     """)
     List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(@Param("unitId") Long unitId, @Param("userId") Long userId);
+
+    Long countByUserId(Long userId);
 }

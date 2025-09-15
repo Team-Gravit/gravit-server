@@ -36,7 +36,7 @@ public class UserLeagueHistory {
     @JoinColumn(name = "final_league_id", nullable = false)
     private League finalLeague;
 
-    @Column(name = "final_rank", nullable = false)
+    @Column(name = "final_rank")
     private Integer finalRank;
 
     @Column(name = "final_lp", nullable = false)

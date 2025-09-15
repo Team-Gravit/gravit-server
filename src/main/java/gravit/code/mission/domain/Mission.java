@@ -61,7 +61,7 @@ public class Mission {
     }
 
     private double calculateCompleteLessonIncrement() {
-        return switch (this.missionType.getType()) {
+        return switch (this.missionType.name()) {
             case "COMPLETE_LESSON_ONE" -> 100.0;
             case "COMPLETE_LESSONS_TWO" -> 50.0;
             case "COMPLETE_LESSONS_THREE" -> 33.4;
@@ -76,7 +76,7 @@ public class Mission {
     }
 
     private double calculatePerfectLessonIncrement() {
-        return switch (this.missionType.getType()) {
+        return switch (this.missionType.name()) {
             case "PERFECT_LESSON_ONE" -> 100.0;
             case "PERFECT_LESSONS_TWO" -> 50.0;
             case "PERFECT_LESSONS_THREE" -> 33.4;
@@ -97,7 +97,7 @@ public class Mission {
     }
 
     private double getTargetLearningMinutes() {
-        return switch (this.missionType.getType()) {
+        return switch (this.missionType.name()) {
             case "LEARNING_MINUTES_FIVE" -> 5.0;
             case "LEARNING_MINUTES_FIFTEEN" -> 15.0;
             case "LEARNING_MINUTES_TWENTY" -> 20.0;

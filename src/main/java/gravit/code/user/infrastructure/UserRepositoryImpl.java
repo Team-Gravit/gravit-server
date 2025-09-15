@@ -1,9 +1,9 @@
 package gravit.code.user.infrastructure;
 
+import gravit.code.mainPage.dto.response.MainPageResponse;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.response.MyPageResponse;
-import gravit.code.mainPage.dto.response.MainPageUserSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -30,13 +30,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return jpaRepository.existsById(id);
-    }
-
-    @Override
-    public Optional<MainPageUserSummaryResponse> findUserMainPageSummaryByUserId(Long userId){
-        return jpaRepository.findUserMainPageSummaryByUserId(userId);
+    public MainPageResponse findMainPageByUserId(Long userId){
+        return jpaRepository.findMainPageByUserId(userId);
     }
 
     @Override

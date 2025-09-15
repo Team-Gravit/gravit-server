@@ -16,6 +16,9 @@ import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,14 @@ public class MissionService {
     private final LessonProgressRepository lessonProgressRepository;
     private final UserRepository userRepository;
 
+    @Retryable(
+            retryFor = {ObjectOptimisticLockingFailureException.class},
+            maxAttempts = 10,
+            backoff = @Backoff(
+                    delay = 100,
+                    random = true
+            )
+    )
     public void handleLessonMission(LessonMissionEvent lessonMissionDto){
         Mission mission = missionRepository.findByUserId(lessonMissionDto.userId())
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
@@ -42,9 +53,9 @@ public class MissionService {
         boolean isFirstAttempt = checkFirstAttemptLesson(lessonMissionDto.userId(), lessonMissionDto.lessonId());
 
         // 미션 타입에 맞게 진행도 업데이트
-        if(missionType.getType().startsWith("COMPLETE_LESSON") && isFirstAttempt){
+        if(missionType.name().startsWith("COMPLETE_LESSON") && isFirstAttempt){
             mission.updateCompleteLessonProgress();
-        }else if(missionType.getType().startsWith("PERFECT_LESSONS") && lessonMissionDto.accuracy() == 100 && isFirstAttempt){
+        }else if(missionType.name().startsWith("PERFECT_LESSONS") && lessonMissionDto.accuracy() == 100 && isFirstAttempt){
             mission.updatePerfectLessonProgress();
         }else{
             mission.updateLearningMinutesProgress(lessonMissionDto.learningTime());
@@ -113,7 +124,7 @@ public class MissionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        user.updateXp(awardXp);
+        user.getLevel().updateXp(awardXp);
         userRepository.save(user);
     }
 
