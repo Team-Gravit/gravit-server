@@ -61,10 +61,10 @@ public class Learning {
     }
 
     public void updateConsecutiveDays(){
-        if(this.todaySolved){
-            this.todaySolved = false;
-        }else{
+        if(!this.todaySolved && consecutiveDays > 0){
             this.consecutiveDays = 0;
+        }else{
+            this.todaySolved = false;
         }
     }
 }
