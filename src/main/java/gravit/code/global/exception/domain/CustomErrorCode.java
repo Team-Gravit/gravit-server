@@ -89,6 +89,13 @@ public enum CustomErrorCode implements ErrorCode {
     BATCH_PREP_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4091", "배치 처리 도중, PREP 시즌 생성 관련하여 충돌이 발생하였습니다."),
     BATCH_ACTIVE_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4092", "배치 처리 도중, ACTIVE 시즌 생성 관련하여 충돌이 발생하였습니다."),
 
+    // Notice
+    NOTICE_TITLE_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4001", "공지 사항의 제목이 유효하지 않습니다."),
+    NOTICE_SUMMARY_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4002", "공지 사항의 요약이 유효하지 않습니다."),
+    NOTICE_CONTENT_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4003", "공지 사항의 내용이 유효하지 않습니다."),
+    NOTICE_PINNED_MUST_BE_PUBLISHED(HttpStatus.BAD_REQUEST, "NOTICE_4004", "핀을 고정하려면 PUBLISHED 상태여야 합니다."),
+
+
     // Dest
     DEST_NOT_VALID(HttpStatus.BAD_REQUEST, "DEST_4001", "유효하지 않은 Dest 입니다. (local/prod 만 유효합니다.)"),
 

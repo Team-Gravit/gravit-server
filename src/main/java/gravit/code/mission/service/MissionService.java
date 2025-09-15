@@ -113,7 +113,7 @@ public class MissionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        user.updateXp(awardXp);
+        user.getLevel().updateXp(awardXp);
         userRepository.save(user);
     }
 
