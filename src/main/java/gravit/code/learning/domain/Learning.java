@@ -24,8 +24,8 @@ public class Learning {
     @Column(name = "consecutive_days", columnDefinition = "integer", nullable = false)
     private Integer consecutiveDays;
 
-    @Column(name = "planet_conquest_rate", columnDefinition = "double precision", nullable = false)
-    private Double planetConquestRate;
+    @Column(name = "planet_conquest_rate", columnDefinition = "integer", nullable = false)
+    private Integer planetConquestRate;
 
     @Column(name = "user_id", columnDefinition = "bigint",  nullable = false)
     private Long userId;
@@ -35,7 +35,7 @@ public class Learning {
         this.recentChapterId = 0L;
         this.todaySolved = false;
         this.consecutiveDays = 0;
-        this.planetConquestRate = 0.0;
+        this.planetConquestRate = 0;
         this.userId = userId;
     }
 
@@ -45,10 +45,11 @@ public class Learning {
                 .build();
     }
 
-    public void updateLearningStatus(Long chapterId, Double planetConquestRate){
+    public void updateLearningStatus(Long chapterId, Integer planetConquestRate){
         if (this.todaySolved){
             this.recentChapterId = chapterId;
         }else{
+            this.recentChapterId = chapterId;
             this.todaySolved = true;
             this.consecutiveDays += 1;
             this.planetConquestRate =  planetConquestRate;

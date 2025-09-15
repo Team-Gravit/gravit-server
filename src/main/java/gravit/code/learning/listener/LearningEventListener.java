@@ -35,14 +35,15 @@ public class LearningEventListener {
             Long totalLesson = lessonRepository.count();
             Long solvedLesson = lessonProgressRepository.countByUserId(updateLearningEvent.userId());
 
-            Double planetConquestRate = Math.round((solvedLesson.doubleValue() / totalLesson) * 10000) / 100.0;
+            Integer planetConquestRate = Math.toIntExact(
+                    Math.round((solvedLesson.doubleValue() / totalLesson) * 100)
+            );
 
             learning.updateLearningStatus(updateLearningEvent.chapterId(), planetConquestRate);
 
             learningRepository.save(learning);
         }catch (Exception e){
             log.error("Exception occurred while updating Learning with {}", e.getMessage());
-
         }
     }
 
