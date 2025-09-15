@@ -12,15 +12,30 @@ import java.util.concurrent.Executor;
 public class AsyncConfig {
 
     @Bean(name = "learningAsync")
-    public Executor asyncExecutor() {
+    public Executor learningAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(30);
-        executor.setKeepAliveSeconds(10);
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(6);
+        executor.setQueueCapacity(50);
+        executor.setKeepAliveSeconds(60);
         executor.setAllowCoreThreadTimeOut(true);
         executor.setThreadNamePrefix("LearningAsync - ");
+        executor.initialize();
+
+        return executor;
+    }
+
+    @Bean(name = "missionAsync")
+    public Executor missionAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(20);
+        executor.setKeepAliveSeconds(60);
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setThreadNamePrefix("MissionAsync - ");
         executor.initialize();
 
         return executor;

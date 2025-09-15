@@ -1,6 +1,6 @@
 package gravit.code.auth.util;
 
-import gravit.code.domain.user.domain.UserRepository;
+import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;

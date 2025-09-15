@@ -17,6 +17,7 @@ public enum CustomErrorCode implements ErrorCode {
     NICKNAME_LENGTH_INVALID(HttpStatus.BAD_REQUEST,"USER_4003", "유효하지 않은 닉네임 길이 입니다."),
     NICKNAME_PATTERN_INVALID(HttpStatus.BAD_REQUEST,"USER_4004", "유효하지 않은 닉네임 패턴 입니다."),
     PROFILE_IMG_NUM_INVALID(HttpStatus.BAD_REQUEST,"USER_4005","유효하지 않은 프로필 이미지 번호입니다."),
+    USER_STATUS_NOT_VALID(HttpStatus.BAD_REQUEST, "USER_4006", "유저 삭제하기 위한 상태가 유효하지 않습니다."),
 
     // Auth
     PROVIDER_INVALID(HttpStatus.BAD_REQUEST, "AUTH_4001","유효하지 않은 OAuth 제공자 이름입니다."),
@@ -61,6 +62,12 @@ public enum CustomErrorCode implements ErrorCode {
     // Option
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION_4041", "옵션 조회에 실패하였습니다."),
 
+    // Report
+    REPORT_TYPE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
+    ALREADY_SUBMITTED_REPORT(HttpStatus.BAD_REQUEST, "REPORT_4002", "이미 제출된 신고입니다."),
+
+    MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION_4041", "사용자의 미션 조회에 실패하였습니다."),
+
     // Friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),
     UNABLE_FOLLOWING_YOURSELF(HttpStatus.BAD_REQUEST,"FRIEND_4001", "자기 자신에게 팔로잉은 불가능합니다"),
@@ -84,6 +91,14 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Dest
     DEST_NOT_VALID(HttpStatus.BAD_REQUEST, "DEST_4001", "유효하지 않은 Dest 입니다. (local/prod 만 유효합니다.)"),
+
+    // Mail
+    INVALID_MAIL_AUTH_CODE(HttpStatus.BAD_REQUEST, "MAIL_4001", "메일 인증 코드가 유효하지 않습니다."),
+    MAIL_SEND_ERROR(HttpStatus.BAD_REQUEST, "MAIL_4002", "메일 전송에 실패하였습니다."),
+
+    // Redis
+    REDIS_EXPIRE_TIME_INVALID(HttpStatus.BAD_REQUEST,"REDIS_4001", "레디스 키 만료 시간은 0보다 커야합니다."),
+    REDIS_MAIL_AUTH_DUPLICATE(HttpStatus.CONFLICT,"REDIS_4091", "레디스에서 MailAuthCode 키가 중복되었습니다."),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),

@@ -1,0 +1,80 @@
+package gravit.code.user.service;
+
+import gravit.code.global.event.OnboardingUserLeagueEvent;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.mainPage.dto.response.MainPageUserSummaryResponse;
+import gravit.code.mission.dto.common.CreateMissionEvent;
+import gravit.code.recentLearning.dto.common.InitRecentLearningEvent;
+import gravit.code.recentLearning.service.RecentLearningService;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserRepository;
+import gravit.code.user.dto.request.OnboardingRequest;
+import gravit.code.user.dto.request.UserProfileUpdateRequest;
+import gravit.code.user.dto.response.MyPageResponse;
+import gravit.code.user.dto.response.UserLevelResponse;
+import gravit.code.user.dto.response.UserResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+
+    private final RecentLearningService recentLearningService;
+
+    private final UserRepository userRepository;
+
+    private final ApplicationEventPublisher publisher;
+
+    @Transactional(readOnly = true)
+    public UserResponse findById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        return UserResponse.from(user);
+    }
+
+    @Transactional
+    public UserResponse onboarding(Long userId, OnboardingRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        user.onboard(request.nickname(), request.profilePhotoNumber());
+
+        publisher.publishEvent(new InitRecentLearningEvent(user.getId()));
+        publisher.publishEvent(new OnboardingUserLeagueEvent(user.getId()));
+        publisher.publishEvent(new CreateMissionEvent(user.getId()));
+
+        return UserResponse.from(user);
+    }
+
+    @Transactional
+    public UserResponse updateUserProfile(Long userId, UserProfileUpdateRequest request){
+        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        user.updateProfile(request.nickname(), request.profilePhotoNumber());
+
+        return UserResponse.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    public MyPageResponse getMyPage(Long userId) {
+        return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
+    }
+
+    @Transactional
+    public UserLevelResponse updateUserLevelAndXp(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        user.getLevel().updateXp(20);
+
+        return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
+    }
+
+    @Transactional(readOnly = true)
+    public MainPageUserSummaryResponse getMainPageUserSummary(Long userId){
+        return userRepository.findUserMainPageSummaryByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+    }
+}

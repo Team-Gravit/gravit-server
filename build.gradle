@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
+    id "org.flywaydb.flyway" version "11.7.2"
 }
 
 group = 'gravit'
@@ -68,6 +69,36 @@ dependencies {
     // Spring-Retry
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework:spring-aspects")
+
+    // Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Redis
+    implementation "org.springframework.boot:spring-boot-starter-data-redis"
+
+}
+
+// 현재 migration 실행까지 테스트 하려면 TestContainer 가 필요할 듯 싶습니다.
+flyway {
+    url = 'jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1'
+    user = 'sa'
+    password = ''
+    locations = ['filesystem:src/main/resources/db/migration']
+    validateMigrationNaming = true
+    ignoreMigrationPatterns = ['*:pending']
+}
+
+
+tasks.register('flywayCi') {
+    dependsOn 'flywayValidate'
+}
+
+tasks.named('build') {
+    dependsOn 'flywayCi'
+}
+
+tasks.named('bootJar') {
+    dependsOn 'flywayCi'
 }
 
 tasks.named('test') {
