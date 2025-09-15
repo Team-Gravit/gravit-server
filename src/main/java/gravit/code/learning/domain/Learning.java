@@ -30,6 +30,9 @@ public class Learning {
     @Column(name = "user_id", columnDefinition = "bigint",  nullable = false)
     private Long userId;
 
+    @Column(columnDefinition = "bigint", nullable = false)
+    private Long version;
+
     @Builder
     private Learning(Long userId) {
         this.recentChapterId = 0L;
@@ -37,6 +40,7 @@ public class Learning {
         this.consecutiveDays = 0;
         this.planetConquestRate = 0;
         this.userId = userId;
+        this.version = 0L;
     }
 
     public static Learning create(Long userId){
@@ -56,7 +60,11 @@ public class Learning {
         }
     }
 
-    public void resetConsecutiveDays(){
-        this.consecutiveDays = 0;
+    public void updateConsecutiveDays(){
+        if(this.todaySolved){
+            this.todaySolved = false;
+        }else{
+            this.consecutiveDays = 0;
+        }
     }
 }

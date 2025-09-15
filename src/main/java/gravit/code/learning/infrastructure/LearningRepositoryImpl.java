@@ -3,6 +3,7 @@ package gravit.code.learning.infrastructure;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.domain.LearningRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,8 +26,8 @@ public class LearningRepositoryImpl implements LearningRepository {
     }
 
     @Override
-    public List<Learning> findAllByTodaySolved(boolean todaySolved){
-        return learningJpaRepository.findAllByTodaySolved(todaySolved);
+    public List<Learning> findAll(Pageable pageable){
+        return learningJpaRepository.findAll(pageable).getContent();
     }
 
     @Override

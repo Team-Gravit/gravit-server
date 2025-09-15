@@ -3,6 +3,8 @@ package gravit.code.learning.service;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.domain.LearningRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +18,23 @@ public class LearningService {
 
     @Transactional
     public void updateConsecutiveDays(){
-        List<Learning> learnings = learningRepository.findAllByTodaySolved(false);
+        int size = 10;
+        int offset = 0;
 
-        for(Learning learning : learnings){
-            learning.resetConsecutiveDays();
+        while(true){
+            Pageable pageable = PageRequest.of(offset,size);
+            List<Learning> learnings = learningRepository.findAll(pageable);
+
+            if(learnings.isEmpty())
+                break;
+
+            for(Learning learning : learnings){
+                learning.updateConsecutiveDays();
+            }
+
+            learningRepository.saveAll(learnings);
+
+            offset++;
         }
-
-        learningRepository.saveAll(learnings);
     }
 }
