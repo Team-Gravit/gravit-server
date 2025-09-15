@@ -9,6 +9,7 @@ public interface UserRepository {
     Optional<User> findById(Long id);
     Optional<User> findByProviderId(String providerId);
     void save(User user);
+    boolean existsById(Long id);
     boolean existsByHandle(String handle);
     Optional<MyPageResponse> findMyPageByUserId(Long userId);
     MainPageResponse findMainPageByUserId(Long userId);
