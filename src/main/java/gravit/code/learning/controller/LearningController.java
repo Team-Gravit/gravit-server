@@ -8,6 +8,7 @@ import gravit.code.learning.facade.LearningFacade;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
+import gravit.code.report.service.ReportService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.List;
 public class LearningController implements LearningControllerSpecification {
 
     private final LearningFacade learningFacade;
+    private final ReportService reportService;
 
     @GetMapping("/chapters")
     public ResponseEntity<List<ChapterProgressDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser) {
@@ -50,6 +52,6 @@ public class LearningController implements LearningControllerSpecification {
     @PostMapping("/reports")
     public ResponseEntity<Boolean> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
                                                        @Valid@RequestBody ProblemReportSubmitRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.submitProblemReport(loginUser.getId(),request));
+        return ResponseEntity.status(HttpStatus.OK).body(reportService.submitProblemReport(loginUser.getId(),request));
     }
 }

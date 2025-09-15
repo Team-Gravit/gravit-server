@@ -13,14 +13,12 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByProviderId(String providerId);
 
-    boolean existsByNickname(String nickname);
-
     @Query("""
         SELECT new gravit.code.mainPage.dto.response.MainPageResponse(
             u.nickname,
             league.name,
-            u.xp,
-            u.level,
+            u.level.xp,
+            u.level.level,
             m.missionType,
             l.planetConquestRate,
             l.consecutiveDays,

@@ -139,8 +139,8 @@ class UserRepositoryTest {
         assertThat(user.get().getNickname()).isEqualTo("test1");
         assertThat(user.get().getHandle()).isEqualTo("@dc5xay");
         assertThat(user.get().getProfileImgNumber()).isEqualTo(1);
-        assertThat(user.get().getLevel()).isEqualTo(1);
-        assertThat(user.get().getXp()).isZero();
+        assertThat(user.get().getLevel().getLevel()).isEqualTo(1);
+        assertThat(user.get().getLevel().getXp()).isZero();
         assertThat(user.get().isOnboarded()).isFalse();
         assertThat(user.get().getCreatedAt()).isNotNull();
     }

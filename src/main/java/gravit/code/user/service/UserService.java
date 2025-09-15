@@ -68,9 +68,9 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        user.updateXp(20);
+        user.getLevel().updateXp(20);
 
-        return UserLevelResponse.create(user.getLevel(), user.getXp());
+        return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
     }
 
     @Retryable(

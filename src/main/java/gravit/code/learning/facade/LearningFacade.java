@@ -16,8 +16,6 @@ import gravit.code.progress.service.ChapterProgressService;
 import gravit.code.progress.service.LessonProgressService;
 import gravit.code.progress.service.ProblemProgressService;
 import gravit.code.progress.service.UnitProgressService;
-import gravit.code.report.dto.request.ProblemReportSubmitRequest;
-import gravit.code.report.service.ReportService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +33,6 @@ public class LearningFacade {
 
     private final UserService userService;
     private final ProblemService problemService;
-    private final ReportService reportService;
 
     private final ChapterProgressService chapterProgressService;
     private final UnitProgressService unitProgressService;
@@ -83,10 +80,5 @@ public class LearningFacade {
         publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
 
         return userService.updateUserLevelAndXp(userId);
-    }
-
-    @Transactional
-    public Boolean submitProblemReport(Long userId, ProblemReportSubmitRequest request){
-        return reportService.saveReport(userId, request);
     }
 }

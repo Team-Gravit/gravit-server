@@ -9,6 +9,7 @@ import gravit.code.report.domain.ReportType;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,8 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final ProblemRepository problemRepository;
 
-    public Boolean saveReport(Long userId, ProblemReportSubmitRequest request){
+    @Transactional
+    public Boolean submitProblemReport(Long userId, ProblemReportSubmitRequest request){
 
         if(!problemRepository.existsProblemById(request.problemId()))
             throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);

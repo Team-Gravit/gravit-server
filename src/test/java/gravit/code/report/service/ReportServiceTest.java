@@ -50,7 +50,7 @@ class ReportServiceTest {
             when(problemRepository.existsProblemById(request.problemId())).thenReturn(false);
 
             //when & then
-            assertThatThrownBy(() -> reportService.saveReport(userId, request))
+            assertThatThrownBy(() -> reportService.submitProblemReport(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
         }
@@ -72,7 +72,7 @@ class ReportServiceTest {
             when(reportRepository.existsReportByProblemIdAndUserId(request.problemId(), userId)).thenReturn(true);
 
             //when & then
-            assertThatThrownBy(() -> reportService.saveReport(userId, request))
+            assertThatThrownBy(() -> reportService.submitProblemReport(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode" ,CustomErrorCode.ALREADY_SUBMITTED_REPORT);
         }
@@ -95,7 +95,7 @@ class ReportServiceTest {
             when(reportRepository.existsReportByProblemIdAndUserId(request.problemId(), userId)).thenReturn(false);
 
             //when
-            boolean result = reportService.saveReport(userId, request);
+            boolean result = reportService.submitProblemReport(userId, request);
 
             //then
             assertThat(result).isTrue();

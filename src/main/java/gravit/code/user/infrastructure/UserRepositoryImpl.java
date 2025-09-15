@@ -30,11 +30,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByNickname(String nickname) {
-        return jpaRepository.existsByNickname(nickname);
-    }
-
-    @Override
     public MainPageResponse findMainPageByUserId(Long userId){
         return jpaRepository.findMainPageByUserId(userId);
     }
@@ -47,5 +42,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<MyPageResponse> findMyPageByUserId(Long userId) {
         return jpaRepository.findMyPageByUserId(userId);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaRepository.deleteById(id);
     }
 }

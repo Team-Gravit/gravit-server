@@ -3,10 +3,10 @@ package gravit.code.learning.infrastructure;
 import gravit.code.learning.domain.Learning;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
-import java.awt.print.Pageable;
 import java.util.Optional;
 
 public interface LearningJpaRepository extends JpaRepository<Learning,Long> {
