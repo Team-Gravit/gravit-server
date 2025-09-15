@@ -15,6 +15,9 @@ import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +73,14 @@ public class UserService {
         return UserLevelResponse.create(user.getLevel(), user.getXp());
     }
 
+    @Retryable(
+            retryFor = {ObjectOptimisticLockingFailureException.class},
+            maxAttempts = 10,
+            backoff = @Backoff(
+                    delay = 100,
+                    random = true
+            )
+    )
     @Transactional(readOnly = true)
     public MainPageResponse getMainPage(Long userId) {
         return userRepository.findMainPageByUserId(userId);
