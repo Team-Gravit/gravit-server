@@ -35,4 +35,9 @@ public class ChapterProgressRepositoryImpl implements ChapterProgressRepository 
         return chapterProgressJpaRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId);
     }
 
+    @Override
+    public Optional<ChapterProgressDetailResponse> findChapterProgressDetailByChapterIdAndUserId(Long chapterId, Long userId){
+        return chapterProgressJpaRepository.findChapterProgressDetailByChapterIdAndUserId(chapterId, userId);
+    }
+
 }

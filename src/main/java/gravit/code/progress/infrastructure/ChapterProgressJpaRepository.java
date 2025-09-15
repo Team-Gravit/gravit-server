@@ -24,6 +24,14 @@ public interface ChapterProgressJpaRepository extends JpaRepository<ChapterProgr
     List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(@Param("userId") Long userId);
 
     @Query("""
+        SELECT new gravit.code.progress.dto.response.ChapterProgressDetailResponse(c.id, c.name, c.description, c.totalUnits, COALESCE(CAST(cp.completedUnits as long), 0L))
+        FROM Chapter c
+        LEFT JOIN ChapterProgress cp ON c.id = cp.chapterId AND cp.userId = :userId
+        WHERE c.id = :chapterId
+    """)
+    Optional<ChapterProgressDetailResponse> findChapterProgressDetailByChapterIdAndUserId(@Param("chapterId")Long chapterId, @Param("userId")Long userId);
+
+    @Query("""
         SELECT new gravit.code.progress.dto.response.ChapterSummaryResponse(c.id, c.name, c.totalUnits, cp.completedUnits)
         FROM ChapterProgress cp
         JOIN Chapter c ON cp.chapterId = c.id
