@@ -14,5 +14,7 @@ public interface ChapterProgressRepository {
 
     List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(Long userId);
 
+    Optional<ChapterProgressDetailResponse> findChapterProgressDetailByChapterIdAndUserId(Long chapterId, Long userId);
+
     Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(Long chapterId, Long userId);
 }

@@ -40,9 +40,6 @@ public enum CustomErrorCode implements ErrorCode {
     TOKEN_NOT_SIGNED(HttpStatus.UNAUTHORIZED,"JWT_4003","서명되지 않은 토큰입니다."),
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT_4004", "토큰을 찾을 수 없습니다."),
 
-    // RecentLearning
-    RECENT_LEARNING_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "RECENT_LEARNING_4041", "최근 학습 정보 조회에 실패하였습니다."),
-
     // Chapter
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),
     CHAPTER_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4042", "챕터 진행도 조회에 실패하였습니다."),
@@ -66,6 +63,7 @@ public enum CustomErrorCode implements ErrorCode {
     REPORT_TYPE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
     ALREADY_SUBMITTED_REPORT(HttpStatus.BAD_REQUEST, "REPORT_4002", "이미 제출된 신고입니다."),
 
+    // Mission
     MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION_4041", "사용자의 미션 조회에 실패하였습니다."),
 
     // Friend
