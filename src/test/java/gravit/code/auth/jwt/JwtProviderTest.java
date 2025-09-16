@@ -1,6 +1,7 @@
 package gravit.code.auth.jwt;
 
 import gravit.code.auth.oauth.LoginUser;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.RestApiException;
@@ -36,7 +37,7 @@ class JwtProviderTest {
 
     @BeforeEach
     void setUp() {
-        testUser = User.create("test@test.com","kakao_123123","kang","@qwd123",1, LocalDateTime.now());
+        testUser = User.create("test@test.com","kakao_123123","kang","@qwd123",1, Role.USER);
         userRepository.save(testUser);
     }
 

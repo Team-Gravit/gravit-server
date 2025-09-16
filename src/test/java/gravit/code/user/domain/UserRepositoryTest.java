@@ -72,7 +72,7 @@ class UserRepositoryTest {
                 "test1",
                 "@dc5xay",
                 1,
-                LocalDateTime.now()
+                Role.USER
         );
         userRepository.save(userWithoutLearning);
 
@@ -82,7 +82,7 @@ class UserRepositoryTest {
                 "test2",
                 "@kc5xay",
                 1,
-                LocalDateTime.now()
+                Role.USER
         );
         userRepository.save(userWithLearning);
 
