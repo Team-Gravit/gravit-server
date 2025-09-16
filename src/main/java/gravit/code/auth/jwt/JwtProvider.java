@@ -11,11 +11,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -49,7 +53,10 @@ public class JwtProvider {
     public Authentication getAuthUser(String token){
         Long userId = getUserId(token);
         User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
-        LoginUser loginUser = new LoginUser(user.getId(),user.getProviderId(),null);
+
+        Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
+        LoginUser loginUser = new LoginUser(user.getId(),user.getProviderId(),null, authorities);
 
         return new UsernamePasswordAuthenticationToken(loginUser, "",
                 loginUser.getAuthorities());

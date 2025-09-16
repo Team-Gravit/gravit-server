@@ -1,5 +1,6 @@
 package gravit.code.user.domain;
 
+import gravit.code.global.doamin.BaseEntity;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at IS NULL") // 기본은 활성만
 @SQLDelete(sql = "UPDATE users SET handle = NULL, deleted_at = NOW(), status = 'DELETED' WHERE id = ?")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,9 +40,6 @@ public class User {
     @Embedded
     private UserLevel level;
 
-    @Column(name = "created_at",  nullable = false)
-    private LocalDateTime createdAt;
-
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -55,29 +53,43 @@ public class User {
     @Column(name = "status", nullable = false)
     private UserStatus status;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Builder
-    private User(String email, String providerId, String nickname, String handle, int profileImgNumber, LocalDateTime createdAt) {
+    private User(
+            String email,
+            String providerId,
+            String nickname,
+            String handle,
+            int profileImgNumber,
+            Role role) {
         this.email = email;
         this.providerId = providerId;
         this.nickname = nickname;
         this.handle = handle;
         this.profileImgNumber = profileImgNumber;
         this.level = new UserLevel(1, 0);
-        this.createdAt = createdAt;
+        this.role = role;
         this.deletedAt = null;
         this.isOnboarded = false;
         this.status = UserStatus.ACTIVE;
     }
 
-    public static User create(String email, String providerId, String nickname, String handle, int profileImgNumber, LocalDateTime createdAt) {
+    public static User create(String email, String providerId, String nickname, String handle, int profileImgNumber, Role role) {
         return User.builder()
                 .email(email)
                 .providerId(providerId)
                 .nickname(nickname)
                 .handle(handle)
+                .role(role)
                 .profileImgNumber(profileImgNumber)
-                .createdAt(createdAt)
                 .build();
+    }
+
+    public void changeRole(Role role) {
+        this.role = role;
     }
 
     public void onboard(String nickname, int profileImgNumber){
