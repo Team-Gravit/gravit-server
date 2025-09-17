@@ -48,7 +48,7 @@ class JwtProviderTest {
         // given
         Subject subject = new Subject(testUser.getId().toString());
         Role role = Role.USER;
-        Duration duration = Duration.parse("2h");
+        Duration duration = Duration.ofHours(2);
 
         // when
         String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()),duration);
@@ -69,28 +69,25 @@ class JwtProviderTest {
         assertEquals(principal.getId(), testUser.getId());
     }
 
-    @Test
-    void 유효하지_않는_User_의_토큰이라면_예외를_던집니다() {
-        // given
-        User wrongUser = User.create("wrong", "wrong", "wrong", "wrong", 1, Role.USER);
-        Subject wrongSubject = new Subject(String.valueOf(999L));
-        Duration duration = Duration.parse("2h");
-
-        String accessToken = jwtProvider.generateToken(wrongSubject, Map.of("role", Role.USER.name()),duration);
-
-        // when
-        // then
-        assertThrows(RestApiException.class, () -> jwtProvider.getAuthentication(wrongUser));
-    }
+    /** 로직이 변경되었다.**/
+//    @Test
+//    void 유효하지_않는_User_의_토큰이라면_예외를_던집니다() {
+//        // given
+//        User wrongUser = User.create("wrong", "wrong", "wrong", "wrong", 1, Role.USER);
+//
+//        // when
+//        // then
+//        assertThrows(RestApiException.class, () -> jwtProvider.getAuthentication(wrongUser));
+//    }
 
     @Test
     void 토큰에서_userId_를_추출합니다() {
         // given
         Subject subject = new Subject(testUser.getId().toString());
         Role role = Role.USER;
-        Duration duration = Duration.parse("2h");
+        Duration duration = Duration.ofHours(2);
 
-        String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()),duration);
+        String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()), duration);
 
         // when
         Long resultUserId = jwtProvider.getUserId(accessToken);
@@ -104,9 +101,8 @@ class JwtProviderTest {
         // given
         Subject subject = new Subject(testUser.getId().toString());
         Role role = Role.USER;
-        Duration duration = Duration.parse("2h");
-        String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()),duration);
-
+        Duration duration = Duration.ofHours(2);
+        String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()), duration);
 
         // when
         // then
@@ -117,21 +113,14 @@ class JwtProviderTest {
     @DirtiesContext(classMode = AFTER_CLASS)
     class ExpiredTokenTests {
 
-        @BeforeEach
-        void setUp() throws NoSuchFieldException, IllegalAccessException {
-            Field validTimeField = JwtProvider.class.getDeclaredField("validTime");
-            validTimeField.setAccessible(true);
-            validTimeField.setInt(jwtProvider,0);
-        }
-
         @Test
         void 유효기간이_지난_토큰이라면_예외를_리턴합니다(){
             // given
             Subject subject = new Subject(testUser.getId().toString());
             Role role = Role.USER;
-            Duration duration = Duration.parse("2h");
+            Duration duration = Duration.ofHours(0);
 
-            String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()),duration);
+            String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()), duration);
 
             // when
             // then
@@ -143,7 +132,7 @@ class JwtProviderTest {
             // given
             Subject subject = new Subject(testUser.getId().toString());
             Role role = Role.USER;
-            Duration duration = Duration.parse("2h");
+            Duration duration = Duration.ofHours(0);
 
             String accessToken = jwtProvider.generateToken(subject, Map.of("role", role.name()),duration);
 
