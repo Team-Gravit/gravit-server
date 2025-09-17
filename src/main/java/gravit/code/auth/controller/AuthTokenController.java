@@ -1,5 +1,6 @@
 package gravit.code.auth.controller;
 
+import gravit.code.auth.controller.docs.AuthTokenControllerDocs;
 import gravit.code.auth.dto.request.RefreshTokenRequest;
 import gravit.code.auth.dto.response.ReissueResponse;
 import gravit.code.auth.service.AuthTokenService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-public class AuthTokenController {
+public class AuthTokenController implements AuthTokenControllerDocs {
 
     private final AuthTokenService authTokenService;
 
