@@ -1,6 +1,6 @@
 package gravit.code.user.controller.docs;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

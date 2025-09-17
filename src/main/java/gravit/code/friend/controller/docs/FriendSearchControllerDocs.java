@@ -1,6 +1,6 @@
 package gravit.code.friend.controller.docs;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.dto.SearchUser;
 import gravit.code.friend.dto.response.PageSearchUserResponse;
 import gravit.code.global.dto.SliceResponse;

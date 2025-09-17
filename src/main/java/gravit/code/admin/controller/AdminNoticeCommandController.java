@@ -5,7 +5,7 @@ import gravit.code.admin.dto.request.NoticeCreateRequest;
 import gravit.code.admin.dto.request.NoticeUpdateRequest;
 import gravit.code.admin.dto.response.NoticeResponse;
 import gravit.code.admin.service.AdminNoticeCommandService;
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -5,6 +5,7 @@ import gravit.code.auth.jwt.JwtAuthFilter;
 import gravit.code.auth.jwt.JwtProvider;
 import gravit.code.auth.jwt.exception.CustomAccessDeniedHandler;
 import gravit.code.auth.jwt.exception.CustomAuthenticationEntryPoint;
+import gravit.code.auth.service.AuthTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    private final AuthTokenProvider authTokenProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
@@ -50,11 +51,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/oauth/**").permitAll()
                 .requestMatchers("/api/v1/oauth/android").permitAll()
                 .requestMatchers("/api/v1/users/me/delete/confirm").permitAll()
+                .requestMatchers("/api/v1/auth/tokens/refresh").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
         // JwtFilter 추가
-        http.addFilterBefore(new JwtAuthFilter(jwtProvider, authenticationEntryPoint), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(authTokenProvider, authenticationEntryPoint), UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler));
 

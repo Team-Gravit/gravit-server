@@ -3,7 +3,7 @@ package gravit.code.admin.controller.docs;
 import gravit.code.admin.dto.request.NoticeCreateRequest;
 import gravit.code.admin.dto.request.NoticeUpdateRequest;
 import gravit.code.admin.dto.response.NoticeResponse;
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

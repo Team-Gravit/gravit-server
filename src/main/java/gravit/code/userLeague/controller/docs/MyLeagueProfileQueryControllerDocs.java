@@ -1,14 +1,10 @@
 package gravit.code.userLeague.controller.docs;
 
-import gravit.code.auth.oauth.LoginUser;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
-import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
