@@ -1,5 +1,6 @@
 package gravit.code.admin.controller;
 
+import gravit.code.admin.controller.docs.AdminReportControllerDocs;
 import gravit.code.admin.dto.response.ReportDetailResponse;
 import gravit.code.admin.dto.response.ReportSummaryResponse;
 import gravit.code.admin.service.AdminReportService;
@@ -13,22 +14,22 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/reports")
-public class AdminReportController {
+public class AdminReportController implements AdminReportControllerDocs {
 
     private final AdminReportService adminReportService;
 
     @GetMapping
-    public ResponseEntity<List<ReportSummaryResponse>> getAllReportSummary(@RequestParam(value = "page", defaultValue = "0") int page){
+    public ResponseEntity<List<ReportSummaryResponse>> getAllReports(@RequestParam(value = "page", defaultValue = "0") int page){
         return ResponseEntity.status(HttpStatus.OK).body(adminReportService.getAllReportSummary(page));
     }
 
     @GetMapping("/{reportId}")
-    public ResponseEntity<ReportDetailResponse> getReportDetail(@PathVariable("reportId") Long reportId){
+    public ResponseEntity<ReportDetailResponse> getReport(@PathVariable("reportId") Long reportId){
         return ResponseEntity.status(HttpStatus.OK).body(adminReportService.getReportDetail(reportId));
     }
 
     @PatchMapping("/{reportId}/status")
-    public ResponseEntity<Boolean> updateResolvedStatus(@PathVariable("reportId") Long reportId){
+    public ResponseEntity<Boolean> updateReportStatus(@PathVariable("reportId") Long reportId){
         return ResponseEntity.status(HttpStatus.OK).body(adminReportService.updateResolvedStatus(reportId));
     }
 }
