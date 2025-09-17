@@ -15,7 +15,7 @@ public class SeasonBatchScheduler {
     private final SeasonBatchService seasonBatchService;
 
     @Scheduled(
-            cron = "${scheduler.season.rollover-cron:0 1 0 * * MON}",
+            cron = "${scheduler.season.rollover-cron:0 0 0 * * MON}",
             zone = "Asia/Seoul"
     )
     public void tryWeeklyRollover(){

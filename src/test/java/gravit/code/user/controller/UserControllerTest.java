@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.common.auth.WithMockLoginUser;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.domain.FriendRepository;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -71,7 +72,7 @@ class UserControllerTest {
         String testProviderId = "kakao123123";
         String testHandle = "@qwe123";
 
-        User user = User.create(testEmail, testProviderId, testNickname,testHandle,testProfileImgNumber, LocalDateTime.now());
+        User user = User.create(testEmail, testProviderId, testNickname,testHandle,testProfileImgNumber, Role.USER);
         userRepository.save(user);
 
         // when
@@ -98,7 +99,7 @@ class UserControllerTest {
         OnboardingRequest onboardingRequest = new OnboardingRequest(testNickname, testProfileImgNumber);
 
 
-        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
+        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, Role.USER);
         userRepository.save(user);
 
         // when
@@ -124,7 +125,7 @@ class UserControllerTest {
         String testHandle = "@qwe123";
         OnboardingRequest onboardingRequest = new OnboardingRequest(testNickname, testProfileImgNumber);
 
-        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
+        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, Role.USER);
         userRepository.save(user);
 
         // when
@@ -149,7 +150,7 @@ class UserControllerTest {
         String testHandle = "@qwe123";
         OnboardingRequest onboardingRequest = new OnboardingRequest(testNickname, testProfileImgNumber);
 
-        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
+        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, Role.USER);
         userRepository.save(user);
 
         // when
@@ -174,7 +175,7 @@ class UserControllerTest {
         String testHandle = "@qwe123";
         OnboardingRequest onboardingRequest = new OnboardingRequest(testNickname, testProfileImgNumber);
 
-        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
+        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, Role.USER);
         userRepository.save(user);
 
         // when
@@ -199,7 +200,7 @@ class UserControllerTest {
         String testHandle = "@qwe123";
         OnboardingRequest onboardingRequest = new OnboardingRequest(testNickname, testProfileImgNumber);
 
-        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
+        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, Role.USER);
         userRepository.save(user);
 
         // when
@@ -227,7 +228,7 @@ class UserControllerTest {
         UserProfileUpdateRequest userProfileUpdateRequest = new UserProfileUpdateRequest(testNickname, testProfileImgNumber);
 
 
-        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, LocalDateTime.now());
+        User user = User.create(testEmail, testProviderId, "test", testHandle, 0, Role.USER);
         userRepository.save(user);
 
         // when
@@ -251,9 +252,9 @@ class UserControllerTest {
         String testNickname = "kang";
         String testHandle = "@qwe123";
 
-        User user = User.create("test@test.com", "kakao123123", testNickname, testHandle, testProfileImgNumber, LocalDateTime.now());
+        User user = User.create("test@test.com", "kakao123123", testNickname, testHandle, testProfileImgNumber, Role.USER);
         userRepository.save(user);
-        User testFollower = User.create("test2@test.com", "google123123", "test", "@ewq321", 3, LocalDateTime.now());
+        User testFollower = User.create("test2@test.com", "google123123", "test", "@ewq321", 3, Role.USER);
         userRepository.save(testFollower);
 
         Friend friend = Friend.create(user.getId(), testFollower.getId());

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.common.auth.WithMockLoginUser;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.domain.FriendRepository;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,11 +47,11 @@ public class FriendControllerTest {
     @BeforeEach
     void setUp() {
 
-        testUser1 = User.create("test1@test.com", "kakao_123123", "kang", "@qwe123",1, LocalDateTime.now());
+        testUser1 = User.create("test1@test.com", "kakao_123123", "kang", "@qwe123",1, Role.USER);
         userRepository.save(testUser1);
-        testUser2 = User.create("test2@test.com", "google_123123", "hyung", "@ewq321", 2, LocalDateTime.now());
+        testUser2 = User.create("test2@test.com", "google_123123", "hyung", "@ewq321", 2, Role.USER);
         userRepository.save(testUser2);
-        testUser3 = User.create("test3@test.com", "naver_123123", "jun", "@weq312", 3, LocalDateTime.now());
+        testUser3 = User.create("test3@test.com", "naver_123123", "jun", "@weq312", 3, Role.USER);
         userRepository.save(testUser3);
     }
 

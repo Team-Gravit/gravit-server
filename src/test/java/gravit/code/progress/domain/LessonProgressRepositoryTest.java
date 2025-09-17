@@ -4,6 +4,7 @@ import gravit.code.learning.domain.Lesson;
 import gravit.code.learning.infrastructure.LessonJpaRepository;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.progress.infrastructure.LessonProgressJpaRepository;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ class LessonProgressRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        User validUser = userRepository.save(User.create("test@example.com", "google 123456", "테스트유저", "@test", 1, LocalDateTime.now()));
+        User validUser = userRepository.save(User.create("test@example.com", "google 123456", "테스트유저", "@test", 1, Role.USER));
 
         Lesson lesson1 = lessonRepository.save(Lesson.create("스택 기본 개념", 10L, 1L));
         Lesson lesson2 = lessonRepository.save(Lesson.create("스택 구현하기", 8L, 1L));

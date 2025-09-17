@@ -102,3 +102,8 @@ user-delete-mail:
   code-length: 16
   expire-time: 180
   service-email: gravit4746@gmail.com
+
+admin:
+  bootstrap:
+    enabled: true
+    emails: ${ADMIN_BOOTSTRAP_EMAILS}

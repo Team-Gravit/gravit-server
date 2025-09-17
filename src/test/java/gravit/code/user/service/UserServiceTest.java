@@ -3,6 +3,7 @@ package gravit.code.user.service;
 import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.event.CreateLearningEvent;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -45,7 +46,7 @@ class UserServiceTest {
         String testNickname = "kang";
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
@@ -73,7 +74,7 @@ class UserServiceTest {
         String testNickname = "kangkangkang";
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
@@ -92,7 +93,7 @@ class UserServiceTest {
         String testNickname = "k";
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
@@ -110,7 +111,7 @@ class UserServiceTest {
         String testNickname = "kang";
         int testProfilePhotoNumber = 0;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
@@ -128,7 +129,7 @@ class UserServiceTest {
         String testNickname = "kang";
         int testProfilePhotoNumber = 11;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
@@ -161,7 +162,7 @@ class UserServiceTest {
         String testNickname = "kang";
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com", testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        User testUser = User.create("test@test.com", testProviderId, "test", "@qwe123",0, Role.USER);
         testUser.onboard("test", 1);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
@@ -180,7 +181,7 @@ class UserServiceTest {
         String testNickname = "kang";
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
-        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, LocalDateTime.now());
+        User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         UserProfileUpdateRequest request = new UserProfileUpdateRequest(testNickname, testProfilePhotoNumber);
@@ -205,7 +206,7 @@ class UserServiceTest {
         String testHandle = "@qwe123";
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
-        User testUser = User.create(testEmail, testProviderId, testNickname, testHandle, testProfilePhotoNumber, LocalDateTime.now());
+        User testUser = User.create(testEmail, testProviderId, testNickname, testHandle, testProfilePhotoNumber, Role.USER);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 

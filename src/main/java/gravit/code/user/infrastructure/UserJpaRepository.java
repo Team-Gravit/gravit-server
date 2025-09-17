@@ -39,6 +39,8 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     """)
     MainPageResponse findMainPageByUserId(@Param("userId") Long userId);
 
+    boolean existsById(Long id);
+
     boolean existsByHandle(String handle);
 
     @Query("""

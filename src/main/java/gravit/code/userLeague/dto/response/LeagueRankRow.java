@@ -6,6 +6,7 @@ public record LeagueRankRow(
         int lp,
         String nickname,
         int profileImgNumber,
+        int xp,
         int level
 ) {
 }

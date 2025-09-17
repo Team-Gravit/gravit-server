@@ -6,12 +6,16 @@ import lombok.Builder;
 @Builder
 public record LeagueResponse(
         Long leagueId,
-        String name
+        String name,
+        int minLp,
+        int maxLp
 ) {
     public static LeagueResponse from(League league) {
         return LeagueResponse.builder()
                 .leagueId(league.getId())
                 .name(league.getName())
+                .minLp(league.getMinLp())
+                .maxLp(league.getMaxLp())
                 .build();
     }
 }

@@ -30,6 +30,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return jpaRepository.existsById(id);
+    }
+
+    @Override
     public MainPageResponse findMainPageByUserId(Long userId){
         return jpaRepository.findMainPageByUserId(userId);
     }
