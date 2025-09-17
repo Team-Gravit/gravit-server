@@ -79,8 +79,8 @@ public class JwtProvider {
     }
 
     public Long getUserId(String token) {
-        Claims claims = extractClaims(token);
-        return claims.get("userId", Long.class);
+        String subject = extractClaims(token).getSubject();
+        return Long.parseLong(subject);
     }
 
     private Claims extractClaims(String token) {

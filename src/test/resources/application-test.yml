@@ -88,8 +88,15 @@ spring:
             scope: name,email
 
 jwt:
-  secret: qwdqwei83qwiu99wq8f9qw98asf8p219qnf43yj90j32
-  valid-time: 7200000
+  secret: testtesttesttesttesttesttesttesttesttesttest
+
+token:
+  access:
+    storage-key-prefix: "accessToken:"
+    expire-time: 15m
+  refresh:
+    storage-key-prefix: "refreshToken:"
+    expire-time: 14d
 
 scheduler:
   season:
