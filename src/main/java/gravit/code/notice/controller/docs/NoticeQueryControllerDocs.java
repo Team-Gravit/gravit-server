@@ -6,11 +6,14 @@ import gravit.code.notice.dto.response.NoticeDetailResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -36,6 +39,19 @@ public interface NoticeQueryControllerDocs {
             @ApiResponse(responseCode = "200", description = "✅ 조회 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = NoticeDetailResponse.class)))
+    ,
+            @ApiResponse(
+                    responseCode = "NOTICE_4041",
+                    description = "🚨 공지 조회 실패(미존재)",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "공지 없음",
+                                    value = "{\"error\":\"NOTICE_4041\",\"message\":\"존재하지 않는 공지사항입니다.\"}"
+                            )
+                    )
+            ),
     })
     @GetMapping("/{noticeId}")
     ResponseEntity<NoticeDetailResponse> getNoticeSummary(@PathVariable("noticeId") Long noticeId

@@ -1,5 +1,6 @@
 package gravit.code.userLeagueHistory.domain;
 
+import gravit.code.global.doamin.BaseEntity;
 import gravit.code.league.domain.League;
 import gravit.code.season.domain.Season;
 import gravit.code.user.domain.User;
@@ -8,17 +9,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_league_history")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class UserLeagueHistory {
+public class UserLeagueHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,20 +40,17 @@ public class UserLeagueHistory {
     @Column(name = "final_lp", nullable = false)
     private Integer finalLp;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @Builder
-    private UserLeagueHistory(Season season, User user, League league, Integer finalLp) {
+    private UserLeagueHistory(Season season, User user, League league,Integer finalRank, Integer finalLp) {
         this.season = season;
         this.user = user;
         this.finalLeague = league;
+        this.finalRank = finalRank;
         this.finalLp = finalLp;
     }
 
-    public static UserLeagueHistory create(Season season, User user, League league, int finalLp) {
+    public static UserLeagueHistory create(Season season, User user, League league, int finalRank, int finalLp) {
         return UserLeagueHistory.builder()
-                .season(season).user(user).league(league).finalLp(finalLp).build();
+                .season(season).user(user).league(league).finalRank(finalRank).finalLp(finalLp).build();
     }
 }

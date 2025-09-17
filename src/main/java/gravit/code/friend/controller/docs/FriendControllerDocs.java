@@ -75,6 +75,7 @@ public interface FriendControllerDocs {
             @Parameter(description = "팔로잉할 대상 유저 ID") @PathVariable("followeeId") Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser);
 
+
     @Operation(summary = "언팔로잉", description = "다른 사용자에 대한 팔로잉을 취소합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
@@ -105,6 +106,7 @@ public interface FriendControllerDocs {
             @Parameter(description = "언팔로잉할 대상 유저 ID") @PathVariable("followeeId") Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser);
 
+
     @Operation(summary = "팔로워 목록 조회", description = "현재 사용자를 팔로우하고 있는 사용자 목록을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
@@ -123,6 +125,7 @@ public interface FriendControllerDocs {
     @GetMapping("/follower")
     ResponseEntity<List<FollowerResponse>> getFollowers(
             @AuthenticationPrincipal LoginUser loginUser);
+
 
     @Operation(summary = "팔로잉 목록 조회", description = "현재 사용자가 팔로잉하고 있는 사용자 목록을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
