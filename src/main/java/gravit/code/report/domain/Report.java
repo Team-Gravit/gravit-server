@@ -55,4 +55,8 @@ public class Report {
                 .userId(userId)
                 .build();
     }
+
+    public void updateResolvedStatus(){
+        this.isResolved = !this.isResolved;
+    }
 }
