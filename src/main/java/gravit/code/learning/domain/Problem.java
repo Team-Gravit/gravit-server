@@ -1,5 +1,6 @@
 package gravit.code.learning.domain;
 
+import gravit.code.admin.dto.request.ProblemUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -47,5 +48,12 @@ public class Problem {
                 .answer(answer)
                 .lessonId(lessonId)
                 .build();
+    }
+
+    public void updateProblem(ProblemUpdateRequest problemUpdateRequest){
+        this.problemType = ProblemType.from(problemUpdateRequest.problemType());
+        this.question = problemUpdateRequest.question();
+        this.content = problemUpdateRequest.content();
+        this.answer = problemUpdateRequest.answer();
     }
 }

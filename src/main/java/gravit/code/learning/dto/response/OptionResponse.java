@@ -6,33 +6,41 @@ import lombok.Builder;
 @Builder
 @Schema(description = "선지 정보 Response")
 public record OptionResponse(
-    @Schema(
-            description = "내용",
-            example = "tail 포인터가 더 빠른 접근을 제공"
-    )
-    String content,
 
-    @Schema(
-            description = "설명",
-            example = "실제로 tail 포인터를 활용했을 때 속도가 더 빠르다."
-    )
-    String explanation,
+        @Schema(
+                description = "선지 아이디",
+                example = "1"
+        )
+        Long optionId,
 
-    @Schema(
-            description = "정답 여부",
-            example = "true"
-    )
-    Boolean isAnswer,
+        @Schema(
+                description = "내용",
+                example = "tail 포인터가 더 빠른 접근을 제공"
+        )
+        String content,
 
-    @Schema(
-            description = "문제 아이디",
-            example = "1"
-    )
-    Long problemId
+        @Schema(
+                description = "설명",
+                example = "실제로 tail 포인터를 활용했을 때 속도가 더 빠르다."
+        )
+        String explanation,
+
+        @Schema(
+                description = "정답 여부",
+                example = "true"
+        )
+        Boolean isAnswer,
+
+        @Schema(
+                description = "문제 아이디",
+                example = "1"
+        )
+        Long problemId
 ) {
 
-    public static OptionResponse create(Long problemId, String content, String explanation, Boolean isAnswer) {
+    public static OptionResponse create(Long optionId, Long problemId, String content, String explanation, Boolean isAnswer) {
         return OptionResponse.builder()
+                .optionId(optionId)
                 .problemId(problemId)
                 .content(content)
                 .explanation(explanation)
