@@ -64,11 +64,11 @@ public class UserService {
 
 
     @Transactional
-    public UserLevelResponse updateUserLevelAndXp(Long userId){
+    public UserLevelResponse updateUserLevelAndXp(Long userId, int xp, int accuracy) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        user.getLevel().updateXp(20);
+        user.getLevel().updateXp((int) Math.round(xp * accuracy * 0.01));
 
         return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
     }

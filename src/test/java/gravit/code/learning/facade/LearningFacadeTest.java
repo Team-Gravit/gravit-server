@@ -359,7 +359,7 @@ class LearningFacadeTest {
                 //then
                 verify(chapterProgressService, times(1)).updateChapterProgress(chapterProgress);
                 verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, validRequest.chapterId()));
-                verify(userService, times(1)).updateUserLevelAndXp(userId);
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
 
             @Test
@@ -383,7 +383,7 @@ class LearningFacadeTest {
                 //then
                 verify(chapterProgressService, never()).updateChapterProgress(any());
                 verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, validRequest.chapterId()));
-                verify(userService, times(1)).updateUserLevelAndXp(userId);
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
         }
     }
