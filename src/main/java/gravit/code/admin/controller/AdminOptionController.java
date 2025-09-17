@@ -17,8 +17,8 @@ public class AdminOptionController implements AdminOptionControllerDocs {
     private final AdminOptionService adminOptionService;
 
     @PostMapping
-    public ResponseEntity<Void> createOption(@Valid@RequestBody OptionCreateRequest createOption){
-        adminOptionService.createOption(createOption);
+    public ResponseEntity<Void> createOption(@Valid@RequestBody OptionCreateRequest request){
+        adminOptionService.createOption(request);
         return ResponseEntity.noContent().build();
     }
 

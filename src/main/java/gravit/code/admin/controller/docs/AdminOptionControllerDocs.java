@@ -54,7 +54,7 @@ public interface AdminOptionControllerDocs {
             )
     })
     @PostMapping
-    ResponseEntity<Void> createOption(@Valid @RequestBody OptionCreateRequest createOption);
+    ResponseEntity<Void> createOption(@Valid @RequestBody OptionCreateRequest request);
 
     @Operation(summary = "옵션 수정", description = "기존 옵션을 수정합니다<br>" +
             "🔐 <strong>관리자 권한 필요</strong><br>")

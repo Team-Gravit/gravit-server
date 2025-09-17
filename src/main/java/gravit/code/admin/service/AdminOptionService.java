@@ -6,6 +6,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Option;
 import gravit.code.learning.domain.OptionRepository;
+import gravit.code.learning.domain.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminOptionService {
 
     private final OptionRepository optionRepository;
+    private final ProblemRepository problemRepository;
 
     @Transactional
     public void createOption(OptionCreateRequest request){
+        if(!problemRepository.existsProblemById(request.problemId()))
+            throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
+
         Option option = Option.create(request.content(), request.explanation(), request.isAnswer(), request.problemId());
         optionRepository.save(option);
     }
