@@ -1,6 +1,6 @@
 package gravit.code.friend.controller;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.controller.docs.FriendControllerDocs;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;

@@ -1,7 +1,6 @@
 package gravit.code.common.auth;
 
-import gravit.code.auth.oauth.LoginUser;
-import gravit.code.user.domain.Role;
+import gravit.code.auth.domain.LoginUser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

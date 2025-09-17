@@ -1,9 +1,10 @@
 package gravit.code.auth.oauth.processor;
 
 import gravit.code.auth.jwt.JwtProvider;
-import gravit.code.auth.oauth.bootstrap.AdminRoleDecider;
-import gravit.code.auth.oauth.dto.LoginResponse;
-import gravit.code.auth.oauth.dto.OAuthUserInfo;
+import gravit.code.auth.bootstrap.AdminRoleDecider;
+import gravit.code.auth.dto.response.LoginResponse;
+import gravit.code.auth.dto.oauth.OAuthUserInfo;
+import gravit.code.auth.service.oauth.OAuthLoginProcessor;
 import gravit.code.auth.util.HandleGenerator;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
@@ -14,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;

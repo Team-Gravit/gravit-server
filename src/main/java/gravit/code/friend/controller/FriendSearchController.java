@@ -1,6 +1,6 @@
 package gravit.code.friend.controller;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.controller.docs.FriendSearchControllerDocs;
 import gravit.code.friend.dto.SearchUser;
 import gravit.code.friend.service.FriendSearchService;

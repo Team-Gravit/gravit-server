@@ -1,6 +1,6 @@
 package gravit.code.mainPage.controller;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.mainPage.controller.docs.MainPageControllerSpecification;
 import gravit.code.mainPage.dto.response.MainPageResponse;
 import gravit.code.user.service.UserService;
