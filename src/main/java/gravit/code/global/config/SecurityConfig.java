@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/oauth/**").permitAll()
                 .requestMatchers("/api/v1/oauth/android").permitAll()
                 .requestMatchers("/api/v1/users/me/delete/confirm").permitAll()
-                .requestMatchers("/api/v1/auth/tokens/refresh").permitAll()
+                .requestMatchers("/api/v1/auth/refresh").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
