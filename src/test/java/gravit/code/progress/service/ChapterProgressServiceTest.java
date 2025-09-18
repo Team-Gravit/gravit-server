@@ -44,7 +44,7 @@ class ChapterProgressServiceTest {
         @DisplayName("비어있는 리스트가 조회되면 예외를 반환한다.")
         void withInvalidUserId(){
             //given
-            Long userId = 1L;
+            long userId = 1L;
             List<ChapterProgressDetailResponse> emptyList = List.of();
 
             when(chapterProgressRepository.findAllChapterProgressDetailByUserId(userId)).thenReturn(emptyList);
@@ -59,7 +59,7 @@ class ChapterProgressServiceTest {
         @DisplayName("비어있지 않은 리스트가 조회되면 정상적으로 반환한다.")
         void withValidUserId(){
             //given
-            Long userId = 1L;
+            long userId = 1L;
             List<ChapterProgressDetailResponse> chapterProgressDetailResponse = List.of(
                     ChapterProgressDetailResponse.create(1L, "자료구조", "스택, 큐 등", 10L, 5L)
             );
@@ -83,8 +83,8 @@ class ChapterProgressServiceTest {
         @DisplayName("조회에 실패하면 예외를 반환한다.")
         void withInvalidChapterIdAndUserId(){
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
+            long chapterId = 1L;
+            long userId = 1L;
 
             when(chapterProgressRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId)).thenReturn(Optional.empty());
 
@@ -98,8 +98,8 @@ class ChapterProgressServiceTest {
         @DisplayName("조회에 성공하면 정상적으로 반환한다.")
         void withValidChapterIdAndUserId(){
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
+            long chapterId = 1L;
+            long userId = 1L;
             ChapterSummaryResponse chapterSummaryResponse = ChapterSummaryResponse.create(1L, "이름", 10L, 5L);
 
             when(chapterProgressRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId)).thenReturn(Optional.of(chapterSummaryResponse));
@@ -138,8 +138,8 @@ class ChapterProgressServiceTest {
         @DisplayName("Chapter 조회에 실패하면 예외를 반환한다.")
         void withInvalidChapterId(){
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
+            long chapterId = 1L;
+            long userId = 1L;
 
             when(chapterRepository.findById(chapterId)).thenReturn(Optional.empty());
 
@@ -153,8 +153,8 @@ class ChapterProgressServiceTest {
         @DisplayName("기존 ChapterProgress가 존재하면 해당 객체를 저장 후 반환한다.")
         void withExistingChapterProgress(){
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
+            long chapterId = 1L;
+            long userId = 1L;
             Chapter chapter = mock(Chapter.class);
             ChapterProgress existingProgress = mock(ChapterProgress.class);
 
@@ -175,9 +175,9 @@ class ChapterProgressServiceTest {
         @DisplayName("ChapterProgress가 존재하지 않으면 새로 생성한 후 저장하여 반환한다.")
         void withNewChapterProgress(){
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
-            Long totalUnits = 10L;
+            long chapterId = 1L;
+            long userId = 1L;
+            long totalUnits = 10L;
             Chapter chapter = mock(Chapter.class);
             ChapterProgress newProgress = mock(ChapterProgress.class);
 

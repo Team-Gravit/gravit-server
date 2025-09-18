@@ -12,8 +12,8 @@ class LessonProgressTest {
     void createUserLessonProgressWithAvailableData(){
 
         // given
-        Long userId = 1L;
-        Long lessonId = 1L;
+        long userId = 1L;
+        long lessonId = 1L;
         Boolean isCompleted = false;
 
         // when

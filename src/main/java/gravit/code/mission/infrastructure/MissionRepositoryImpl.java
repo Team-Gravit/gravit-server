@@ -15,7 +15,7 @@ public class MissionRepositoryImpl implements MissionRepository {
     private final MissionJpaRepository missionJpaRepository;
 
     @Override
-    public Optional<Mission> findByUserId(Long userId){
+    public Optional<Mission> findByUserId(long userId){
         return missionJpaRepository.findByUserId(userId);
     }
 

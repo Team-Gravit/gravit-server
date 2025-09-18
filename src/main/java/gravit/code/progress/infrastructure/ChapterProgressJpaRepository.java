@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface ChapterProgressJpaRepository extends JpaRepository<ChapterProgress, Long> {
 
-    Optional<ChapterProgress> findByChapterIdAndUserId(Long chapterId, Long userId);
+    Optional<ChapterProgress> findByChapterIdAndUserId(long chapterId, long userId);
 
     @Query("""
         SELECT new gravit.code.progress.dto.response.ChapterProgressDetailResponse(c.id, c.name, c.description, c.totalUnits, COALESCE(CAST(cp.completedUnits as long), 0L))
@@ -21,15 +21,7 @@ public interface ChapterProgressJpaRepository extends JpaRepository<ChapterProgr
         WHERE EXISTS (SELECT 1 FROM User u WHERE u.id = :userId)
         ORDER BY c.id
     """)
-    List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(@Param("userId") Long userId);
-
-    @Query("""
-        SELECT new gravit.code.progress.dto.response.ChapterProgressDetailResponse(c.id, c.name, c.description, c.totalUnits, COALESCE(CAST(cp.completedUnits as long), 0L))
-        FROM Chapter c
-        LEFT JOIN ChapterProgress cp ON c.id = cp.chapterId AND cp.userId = :userId
-        WHERE c.id = :chapterId
-    """)
-    Optional<ChapterProgressDetailResponse> findChapterProgressDetailByChapterIdAndUserId(@Param("chapterId")Long chapterId, @Param("userId")Long userId);
+    List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(@Param("userId") long userId);
 
     @Query("""
         SELECT new gravit.code.progress.dto.response.ChapterSummaryResponse(c.id, c.name, c.totalUnits, cp.completedUnits)
@@ -37,5 +29,5 @@ public interface ChapterProgressJpaRepository extends JpaRepository<ChapterProgr
         JOIN Chapter c ON cp.chapterId = c.id
         WHERE cp.chapterId = :chapterId AND cp.userId = :userId
     """)
-    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(@Param("chapterId") Long chapterId, @Param("userId") Long userId);
+    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(@Param("chapterId") long chapterId, @Param("userId") long userId);
 }

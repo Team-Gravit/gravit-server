@@ -94,5 +94,5 @@ public interface AdminReportControllerDocs {
             )
     })
     @PatchMapping("/{reportId}/status")
-    ResponseEntity<Boolean> updateReportStatus(@PathVariable Long reportId);
+    ResponseEntity<Void> updateReportStatus(@PathVariable Long reportId);
 }

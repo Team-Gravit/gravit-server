@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "User Deletion API", description = "계정 삭제(요청/확정) API")
-public interface UserDeletionControllerSpecification {
+public interface UserDeletionControllerDocs {
 
     @Operation(
             summary = "계정 삭제 요청(인증 메일 발송)",

@@ -79,8 +79,8 @@ class UnitProgressServiceTest {
         @DisplayName("Unit 조회에 실패하면 예외를 반환한다.")
         void withInvalidUnitId(){
             //given
-            Long unitId = 1L;
-            Long userId = 1L;
+            long unitId = 1L;
+            long userId = 1L;
 
             when(unitRepository.findById(unitId)).thenReturn(Optional.empty());
 
@@ -94,8 +94,8 @@ class UnitProgressServiceTest {
         @DisplayName("기존 UnitProgress가 존재하면 해당 객체를 저장 후 반환한다.")
         void withExistingUnitProgress(){
             //given
-            Long unitId = 1L;
-            Long userId = 1L;
+            long unitId = 1L;
+            long userId = 1L;
             Unit targetUnit = mock(Unit.class);
             UnitProgress existingProgress = mock(UnitProgress.class);
 
@@ -116,9 +116,9 @@ class UnitProgressServiceTest {
         @DisplayName("UnitProgress가 존재하지 않으면 새로 생성한 후 저장하여 반환한다.")
         void withNewUnitProgress(){
             //given
-            Long unitId = 1L;
-            Long userId = 1L;
-            Long totalLessons = 10L;
+            long unitId = 1L;
+            long userId = 1L;
+            long totalLessons = 10L;
             Unit targetUnit = mock(Unit.class);
             UnitProgress newProgress = mock(UnitProgress.class);
 
@@ -145,8 +145,8 @@ class UnitProgressServiceTest {
         @DisplayName("userId가 유효하지 않으면 예외를 반환한다.")
         void withInvalidUserId(){
             //given
-            Long chapterId = 1L;
-            Long userId = 99L;
+            long chapterId = 1L;
+            long userId = 99L;
 
             when(unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId)).thenReturn(List.of());
 
@@ -160,8 +160,8 @@ class UnitProgressServiceTest {
         @DisplayName("userId가 유효하면 정상적으로 반환한다.")
         void withValidUserId(){
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
+            long chapterId = 1L;
+            long userId = 1L;
 
             List<UnitProgressDetailResponse> unitProgressDetailResponses = List.of(
                     UnitProgressDetailResponse.create(1L, "스택", 4L, 3L),

@@ -11,7 +11,7 @@ public record ChapterProgressDetailResponse(
                 description = "챕터 아이디",
                 example = "1"
         )
-        Long chapterId,
+        long chapterId,
 
         @Schema(
                 description = "챕터 이름",
@@ -29,15 +29,15 @@ public record ChapterProgressDetailResponse(
                 description = "총 유닛",
                 example = "10"
         )
-        Long totalUnits,
+        long totalUnits,
 
         @Schema(
                 description = "푼 유닛",
                 example = "7"
         )
-        Long completedUnits
+        long completedUnits
 ) {
-    public static ChapterProgressDetailResponse create(Long chapterId, String name, String description, Long totalUnits, Long completedUnits) {
+    public static ChapterProgressDetailResponse create(long chapterId, String name, String description, long totalUnits, long completedUnits) {
         return ChapterProgressDetailResponse.builder()
                 .chapterId(chapterId)
                 .name(name)

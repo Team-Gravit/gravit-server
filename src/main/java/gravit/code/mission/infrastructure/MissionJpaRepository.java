@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface MissionJpaRepository extends JpaRepository<Mission, Long> {
-    Optional<Mission> findByUserId(Long userId);
+    Optional<Mission> findByUserId(long userId);
 
     @Lock(LockModeType.OPTIMISTIC)
     Page<Mission> findAll(Pageable pageable);

@@ -17,26 +17,26 @@ public class ChapterProgress {
     private Long id;
 
     @Column(name = "total_units", columnDefinition = "bigint", nullable = false)
-    private Long totalUnits;
+    private long totalUnits;
 
     @Column(name = "completed_units", columnDefinition = "bigint", nullable = false)
-    private Long completedUnits;
+    private long completedUnits;
 
     @Column(name = "user_id", columnDefinition = "bigint", nullable = false)
-    private Long userId;
+    private long userId;
 
     @Column(name = "chapter_id", columnDefinition = "bigint", nullable = false)
-    private Long chapterId;
+    private long chapterId;
 
     @Builder
-    private ChapterProgress(Long totalUnits, Long userId, Long chapterId) {
+    private ChapterProgress(long totalUnits, long userId, long chapterId) {
         this.totalUnits = totalUnits;
         this.completedUnits = 0L;
         this.userId = userId;
         this.chapterId = chapterId;
     }
 
-    public static ChapterProgress create(Long totalUnits, Long userId, Long chapterId) {
+    public static ChapterProgress create(long totalUnits, long userId, long chapterId) {
         return ChapterProgress.builder()
                 .totalUnits(totalUnits)
                 .userId(userId)

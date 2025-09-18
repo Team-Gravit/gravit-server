@@ -78,8 +78,8 @@ class ChapterProgressRepositoryTest {
         @DisplayName("chapterId와 userId가 유효하면 ChapterProgress를 반환한다.")
         void withValidChapterIdAndUserId(){
             //given
-            Long userId = 1L;
-            Long chapterId = 1L;
+            long userId = 1L;
+            long chapterId = 1L;
 
             //when
             Optional<ChapterProgress> chapterProgress = chapterProgressJpaRepository.findByChapterIdAndUserId(chapterId, userId);
@@ -94,8 +94,8 @@ class ChapterProgressRepositoryTest {
         @DisplayName("chapterId와 userId가 유효하지 않으면 Optional.empty()를 반환한다.")
         void withInvalidChapterIdAndUserId(){
             //given
-            Long userId = 999L;
-            Long chapterId = 999L;
+            long userId = 999L;
+            long chapterId = 999L;
 
             //when
             Optional<ChapterProgress> chapterProgress = chapterProgressJpaRepository.findByChapterIdAndUserId(chapterId, userId);
@@ -114,7 +114,7 @@ class ChapterProgressRepositoryTest {
         @DisplayName("userId가 유효하면 정상적으로 반환한다.")
         void withValidUserId(){
             //given
-            Long userId = 1L;
+            long userId = 1L;
 
             //when
             List<ChapterProgressDetailResponse> chapterProgressDetailResponses = chapterProgressJpaRepository.findAllChapterProgressDetailByUserId(userId);
@@ -130,7 +130,7 @@ class ChapterProgressRepositoryTest {
         @DisplayName("userId가 유효하지 않으면 빈 리스트를 반환한다.")
         void withInvalidUserId(){
             //given
-            Long userId = 999L;
+            long userId = 999L;
 
             //when
             List<ChapterProgressDetailResponse> chapterProgressDetailResponses = chapterProgressJpaRepository.findAllChapterProgressDetailByUserId(userId);

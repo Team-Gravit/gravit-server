@@ -11,9 +11,9 @@ class ChapterProgressTest {
     @Test
     void createUserChapterProgressWithValidValue() {
         // given
-        Long totalUnits = 20L;
-        Long userId = 1L;
-        Long chapterId = 1L;
+        long totalUnits = 20L;
+        long userId = 1L;
+        long chapterId = 1L;
 
         // when
         ChapterProgress chapterProgress = ChapterProgress.create(totalUnits, userId, chapterId);

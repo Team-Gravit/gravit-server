@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -401,7 +402,7 @@ class LearningControllerTest {
             //given
             long userId = 1L;
 
-            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+            doThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND)).when(reportService).submitProblemReport(userId, validRequest);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -422,7 +423,7 @@ class LearningControllerTest {
             //given
             long userId = 1L;
 
-            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+            doThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND)).when(reportService).submitProblemReport(userId, validRequest);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -443,7 +444,7 @@ class LearningControllerTest {
             //given
             long userId = 1L;
 
-            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT));
+            doThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT)).when(reportService).submitProblemReport(userId, validRequest);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
