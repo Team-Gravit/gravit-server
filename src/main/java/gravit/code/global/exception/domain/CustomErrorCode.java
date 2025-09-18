@@ -35,10 +35,11 @@ public enum CustomErrorCode implements ErrorCode {
 
     // JWT
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "JWT_4011", "유효하지 않은 토큰입니다."),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4001","만료된 토큰입니다."),
-    TOKEN_EMPTY(HttpStatus.UNAUTHORIZED,"JWT_4002", "빈 토큰입니다."),
-    TOKEN_NOT_SIGNED(HttpStatus.UNAUTHORIZED,"JWT_4003","서명되지 않은 토큰입니다."),
-    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT_4004", "토큰을 찾을 수 없습니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4012","만료된 토큰입니다."),
+    TOKEN_EMPTY(HttpStatus.UNAUTHORIZED,"JWT_4013", "빈 토큰입니다."),
+    TOKEN_NOT_SIGNED(HttpStatus.UNAUTHORIZED,"JWT_4014","서명되지 않은 토큰입니다."),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT_4015", "토큰을 찾을 수 없습니다."),
+    REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4016", "만료된 리프레시 토큰입니다."),
 
     // Chapter
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),

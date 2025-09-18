@@ -92,7 +92,14 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
-  valid-time: 7200000
+
+token:
+  access:
+    storage-key-prefix: "accessToken:"
+    expire-time: 2h
+  refresh:
+    storage-key-prefix: "refreshToken:"
+    expire-time: 14d
 
 auth0:
   issuer: ${AUTH0_ISSUER}

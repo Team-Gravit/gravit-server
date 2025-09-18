@@ -1,6 +1,6 @@
 package gravit.code.user.controller.docs;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;

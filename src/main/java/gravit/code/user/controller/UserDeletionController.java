@@ -1,6 +1,6 @@
 package gravit.code.user.controller;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.user.controller.docs.UserDeletionControllerSpecification;
 import gravit.code.user.service.UserDeletionService;
 import lombok.RequiredArgsConstructor;

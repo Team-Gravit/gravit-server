@@ -3,7 +3,7 @@ package gravit.code.admin.controller.docs;
 import gravit.code.admin.dto.request.NoticeCreateRequest;
 import gravit.code.admin.dto.request.NoticeUpdateRequest;
 import gravit.code.admin.dto.response.NoticeResponse;
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +29,7 @@ public interface AdminNoticeCommandControllerDocs {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = NoticeResponse.class)))
     })
-    @PostMapping("/create")
+    @PostMapping
     ResponseEntity<NoticeResponse> createNotice(@AuthenticationPrincipal LoginUser loginUser,
                                                 @RequestBody NoticeCreateRequest noticeCreateResponse);
 
@@ -42,7 +42,7 @@ public interface AdminNoticeCommandControllerDocs {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = NoticeResponse.class)))
     })
-    @PostMapping("/update")
+    @PostMapping
     ResponseEntity<NoticeResponse> updateNotice(@AuthenticationPrincipal LoginUser loginUser,
                                                 @RequestBody NoticeUpdateRequest noticeUpdateRequest);
 
@@ -54,7 +54,7 @@ public interface AdminNoticeCommandControllerDocs {
             @ApiResponse(responseCode = "200", description = "✅ 공지 삭제 성공"),
 
     })
-    @DeleteMapping("/delete/{noticeId}")
+    @DeleteMapping("/{noticeId}")
     ResponseEntity<Void> deleteNotice(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("noticeId") Long noticeId

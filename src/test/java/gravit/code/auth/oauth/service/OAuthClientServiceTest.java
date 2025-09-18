@@ -1,7 +1,9 @@
 package gravit.code.auth.oauth.service;
 
-import gravit.code.auth.oauth.dto.OAuthUserInfo;
-import gravit.code.auth.oauth.startegy.OAuthResponseFactory;
+import gravit.code.auth.dto.oauth.OAuthUserInfo;
+import gravit.code.auth.startegy.OAuthResponseFactory;
+import gravit.code.auth.service.oauth.OAuthClientService;
+import gravit.code.auth.client.WebClientAdapter;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,8 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 

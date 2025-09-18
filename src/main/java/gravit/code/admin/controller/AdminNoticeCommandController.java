@@ -5,7 +5,7 @@ import gravit.code.admin.dto.request.NoticeCreateRequest;
 import gravit.code.admin.dto.request.NoticeUpdateRequest;
 import gravit.code.admin.dto.response.NoticeResponse;
 import gravit.code.admin.service.AdminNoticeCommandService;
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminNoticeCommandController implements AdminNoticeCommandControllerDocs {
     private final AdminNoticeCommandService adminNoticeCommandService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<NoticeResponse> createNotice(@AuthenticationPrincipal LoginUser loginUser,
                                                        @RequestBody NoticeCreateRequest noticeCreateResponse) {
         Long authorId = loginUser.getId();
@@ -27,7 +27,7 @@ public class AdminNoticeCommandController implements AdminNoticeCommandControlle
         return ResponseEntity.status(status).body(notice);
     }
 
-    @PostMapping("/update")
+    @PatchMapping
     public ResponseEntity<NoticeResponse> updateNotice(@AuthenticationPrincipal LoginUser loginUser,
                                                        @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
         Long authorId = loginUser.getId();
@@ -36,7 +36,7 @@ public class AdminNoticeCommandController implements AdminNoticeCommandControlle
         return ResponseEntity.status(status).body(notice);
     }
 
-    @DeleteMapping("/delete/{noticeId}")
+    @DeleteMapping("/{noticeId}")
     public ResponseEntity<Void> deleteNotice(@AuthenticationPrincipal LoginUser loginUser,
                                              @PathVariable("noticeId") Long noticeId) {
         Long authorId = loginUser.getId();

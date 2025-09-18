@@ -1,6 +1,6 @@
 package gravit.code.userLeague.controller;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.userLeague.controller.docs.MyLeagueProfileQueryControllerDocs;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import gravit.code.userLeague.service.MyLeagueProfileQueryService;

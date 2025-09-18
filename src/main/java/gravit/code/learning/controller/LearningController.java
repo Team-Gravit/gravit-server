@@ -1,6 +1,6 @@
 package gravit.code.learning.controller;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.learning.controller.docs.LearningControllerSpecification;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LessonResponse;

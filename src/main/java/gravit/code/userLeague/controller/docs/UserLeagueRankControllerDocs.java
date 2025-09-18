@@ -1,6 +1,6 @@
 package gravit.code.userLeague.controller.docs;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.global.dto.SliceResponse;
 import io.swagger.v3.oas.annotations.Operation;

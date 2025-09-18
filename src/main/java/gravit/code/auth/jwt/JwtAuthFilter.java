@@ -2,6 +2,7 @@ package gravit.code.auth.jwt;
 
 import gravit.code.auth.jwt.exception.CustomAuthenticationEntryPoint;
 import gravit.code.auth.jwt.exception.CustomAuthenticationException;
+import gravit.code.auth.service.AuthTokenProvider;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.servlet.FilterChain;
@@ -20,7 +21,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final AuthTokenProvider authTokenProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
@@ -32,7 +33,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 || path.startsWith("/swagger-resources")
                 || path.startsWith("/webjars")
                 || path.startsWith("/api/v1/oauth")
-                || path.startsWith("/api/v1/oauth/android");
+                || path.startsWith("/api/v1/oauth/android")
+                || path.startsWith("/api/v1/auth/refresh");
     }
 
     @Override
@@ -44,8 +46,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (checkTokenNotNullAndBearer(token)) {
                 String jwtToken = token.substring(7);
 
-                jwtProvider.validateToken(jwtToken);
-                Authentication authentication = jwtProvider.getAuthUser(jwtToken);
+                authTokenProvider.validateToken(jwtToken);
+                Authentication authentication = authTokenProvider.getAuthUser(jwtToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.info("[doFilterInternal] 토큰 값 검증 완료");
             }
