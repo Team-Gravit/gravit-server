@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "OAuth2.0 Android API", description = "Android OAuth 관련 API")
 public interface OAuthAndroidControllerDocs {
 
-    @Operation(summary = "OAuth 회원가입/로그인 처리", description = "OAuth IdToken 을 기반으로 사용자 정보를 조회하고 회원가입 및 로그인 처리를 합니다")
+    @Operation(summary = "OAuth 회원가입/로그인 처리", description = "Android 에서 전달한 OAuth IdToken 을 기반으로 사용자 정보를 조회하고 회원가입/로그인 처리를 합니다")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ OAuth 회원가입/로그인 성공"),
             @ApiResponse(responseCode = "AUTH_4001", description = "🚨 유효하지 않은 OAuth 제공자",
@@ -31,7 +31,7 @@ public interface OAuthAndroidControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "AUTH_4003", description = "🚨 유효하지 않은 OAuth IdToken",
+            @ApiResponse(responseCode = "AUTH_4004", description = "🚨 유효하지 않은 OAuth IdToken",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(

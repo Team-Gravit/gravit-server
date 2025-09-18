@@ -14,13 +14,24 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
     int deleteBySeasonId(@Param("season") Season season);
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
-    @Query("""
-           insert into UserLeagueHistory (season, user, finalLeague, finalLp)
-           select :season, ul.user, ul.league, ul.lp
-           from UserLeague ul
-           where ul.season = :season
-    """)
-    int insertFromCurrent(@Param("season") Season season);
-
+    @Query(value = """
+            INSERT INTO user_league_history (
+                season_id, user_id, final_league_id, final_rank, final_lp, created_at, updated_at
+            )
+            SELECT
+                :seasonId AS season_id,
+                ul.user_id AS user_id,
+                ul.league_id AS final_league_id,
+                DENSE_RANK() OVER (
+                    PARTITION BY ul.league_id
+                    ORDER BY ul.league_point DESC, ul.updated_at ASC, ul.user_id ASC
+                ) AS final_rank,
+                ul.league_point AS final_lp,
+                CURRENT_TIMESTAMP AS created_at,
+                CURRENT_TIMESTAMP AS updated_at
+            FROM user_league ul
+            WHERE ul.season_id = :seasonId
+            """, nativeQuery = true)
+    int insertFromCurrent(@Param("seasonId") Long seasonId);
 
 }
