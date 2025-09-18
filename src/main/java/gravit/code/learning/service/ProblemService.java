@@ -22,7 +22,7 @@ public class ProblemService {
     private final ProblemRepository problemRepository;
     private final OptionRepository optionRepository;
 
-    public List<ProblemResponse> getAllProblem(Long lessonId){
+    public List<ProblemResponse> getAllProblemInLesson(Long lessonId){
 
         // 문제 조회, 선지 포함 X
         List<Problem> problems = problemRepository.findAllProblemByLessonId(lessonId);

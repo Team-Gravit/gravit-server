@@ -1,7 +1,7 @@
 package gravit.code.learning.controller;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.learning.controller.docs.LearningControllerSpecification;
+import gravit.code.learning.controller.docs.LearningControllerDocs;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.learning.facade.LearningFacade;
@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/learning")
-public class LearningController implements LearningControllerSpecification {
+public class LearningController implements LearningControllerDocs {
 
     private final LearningFacade learningFacade;
     private final ReportService reportService;
@@ -38,9 +38,9 @@ public class LearningController implements LearningControllerSpecification {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllUnitsInChapter(loginUser.getId(), chapterId));
     }
 
-    @GetMapping("/{lessonId}/problems")
-    public ResponseEntity<LessonResponse> getProblems(@PathVariable("lessonId") Long lessonsId){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId));
+    @GetMapping("/{lessonId}")
+    public ResponseEntity<LessonResponse> getLesson(@PathVariable("lessonId") Long lessonsId){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getLesson(lessonsId));
     }
 
     @PostMapping("/results")
@@ -50,8 +50,9 @@ public class LearningController implements LearningControllerSpecification {
     }
 
     @PostMapping("/reports")
-    public ResponseEntity<Boolean> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
-                                                       @Valid@RequestBody ProblemReportSubmitRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(reportService.submitProblemReport(loginUser.getId(),request));
+    public ResponseEntity<Void> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
+                                                    @Valid@RequestBody ProblemReportSubmitRequest request){
+        reportService.submitProblemReport(loginUser.getId(), request);
+        return ResponseEntity.ok().build();
     }
 }

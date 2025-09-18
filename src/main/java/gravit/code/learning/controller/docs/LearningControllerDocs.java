@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Tag(name = "Learning API", description = "학습 관련 API")
-public interface LearningControllerSpecification {
+public interface LearningControllerDocs {
 
     @Operation(summary = "챕터 목록 조회", description = "사용자의 챕터 진행 상황과 함께 전체 챕터 목록을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -111,8 +111,8 @@ public interface LearningControllerSpecification {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/{lessonId}/problems")
-    ResponseEntity<LessonResponse> getProblems(@PathVariable("lessonId") Long lessonId);
+    @GetMapping("/{lessonId}")
+    ResponseEntity<LessonResponse> getLesson(@PathVariable("lessonId") Long lessonsId);
 
     @Operation(summary = "학습 결과 저장", description = "레슨 완료 후 문제 풀이 결과를 저장하고 사용자 레벨을 업데이트합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -239,6 +239,6 @@ public interface LearningControllerSpecification {
             )
     })
     @PostMapping("/reports")
-    ResponseEntity<Boolean> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
-                                                @Valid @RequestBody ProblemReportSubmitRequest request);
+    ResponseEntity<Void> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
+                                             @Valid @RequestBody ProblemReportSubmitRequest request);
 }

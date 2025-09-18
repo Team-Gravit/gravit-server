@@ -19,19 +19,19 @@ public class Lesson {
     private String name;
 
     @Column(name = "total_problems",columnDefinition = "bigint", nullable = false)
-    private Long totalProblems;
+    private long totalProblems;
 
     @Column(name = "unit_id", columnDefinition = "bigint", nullable = false)
-    private Long unitId;
+    private long unitId;
 
     @Builder
-    private Lesson(String name, Long totalProblems, Long unitId) {
+    private Lesson(String name, long totalProblems, long unitId) {
         this.name = name;
         this.totalProblems = totalProblems;
         this.unitId = unitId;
     }
 
-    public static Lesson create(String name, Long totalProblems, Long unitId) {
+    public static Lesson create(String name, long totalProblems, long unitId) {
         return Lesson.builder()
                 .name(name)
                 .totalProblems(totalProblems)

@@ -25,9 +25,9 @@ public enum MissionType {
     // 새로운 친구 팔로우하기
     FOLLOW_NEW_FRIEND(10, "새로운 친구 팔로우하기", 40, 5);
 
-    private final Integer missionId;
+    private final int missionId;
     private final String description;
-    private final Integer awardXp;
-    private final Integer ticket;
+    private final int awardXp;
+    private final int ticket;
 
 }

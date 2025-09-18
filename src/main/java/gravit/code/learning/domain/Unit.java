@@ -19,13 +19,13 @@ public class Unit {
     private String name;
 
     @Column(name = "total_lessons", columnDefinition = "bigint", nullable = false)
-    private Long totalLessons;
+    private long totalLessons;
 
     @Column(name = "chapter_id", columnDefinition = "bigint", nullable = false)
-    private Long chapterId;
+    private long chapterId;
 
     @Builder
-    private Unit(String name, Long totalLessons, Long chapterId) {
+    private Unit(String name, long totalLessons, long chapterId) {
         this.name = name;
         this.totalLessons = totalLessons;
         this.chapterId = chapterId;

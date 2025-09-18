@@ -19,10 +19,10 @@ public class LearningService {
     @Transactional
     public void updateConsecutiveDays(){
         int size = 10;
-        int offset = 0;
+        int page = 0;
 
         while(true){
-            Pageable pageable = PageRequest.of(offset,size);
+            Pageable pageable = PageRequest.of(page,size);
             List<Learning> learnings = learningRepository.findAll(pageable);
 
             if(learnings.isEmpty())
@@ -34,7 +34,7 @@ public class LearningService {
 
             learningRepository.saveAll(learnings);
 
-            offset++;
+            page++;
         }
     }
 }
