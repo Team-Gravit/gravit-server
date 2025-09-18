@@ -108,6 +108,10 @@ public enum CustomErrorCode implements ErrorCode {
     REDIS_EXPIRE_TIME_INVALID(HttpStatus.BAD_REQUEST,"REDIS_4001", "레디스 키 만료 시간은 0보다 커야합니다."),
     REDIS_MAIL_AUTH_DUPLICATE(HttpStatus.CONFLICT,"REDIS_4091", "레디스에서 MailAuthCode 키가 중복되었습니다."),
 
+    // Converter
+    JSON_CONVERT_TO_STRING_INVALID(HttpStatus.BAD_REQUEST, "CONVERT_4001", "Json 객체를 String 객체로 변환에 실패하였습니다."),
+    STRING_CONVERT_TO_JSON_INVALID(HttpStatus.BAD_REQUEST, "CONVERT_4002", "String 객체를 Json 객체로 변환에 실패하였습니다."),
+
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
     DATABASE_EXCEPTION(HttpStatus.BAD_REQUEST, "DB_4001", "데이터베이스 작업 중 예외 발생"),
