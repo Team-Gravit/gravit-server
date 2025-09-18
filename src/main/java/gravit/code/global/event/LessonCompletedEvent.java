@@ -1,4 +1,4 @@
 package gravit.code.global.event;
 
-public record LessonCompletedEvent(Long userId, int points) {
+public record LessonCompletedEvent(Long userId, int points, int accuracy) {
 }
