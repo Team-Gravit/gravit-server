@@ -1,6 +1,5 @@
 package gravit.code.config;
 
-import gravit.code.auth.oauth.config.Auth0Props;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

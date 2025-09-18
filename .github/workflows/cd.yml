@@ -50,6 +50,8 @@ jobs:
           auth0.issuer: ${{ secrets.AUTH0_ISSUER }}
           auth0.android-client-id: ${{ secrets.ANDROID_CLIENT_ID }}
 
+          admin.bootstrap.emails: ${{ secrets.ADMIN_BOOTSTRAP_EMAILS }}
+
       - name: JAR 빌드
         run: |
           chmod +x ./gradlew

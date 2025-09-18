@@ -5,6 +5,7 @@ import gravit.code.learning.infrastructure.ChapterJpaRepository;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.infrastructure.ChapterProgressJpaRepository;
 import gravit.code.progress.domain.ChapterProgress;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ class ChapterProgressRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        User user = User.create("이메일", "프로바이더 아이디", "닉네임", "핸들", 1, LocalDateTime.now());
+        User user = User.create("이메일", "프로바이더 아이디", "닉네임", "핸들", 1, Role.USER);
         userRepository.save(user);
 
         Chapter chapter1 = Chapter.create("자료구조", "스택, 큐, 트리, 그래프 등 기본적인 자료구조의 개념과 구현을 학습합니다.", 8L);

@@ -20,10 +20,10 @@ public class UserLeaguePointService {
     private final LeagueRepository leagueRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addLeaguePoints(Long userId, int points) {
+    public void addLeaguePoints(Long userId, int points, int accuracy) {
         UserLeague userLeague = userLeagueRepository.findByUserId(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
 
-        int updatedLp = userLeague.addLeaguePoints(points);
+        int updatedLp = userLeague.addLeaguePoints((int) Math.round(points * accuracy * 0.01));
         League league = leagueRepository.findByLpBetween(updatedLp).orElseThrow(() -> new RestApiException(CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT));
 
         userLeague.updateLeagueIfDifferent(league);

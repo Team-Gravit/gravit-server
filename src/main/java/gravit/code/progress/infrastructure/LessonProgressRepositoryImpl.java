@@ -30,4 +30,9 @@ public class LessonProgressRepositoryImpl implements LessonProgressRepository {
         return lessonProgressJpaRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
     }
 
+    @Override
+    public Long countByUserId(Long userId){
+        return lessonProgressJpaRepository.countByUserId(userId);
+    }
+
 }

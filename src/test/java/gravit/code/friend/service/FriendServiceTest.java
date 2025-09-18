@@ -5,6 +5,7 @@ import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -36,9 +37,9 @@ class FriendServiceTest {
     @Test
     void 상호_팔로우_가능한지_검증() {
         // given
-        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
+        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, Role.USER);
         userRepository.save(user1);
-        User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, LocalDateTime.now());
+        User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, Role.USER);
         userRepository.save(user2);
 
         // when
@@ -62,9 +63,9 @@ class FriendServiceTest {
     @Test
     void 팔로잉을_한_유저를_대상으로_팔로잉을_취소합니다() {
         // given
-        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
+        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1,Role.USER);
         userRepository.save(user1);
-        User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, LocalDateTime.now());
+        User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, Role.USER);
         userRepository.save(user2);
         friendService.following(user1.getId(), user2.getId());
 
@@ -79,11 +80,11 @@ class FriendServiceTest {
     @Test
     void 나를_팔로우_한_사람들을_조회합니다() {
         // given
-        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
+        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, Role.USER);
         userRepository.save(user1);
-        User user2 = User.create("user2@example.com", "kakao1258853439443", "User2", "@user2", 1, LocalDateTime.now());
+        User user2 = User.create("user2@example.com", "kakao1258853439443", "User2", "@user2", 1, Role.USER);
         userRepository.save(user2);
-        User user3 = User.create("user3@example.com", "kakao6438123471324", "User3", "@user3", 1, LocalDateTime.now());
+        User user3 = User.create("user3@example.com", "kakao6438123471324", "User3", "@user3", 1, Role.USER);
         userRepository.save(user3);
 
         Friend friend1 = Friend.create(user1.getId(), user2.getId());
@@ -110,11 +111,11 @@ class FriendServiceTest {
     @Test
     void 내가_팔로우_한_사람들을_조회합니다() {
         // given
-        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, LocalDateTime.now());
+        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, Role.USER);
         userRepository.save(user1);
-        User user2 = User.create("user2@example.com", "kakao1258853439443", "User2", "@user2", 1, LocalDateTime.now());
+        User user2 = User.create("user2@example.com", "kakao1258853439443", "User2", "@user2", 1, Role.USER);
         userRepository.save(user2);
-        User user3 = User.create("user3@example.com", "kakao6438123471324", "User3", "@user3", 1, LocalDateTime.now());
+        User user3 = User.create("user3@example.com", "kakao6438123471324", "User3", "@user3", 1, Role.USER);
         userRepository.save(user3);
 
         Friend friend1 = Friend.create(user1.getId(), user2.getId());

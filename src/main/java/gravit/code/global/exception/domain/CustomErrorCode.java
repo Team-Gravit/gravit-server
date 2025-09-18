@@ -35,13 +35,11 @@ public enum CustomErrorCode implements ErrorCode {
 
     // JWT
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "JWT_4011", "유효하지 않은 토큰입니다."),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4001","만료된 토큰입니다."),
-    TOKEN_EMPTY(HttpStatus.UNAUTHORIZED,"JWT_4002", "빈 토큰입니다."),
-    TOKEN_NOT_SIGNED(HttpStatus.UNAUTHORIZED,"JWT_4003","서명되지 않은 토큰입니다."),
-    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT_4004", "토큰을 찾을 수 없습니다."),
-
-    // RecentLearning
-    RECENT_LEARNING_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "RECENT_LEARNING_4041", "최근 학습 정보 조회에 실패하였습니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4012","만료된 토큰입니다."),
+    TOKEN_EMPTY(HttpStatus.UNAUTHORIZED,"JWT_4013", "빈 토큰입니다."),
+    TOKEN_NOT_SIGNED(HttpStatus.UNAUTHORIZED,"JWT_4014","서명되지 않은 토큰입니다."),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT_4015", "토큰을 찾을 수 없습니다."),
+    REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4016", "만료된 리프레시 토큰입니다."),
 
     // Chapter
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),
@@ -63,9 +61,11 @@ public enum CustomErrorCode implements ErrorCode {
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION_4041", "옵션 조회에 실패하였습니다."),
 
     // Report
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_4041", "신고 조회에 실패하였습니다."),
     REPORT_TYPE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
     ALREADY_SUBMITTED_REPORT(HttpStatus.BAD_REQUEST, "REPORT_4002", "이미 제출된 신고입니다."),
 
+    // Mission
     MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION_4041", "사용자의 미션 조회에 실패하였습니다."),
 
     // Friend
@@ -88,6 +88,14 @@ public enum CustomErrorCode implements ErrorCode {
     ACTIVE_SEASON_NOT_FOUND(HttpStatus.NOT_FOUND, "SEASON_4041", "마감 대상 ACTIVE 시즌이 없습니다."),
     BATCH_PREP_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4091", "배치 처리 도중, PREP 시즌 생성 관련하여 충돌이 발생하였습니다."),
     BATCH_ACTIVE_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4092", "배치 처리 도중, ACTIVE 시즌 생성 관련하여 충돌이 발생하였습니다."),
+
+    // Notice
+    NOTICE_TITLE_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4001", "공지 사항의 제목이 유효하지 않습니다."),
+    NOTICE_SUMMARY_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4002", "공지 사항의 요약이 유효하지 않습니다."),
+    NOTICE_CONTENT_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4003", "공지 사항의 내용이 유효하지 않습니다."),
+    NOTICE_PINNED_MUST_BE_PUBLISHED(HttpStatus.BAD_REQUEST, "NOTICE_4004", "핀을 고정하려면 PUBLISHED 상태여야 합니다."),
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE_4041", "존재하지 않는 공지사항입니다."),
+    NOTICE_STATUS_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4005", "공지 사항의 상태가 PUBLISHED, ARCHIVED 에서 DRAFT 로 변경될 수 없습니다."),
 
     // Dest
     DEST_NOT_VALID(HttpStatus.BAD_REQUEST, "DEST_4001", "유효하지 않은 Dest 입니다. (local/prod 만 유효합니다.)"),

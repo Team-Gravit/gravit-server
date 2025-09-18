@@ -3,10 +3,9 @@ package gravit.code.user.service;
 import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.mainPage.dto.response.MainPageUserSummaryResponse;
+import gravit.code.learning.dto.event.CreateLearningEvent;
+import gravit.code.mainPage.dto.response.MainPageResponse;
 import gravit.code.mission.dto.common.CreateMissionEvent;
-import gravit.code.recentLearning.dto.common.InitRecentLearningEvent;
-import gravit.code.recentLearning.service.RecentLearningService;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -16,14 +15,15 @@ import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
-    private final RecentLearningService recentLearningService;
 
     private final UserRepository userRepository;
 
@@ -41,7 +41,7 @@ public class UserService {
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
 
-        publisher.publishEvent(new InitRecentLearningEvent(user.getId()));
+        publisher.publishEvent(new CreateLearningEvent(user.getId()));
         publisher.publishEvent(new OnboardingUserLeagueEvent(user.getId()));
         publisher.publishEvent(new CreateMissionEvent(user.getId()));
 
@@ -62,19 +62,27 @@ public class UserService {
         return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }
 
+
     @Transactional
-    public UserLevelResponse updateUserLevelAndXp(Long userId){
+    public UserLevelResponse updateUserLevelAndXp(Long userId, int xp, int accuracy) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        user.getLevel().updateXp(20);
+        user.getLevel().updateXp((int) Math.round(xp * accuracy * 0.01));
 
         return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
     }
 
+    @Retryable(
+            retryFor = {ObjectOptimisticLockingFailureException.class},
+            maxAttempts = 10,
+            backoff = @Backoff(
+                    delay = 100,
+                    random = true
+            )
+    )
     @Transactional(readOnly = true)
-    public MainPageUserSummaryResponse getMainPageUserSummary(Long userId){
-        return userRepository.findUserMainPageSummaryByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+    public MainPageResponse getMainPage(Long userId) {
+        return userRepository.findMainPageByUserId(userId);
     }
 }

@@ -1,5 +1,6 @@
 package gravit.code.learning.domain;
 
+import gravit.code.admin.dto.request.OptionUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -42,5 +43,11 @@ public class Option {
                 .isAnswer(isAnswer)
                 .problemId(problemId)
                 .build();
+    }
+
+    public void updateOption(OptionUpdateRequest optionUpdateRequest){
+        this.content = optionUpdateRequest.content();
+        this.explanation = optionUpdateRequest.explanation();
+        this.isAnswer = optionUpdateRequest.isAnswer();
     }
 }

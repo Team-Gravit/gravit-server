@@ -5,4 +5,5 @@ import java.util.Optional;
 public interface LessonRepository {
     Lesson save(Lesson lesson);
     Optional<Lesson> findById(Long lessonId);
+    Long count();
 }

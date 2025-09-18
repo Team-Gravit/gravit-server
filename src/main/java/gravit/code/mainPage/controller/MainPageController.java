@@ -1,9 +1,9 @@
 package gravit.code.mainPage.controller;
 
-import gravit.code.auth.oauth.LoginUser;
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.mainPage.controller.docs.MainPageControllerSpecification;
 import gravit.code.mainPage.dto.response.MainPageResponse;
-import gravit.code.mainPage.facade.MainPageFacade;
+import gravit.code.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MainPageController implements MainPageControllerSpecification {
 
-    private final MainPageFacade mainPageFacade;
+    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser){
-        return ResponseEntity.status(HttpStatus.OK).body(mainPageFacade.getMainPage(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getMainPage(loginUser.getId()));
     }
 }

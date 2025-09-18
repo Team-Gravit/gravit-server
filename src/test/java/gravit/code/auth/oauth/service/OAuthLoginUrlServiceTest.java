@@ -1,5 +1,6 @@
 package gravit.code.auth.oauth.service;
 
+import gravit.code.auth.service.oauth.OAuthLoginUrlService;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

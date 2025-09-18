@@ -1,11 +1,11 @@
 package gravit.code.learning.facade;
 
 import gravit.code.learning.domain.Problem;
+import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.service.ChapterProgressService;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.recentLearning.dto.common.UpdateRecentLearningEvent;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
 import gravit.code.progress.service.LessonProgressService;
@@ -210,28 +210,28 @@ class LearningFacadeTest {
 
             problemResponses = List.of(
                     ProblemResponse.create(problem1, List.of(
-                            OptionResponse.create(1L, "LIFO (Last In First Out)", "스택은 마지막에 들어간 데이터가 먼저 나오는 구조입니다.", true),
-                            OptionResponse.create(1L, "FIFO (First In First Out)", "이는 큐의 특징입니다.", false),
-                            OptionResponse.create(1L, "랜덤 접근 가능", "스택은 순차 접근만 가능합니다.", false),
-                            OptionResponse.create(1L, "정렬된 데이터 저장", "스택은 정렬과 무관합니다.", false)
+                            OptionResponse.create(1L, 1L, "LIFO (Last In First Out)", "스택은 마지막에 들어간 데이터가 먼저 나오는 구조입니다.", true),
+                            OptionResponse.create(2L, 1L, "FIFO (First In First Out)", "이는 큐의 특징입니다.", false),
+                            OptionResponse.create(3L, 1L, "랜덤 접근 가능", "스택은 순차 접근만 가능합니다.", false),
+                            OptionResponse.create(4L, 1L, "정렬된 데이터 저장", "스택은 정렬과 무관합니다.", false)
                     )),
                     ProblemResponse.create(problem2, List.of(
-                            OptionResponse.create(2L, "FIFO (First In First Out)", "큐는 먼저 들어간 데이터가 먼저 나오는 구조입니다.", true),
-                            OptionResponse.create(2L, "LIFO (Last In First Out)", "이는 스택의 특징입니다.", false),
-                            OptionResponse.create(2L, "이진 탐색 가능", "큐는 탐색 자료구조가 아닙니다.", false),
-                            OptionResponse.create(2L, "인덱스 접근 가능", "큐는 양 끝에서만 접근 가능합니다.", false)
+                            OptionResponse.create(5L, 2L, "FIFO (First In First Out)", "큐는 먼저 들어간 데이터가 먼저 나오는 구조입니다.", true),
+                            OptionResponse.create(6L, 2L, "LIFO (Last In First Out)", "이는 스택의 특징입니다.", false),
+                            OptionResponse.create(7L, 2L, "이진 탐색 가능", "큐는 탐색 자료구조가 아닙니다.", false),
+                            OptionResponse.create(8L, 2L, "인덱스 접근 가능", "큐는 양 끝에서만 접근 가능합니다.", false)
                     )),
                     ProblemResponse.create(problem3, List.of(
-                            OptionResponse.create(3L, "동적 크기 조절", "연결 리스트는 실행 시간에 크기를 조절할 수 있습니다.", true),
-                            OptionResponse.create(3L, "빠른 랜덤 접근", "배열의 장점입니다.", false),
-                            OptionResponse.create(3L, "메모리 연속성", "배열의 장점입니다.", false),
-                            OptionResponse.create(3L, "캐시 효율성", "배열의 장점입니다.", false)
+                            OptionResponse.create(9L, 3L, "동적 크기 조절", "연결 리스트는 실행 시간에 크기를 조절할 수 있습니다.", true),
+                            OptionResponse.create(10L, 3L, "빠른 랜덤 접근", "배열의 장점입니다.", false),
+                            OptionResponse.create(11L, 3L, "메모리 연속성", "배열의 장점입니다.", false),
+                            OptionResponse.create(12L, 3L, "캐시 효율성", "배열의 장점입니다.", false)
                     )),
                     ProblemResponse.create(problem4, List.of(
-                            OptionResponse.create(4L, "O(1)", "배열은 인덱스로 상수 시간에 접근 가능합니다.", true),
-                            OptionResponse.create(4L, "O(log n)", "이진 탐색의 시간 복잡도입니다.", false),
-                            OptionResponse.create(4L, "O(n)", "선형 탐색의 시간 복잡도입니다.", false),
-                            OptionResponse.create(4L, "O(n log n)", "정렬 알고리즘의 평균 시간 복잡도입니다.", false)
+                            OptionResponse.create(13L, 4L, "O(1)", "배열은 인덱스로 상수 시간에 접근 가능합니다.", true),
+                            OptionResponse.create(14L, 4L, "O(log n)", "이진 탐색의 시간 복잡도입니다.", false),
+                            OptionResponse.create(15L, 4L, "O(n)", "선형 탐색의 시간 복잡도입니다.", false),
+                            OptionResponse.create(16L, 4L, "O(n log n)", "정렬 알고리즘의 평균 시간 복잡도입니다.", false)
                     )),
                     ProblemResponse.create(problem5, List.of()),
                     ProblemResponse.create(problem6, List.of())
@@ -358,8 +358,8 @@ class LearningFacadeTest {
 
                 //then
                 verify(chapterProgressService, times(1)).updateChapterProgress(chapterProgress);
-                verify(publisher, times(1)).publishEvent(new UpdateRecentLearningEvent(userId, validRequest.chapterId()));
-                verify(userService, times(1)).updateUserLevelAndXp(userId);
+                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, validRequest.chapterId()));
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
 
             @Test
@@ -382,8 +382,8 @@ class LearningFacadeTest {
 
                 //then
                 verify(chapterProgressService, never()).updateChapterProgress(any());
-                verify(publisher, times(1)).publishEvent(new UpdateRecentLearningEvent(userId, validRequest.chapterId()));
-                verify(userService, times(1)).updateUserLevelAndXp(userId);
+                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, validRequest.chapterId()));
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
         }
     }

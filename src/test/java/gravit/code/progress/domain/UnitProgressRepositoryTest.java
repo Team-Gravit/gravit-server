@@ -4,6 +4,7 @@ import gravit.code.learning.domain.Unit;
 import gravit.code.learning.infrastructure.UnitJpaRepository;
 import gravit.code.progress.dto.response.UnitProgressDetailResponse;
 import gravit.code.progress.infrastructure.UnitProgressJpaRepository;
+import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,7 @@ class UnitProgressRepositoryTest {
     @BeforeEach
     void setUp() {
 
-        User user = User.create("이메일", "프로바이더 아이디", "닉네임", "핸들", 1, LocalDateTime.now());
+        User user = User.create("이메일", "프로바이더 아이디", "닉네임", "핸들", 1, Role.USER);
         userRepository.save(user);
 
         Unit unit1 = Unit.create("유닛1", 10L, 1L);
