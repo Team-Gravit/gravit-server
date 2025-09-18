@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -53,7 +52,6 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         doNothing().when(eventPublisher).publishEvent(any(CreateLearningEvent.class));
         doNothing().when(eventPublisher).publishEvent(any(OnboardingUserLeagueEvent.class));
-
 
         // when
         UserResponse result = userService.onboarding(userId, request);
