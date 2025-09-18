@@ -246,10 +246,10 @@ class LearningFacadeTest {
             //given
             Long lessonId = 1L;
 
-            when(problemService.getAllProblem(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+            when(problemService.getAllProblemInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
 
             //when&then
-            assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
+            assertThatThrownBy(() -> learningFacade.getLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
         }
@@ -260,10 +260,10 @@ class LearningFacadeTest {
             //given
             Long lessonId = 1L;
 
-            when(problemService.getAllProblem(lessonId)).thenThrow(new RestApiException(CustomErrorCode.OPTION_NOT_FOUND));
+            when(problemService.getAllProblemInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.OPTION_NOT_FOUND));
 
             //when&then
-            assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
+            assertThatThrownBy(() -> learningFacade.getLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.OPTION_NOT_FOUND);
         }
@@ -274,14 +274,14 @@ class LearningFacadeTest {
             //given
             Long lessonId = 1L;
 
-            when(problemService.getAllProblem(lessonId)).thenReturn(problemResponses);
+            when(problemService.getAllProblemInLesson(lessonId)).thenReturn(problemResponses);
 
             //when
-            LessonResponse returnValue = learningFacade.getAllProblemsInLesson(lessonId);
+            LessonResponse returnValue = learningFacade.getLesson(lessonId);
 
             //then
             assertThat(returnValue).isEqualTo(lessonResponse);
-            verify(problemService, times(1)).getAllProblem(lessonId);
+            verify(problemService, times(1)).getAllProblemInLesson(lessonId);
         }
     }
 
@@ -350,7 +350,7 @@ class LearningFacadeTest {
                 when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId, validRequest.learningTime());
+                doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(true);
 
                 //when
@@ -374,7 +374,7 @@ class LearningFacadeTest {
                 when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgressStatus(validRequest.lessonId(), userId, validRequest.learningTime());
+                doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(false);
 
                 //when

@@ -7,14 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChapterProgressRepository {
-
     ChapterProgress save(ChapterProgress chapterProgress);
-
-    Optional<ChapterProgress> findByChapterIdAndUserId(Long chapterId, Long userId);
-
-    List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(Long userId);
-
-    Optional<ChapterProgressDetailResponse> findChapterProgressDetailByChapterIdAndUserId(Long chapterId, Long userId);
-
-    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(Long chapterId, Long userId);
+    Optional<ChapterProgress> findByChapterIdAndUserId(long chapterId, long userId);
+    List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(long userId);
+    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(long chapterId, long userId);
 }

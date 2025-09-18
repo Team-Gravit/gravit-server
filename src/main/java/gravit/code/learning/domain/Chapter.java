@@ -22,16 +22,16 @@ public class Chapter {
     private String description;
 
     @Column(name = "total_units",columnDefinition = "bigint", nullable = false)
-    private Long totalUnits;
+    private long totalUnits;
 
     @Builder
-    private Chapter(String name, String description, Long totalUnits) {
+    private Chapter(String name, String description, long totalUnits) {
         this.name = name;
         this.description = description;
         this.totalUnits = totalUnits;
     }
 
-    public static Chapter create(String name, String description, Long totalUnits) {
+    public static Chapter create(String name, String description, long totalUnits) {
         return Chapter.builder()
                 .name(name)
                 .description(description)

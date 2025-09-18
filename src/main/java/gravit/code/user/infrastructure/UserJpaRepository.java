@@ -37,7 +37,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         LEFT JOIN ChapterProgress cp ON cp.chapterId = c.id AND cp.userId = u.id
         WHERE u.id = :userId
     """)
-    MainPageResponse findMainPageByUserId(@Param("userId") Long userId);
+    MainPageResponse findMainPageByUserId(@Param("userId") long userId);
 
     boolean existsById(Long id);
 

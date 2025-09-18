@@ -24,7 +24,7 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public Long count(){
+    public long count(){
         return lessonJpaRepository.count();
     }
 }

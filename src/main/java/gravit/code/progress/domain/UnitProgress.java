@@ -19,26 +19,26 @@ public class UnitProgress {
     private Long id;
 
     @Column(name = "total_lessons", columnDefinition = "bigint", nullable = false)
-    private Long totalLessons;
+    private long totalLessons;
 
     @Column(name = "completed_lessons", columnDefinition = "bigint", nullable = false)
-    private Long completedLessons;
+    private long completedLessons;
 
     @Column(name = "user_id",columnDefinition = "bigint", nullable = false)
-    private Long userId;
+    private long userId;
 
     @Column(name = "unit_id",columnDefinition = "bigint", nullable = false)
-    private Long unitId;
+    private long unitId;
 
     @Builder
-    private UnitProgress(Long totalLessons, Long userId, Long unitId) {
+    private UnitProgress(long totalLessons, long userId, long unitId) {
         this.totalLessons = totalLessons;
         this.completedLessons = 0L;
         this.userId = userId;
         this.unitId = unitId;
     }
 
-    public static UnitProgress create(Long totalLessons, Long userId, Long unitId) {
+    public static UnitProgress create(long totalLessons, long userId, long unitId) {
         return UnitProgress.builder()
                 .totalLessons(totalLessons)
                 .userId(userId)

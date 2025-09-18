@@ -1,4 +1,4 @@
-package gravit.code.mission.dto.common;
+package gravit.code.mission.dto.event;
 
 public record CreateMissionEvent(
         Long userId

@@ -23,20 +23,20 @@ public class Option {
     private String explanation;
 
     @Column(name = "is_answer", nullable = false)
-    private Boolean isAnswer;
+    private boolean isAnswer;
 
     @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
-    private Long problemId;
+    private long problemId;
 
     @Builder
-    private Option(String content, String explanation, Boolean isAnswer, Long problemId) {
+    private Option(String content, String explanation, boolean isAnswer, long problemId) {
         this.content = content;
         this.explanation = explanation;
         this.isAnswer = isAnswer;
         this.problemId = problemId;
     }
 
-    public static Option create(String content, String explanation, Boolean isAnswer, Long problemId) {
+    public static Option create(String content, String explanation, boolean isAnswer, long problemId) {
         return Option.builder()
                 .content(content)
                 .explanation(explanation)

@@ -33,7 +33,7 @@ class ProblemProgressServiceTest {
     @DisplayName("유효한 데이터로 문제풀이 결과를 저장할 수 있다.")
     void saveProblemProgressByUserIdAndProblemProgress(){
         // given
-        Long userId = 1L;
+        long userId = 1L;
 
         List<ProblemResultRequest> problemResults = List.of(
                 new ProblemResultRequest(1L, true, 0L),

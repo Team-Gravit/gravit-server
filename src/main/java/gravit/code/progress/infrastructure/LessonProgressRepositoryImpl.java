@@ -21,17 +21,17 @@ public class LessonProgressRepositoryImpl implements LessonProgressRepository {
     }
 
     @Override
-    public Optional<LessonProgress> findByLessonIdAndUserId(Long lessonId, Long userId){
+    public Optional<LessonProgress> findByLessonIdAndUserId(long lessonId, long userId){
         return lessonProgressJpaRepository.findByLessonIdAndUserId(lessonId, userId);
     }
 
     @Override
-    public List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(Long unitId, Long userId){
+    public List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(long unitId, long userId){
         return lessonProgressJpaRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
     }
 
     @Override
-    public Long countByUserId(Long userId){
+    public long countByUserId(long userId){
         return lessonProgressJpaRepository.countByUserId(userId);
     }
 
