@@ -1,14 +1,17 @@
 package gravit.code.progress.service;
 
+import gravit.code.global.event.badge.PlanetCompletedEvent;
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.ChapterRepository;
 import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.ChapterProgressRepository;
+import gravit.code.progress.dto.ChapterCompletedDto;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.ChapterSummaryResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +22,7 @@ public class ChapterProgressService {
 
     private final ChapterRepository chapterRepository;
     private final ChapterProgressRepository chapterProgressRepository;
+    private final ApplicationEventPublisher publisher;
 
     public List<ChapterProgressDetailResponse> getChapterProgressDetails(Long userId){
         List<ChapterProgressDetailResponse> chapterProgressDetailResponses = chapterProgressRepository.findAllChapterProgressDetailByUserId(userId);
@@ -35,7 +39,10 @@ public class ChapterProgressService {
     }
 
     public void updateChapterProgress(ChapterProgress chapterProgress){
-        chapterProgress.updateCompletedUnits();
+        ChapterCompletedDto dto = chapterProgress.updateCompletedUnits();
+        publisher.publishEvent(new PlanetCompletedEvent(
+                chapterProgress.getUserId(), chapterProgress.getChapterId(), dto.before(), dto.after(), dto.totalUnits())
+        );
     }
 
     public ChapterProgress ensureChapterProgress(Long chapterId, Long userId){

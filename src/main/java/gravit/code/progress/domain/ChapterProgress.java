@@ -1,5 +1,6 @@
 package gravit.code.progress.domain;
 
+import gravit.code.progress.dto.ChapterCompletedDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -44,7 +45,12 @@ public class ChapterProgress {
                 .build();
     }
 
-    public void updateCompletedUnits(){
-        this.completedUnits++;
+    public ChapterCompletedDto updateCompletedUnits(){
+        long before = this.completedUnits;
+        long after = this.completedUnits++;
+
+        return new ChapterCompletedDto(
+                before, after, this.totalUnits
+        );
     }
 }

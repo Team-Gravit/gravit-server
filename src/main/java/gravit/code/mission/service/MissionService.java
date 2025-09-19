@@ -1,5 +1,7 @@
 package gravit.code.mission.service;
 
+import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.domain.Mission;
@@ -14,6 +16,7 @@ import gravit.code.progress.domain.LessonProgressRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -31,6 +34,7 @@ public class MissionService {
     private final MissionRepository missionRepository;
     private final LessonProgressRepository lessonProgressRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Retryable(
             retryFor = {ObjectOptimisticLockingFailureException.class},
@@ -65,8 +69,10 @@ public class MissionService {
         mission.checkAndUpdateCompletionStatus();
 
         // 미션을 완료했다면, 경험치 지급
-        if(mission.getIsCompleted())
+        if(mission.getIsCompleted()){
             awardMissionXp(lessonMissionDto.userId(), mission.getMissionType().getAwardXp());
+            publisher.publishEvent(new MissionCompletedEvent(lessonMissionDto.userId()));
+        }
     }
 
     public void handleFollowMission(FollowMissionEvent followMissionDto){
