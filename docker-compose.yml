@@ -8,12 +8,16 @@ services:
       - TZ=Asia/Seoul
     networks:
       - mogaktae_js-bridge
+    depends_on:
+      gravit-redis:
+        condition: service_started
+
 
   gravit-redis:
     image: redis:latest
     container_name: gravit-redis
     ports:
-      - "6386:6379"
+      - "6388:6379"
     volumes:
       - redis_data:/data
     networks:
