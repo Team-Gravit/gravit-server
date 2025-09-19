@@ -2,35 +2,35 @@ services:
   gravit-server:
     container_name: gravit-server
     image: ${DOCKER_HUB_USERNAME}/gravit-server:latest
-    depends_on:
-      js-logstash:
-        condition: service_healthy
+#    depends_on:
+#      js-logstash:
+#        condition: service_healthy
     ports:
       - "8520:8080"
     environment:
       - TZ=Asia/Seoul
     networks:
       - mogaktae_js-bridge
-    restart: unless-stopped
+#    restart: unless-stopped
 
-  js-logstash:
-    image: docker.elastic.co/logstash/logstash:8.11.0
-    container_name: js-logstash
-    volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-      - ./logs:/var/log/logstash
-    ports:
-      - "5000:5000"
-    environment:
-      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
-    networks:
-      - mogaktae_js-bridge
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9600/_node/stats || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+#  js-logstash:
+#    image: docker.elastic.co/logstash/logstash:8.11.0
+#    container_name: js-logstash
+#    volumes:
+#      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+#      - ./logs:/var/log/logstash
+#    ports:
+#      - "5000:5000"
+#    environment:
+#      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+#    networks:
+#      - mogaktae_js-bridge
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl -f http://localhost:9600/_node/stats || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#      start_period: 60s
 
   # Redis
   redis:
