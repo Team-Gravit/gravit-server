@@ -1,6 +1,7 @@
 package gravit.code.badge.controller;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.badge.controller.docs.BadgeQueryControllerDocs;
 import gravit.code.badge.dto.response.AllBadgesResponse;
 import gravit.code.badge.service.BadgeQueryService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/badges")
-public class BadgeQueryController {
+public class BadgeQueryController implements BadgeQueryControllerDocs {
 
     private final BadgeQueryService badgeQueryService;
 
