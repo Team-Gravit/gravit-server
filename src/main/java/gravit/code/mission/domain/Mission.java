@@ -20,19 +20,19 @@ public class Mission {
     private MissionType missionType;
 
     @Column(name = "progress_rate", columnDefinition = "double precision", nullable = false)
-    private Double progressRate;
+    private double progressRate;
 
     @Column(name = "is_completed", columnDefinition = "boolean", nullable = false)
-    private Boolean isCompleted;
+    private boolean isCompleted;
 
     @Column(name = "user_id", columnDefinition = "bigint", nullable = false, unique = true)
-    private Long userId;
+    private long userId;
 
     @Version
-    private Long version;
+    private long version;
 
     @Builder
-    private Mission(MissionType missionType, Long userId) {
+    private Mission(MissionType missionType, long userId) {
         this.missionType = missionType;
         this.progressRate = 0.0;
         this.isCompleted = false;
@@ -40,7 +40,7 @@ public class Mission {
         this.version = 0L;
     }
 
-    public static Mission create(MissionType missionType, Long userId) {
+    public static Mission create(MissionType missionType, long userId) {
         return Mission.builder()
                 .missionType(missionType)
                 .userId(userId)

@@ -13,9 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.any;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -38,8 +39,8 @@ class ReportServiceTest {
         @DisplayName("문제가 존재하지 않으면 예외를 반환한다.")
         void withInvalidProblemId(){
             //given
-            Long userId = 1L;
-            Long problemId = 1L;
+            long userId = 1L;
+            long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
                     "TYPO_ERROR",
@@ -59,8 +60,8 @@ class ReportServiceTest {
         @DisplayName("이미 제출된 신고라면 예외를 반환한다.")
         void withAlreadySubmittedData(){
             //given
-            Long userId = 1L;
-            Long problemId = 1L;
+            long userId = 1L;
+            long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
                     "TYPO_ERROR",
@@ -82,8 +83,8 @@ class ReportServiceTest {
         @DisplayName("데이터가 유효하면 문제 신고에 성공한다.")
         void withValidRequestData(){
             //given
-            Long userId = 1L;
-            Long problemId = 1L;
+            long userId = 1L;
+            long problemId = 1L;
 
             ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
                     "TYPO_ERROR",
@@ -95,10 +96,10 @@ class ReportServiceTest {
             when(reportRepository.existsReportByProblemIdAndUserId(request.problemId(), userId)).thenReturn(false);
 
             //when
-            boolean result = reportService.submitProblemReport(userId, request);
+            reportService.submitProblemReport(userId, request);
 
             //then
-            assertThat(result).isTrue();
+            verify(reportRepository).save(any());
         }
     }
 }

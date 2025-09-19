@@ -1,7 +1,7 @@
 package gravit.code.mainPage.controller;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.mainPage.controller.docs.MainPageControllerSpecification;
+import gravit.code.mainPage.controller.docs.MainPageControllerDocs;
 import gravit.code.mainPage.dto.response.MainPageResponse;
 import gravit.code.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/main")
 @RequiredArgsConstructor
-public class MainPageController implements MainPageControllerSpecification {
+public class MainPageController implements MainPageControllerDocs {
 
     private final UserService userService;
 

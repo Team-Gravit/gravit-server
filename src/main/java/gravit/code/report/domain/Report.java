@@ -26,19 +26,19 @@ public class Report {
     private String content;
 
     @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
-    private Long problemId;
+    private long problemId;
 
     @Column(name = "user_id", columnDefinition = "bigint", nullable = false)
-    private Long userId;
+    private long userId;
 
     @Column(name = "is_resolved", columnDefinition = "boolean", nullable = false)
-    private Boolean isResolved;
+    private boolean isResolved;
 
     @Column(name = "submitted_at", columnDefinition = "timestamp", nullable = false)
     private LocalDateTime submittedAt;
 
     @Builder
-    private Report(ReportType reportType, String content, Long problemId, Long userId) {
+    private Report(ReportType reportType, String content, long problemId, long userId) {
         this.reportType = reportType;
         this.content = content;
         this.problemId = problemId;
@@ -47,7 +47,7 @@ public class Report {
         this.submittedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
-    public static Report create(ReportType reportType, String content, Long problemId, Long userId){
+    public static Report create(ReportType reportType, String content, long problemId, long userId){
         return Report.builder()
                 .reportType(reportType)
                 .content(content)

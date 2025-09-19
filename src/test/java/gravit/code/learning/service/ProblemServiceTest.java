@@ -113,7 +113,7 @@ class ProblemServiceTest {
             when(optionRepository.findAllByProblemIdInIds(any())).thenReturn(options);
 
             //when
-            List<ProblemResponse> problemResponses = problemService.getAllProblem(lessonId);
+            List<ProblemResponse> problemResponses = problemService.getAllProblemInLesson(lessonId);
 
             //then
             assertThat(problemResponses).hasSize(12);
@@ -150,7 +150,7 @@ class ProblemServiceTest {
             when(problemRepository.findAllProblemByLessonId(lessonId)).thenReturn(List.of());
 
             //when & then
-            assertThatThrownBy(() -> problemService.getAllProblem(lessonId))
+            assertThatThrownBy(() -> problemService.getAllProblemInLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
         }
@@ -164,7 +164,7 @@ class ProblemServiceTest {
             when(optionRepository.findAllByProblemIdInIds(List.of(1L, 2L, 3L, 4L))).thenReturn(List.of());
 
             //when & then
-            assertThatThrownBy(() -> problemService.getAllProblem(lessonId))
+            assertThatThrownBy(() -> problemService.getAllProblemInLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.OPTION_NOT_FOUND);
         }

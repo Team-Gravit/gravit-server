@@ -61,8 +61,8 @@ class LessonProgressRepositoryTest {
         @DisplayName("userId가 유효하지 않으면 빈 리스트를 반환한다.")
         void withInvalidUserId(){
             //given
-            Long unitId = 1L;
-            Long userId = 111111L;
+            long unitId = 1L;
+            long userId = 111111L;
 
             //given
             List<LessonProgressSummaryResponse> lessonProgressSummaryResponse = lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
@@ -75,8 +75,8 @@ class LessonProgressRepositoryTest {
         @DisplayName("userId가 유효하면 정상적으로 반환한다.")
         void withValidUserId(){
             //given
-            Long unitId = 1L;
-            Long userId = 1L;
+            long unitId = 1L;
+            long userId = 1L;
 
             //given
             List<LessonProgressSummaryResponse> lessonProgressSummaryResponse = lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);

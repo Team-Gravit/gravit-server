@@ -23,7 +23,7 @@ public class ReportRepositoryIml implements ReportRepository {
     }
 
     @Override
-    public boolean existsReportByProblemIdAndUserId(Long problemId, Long userId){
+    public boolean existsReportByProblemIdAndUserId(long problemId, long userId){
         return reportJpaRepository.existsReportByProblemIdAndUserId(problemId,userId);
     }
 
@@ -33,12 +33,12 @@ public class ReportRepositoryIml implements ReportRepository {
     }
 
     @Override
-    public Optional<ReportDetailResponse> findReportDetailById(Long reportId){
+    public Optional<ReportDetailResponse> findReportDetailById(long reportId){
         return reportJpaRepository.findReportDetailById(reportId);
     }
 
     @Override
-    public Optional<Report> findById(Long reportId){
+    public Optional<Report> findById(long reportId){
         return reportJpaRepository.findById(reportId);
     }
 }

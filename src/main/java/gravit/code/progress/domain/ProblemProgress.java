@@ -24,27 +24,27 @@ public class ProblemProgress {
     private boolean isCorrect;
 
     @Column(name = "incorrect_counts", columnDefinition = "bigint", nullable = false)
-    private Long incorrectCounts;
+    private long incorrectCounts;
 
     @Column(name = "user_id",columnDefinition = "bigint", nullable = false)
-    private Long userId;
+    private long userId;
 
     @Column(name = "problem_id",columnDefinition = "bigint", nullable = false)
-    private Long problemId;
+    private long problemId;
 
     @Column(name = "created_at",  nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
     @Builder
-    private ProblemProgress(Boolean isCorrect, Long incorrectCounts, Long userId, Long problemId) {
+    private ProblemProgress(Boolean isCorrect, long incorrectCounts, long userId, long problemId) {
         this.isCorrect = isCorrect ;
         this.incorrectCounts = incorrectCounts;
         this.userId = userId;
         this.problemId = problemId;
     }
 
-    public static ProblemProgress create(Boolean isCorrect, Long incorrectCounts, Long userId, Long problemId) {
+    public static ProblemProgress create(Boolean isCorrect, long incorrectCounts, long userId, long problemId) {
         return ProblemProgress.builder()
                 .isCorrect(isCorrect)
                 .incorrectCounts(incorrectCounts)

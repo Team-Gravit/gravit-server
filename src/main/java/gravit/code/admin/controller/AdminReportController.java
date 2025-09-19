@@ -29,7 +29,8 @@ public class AdminReportController implements AdminReportControllerDocs {
     }
 
     @PatchMapping("/{reportId}/status")
-    public ResponseEntity<Boolean> updateReportStatus(@PathVariable("reportId") Long reportId){
-        return ResponseEntity.status(HttpStatus.OK).body(adminReportService.updateResolvedStatus(reportId));
+    public ResponseEntity<Void> updateReportStatus(@PathVariable("reportId") Long reportId){
+        adminReportService.updateResolvedStatus(reportId);
+        return ResponseEntity.ok().build();
     }
 }

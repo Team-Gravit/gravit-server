@@ -45,7 +45,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<MyPageResponse> findMyPageByUserId(Long userId) {
+    public Optional<MyPageResponse> findMyPageByUserId(long userId) {
         return jpaRepository.findMyPageByUserId(userId);
     }
 

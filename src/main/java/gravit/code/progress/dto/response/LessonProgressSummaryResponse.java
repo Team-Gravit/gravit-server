@@ -10,7 +10,7 @@ public record LessonProgressSummaryResponse(
                 description = "레슨 아이디",
                 example = "1"
         )
-        Long lessonId,
+        long lessonId,
 
         @Schema(
                 description = "레슨 이름",
@@ -24,7 +24,7 @@ public record LessonProgressSummaryResponse(
         )
         boolean isCompleted
 ) {
-        public static LessonProgressSummaryResponse create(Long lessonId, String name, boolean isCompleted) {
+        public static LessonProgressSummaryResponse create(long lessonId, String name, boolean isCompleted) {
                 return LessonProgressSummaryResponse.builder()
                         .lessonId(lessonId)
                         .name(name)

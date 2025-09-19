@@ -5,7 +5,7 @@ import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.learning.service.ProblemService;
-import gravit.code.mission.dto.common.LessonMissionEvent;
+import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.UnitProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
@@ -40,39 +40,43 @@ public class LearningFacade {
     private final ProblemProgressService problemProgressService;
 
     @Transactional(readOnly = true)
-    public List<ChapterProgressDetailResponse> getAllChapters(Long userId){
+    public List<ChapterProgressDetailResponse> getAllChapters(long userId){
         return chapterProgressService.getChapterProgressDetails(userId);
     }
 
     @Transactional(readOnly = true)
-    public List<UnitPageResponse> getAllUnitsInChapter(Long userId, Long chapterId){
-        List<UnitProgressDetailResponse> unitProgressDetailResponses = unitProgressService.findAllUnitProgress(chapterId, userId);
+    public List<UnitPageResponse> getAllUnitsInChapter(long userId, long chapterId){
+        // 사용자의 유닛 진행도 조회
+        List<UnitProgressDetailResponse> unitProgresses = unitProgressService.findAllUnitProgress(chapterId, userId);
 
-        return unitProgressDetailResponses.stream()
-                .map(unitProgressDetailResponse -> {
-                    List<LessonProgressSummaryResponse> lessonProgressSummaryResponses = lessonProgressService.getLessonProgressSummaries(unitProgressDetailResponse.unitId(), userId);
+        // 유닛 정보 + 유닛 진행도
+        return unitProgresses.stream()
+                .map(unitProgress -> {
+                    List<LessonProgressSummaryResponse> lessonProgressSummaries = lessonProgressService.getLessonProgressSummaries(unitProgress.unitId(), userId);
 
-                    return UnitPageResponse.create(unitProgressDetailResponse, lessonProgressSummaryResponses);
+                    return UnitPageResponse.create(unitProgress, lessonProgressSummaries);
                 })
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public LessonResponse getAllProblemsInLesson(Long lessonId){
-        return LessonResponse.create(problemService.getAllProblem(lessonId));
+    public LessonResponse getLesson(long lessonId){
+        return LessonResponse.create(problemService.getAllProblemInLesson(lessonId));
     }
 
     @Transactional
-    public UserLevelResponse saveLearningResult(Long userId, LearningResultSaveRequest request){
+    public UserLevelResponse saveLearningResult(long userId, LearningResultSaveRequest request){
 
         ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(request.chapterId(), userId);
         UnitProgress unitProgress = unitProgressService.ensureUnitProgress(request.unitId(), userId);
 
+        // 문제 풀이 결과 저장
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
-        lessonProgressService.updateLessonProgressStatus(request.lessonId(), userId, request.learningTime());
+        // lesson, unit, chapter 진행도 업데이트
+        lessonProgressService.updateLessonProgress(request.lessonId(), userId, request.learningTime());
 
-        if(Boolean.TRUE.equals(unitProgressService.updateUnitProgress(unitProgress)))
+        if(unitProgressService.updateUnitProgress(unitProgress))
             chapterProgressService.updateChapterProgress(chapterProgress);
 
         publisher.publishEvent(new UpdateLearningEvent(userId, request.chapterId()));

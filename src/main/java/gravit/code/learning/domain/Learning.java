@@ -16,22 +16,22 @@ public class Learning {
     private Long id;
 
     @Column(name = "recent_chapter_id", columnDefinition = "bigint",  nullable = false)
-    private Long recentChapterId;
+    private long recentChapterId;
 
     @Column(name = "today_solved", columnDefinition = "boolean", nullable = false)
-    private Boolean todaySolved;
+    private boolean todaySolved;
 
     @Column(name = "consecutive_days", columnDefinition = "integer", nullable = false)
-    private Integer consecutiveDays;
+    private int consecutiveDays;
 
     @Column(name = "planet_conquest_rate", columnDefinition = "integer", nullable = false)
-    private Integer planetConquestRate;
+    private int planetConquestRate;
 
     @Column(name = "user_id", columnDefinition = "bigint",  nullable = false)
-    private Long userId;
+    private long userId;
 
     @Column(columnDefinition = "bigint", nullable = false)
-    private Long version;
+    private long version;
 
     @Builder
     private Learning(Long userId) {
@@ -43,13 +43,13 @@ public class Learning {
         this.version = 0L;
     }
 
-    public static Learning create(Long userId){
+    public static Learning create(long userId){
         return Learning.builder()
                 .userId(userId)
                 .build();
     }
 
-    public void updateLearningStatus(Long chapterId, Integer planetConquestRate){
+    public void updateLearningStatus(long chapterId, int planetConquestRate){
         if (this.todaySolved){
             this.recentChapterId = chapterId;
         }else{

@@ -41,6 +41,6 @@ public class AdminReportService {
 
         reportRepository.save(report);
 
-        return report.getIsResolved();
+        return report.isResolved();
     }
 }

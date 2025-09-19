@@ -20,7 +20,7 @@ public class ChapterProgressService {
     private final ChapterRepository chapterRepository;
     private final ChapterProgressRepository chapterProgressRepository;
 
-    public List<ChapterProgressDetailResponse> getChapterProgressDetails(Long userId){
+    public List<ChapterProgressDetailResponse> getChapterProgressDetails(long userId){
         List<ChapterProgressDetailResponse> chapterProgressDetailResponses = chapterProgressRepository.findAllChapterProgressDetailByUserId(userId);
 
         if(chapterProgressDetailResponses.isEmpty())
@@ -29,7 +29,7 @@ public class ChapterProgressService {
         return chapterProgressDetailResponses;
     }
 
-    public ChapterSummaryResponse getChapterSummary(Long chapterId, Long userId) {
+    public ChapterSummaryResponse getChapterSummary(long chapterId, long userId) {
         return chapterProgressRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_SUMMARY_NOT_FOUND));
     }
@@ -38,7 +38,7 @@ public class ChapterProgressService {
         chapterProgress.updateCompletedUnits();
     }
 
-    public ChapterProgress ensureChapterProgress(Long chapterId, Long userId){
+    public ChapterProgress ensureChapterProgress(long chapterId, long userId){
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
 
