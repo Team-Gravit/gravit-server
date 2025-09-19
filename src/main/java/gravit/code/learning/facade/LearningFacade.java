@@ -1,6 +1,7 @@
 package gravit.code.learning.facade;
 
 import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LessonResponse;
@@ -82,7 +83,8 @@ public class LearningFacade {
         publisher.publishEvent(new UpdateLearningEvent(userId, request.chapterId()));
         publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
         publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
+        publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
 
-        return userService.updateUserLevelAndXp(userId, 20, request.accuracy());
+        return userService.updateUserLevelAndXp(userId,20, request.accuracy());
     }
 }

@@ -1,5 +1,6 @@
 package gravit.code.learning.domain;
 
+import gravit.code.learning.dto.StreakDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -49,14 +50,22 @@ public class Learning {
                 .build();
     }
 
-    public void updateLearningStatus(long chapterId, int planetConquestRate){
+    public StreakDto updateLearningStatus(long chapterId, Integer planetConquestRate){
+        int before = this.consecutiveDays;
+
         if (this.todaySolved){
             this.recentChapterId = chapterId;
+
+            int after = this.consecutiveDays;
+            return new StreakDto(before, after);
         }else{
             this.recentChapterId = chapterId;
             this.todaySolved = true;
             this.consecutiveDays += 1;
             this.planetConquestRate =  planetConquestRate;
+
+            int after = this.consecutiveDays;
+            return new StreakDto(before, after);
         }
     }
 
