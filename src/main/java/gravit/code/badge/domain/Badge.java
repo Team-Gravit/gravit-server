@@ -18,7 +18,7 @@ public class Badge extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "catergory_id", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private BadgeCategory category;
 
     @Column(nullable = false)
@@ -31,7 +31,10 @@ public class Badge extends BaseEntity {
     private String description;
 
     @Column(nullable = false)
-    private int IconId;
+    private int iconId;
+
+    @Column(nullable = false)
+    private int displayOrder;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
