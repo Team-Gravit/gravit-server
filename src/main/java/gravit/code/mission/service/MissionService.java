@@ -36,18 +36,18 @@ public class MissionService {
     private final ApplicationEventPublisher publisher;
 
     @Transactional
-    public void reassignMission() {
+    public void reassignMission(){
         int size = 10;
         int page = 0;
 
-        while (true) {
+        while(true){
             Pageable pageable = PageRequest.of(page, size);
             List<Mission> missions = missionRepository.findAll(pageable);
 
-            if (missions.isEmpty())
+            if(missions.isEmpty())
                 break;
 
-            for (Mission mission : missions) {
+            for(Mission mission : missions){
                 mission.reassignMission();
             }
 
@@ -63,12 +63,12 @@ public class MissionService {
                     random = true
             )
     )
-    public void handleLessonMission(LessonMissionEvent lessonMissionDto) {
+    public void handleLessonMission(LessonMissionEvent lessonMissionDto){
         Mission mission = missionRepository.findByUserId(lessonMissionDto.userId())
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
 
         // 이미 미션을 완료했다면 처리 종료
-        if (mission.isCompleted())
+        if(mission.isCompleted())
             return;
 
         MissionType missionType = mission.getMissionType();
