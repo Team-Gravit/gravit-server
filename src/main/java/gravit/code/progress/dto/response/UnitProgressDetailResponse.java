@@ -10,7 +10,7 @@ public record UnitProgressDetailResponse(
                 description = "유닛 아이디",
                 example = "1"
         )
-        Long unitId,
+        long unitId,
 
         @Schema(
                 description = "유닛 이름",
@@ -22,15 +22,15 @@ public record UnitProgressDetailResponse(
                 description = "총 레슨",
                 example = "3"
         )
-        Long totalLesson,
+        long totalLesson,
 
         @Schema(
                 description = "푼 레슨",
                 example = "2"
         )
-        Long completedLesson
+        long completedLesson
 ) {
-        public static UnitProgressDetailResponse create(Long unitId, String name, Long totalLesson, Long completedLesson) {
+        public static UnitProgressDetailResponse create(long unitId, String name, long totalLesson, long completedLesson) {
                 return UnitProgressDetailResponse.builder()
                         .unitId(unitId)
                         .name(name)

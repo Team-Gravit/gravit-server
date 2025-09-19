@@ -15,7 +15,7 @@ public record ProblemResponse(
                 description = "문제 아이디",
                 example = "1"
         )
-        Long problemId,
+        long problemId,
 
         @Schema(
                 description = "문제 타입",

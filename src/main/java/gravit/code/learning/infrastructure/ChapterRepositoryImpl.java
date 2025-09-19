@@ -17,6 +17,7 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     public Optional<Chapter> findById(Long chapterId){
         return chapterJpaRepository.findById(chapterId);
     }
+
     @Override
     public Chapter save(Chapter chapter) {
         return chapterJpaRepository.save(chapter);

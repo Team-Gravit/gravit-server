@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -63,7 +64,7 @@ class LearningControllerTest {
         @DisplayName("유저 아이디가 유효하지 않으면 예외를 반환한다.")
         void withInvalidUserId() throws Exception{
             //given
-            Long userId = 1L;
+            long userId = 1L;
 
             when(learningFacade.getAllChapters(userId)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
@@ -83,7 +84,7 @@ class LearningControllerTest {
         @DisplayName("유저 아이디가 유효하면 정상적으로 반환한다.")
         void withValidUserId() throws Exception{
             //given
-            Long userId = 1L;
+            long userId = 1L;
             List<ChapterProgressDetailResponse> response = List.of(
                     ChapterProgressDetailResponse.create(1L, "자료구조", "스택, 큐, 힙, 트리 등 기본적인 자료구조에 대해 학습합니다.", 12L, 8L),
                     ChapterProgressDetailResponse.create(2L, "알고리즘", "정렬, 탐색, 동적계획법 등 다양한 알고리즘을 학습합니다.", 15L, 5L),
@@ -121,8 +122,8 @@ class LearningControllerTest {
         @DisplayName("유저 아이디가 유효하지 않으면 예외를 반환한다.")
         void withInvalidUserId() throws Exception{
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
+            long chapterId = 1L;
+            long userId = 1L;
 
             when(learningFacade.getAllUnitsInChapter(userId, chapterId)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
@@ -142,8 +143,8 @@ class LearningControllerTest {
         @DisplayName("유저 아이디가 유효하면 정상적으로 반환한다.")
         void withValidUserId() throws Exception{
             //given
-            Long chapterId = 1L;
-            Long userId = 1L;
+            long chapterId = 1L;
+            long userId = 1L;
             List<UnitPageResponse> response = List.of(
                     UnitPageResponse.create(
                             UnitProgressDetailResponse.create(1L, "스택", 4L, 3L),
@@ -213,12 +214,12 @@ class LearningControllerTest {
         @DisplayName("레슨 아이디가 유효하지 않으면 예외를 반환한다.")
         void withInvalidUserId() throws Exception{
             //given
-            Long lessonId = 1L;
+            long lessonId = 1L;
 
-            when(learningFacade.getAllProblemsInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+            when(learningFacade.getLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
 
             //when
-            ResultActions resultActions = mockMvc.perform(get("/api/v1/learning/{lessonId}/problems", lessonId)
+            ResultActions resultActions = mockMvc.perform(get("/api/v1/learning/{lessonId}", lessonId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(csrf()));
 
@@ -233,7 +234,7 @@ class LearningControllerTest {
         @DisplayName("레슨 아이디가 유효하면 정상적으로 반환한다.")
         void withValidUserId() throws Exception{
             //given
-            Long lessonId = 1L;
+            long lessonId = 1L;
             List<ProblemResponse> problemResponses = List.of(
                     ProblemResponse.builder().problemId(1L).problemType(ProblemType.SUBJECTIVE).question("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다.").content("-").answer("LIFO").options(List.of()).build(),
                     ProblemResponse.builder().problemId(2L).problemType(ProblemType.OBJECTIVE).question("스택의 주요 연산이 아닌 것은?").content("1. push, 2. pop, 3. peek, 4. enqueue").answer("4").options(List.of()).build(),
@@ -247,10 +248,10 @@ class LearningControllerTest {
 
             LessonResponse lessonResponse = LessonResponse.create(problemResponses);
 
-            when(learningFacade.getAllProblemsInLesson(lessonId)).thenReturn(lessonResponse);
+            when(learningFacade.getLesson(lessonId)).thenReturn(lessonResponse);
 
             //when
-            ResultActions resultActions = mockMvc.perform(get("/api/v1/learning/{lessonId}/problems", lessonId)
+            ResultActions resultActions = mockMvc.perform(get("/api/v1/learning/{lessonId}", lessonId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .with(csrf()));
 
@@ -304,7 +305,7 @@ class LearningControllerTest {
         @DisplayName("RequestBody가 유효하지 않으면 예외를 반환한다.")
         void withInvalidRequestBody() throws Exception {
             //given
-            Long userId = 1L;
+            long userId = 1L;
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/results")
@@ -323,7 +324,7 @@ class LearningControllerTest {
         @DisplayName("유저 아이디가 유효하지 않으면 예외를 반환한다.")
         void withInvalidUserId() throws Exception{
             //given
-            Long userId = 1L;
+            long userId = 1L;
 
             when(learningFacade.saveLearningResult(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
@@ -344,7 +345,7 @@ class LearningControllerTest {
         @DisplayName("RequestBody와 유저 아이디가 유효하면 정상적으로 저장한다.")
         void withValidRequestBodyAndUserId() throws Exception{
             //given
-            Long userId = 1L;
+            long userId = 1L;
             UserLevelResponse userLevelResponse = UserLevelResponse.create(3, 150);
 
             when(learningFacade.saveLearningResult(userId, validRequest)).thenReturn(userLevelResponse);
@@ -399,9 +400,9 @@ class LearningControllerTest {
         @DisplayName("유저 아이디가 유효하지 않으면 예외를 반환한다.")
         void withInvalidUserId() throws Exception{
             //given
-            Long userId = 1L;
+            long userId = 1L;
 
-            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+            doThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND)).when(reportService).submitProblemReport(userId, validRequest);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -420,9 +421,9 @@ class LearningControllerTest {
         @DisplayName("문제가 존재하지 않으면 예외를 반환한다.")
         void withInvalidProblemId() throws Exception{
             //given
-            Long userId = 1L;
+            long userId = 1L;
 
-            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+            doThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND)).when(reportService).submitProblemReport(userId, validRequest);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -441,9 +442,9 @@ class LearningControllerTest {
         @DisplayName("이미 제출된 신고라면 예외를 반환한다.")
         void withAlreadySubmittedReport() throws Exception{
             //given
-            Long userId = 1L;
+            long userId = 1L;
 
-            when(reportService.submitProblemReport(userId, validRequest)).thenThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT));
+            doThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT)).when(reportService).submitProblemReport(userId, validRequest);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
@@ -461,11 +462,6 @@ class LearningControllerTest {
         @WithMockLoginUser
         @DisplayName("RequestBody와 유저 아이디가 유효하면 정상적으로 제출한다.")
         void withValidRequestBodyAndUserId() throws Exception{
-            //given
-            Long userId = 1L;
-
-            when(reportService.submitProblemReport(userId, validRequest)).thenReturn(true);
-
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -475,8 +471,7 @@ class LearningControllerTest {
             //then
             resultActions
                     .andDo(print())
-                    .andExpect(status().is2xxSuccessful())
-                    .andExpect(jsonPath("$").value(true));
+                    .andExpect(status().is2xxSuccessful());
         }
     }
 

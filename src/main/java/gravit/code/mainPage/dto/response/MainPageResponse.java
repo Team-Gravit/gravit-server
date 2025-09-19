@@ -2,9 +2,7 @@ package gravit.code.mainPage.dto.response;
 
 import gravit.code.mission.domain.MissionType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 
-@Builder
 @Schema(description = "메인페이지 정보 Response")
 public record MainPageResponse(
 
@@ -24,13 +22,13 @@ public record MainPageResponse(
                 description = "경험치",
                 example = "789"
         )
-        Integer xp,
+        int xp,
 
         @Schema(
                 description = "레벨",
                 example = "12"
         )
-        Integer level,
+        int level,
 
         @Schema(
                 description = "미션 타입",
@@ -42,19 +40,19 @@ public record MainPageResponse(
                 description = "행성 정복율",
                 example = "70"
         )
-        Integer planetConquestRate,
+        int planetConquestRate,
 
         @Schema(
                 description = "연속 학습일",
                 example = "10"
         )
-        Integer consecutiveDays,
+        int consecutiveDays,
 
         @Schema(
                 description = "챕터 아이디",
                 example = "5"
         )
-        Long chapterId,
+        long chapterId,
 
         @Schema(
                 description = "챕터 이름",
@@ -72,13 +70,13 @@ public record MainPageResponse(
                 description = "총 유닛수",
                 example = "10"
         )
-        Long totalUnits,
+        long totalUnits,
 
         @Schema(
                 description = "완료한 유닛수",
                 example = "8"
         )
-        Long completedUnits
+        long completedUnits
 
 ) {
 }

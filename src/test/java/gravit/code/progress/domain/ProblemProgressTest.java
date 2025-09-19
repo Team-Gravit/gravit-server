@@ -13,9 +13,9 @@ class ProblemProgressTest {
 
         // given
         Boolean isCorrect = false;
-        Long inCorrectCounts = 1L;
-        Long userId = 1L;
-        Long problemId = 1L;
+        long inCorrectCounts = 1L;
+        long userId = 1L;
+        long problemId = 1L;
 
         // when
         ProblemProgress problemProgress = ProblemProgress.create(isCorrect, inCorrectCounts, userId, problemId);

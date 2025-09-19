@@ -1,7 +1,7 @@
 package gravit.code.user.controller;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.user.controller.docs.UserDeletionControllerSpecification;
+import gravit.code.user.controller.docs.UserDeletionControllerDocs;
 import gravit.code.user.service.UserDeletionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users/me/delete")
-public class UserDeletionController implements UserDeletionControllerSpecification {
+public class UserDeletionController implements UserDeletionControllerDocs {
 
     private final UserDeletionService userDeleteWithMailService;
 

@@ -1,8 +1,8 @@
 package gravit.code.mission.listener;
 
-import gravit.code.mission.dto.common.CreateMissionEvent;
-import gravit.code.mission.dto.common.FollowMissionEvent;
-import gravit.code.mission.dto.common.LessonMissionEvent;
+import gravit.code.mission.dto.event.CreateMissionEvent;
+import gravit.code.mission.dto.event.FollowMissionEvent;
+import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.mission.service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -11,7 +11,7 @@ public record OptionResponse(
                 description = "선지 아이디",
                 example = "1"
         )
-        Long optionId,
+        long optionId,
 
         @Schema(
                 description = "내용",
@@ -29,16 +29,16 @@ public record OptionResponse(
                 description = "정답 여부",
                 example = "true"
         )
-        Boolean isAnswer,
+        boolean isAnswer,
 
         @Schema(
                 description = "문제 아이디",
                 example = "1"
         )
-        Long problemId
+        long problemId
 ) {
 
-    public static OptionResponse create(Long optionId, Long problemId, String content, String explanation, Boolean isAnswer) {
+    public static OptionResponse create(long optionId, long problemId, String content, String explanation, Boolean isAnswer) {
         return OptionResponse.builder()
                 .optionId(optionId)
                 .problemId(problemId)

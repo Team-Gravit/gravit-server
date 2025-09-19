@@ -19,7 +19,7 @@ public class ReportService {
     private final ProblemRepository problemRepository;
 
     @Transactional
-    public Boolean submitProblemReport(Long userId, ProblemReportSubmitRequest request){
+    public void submitProblemReport(long userId, ProblemReportSubmitRequest request){
 
         if(!problemRepository.existsProblemById(request.problemId()))
             throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
@@ -33,7 +33,5 @@ public class ReportService {
                 request.problemId(),
                 userId
         ));
-
-        return true;
     }
 }

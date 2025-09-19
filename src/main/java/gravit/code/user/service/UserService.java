@@ -5,7 +5,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.mainPage.dto.response.MainPageResponse;
-import gravit.code.mission.dto.common.CreateMissionEvent;
+import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;

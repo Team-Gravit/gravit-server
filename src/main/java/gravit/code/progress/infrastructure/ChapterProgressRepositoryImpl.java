@@ -21,23 +21,18 @@ public class ChapterProgressRepositoryImpl implements ChapterProgressRepository 
         return chapterProgressJpaRepository.save(chapterProgress);
     }
     @Override
-    public Optional<ChapterProgress> findByChapterIdAndUserId(Long chapterId, Long userId){
+    public Optional<ChapterProgress> findByChapterIdAndUserId(long chapterId, long userId){
         return chapterProgressJpaRepository.findByChapterIdAndUserId(chapterId,userId);
     }
 
     @Override
-    public List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(Long userId){
+    public List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(long userId){
         return chapterProgressJpaRepository.findAllChapterProgressDetailByUserId(userId);
     }
 
     @Override
-    public Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(Long chapterId, Long userId){
+    public Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(long chapterId, long userId){
         return chapterProgressJpaRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId);
-    }
-
-    @Override
-    public Optional<ChapterProgressDetailResponse> findChapterProgressDetailByChapterIdAndUserId(Long chapterId, Long userId){
-        return chapterProgressJpaRepository.findChapterProgressDetailByChapterIdAndUserId(chapterId, userId);
     }
 
 }

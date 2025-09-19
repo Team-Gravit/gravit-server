@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonProgressRepository {
-
     LessonProgress save(LessonProgress lessonProgress);
-    Optional<LessonProgress> findByLessonIdAndUserId(Long lessonId, Long userId);
-    List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(Long unitId, Long userId);
-    Long countByUserId(Long userId);
+    Optional<LessonProgress> findByLessonIdAndUserId(long lessonId, long userId);
+    List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(long unitId, long userId);
+    long countByUserId(long userId);
 }

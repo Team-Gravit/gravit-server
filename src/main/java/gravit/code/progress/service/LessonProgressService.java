@@ -19,7 +19,7 @@ public class LessonProgressService {
     private final LessonRepository lessonRepository;
     private final LessonProgressRepository lessonProgressRepository;
 
-    public void updateLessonProgressStatus(Long lessonId, Long userId, Integer learningTime){
+    public void updateLessonProgress(long lessonId, long userId, int learningTime){
 
         Lesson targetLesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
@@ -32,7 +32,7 @@ public class LessonProgressService {
         lessonProgressRepository.save(lessonProgress);
     }
 
-    public List<LessonProgressSummaryResponse> getLessonProgressSummaries(Long unitId, Long userId){
+    public List<LessonProgressSummaryResponse> getLessonProgressSummaries(long unitId, long userId){
         return lessonProgressRepository.findLessonProgressSummaryByUnitIdAndUserId(unitId, userId);
     }
 }

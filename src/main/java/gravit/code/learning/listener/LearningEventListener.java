@@ -37,10 +37,10 @@ public class LearningEventListener {
             Learning learning = learningRepository.findByUserId(updateLearningEvent.userId())
                     .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-            Long totalLesson = lessonRepository.count();
+            long totalLesson = lessonRepository.count();
             Long solvedLesson = lessonProgressRepository.countByUserId(updateLearningEvent.userId());
 
-            Integer planetConquestRate = Math.toIntExact(
+            int planetConquestRate = Math.toIntExact(
                     Math.round((solvedLesson.doubleValue() / totalLesson) * 100)
             );
 

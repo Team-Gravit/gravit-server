@@ -26,13 +26,13 @@ public class LessonProgress {
     private boolean isCompleted;
 
     @Column(name = "user_id",columnDefinition = "bigint", nullable = false)
-    private Long userId;
+    private long userId;
 
     @Column(name = "lesson_id",columnDefinition = "bigint", nullable = false)
-    private Long lessonId;
+    private long lessonId;
 
     @Builder
-    private LessonProgress(Long userId, Long lessonId) {
+    private LessonProgress(long userId, long lessonId) {
         this.userId = userId;
         this.attemptCount = 0;
         this.learningTime = 0;
@@ -40,7 +40,7 @@ public class LessonProgress {
         this.isCompleted = false;
     }
 
-    public static LessonProgress create(Long userId, Long lessonId) {
+    public static LessonProgress create(long userId, long lessonId) {
         return LessonProgress.builder()
                 .userId(userId)
                 .lessonId(lessonId)

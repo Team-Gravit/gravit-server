@@ -12,9 +12,9 @@ class UnitProgressTest {
     void createUserUnitProgressWithAvailableData(){
 
         // given
-        Long totalLessons = 3L;
-        Long userId = 1L;
-        Long unitId = 1L;
+        long totalLessons = 3L;
+        long userId = 1L;
+        long unitId = 1L;
 
         // when
         UnitProgress unitProgress = UnitProgress.create(totalLessons, userId, unitId);

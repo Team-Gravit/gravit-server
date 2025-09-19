@@ -29,10 +29,10 @@ public class Problem {
     private String answer;
 
     @Column(name = "lesson_id", columnDefinition = "bigint", nullable = false)
-    private Long lessonId;
+    private long lessonId;
 
     @Builder
-    private Problem(ProblemType problemType, String question, String content, String answer, Long lessonId) {
+    private Problem(ProblemType problemType, String question, String content, String answer, long lessonId) {
         this.problemType = problemType;
         this.question = question;
         this.content = content;
@@ -40,7 +40,7 @@ public class Problem {
         this.lessonId = lessonId;
     }
 
-    public static Problem create(ProblemType problemType, String question, String content, String answer, Long lessonId) {
+    public static Problem create(ProblemType problemType, String question, String content, String answer, long lessonId) {
         return Problem.builder()
                 .problemType(problemType)
                 .question(question)
