@@ -19,7 +19,7 @@ public class Badge extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catergory_id", nullable = false)
-    private BadgeCategory  category;
+    private BadgeCategory category;
 
     @Column(nullable = false)
     private String code;

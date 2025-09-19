@@ -1,5 +1,6 @@
 package gravit.code.badge.domain;
 
+import gravit.code.global.doamin.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,14 +12,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BadgeCategory {
+public class BadgeCategory extends BaseEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-
-    @Column(nullable = false)
-    private String code;
 
     @Column(nullable = false)
     private String name;

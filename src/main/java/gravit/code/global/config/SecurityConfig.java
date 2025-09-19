@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/oauth/android").permitAll()
                 .requestMatchers("/api/v1/users/me/delete/confirm").permitAll()
                 .requestMatchers("/api/v1/auth/refresh").permitAll()
+                .requestMatchers("/api/v1/test/**").permitAll() // 테스트 할때만
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
 

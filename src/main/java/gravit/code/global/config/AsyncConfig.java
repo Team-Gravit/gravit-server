@@ -40,4 +40,19 @@ public class AsyncConfig {
 
         return executor;
     }
+
+    @Bean(name = "badgeAsync")
+    public Executor badgeAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(20);
+        executor.setKeepAliveSeconds(60);
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setThreadNamePrefix("BadgeAsync - ");
+        executor.initialize();
+
+        return executor;
+    }
 }
