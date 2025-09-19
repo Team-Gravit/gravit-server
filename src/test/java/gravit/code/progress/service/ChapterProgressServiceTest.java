@@ -1,9 +1,11 @@
 package gravit.code.progress.service;
 
+import gravit.code.global.event.badge.PlanetCompletedEvent;
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.ChapterRepository;
 import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.ChapterProgressRepository;
+import gravit.code.progress.dto.ChapterCompletedDto;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.ChapterSummaryResponse;
 import gravit.code.progress.service.ChapterProgressService;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,9 @@ class ChapterProgressServiceTest {
 
     @Mock
     private ChapterRepository chapterRepository;
+
+    @Mock
+    private ApplicationEventPublisher publisher;
 
     @InjectMocks
     private ChapterProgressService chapterProgressService;
@@ -121,6 +127,12 @@ class ChapterProgressServiceTest {
         void updateCompletedUnits(){
             //given
             ChapterProgress chapterProgress = mock(ChapterProgress.class);
+            when(chapterProgress.updateCompletedUnits())
+                    .thenReturn(new ChapterCompletedDto(3L, 4L, 4L));
+            when(chapterProgress.getUserId()).thenReturn(1L);
+            when(chapterProgress.getChapterId()).thenReturn(10L);
+
+            doNothing().when(publisher).publishEvent(any(PlanetCompletedEvent.class));
 
             //when
             chapterProgressService.updateChapterProgress(chapterProgress);
