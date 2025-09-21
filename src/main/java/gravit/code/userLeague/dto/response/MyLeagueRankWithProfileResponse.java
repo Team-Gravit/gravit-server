@@ -1,10 +1,10 @@
 package gravit.code.userLeague.dto.response;
 
 public record MyLeagueRankWithProfileResponse(
-        Long leagueId,
+        long leagueId,
         String leagueName,
         int rank,
-        Long userId,
+        long userId,
         int lp,
         int maxLp,
         String nickname,
