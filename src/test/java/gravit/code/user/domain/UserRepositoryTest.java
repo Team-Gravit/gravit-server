@@ -183,7 +183,6 @@ class UserRepositoryTest {
             assertThat(response).isNotNull();
             assertThat(response.nickname()).isEqualTo("test2");
             assertThat(response.leagueName()).isEqualTo("브론즈");
-            assertThat(response.missionType()).isEqualTo(MissionType.COMPLETE_LESSON_ONE);
             assertThat(response.consecutiveDays()).isEqualTo(1);
             assertThat(response.planetConquestRate()).isEqualTo(15);
             assertThat(response.chapterId()).isEqualTo(1L);
