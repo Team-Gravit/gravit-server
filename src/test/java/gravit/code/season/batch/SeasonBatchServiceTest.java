@@ -6,6 +6,7 @@ import gravit.code.season.batch.SeasonBatchService;
 import gravit.code.season.domain.Season;
 import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.infrastructure.SeasonRepository;
+import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.userLeague.domain.UserLeagueRepository;
 import gravit.code.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
 import gravit.code.global.exception.domain.RestApiException;
@@ -40,6 +41,9 @@ class SeasonBatchServiceTest {
     @Mock
     LeagueRepository leagueRepository;
 
+    @Mock
+    SeasonClosedCache seasonClosedCache;
+
     @InjectMocks
     SeasonBatchService seasonBatchService;
 
@@ -51,6 +55,7 @@ class SeasonBatchServiceTest {
         ReflectionTestUtils.setField(nowSeason, "id", 1L);
         ReflectionTestUtils.setField(newNextSeason, "id", 2L);
 
+        doNothing().when(seasonClosedCache).setLastClosedSeasonId(any(Long.class));
         when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(any(Long.class))).thenReturn(12);
@@ -87,6 +92,7 @@ class SeasonBatchServiceTest {
         Season nextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
         ReflectionTestUtils.setField(nowSeason, "id", 1L);
         ReflectionTestUtils.setField(nextSeason, "id", 2L);
+        doNothing().when(seasonClosedCache).setLastClosedSeasonId(any(Long.class));
         when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
         when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
         when(userLeagueHistoryRepository.insertFromCurrent(any(Long.class))).thenReturn(12);

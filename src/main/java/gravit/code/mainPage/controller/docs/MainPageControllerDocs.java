@@ -1,8 +1,8 @@
 package gravit.code.mainPage.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.mainPage.dto.response.MainPageResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
+import gravit.code.mainPage.dto.response.MainPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

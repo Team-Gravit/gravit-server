@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHistory, Long> {
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
@@ -32,6 +34,9 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
             FROM user_league ul
             WHERE ul.season_id = :seasonId
             """, nativeQuery = true)
-    int insertFromCurrent(@Param("seasonId") Long seasonId);
+    int insertFromCurrent(@Param("seasonId") long seasonId);
 
+    boolean existsByUserIdAndSeasonId(long userId, long seasonId);
+
+    Optional<UserLeagueHistory> findByUserIdAndSeasonId(long userId, long seasonId);
 }

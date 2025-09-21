@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface UserLeagueRepository {
 
-    String findUserLeagueNameByUserId(@Param("userId") Long userId);
+    String findUserLeagueNameByUserId(@Param("userId") long userId);
 
-    boolean existsByUserId(Long userId);
+    boolean existsByUserId(long userId);
 
     void save(UserLeague userLeague);
 
-    Optional<UserLeague> findByUserId(Long userId);
+    Optional<UserLeague> findByUserId(long userId);
 
     int resetAllForNextSeason(Season currentSeason, Season nextSeason, League startLeague);
 }

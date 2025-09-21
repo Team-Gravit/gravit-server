@@ -24,12 +24,12 @@ public class Friend {
 
 
     @Builder
-    private Friend(Long followerId, Long followeeId) {
+    private Friend(long followerId, long followeeId) {
         this.followerId = followerId;
         this.followeeId = followeeId;
     }
 
-    public static Friend create(Long followerId, Long followeeId) {
+    public static Friend create(long followerId, long followeeId) {
         return Friend.builder()
                 .followerId(followerId)
                 .followeeId(followeeId)

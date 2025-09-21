@@ -23,12 +23,12 @@ public class FriendRepositoryImpl implements FriendRepository {
     }
 
     @Override
-    public boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId) {
+    public boolean existsByFollowerIdAndFolloweeId(long followerId, long followeeId) {
         return jpaRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId);
     }
 
     @Override
-    public Optional<Friend> findByFolloweeIdAndFollowerId(Long followeeId, Long followerId) {
+    public Optional<Friend> findByFolloweeIdAndFollowerId(long followeeId, long followerId) {
         return jpaRepository.findByFolloweeIdAndFollowerId(followeeId, followerId);
     }
 
@@ -38,12 +38,12 @@ public class FriendRepositoryImpl implements FriendRepository {
     }
 
     @Override
-    public List<FollowerResponse> findByFollowersByFolloweeId(Long followeeId) {
+    public List<FollowerResponse> findByFollowersByFolloweeId(long followeeId) {
         return jpaRepository.findFollowersByFolloweeId(followeeId);
     }
 
     @Override
-    public List<FollowingResponse> findByFollowingsByFollowerId(Long followerId) {
+    public List<FollowingResponse> findByFollowingsByFollowerId(long followerId) {
         return jpaRepository.findByFollowingsByFollowerId(followerId);
     }
 }

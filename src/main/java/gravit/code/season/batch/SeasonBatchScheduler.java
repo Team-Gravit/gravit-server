@@ -24,7 +24,7 @@ public class SeasonBatchScheduler {
             log.info("Season Rollover 실행");
         }catch (RestApiException e){
             if(e.getErrorCode() == CustomErrorCode.ACTIVE_SEASON_NOT_FOUND){
-                log.info("시즌 변경 작업 도중 ACTIVE 인 시즌이 존재하지 않아 예외 발생");
+                log.error("시즌 변경 작업 도중 ACTIVE 인 시즌이 존재하지 않아 예외 발생");
                 return;
             }
         }

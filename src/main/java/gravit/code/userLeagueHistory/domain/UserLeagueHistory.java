@@ -35,13 +35,13 @@ public class UserLeagueHistory extends BaseEntity {
     private League finalLeague;
 
     @Column(name = "final_rank")
-    private Integer finalRank;
+    private int finalRank;
 
     @Column(name = "final_lp", nullable = false)
-    private Integer finalLp;
+    private int finalLp;
 
     @Builder
-    private UserLeagueHistory(Season season, User user, League league,Integer finalRank, Integer finalLp) {
+    private UserLeagueHistory(Season season, User user, League league, int finalRank, int finalLp) {
         this.season = season;
         this.user = user;
         this.finalLeague = league;

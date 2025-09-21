@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record UserResponse(
-        Long userId,
+        long userId,
         int profileImgNumber,
         String nickname,
         String providerId
