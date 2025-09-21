@@ -15,7 +15,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository jpaRepository;
 
     @Override
-    public Optional<User> findById(Long id) {
+    public Optional<User> findById(long id) {
         return jpaRepository.findById(id);
     }
 
@@ -30,12 +30,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(long id) {
         return jpaRepository.existsById(id);
     }
 
     @Override
-    public MainPageResponse findMainPageByUserId(Long userId){
+    public MainPageResponse findMainPageByUserId(long userId){
         return jpaRepository.findMainPageByUserId(userId);
     }
 
@@ -50,7 +50,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         jpaRepository.deleteById(id);
     }
 }

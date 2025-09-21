@@ -33,7 +33,7 @@ public class UserBadge extends BaseEntity {
         this.badge = badge;
     }
 
-    public static UserBadge of(Long userId, Badge badge) {
+    public static UserBadge of(long userId, Badge badge) {
         return UserBadge.builder().userId(userId).badge(badge).build();
     }
 }

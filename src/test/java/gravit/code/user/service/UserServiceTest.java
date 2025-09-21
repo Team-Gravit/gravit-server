@@ -12,10 +12,12 @@ import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -46,6 +48,7 @@ class UserServiceTest {
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
         User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
+        ReflectionTestUtils.setField(testUser, "id", userId);
 
         OnboardingRequest request = new OnboardingRequest(testNickname, testProfilePhotoNumber);
 
@@ -180,6 +183,7 @@ class UserServiceTest {
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
         User testUser = User.create("test@test.com",testProviderId, "test", "@qwe123",0, Role.USER);
+        ReflectionTestUtils.setField(testUser, "id", userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         UserProfileUpdateRequest request = new UserProfileUpdateRequest(testNickname, testProfilePhotoNumber);
@@ -205,6 +209,7 @@ class UserServiceTest {
         int testProfilePhotoNumber = 1;
         String testProviderId = "kakao123123";
         User testUser = User.create(testEmail, testProviderId, testNickname, testHandle, testProfilePhotoNumber, Role.USER);
+        ReflectionTestUtils.setField(testUser, "id", userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 

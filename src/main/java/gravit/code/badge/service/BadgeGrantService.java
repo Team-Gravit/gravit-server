@@ -23,7 +23,7 @@ public class BadgeGrantService {
     private static final String CODE_MISSION_ALL = "MISSION_ALL_STAR";
 
     @Transactional
-    public void evaluatePlanet(Long userId, String planet, boolean allPlanetsCompleted) {
+    public void evaluatePlanet(long userId, String planet, boolean allPlanetsCompleted) {
         for(Badge b : badgeRepository.findByCriteriaTypeAndCodeNot(CriteriaType.PLANET_COMPLETE, CODE_PLANETS_ALL)) {
             String need = b.getCriteriaParams().path("planet").asText();
             if(planet.equalsIgnoreCase(need)) grantIfAbsent(userId, b);
@@ -35,7 +35,7 @@ public class BadgeGrantService {
     }
 
     @Transactional
-    public void evaluateMissionCount(Long userId, int completedCount) {
+    public void evaluateMissionCount(long userId, int completedCount) {
         for (Badge b : badgeRepository.findByCriteriaTypeAndCodeNot(CriteriaType.MISSION_COUNT, CODE_MISSION_ALL)) {
             int need = b.getCriteriaParams().path("count").asInt();
             if (completedCount >= need) grantIfAbsent(userId, b);
@@ -45,7 +45,7 @@ public class BadgeGrantService {
     }
 
     @Transactional
-    public void evaluateQualifiedSolvedCount(Long userId, int qualifiedCount) {
+    public void evaluateQualifiedSolvedCount(long userId, int qualifiedCount) {
         for (Badge b : badgeRepository.findByCriteriaTypeAndCodeNot(CriteriaType.SPEED_QUALIFIED_COUNT, CODE_SPEED_ALL)) {
             int need = b.getCriteriaParams().path("count").asInt();
             if (qualifiedCount >= need) {
@@ -57,7 +57,7 @@ public class BadgeGrantService {
     }
 
     @Transactional
-    public void evaluateStreak(Long userId, int currentStreak){
+    public void evaluateStreak(long userId, int currentStreak){
         for(Badge b : badgeRepository.findByCriteriaTypeAndCodeNot(CriteriaType.STREAK_DAYS, CODE_STREAK_ALL)) {
             int need = b.getCriteriaParams().path("days").asInt();
             if(currentStreak >= need) grantIfAbsent(userId, b);
@@ -66,14 +66,14 @@ public class BadgeGrantService {
         maybeGrantAllStar(userId, CriteriaType.STREAK_DAYS, CODE_STREAK_ALL);
     }
 
-    private void grantIfAbsent(Long userId, Badge badge) {
+    private void grantIfAbsent(long userId, Badge badge) {
         if (userBadgeRepository.existsByUserIdAndBadge_Id(userId, badge.getId())) return;
 
         UserBadge userBadge = UserBadge.builder().userId(userId).badge(badge).build();
         userBadgeRepository.save(userBadge);
     }
 
-    private void maybeGrantAllStar(Long userId, CriteriaType criteriaType, String allStarCode) {
+    private void maybeGrantAllStar(long userId, CriteriaType criteriaType, String allStarCode) {
         long total = badgeRepository.countByCriteriaType(criteriaType);
         long totalExcludingAllStar = total - 1;
         log.info("totalExcludingAllStar : {}", totalExcludingAllStar);

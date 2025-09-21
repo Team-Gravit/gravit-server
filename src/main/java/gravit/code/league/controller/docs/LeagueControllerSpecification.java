@@ -1,6 +1,8 @@
 package gravit.code.league.controller.docs;
 
+import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
+import gravit.code.league.dto.response.LeagueHomeResponse;
 import gravit.code.league.dto.response.LeagueResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -54,4 +57,46 @@ public interface LeagueControllerSpecification {
     })
     @GetMapping("/{leagueId}")
     ResponseEntity<LeagueResponse> getLeague(@PathVariable("leagueId") Long leagueId);
+
+
+    @Operation(
+            summary = "리그 페이지 home 조회",
+            description = "리그 페이지에 필요한 시즌 정보 및 팝업 데이터를 리턴합니다.<br> 시즌 정보는 필수적으로 포함합니다<br> " +
+                    "containsPopup 필드가 true 면, lastSeasonPopup 에 팝업 정보를 포함합니다. <br> " +
+                    "containsPopup 필드가 false 면, lastSeasonPopup 은 null 값을 가집니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 리그 home 조회 성공"),
+            @ApiResponse(
+                    responseCode = "SEASON_4041",
+                    description = "🚨 시즌 조회 실패(미존재)",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "ACTIVE 시즌 없음",
+                                            value = "{\"error\":\"SEASON_4041\",\"message\":\"ACTIVE 시즌이 없습니다.\"}"
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "GLOBAL_5001",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "서버 에러",
+                                            value = "{\"error\":\"GLOBAL_5001\",\"message\":\"예기치 못한 예외 발생\"}"
+                                    )
+                            }
+                    )
+            )
+    })
+    @GetMapping("/home")
+    ResponseEntity<LeagueHomeResponse> enterHome(@AuthenticationPrincipal LoginUser loginUser);
+
 }

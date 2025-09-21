@@ -1,7 +1,7 @@
 package gravit.code.badge.dto.response;
 
 public record BadgeResponse(
-        Long badgeId,
+        long badgeId,
         String code,
         String name,
         String description,

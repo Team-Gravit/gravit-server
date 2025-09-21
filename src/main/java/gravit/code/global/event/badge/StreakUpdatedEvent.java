@@ -1,7 +1,7 @@
 package gravit.code.global.event.badge;
 
 public record StreakUpdatedEvent(
-        Long userId,
+        long userId,
         int steakCount
 ) {
 }

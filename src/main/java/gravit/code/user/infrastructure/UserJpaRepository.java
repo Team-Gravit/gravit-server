@@ -39,7 +39,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     """)
     MainPageResponse findMainPageByUserId(@Param("userId") long userId);
 
-    boolean existsById(Long id);
+    boolean existsById(long id);
 
     boolean existsByHandle(String handle);
 
@@ -54,5 +54,5 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         from User u
         where u.id = :userId
     """)
-    Optional<MyPageResponse> findMyPageByUserId(@Param("userId") Long userId);
+    Optional<MyPageResponse> findMyPageByUserId(@Param("userId") long userId);
 }

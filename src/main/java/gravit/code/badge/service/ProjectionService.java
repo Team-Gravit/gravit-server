@@ -23,7 +23,7 @@ public class ProjectionService {
     private final UserQualifiedSolveStatRepository userQualifiedSolveStatRepository;
 
     @Transactional
-    public PlanetCompletionDto recordPlanetCompletion(Long userId, Long chapterId, long beforeCount, long afterCount , long totalCounts) {
+    public PlanetCompletionDto recordPlanetCompletion(long userId, long chapterId, long beforeCount, long afterCount , long totalCounts) {
         Planet planet = Planet.getPlanetByChapterId(chapterId);
 
         if(beforeCount == afterCount || afterCount != totalCounts){

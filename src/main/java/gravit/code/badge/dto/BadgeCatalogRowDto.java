@@ -1,10 +1,10 @@
 package gravit.code.badge.dto;
 
 public record BadgeCatalogRowDto(
-        Long categoryId,
+        long categoryId,
         String categoryName,
         int categoryOrder,
-        Long badgeId,
+        long badgeId,
         String code,
         String badgeName,
         String description,

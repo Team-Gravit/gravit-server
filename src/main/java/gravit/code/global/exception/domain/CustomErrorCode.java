@@ -85,7 +85,7 @@ public enum CustomErrorCode implements ErrorCode {
     LEAGUE_POINT_MUST_BE_POSITIVE(HttpStatus.BAD_REQUEST,"U_L_4001", "리그 포인트는 양수여야 합니다."),
 
     // Season
-    ACTIVE_SEASON_NOT_FOUND(HttpStatus.NOT_FOUND, "SEASON_4041", "마감 대상 ACTIVE 시즌이 없습니다."),
+    ACTIVE_SEASON_NOT_FOUND(HttpStatus.NOT_FOUND, "SEASON_4041", "ACTIVE 시즌이 없습니다."),
     BATCH_PREP_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4091", "배치 처리 도중, PREP 시즌 생성 관련하여 충돌이 발생하였습니다."),
     BATCH_ACTIVE_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4092", "배치 처리 도중, ACTIVE 시즌 생성 관련하여 충돌이 발생하였습니다."),
 

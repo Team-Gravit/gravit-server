@@ -39,7 +39,7 @@ public class LeagueService {
     private static final Duration DEFAULT_TTL = Duration.ofDays(10);
 
 
-    public LeagueResponse getLeague(Long leagueId) {
+    public LeagueResponse getLeague(long leagueId) {
         League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RestApiException(CustomErrorCode.LEAGUE_NOT_FOUND));
         return LeagueResponse.from(league);
     }
