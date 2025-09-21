@@ -6,7 +6,7 @@ import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.infrastructure.ChapterJpaRepository;
 import gravit.code.learning.infrastructure.LearningJpaRepository;
-import gravit.code.mainPage.dto.response.MainPageResponse;
+import gravit.code.mainPage.dto.MainPageSummary;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.infrastructure.MissionJpaRepository;
@@ -156,7 +156,7 @@ class UserRepositoryTest {
             Long userId = 1L;
 
             // when
-            MainPageResponse response = userRepository.findMainPageByUserId(userId);
+            MainPageSummary response = userRepository.findMainPageByUserId(userId);
 
             // then
             assertThat(response).isNotNull();
@@ -177,7 +177,7 @@ class UserRepositoryTest {
             Long userId = 2L;
 
             // when
-            MainPageResponse response = userRepository.findMainPageByUserId(userId);
+            MainPageSummary response = userRepository.findMainPageByUserId(userId);
 
             // then
             assertThat(response).isNotNull();

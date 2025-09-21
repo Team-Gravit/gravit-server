@@ -4,8 +4,11 @@ import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.event.CreateLearningEvent;
+import gravit.code.mainPage.dto.MainPageSummary;
 import gravit.code.mainPage.dto.response.MainPageResponse;
+import gravit.code.mission.dto.MissionSummary;
 import gravit.code.mission.dto.event.CreateMissionEvent;
+import gravit.code.mission.service.MissionService;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -15,9 +18,6 @@ import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MissionService missionService;
 
     private final ApplicationEventPublisher publisher;
 
@@ -64,7 +65,7 @@ public class UserService {
 
 
     @Transactional
-    public UserLevelResponse updateUserLevelAndXp(Long userId, int xp, int accuracy) {
+    public UserLevelResponse updateUserLevelAndXp(long userId, int xp, int accuracy) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
@@ -73,16 +74,11 @@ public class UserService {
         return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
     }
 
-    @Retryable(
-            retryFor = {ObjectOptimisticLockingFailureException.class},
-            maxAttempts = 10,
-            backoff = @Backoff(
-                    delay = 100,
-                    random = true
-            )
-    )
     @Transactional(readOnly = true)
-    public MainPageResponse getMainPage(Long userId) {
-        return userRepository.findMainPageByUserId(userId);
+    public MainPageResponse getMainPage(long userId) {
+        MainPageSummary mainPageSummary =  userRepository.findMainPageByUserId(userId);
+        MissionSummary missionSummary = missionService.getMissionSummary(userId);
+
+        return MainPageResponse.create(mainPageSummary, missionSummary);
     }
 }

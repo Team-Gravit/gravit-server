@@ -1,6 +1,6 @@
 package gravit.code.user.infrastructure;
 
-import gravit.code.mainPage.dto.response.MainPageResponse;
+import gravit.code.mainPage.dto.MainPageSummary;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.response.MyPageResponse;
@@ -35,7 +35,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public MainPageResponse findMainPageByUserId(long userId){
+    public MainPageSummary findMainPageByUserId(long userId){
         return jpaRepository.findMainPageByUserId(userId);
     }
 
