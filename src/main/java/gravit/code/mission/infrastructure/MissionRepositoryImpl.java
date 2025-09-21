@@ -2,6 +2,7 @@ package gravit.code.mission.infrastructure;
 
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
+import gravit.code.mission.dto.MissionSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -27,5 +28,10 @@ public class MissionRepositoryImpl implements MissionRepository {
     @Override
     public List<Mission> findAll(Pageable pageable) {
         return missionJpaRepository.findAll(pageable).getContent();
+    }
+
+    @Override
+    public MissionSummary findMissionSummaryByUserId(long userId){
+        return missionJpaRepository.findMissionSummaryByUserId(userId);
     }
 }

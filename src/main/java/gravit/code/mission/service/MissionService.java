@@ -6,6 +6,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
+import gravit.code.mission.dto.MissionSummary;
 import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.event.LessonMissionEvent;
@@ -53,6 +54,18 @@ public class MissionService {
 
             page++;
         }
+    }
+
+    @Retryable(
+            retryFor = {ObjectOptimisticLockingFailureException.class},
+            maxAttempts = 10,
+            backoff = @Backoff(
+                    delay = 100,
+                    random = true
+            )
+    )
+    public MissionSummary getMissionSummary(long userId){
+        return missionRepository.findMissionSummaryByUserId(userId);
     }
 
     @Retryable(

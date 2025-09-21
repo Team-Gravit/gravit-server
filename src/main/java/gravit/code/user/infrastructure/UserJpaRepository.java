@@ -1,6 +1,6 @@
 package gravit.code.user.infrastructure;
 
-import gravit.code.mainPage.dto.response.MainPageResponse;
+import gravit.code.mainPage.dto.MainPageSummary;
 import gravit.code.user.domain.User;
 import gravit.code.user.dto.response.MyPageResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,12 +14,11 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     Optional<User> findByProviderId(String providerId);
 
     @Query("""
-        SELECT new gravit.code.mainPage.dto.response.MainPageResponse(
+        SELECT new gravit.code.mainPage.dto.MainPageSummary(
             u.nickname,
             league.name,
             u.level.xp,
             u.level.level,
-            m.missionType,
             l.planetConquestRate,
             l.consecutiveDays,
             CAST(CASE WHEN l.recentChapterId = 0 THEN 0 ELSE COALESCE(c.id, 0) END AS long),
@@ -30,14 +29,13 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         )
         FROM User u
         LEFT JOIN Learning l ON l.userId = u.id
-        LEFT JOIN Mission m ON m.userId = u.id
         LEFT JOIN UserLeague ul ON ul.user.id = u.id
         LEFT JOIN League league ON league.id = ul.league.id
         LEFT JOIN Chapter c ON c.id = l.recentChapterId AND l.recentChapterId != 0
         LEFT JOIN ChapterProgress cp ON cp.chapterId = c.id AND cp.userId = u.id
         WHERE u.id = :userId
     """)
-    MainPageResponse findMainPageByUserId(@Param("userId") long userId);
+    MainPageSummary findMainPageByUserId(@Param("userId") long userId);
 
     boolean existsById(long id);
 
