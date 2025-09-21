@@ -11,22 +11,22 @@ import lombok.NoArgsConstructor;
 public class UserLevel {
 
     @Column(name = "level", nullable = false)
-    private Integer level;
+    private int level;
 
     @Column(name = "xp", nullable = false)
-    private Integer xp;
+    private int xp;
 
-    public UserLevel(Integer level, Integer xp) {
+    public UserLevel(int level, int xp) {
         this.level = level;
         this.xp = xp;
     }
 
-    public void updateXp(Integer xp){
+    public void updateXp(int xp){
         this.xp = xp;
         updateLevel(this.xp);
     }
 
-    private void updateLevel(Integer totalXp){
+    private void updateLevel(int totalXp){
         this.level = calculateLevel(totalXp);
     }
 

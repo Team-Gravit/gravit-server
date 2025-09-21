@@ -11,21 +11,21 @@ public record UserLevelResponse(
                 description = "현재 레벨",
                 example = "3"
         )
-        Integer currentLevel,
+        int currentLevel,
 
         @Schema(
                 description = "다음 레벨",
                 example = "4"
         )
-        Integer nextLevel,
+        int nextLevel,
 
         @Schema(
                 description = "경험치",
                 example = "100"
         )
-        Integer xp
+        int xp
 ){
-    public static UserLevelResponse create(Integer level, Integer xp){
+    public static UserLevelResponse create(int level, int xp){
         return UserLevelResponse.builder()
                 .currentLevel(level)
                 .nextLevel(level+1)

@@ -3,7 +3,7 @@ package gravit.code.badge.dto.response;
 import java.util.List;
 
 public record BadgeCategoryResponse(
-        Long categoryId,
+        long categoryId,
         String categoryName,
         int order,
         List<BadgeResponse> badgeResponses

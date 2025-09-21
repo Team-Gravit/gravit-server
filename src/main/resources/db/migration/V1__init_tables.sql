@@ -131,6 +131,7 @@ CREATE TABLE learning
     today_solved         BOOLEAN NOT NULL,
     consecutive_days     INTEGER NOT NULL,
     planet_conquest_rate INTEGER NOT NULL,
+    version              BIGINT  NOT NULL,
     CONSTRAINT uk_learning_user UNIQUE (user_id)
 );
 

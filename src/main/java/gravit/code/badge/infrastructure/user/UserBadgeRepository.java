@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface UserBadgeRepository extends JpaRepository<UserBadge, Long> {
-    boolean existsByUserIdAndBadge_Id(Long userId, Long badgeId);
-    long countByUserIdAndBadge_CriteriaType(Long userId, CriteriaType criteriaType);
+    boolean existsByUserIdAndBadge_Id(long userId, long badgeId);
+    long countByUserIdAndBadge_CriteriaType(long userId, CriteriaType criteriaType);
 
     @Query("select ub.badge.id from UserBadge ub where ub.userId = :userId")
-    List<Long> findBadgeIdsByUserId(@Param("userId") Long userId);
+    List<Long> findBadgeIdsByUserId(@Param("userId") long userId);
 }

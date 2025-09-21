@@ -16,12 +16,12 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
     private final UserLeagueJpaRepository userLeagueJpaRepository;
 
     @Override
-    public String findUserLeagueNameByUserId(Long userId){
+    public String findUserLeagueNameByUserId(long userId){
         return userLeagueJpaRepository.findUserLeagueNameByUserId(userId);
     }
 
     @Override
-    public boolean existsByUserId(Long userId) {
+    public boolean existsByUserId(long userId) {
         return userLeagueJpaRepository.existsByUserId(userId);
     }
 
@@ -31,7 +31,7 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
     }
 
     @Override
-    public Optional<UserLeague> findByUserId(Long userId) {
+    public Optional<UserLeague> findByUserId(long userId) {
         return userLeagueJpaRepository.findById(userId);
     }
 

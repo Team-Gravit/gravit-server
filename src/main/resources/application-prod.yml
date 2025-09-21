@@ -19,7 +19,7 @@ spring:
 
   data:
     redis:
-      host: redis-gravit
+      host: gravit-redis
       port: 6379
 
   mail:

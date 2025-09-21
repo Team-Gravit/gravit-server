@@ -31,6 +31,7 @@ public class Learning {
     @Column(name = "user_id", columnDefinition = "bigint",  nullable = false)
     private long userId;
 
+    @Version
     @Column(columnDefinition = "bigint", nullable = false)
     private long version;
 

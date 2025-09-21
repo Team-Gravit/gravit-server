@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record NoticeDetailResponse(
-        Long id,
+        long id,
         String title,
         String content,
         boolean pinned,

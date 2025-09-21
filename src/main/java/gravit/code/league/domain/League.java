@@ -19,23 +19,23 @@ public class League {
     private String name;
 
     @Column(name = "max_lp", columnDefinition = "integer", nullable = false)
-    private Integer maxLp;
+    private int maxLp;
 
     @Column(name = "min_lp", columnDefinition = "integer", nullable = false)
-    private Integer minLp;
+    private int minLp;
 
     @Column(name = "sort_order", nullable = false, unique = true)
-    private Integer sortOrder;
+    private int sortOrder;
 
     @Builder
-    private League(String name, Integer maxLp, Integer minLp, int sortOrder) {
+    private League(String name, int maxLp, int minLp, int sortOrder) {
         this.name = name;
         this.maxLp = maxLp;
         this.minLp = minLp;
         this.sortOrder = sortOrder;
     }
 
-    public static League create(String name, Integer maxLp, Integer minLp, int sortOrder) {
+    public static League create(String name, int maxLp, int minLp, int sortOrder) {
         return League.builder()
                 .name(name)
                 .maxLp(maxLp)

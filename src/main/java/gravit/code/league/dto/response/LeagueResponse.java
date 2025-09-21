@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record LeagueResponse(
-        Long leagueId,
+        long leagueId,
         String name,
         int minLp,
         int maxLp
