@@ -6,6 +6,8 @@ import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,7 +25,10 @@ public class FriendRepositoryImpl implements FriendRepository {
     }
 
     @Override
-    public boolean existsByFollowerIdAndFolloweeId(long followerId, long followeeId) {
+    public boolean existsByFollowerIdAndFolloweeId(
+            long followerId,
+            long followeeId
+    ) {
         return jpaRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId);
     }
 
@@ -38,12 +43,18 @@ public class FriendRepositoryImpl implements FriendRepository {
     }
 
     @Override
-    public List<FollowerResponse> findByFollowersByFolloweeId(long followeeId) {
-        return jpaRepository.findFollowersByFolloweeId(followeeId);
+    public Slice<FollowerResponse> findFollowersByFolloweeId(
+            long followeeId,
+            Pageable pageable
+    ) {
+        return jpaRepository.findFollowersByFolloweeId(followeeId, pageable);
     }
 
     @Override
-    public List<FollowingResponse> findByFollowingsByFollowerId(long followerId) {
-        return jpaRepository.findByFollowingsByFollowerId(followerId);
+    public Slice<FollowingResponse> findFollowingsByFollowerId(
+            long followerId,
+            Pageable pageable
+    ) {
+        return jpaRepository.findFollowingsByFollowerId(followerId, pageable);
     }
 }
