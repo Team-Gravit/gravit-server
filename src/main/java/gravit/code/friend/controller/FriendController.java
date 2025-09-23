@@ -52,12 +52,10 @@ public class FriendController implements FriendControllerDocs {
     @GetMapping("/follower")
     public ResponseEntity<SliceResponse<FollowerResponse>> getFollowers(
             @AuthenticationPrincipal LoginUser loginUser,
-            @ParameterObject
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable
+            @RequestParam(defaultValue = "0") int page
     ){
         Long followeeId = loginUser.getId();
-        SliceResponse<FollowerResponse> followers = friendService.getFollowers(followeeId, pageable);
+        SliceResponse<FollowerResponse> followers = friendService.getFollowers(followeeId, page);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(followers);
     }
@@ -65,12 +63,10 @@ public class FriendController implements FriendControllerDocs {
     @GetMapping("/following")
     public ResponseEntity<SliceResponse<FollowingResponse>> getFollowings(
             @AuthenticationPrincipal LoginUser loginUser,
-            @ParameterObject
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable
+            @RequestParam(defaultValue = "0") int page
     ){
         Long followerId = loginUser.getId();
-        SliceResponse<FollowingResponse> followings = friendService.getFollowings(followerId, pageable);
+        SliceResponse<FollowingResponse> followings = friendService.getFollowings(followerId, page);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(followings);
     }
