@@ -1,5 +1,6 @@
-package gravit.code.auth.util;
+package gravit.code.user.infrastructure;
 
+import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -13,7 +14,7 @@ import java.util.Random;
  */
 @Component
 @RequiredArgsConstructor
-public class RandomHandleGenerator implements HandleGenerator{
+public class RandomHandleGenerator implements HandleGenerator {
 
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
     private static final Random RANDOM = new Random();

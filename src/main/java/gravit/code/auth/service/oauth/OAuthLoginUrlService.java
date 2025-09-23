@@ -1,5 +1,6 @@
 package gravit.code.auth.service.oauth;
 
+import gravit.code.auth.domain.Provider;
 import gravit.code.global.consts.RedirectHostConst;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -9,7 +10,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static gravit.code.auth.util.oauth.OAuthConstants.OAUTH_PROVIDERS;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -18,15 +19,14 @@ public class OAuthLoginUrlService {
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     public String generateLoginUrl(String provider, String dest) {
-        validateProvider(provider);
+        String validProvider = getValidProvider(Provider.parse(provider));
         String baseHost = validateDest(dest);
-        String lowerCaseProvider = provider.toLowerCase();
 
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(lowerCaseProvider);
+        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(validProvider);
         String authorizationUri = registration.getProviderDetails().getAuthorizationUri();
         String clientId = registration.getClientId();
         String responseType = "code";
-        String redirectUri = baseHost + "/login/oauth2/code/" + lowerCaseProvider;
+        String redirectUri = baseHost + "/login/oauth2/code/" + validProvider;
         String scope = String.join(" ", registration.getScopes()); // 공백이 표준
 
         return UriComponentsBuilder.fromUriString(authorizationUri)
@@ -47,14 +47,7 @@ public class OAuthLoginUrlService {
         return base;
     }
 
-    private void validateProvider(String provider) {
-        if(provider == null || provider.isBlank()){
-            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
-        }
-
-        String lowerCaseProvider = provider.toLowerCase();
-        if(!OAUTH_PROVIDERS.contains(lowerCaseProvider)){
-            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
-        }
+    private String getValidProvider(Optional<String> provider) {
+        return provider.orElseThrow(() -> new RestApiException(CustomErrorCode.PROVIDER_INVALID));
     }
 }

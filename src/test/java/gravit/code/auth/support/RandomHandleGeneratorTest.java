@@ -1,7 +1,8 @@
-package gravit.code.auth.util;
+package gravit.code.auth.support;
 
 import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.user.infrastructure.RandomHandleGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

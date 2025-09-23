@@ -1,4 +1,4 @@
-package gravit.code.auth.service.oauth.port;
+package gravit.code.auth.service.oauth;
 
 import org.springframework.util.MultiValueMap;
 

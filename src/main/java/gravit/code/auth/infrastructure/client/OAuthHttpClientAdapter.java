@@ -1,6 +1,6 @@
 package gravit.code.auth.infrastructure.client;
 
-import gravit.code.auth.service.oauth.port.OAuthClient;
+import gravit.code.auth.service.oauth.OAuthClient;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;

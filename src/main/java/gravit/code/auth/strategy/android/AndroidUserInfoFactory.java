@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Locale;
 import java.util.Map;
 
-import static gravit.code.auth.util.oauth.OAuthClaimsUtil.getString;
-import static gravit.code.auth.util.oauth.OAuthClaimsUtil.isBlank;
+import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.getClaimAsString;
+import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.isBlank;
 
 @Slf4j
 public final class AndroidUserInfoFactory {
@@ -31,7 +31,7 @@ public final class AndroidUserInfoFactory {
 
     // sub 꺼내기
     private static String resolveProvider(Map<String, Object> claims) {
-        String sub = getString(claims, "sub");
+        String sub = getClaimAsString(claims, "sub");
         return providerFromSub(sub);
     }
     

@@ -2,11 +2,11 @@ package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
-import gravit.code.auth.bootstrap.AdminRoleDecider;
+import gravit.code.auth.policy.AdminRolePolicy;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.service.AuthTokenProvider;
-import gravit.code.auth.util.HandleGenerator;
+import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
@@ -23,12 +23,11 @@ public class OAuthLoginProcessor {
     private final UserRepository userRepository;
     private final AuthTokenProvider authTokenProvider;
     private final HandleGenerator handleGenerator;
-    private final AdminRoleDecider adminRoleDecider;
+    private final AdminRolePolicy adminRoleDecider;
 
     @Transactional
     public LoginResponse process(OAuthUserInfo oAuthUserInfo) {
         User user = findOrCreateUser(oAuthUserInfo);
-        log.info("find or create user : {}", user);
         boolean isOnboarded = user.isOnboarded();
 
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
@@ -41,7 +40,7 @@ public class OAuthLoginProcessor {
         String providerId = oAuthUserInfo.getProvider() + " " + oAuthUserInfo.getProviderId();
 
         return userRepository.findByProviderId(providerId)
-                .map(u -> promoteIfAdminWhitelist(u, oAuthUserInfo)) // 유저가 존재하고, admin 승격 가능성 확인
+                .map(u -> promoteToAdminByWhitelist(u, oAuthUserInfo)) // 유저가 존재하고, admin 승격 가능성 확인
                 .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId)); // 유저가 존재하지 않으면 생성
     }
 
@@ -64,7 +63,7 @@ public class OAuthLoginProcessor {
         return user;
     }
 
-    private User promoteIfAdminWhitelist(User user, OAuthUserInfo oAuthUserInfo) {
+    private User promoteToAdminByWhitelist(User user, OAuthUserInfo oAuthUserInfo) {
         log.info("oAuthUserInfo.getEmail() : {}", oAuthUserInfo.getEmail());
         if (user.getRole() != Role.ADMIN &&
                 adminRoleDecider.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {

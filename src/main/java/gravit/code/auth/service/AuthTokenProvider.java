@@ -4,7 +4,8 @@ import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.token.JwtProvider;
-import gravit.code.auth.token.RedisTokenStorage;
+import gravit.code.auth.infrastructure.redis.RedisTokenStorage;
+import gravit.code.auth.token.TokenStorage;
 import gravit.code.auth.token.config.TokenProperties;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -25,7 +26,7 @@ public class AuthTokenProvider {
     private static final String ROLE_CLAIM_KEY = "role";
 
     private final JwtProvider jwtProvider;
-    private final RedisTokenStorage redisTokenStorage;
+    private final TokenStorage tokenStorage;
     private final UserRepository userRepository;
     private final TokenProperties tokenProperties;
 
@@ -46,12 +47,12 @@ public class AuthTokenProvider {
                 tokenProperties.refresh().expireTime()
         );
         RefreshToken refreshToken = new RefreshToken(token);
-        return redisTokenStorage.saveToken(subject, refreshToken);
+        return tokenStorage.saveToken(subject, refreshToken);
     }
 
     public boolean isValidRefreshToken(String requestedRefreshToken){
         Subject subject = jwtProvider.parseSubject(requestedRefreshToken);
-        return redisTokenStorage.findToken(subject, RefreshToken.class)
+        return tokenStorage.findToken(subject, RefreshToken.class)
                 .map(foundRefreshToken -> Objects.equals(foundRefreshToken, requestedRefreshToken))
                 .orElse(false);
     }

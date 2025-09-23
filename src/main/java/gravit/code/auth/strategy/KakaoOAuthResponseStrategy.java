@@ -15,7 +15,6 @@ public class KakaoOAuthResponseStrategy implements OAuthResponseStrategy {
 
     @Override
     public OAuthUserInfo createOAuthUserInfo(Map<String, Object> attributes) {
-        System.out.println(attributes);
         return new KakaoUserInfo(attributes);
     }
 }

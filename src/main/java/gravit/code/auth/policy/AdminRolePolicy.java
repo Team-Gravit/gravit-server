@@ -1,4 +1,4 @@
-package gravit.code.auth.bootstrap;
+package gravit.code.auth.policy;
 
 import gravit.code.user.domain.Role;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AdminRoleDecider {
-    private final AdminBootstrapProps props;
+public class AdminRolePolicy {
+    private final AdminWhitelistProps props;
 
     public Role initRole(String email) {
         if (props.enabled() && props.emails().contains(email)) {

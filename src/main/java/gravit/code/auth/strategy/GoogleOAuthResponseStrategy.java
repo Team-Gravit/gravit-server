@@ -16,7 +16,6 @@ public class GoogleOAuthResponseStrategy implements OAuthResponseStrategy {
 
     @Override
     public OAuthUserInfo createOAuthUserInfo(Map<String, Object> attributes) {
-        System.out.println(attributes);
         return new GoogleUserInfo(attributes);
     }
 }

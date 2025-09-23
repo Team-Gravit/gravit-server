@@ -1,4 +1,4 @@
-package gravit.code.user.infrastructure;
+package gravit.code.user.infrastructure.mail;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;

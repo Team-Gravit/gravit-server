@@ -23,8 +23,8 @@ public class OAuthResponseFactory {
 
     public OAuthUserInfo createOAuthUserInfo(String registrationId, Map<String, Object> attributes){
         OAuthResponseStrategy strategy = strategies.get(registrationId);
-        System.out.println(strategy);
-        if(Objects.equals(strategy,null)) throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+        if(Objects.equals(strategy,null))
+            throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
         return strategy.createOAuthUserInfo(attributes);
     }
 }

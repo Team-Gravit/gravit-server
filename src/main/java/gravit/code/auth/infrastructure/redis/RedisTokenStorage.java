@@ -1,7 +1,8 @@
-package gravit.code.auth.token;
+package gravit.code.auth.infrastructure.redis;
 
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.domain.Token;
+import gravit.code.auth.token.TokenStorage;
 import gravit.code.auth.token.config.TokenProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,10 +12,11 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class RedisTokenStorage {
+public class RedisTokenStorage implements TokenStorage {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    @Override
     public <T extends Token> T saveToken(Subject subject, T token) {
         redisTemplate.opsForValue().set(
                 createKey(subject, token.getClass()),
@@ -24,6 +26,7 @@ public class RedisTokenStorage {
         return token;
     }
 
+    @Override
     public <T extends Token> Optional<String> findToken(Subject subject, Class<T> tokenClass) {
         String key = createKey(subject, tokenClass);
         String foundTokenValue = redisTemplate.opsForValue().get(key);
