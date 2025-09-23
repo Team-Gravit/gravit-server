@@ -1,7 +1,7 @@
 package gravit.code.auth.oauth.service;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
-import gravit.code.auth.startegy.OAuthResponseFactory;
+import gravit.code.auth.strategy.OAuthResponseFactory;
 import gravit.code.auth.service.oauth.OAuthClientService;
 import gravit.code.auth.client.WebClientAdapter;
 import gravit.code.global.exception.domain.RestApiException;

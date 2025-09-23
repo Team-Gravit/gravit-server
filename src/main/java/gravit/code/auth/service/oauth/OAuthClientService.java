@@ -3,7 +3,7 @@ package gravit.code.auth.service.oauth;
 import gravit.code.auth.client.WebClientAdapter;
 import gravit.code.global.consts.RedirectHostConst;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
-import gravit.code.auth.startegy.OAuthResponseFactory;
+import gravit.code.auth.strategy.OAuthResponseFactory;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;

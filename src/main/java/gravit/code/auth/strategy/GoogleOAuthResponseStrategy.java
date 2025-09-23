@@ -1,4 +1,4 @@
-package gravit.code.auth.startegy;
+package gravit.code.auth.strategy;
 
 
 import gravit.code.auth.dto.oauth.GoogleUserInfo;

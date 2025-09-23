@@ -1,21 +1,21 @@
-package gravit.code.auth.startegy;
+package gravit.code.auth.strategy;
 
-import gravit.code.auth.dto.oauth.KakaoUserInfo;
+
+import gravit.code.auth.dto.oauth.NaverUserInfo;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
-public class KakaoOAuthResponseStrategy implements OAuthResponseStrategy {
+public class NaverOAuthResponseStrategy implements OAuthResponseStrategy {
     @Override
     public String getProviderName() {
-        return "kakao";
+        return "naver";
     }
 
     @Override
     public OAuthUserInfo createOAuthUserInfo(Map<String, Object> attributes) {
-        System.out.println(attributes);
-        return new KakaoUserInfo(attributes);
+        return new NaverUserInfo(attributes);
     }
 }

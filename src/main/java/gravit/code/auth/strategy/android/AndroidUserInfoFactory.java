@@ -1,4 +1,4 @@
-package gravit.code.auth.startegy.android;
+package gravit.code.auth.strategy.android;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.dto.oauth.android.GoogleAndroidUserInfo;
