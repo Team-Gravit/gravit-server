@@ -2,8 +2,8 @@ package gravit.code.auth.oauth.service;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.strategy.OAuthResponseFactory;
-import gravit.code.auth.service.oauth.OAuthClientService;
-import gravit.code.auth.client.WebClientAdapter;
+import gravit.code.auth.service.oauth.OAuthUserInfoService;
+import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,10 +32,10 @@ class OAuthClientServiceTest {
     private OAuthResponseFactory oAuthResponseFactory;
 
     @MockitoBean
-    private WebClientAdapter webClientAdapter;
+    private OAuthHttpClientAdapter webClientAdapter;
 
     @Autowired
-    private OAuthClientService oAuthClientService;
+    private OAuthUserInfoService oAuthClientService;
 
     @BeforeEach
     void setUp() {

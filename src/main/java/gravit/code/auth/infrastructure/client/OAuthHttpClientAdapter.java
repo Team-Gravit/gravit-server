@@ -1,5 +1,6 @@
-package gravit.code.auth.client;
+package gravit.code.auth.infrastructure.client;
 
+import gravit.code.auth.service.oauth.port.OAuthClient;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,10 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class WebClientAdapter {
+public class OAuthHttpClientAdapter implements OAuthClient {
     private final WebClient webClient;
 
+    @Override
     public Map<String, Object> getAccessTokenResponse(String tokenUri, MultiValueMap<String, String> tokenRequest) {
         try {
             return webClient.post()
@@ -41,6 +43,7 @@ public class WebClientAdapter {
         }
     }
 
+    @Override
     public Map<String, Object> getUserInfoWithAccessToken(String uri, String accessToken) {
         try {
             return webClient.get()
@@ -58,5 +61,4 @@ public class WebClientAdapter {
             throw new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR);
         }
     }
-
 }

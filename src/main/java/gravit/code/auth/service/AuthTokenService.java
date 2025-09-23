@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthTokenService {
 
     private final AuthTokenProvider authTokenProvider;
-    private final UserRepository userRepository;
 
     @Transactional
     public ReissueResponse reissue(String requestedRefreshToken) {

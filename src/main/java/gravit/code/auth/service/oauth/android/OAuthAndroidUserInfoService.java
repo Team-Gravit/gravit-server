@@ -1,6 +1,6 @@
-package gravit.code.auth.service.oauth;
+package gravit.code.auth.service.oauth.android;
 
-import gravit.code.auth.client.config.Auth0Props;
+import gravit.code.auth.infrastructure.config.Auth0Props;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.strategy.android.AndroidUserInfoFactory;
 import gravit.code.global.exception.domain.CustomErrorCode;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OAuthAndroidClientService {
+public class OAuthAndroidUserInfoService {
 
     private final JwtDecoder jwtDecoder;
     private final Auth0Props props;

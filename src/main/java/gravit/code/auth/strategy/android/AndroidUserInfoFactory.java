@@ -20,7 +20,6 @@ public final class AndroidUserInfoFactory {
 
     public static OAuthUserInfo fromClaims(Map<String, Object> claims) {
         String provider = resolveProvider(claims);
-        log.info("resulve provider : {}", provider);
 
         return switch (provider){
             case "kakao" -> new KakaoAndroidUserInfo(claims);

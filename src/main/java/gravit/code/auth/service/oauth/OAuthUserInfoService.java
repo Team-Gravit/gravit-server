@@ -1,6 +1,6 @@
 package gravit.code.auth.service.oauth;
 
-import gravit.code.auth.client.WebClientAdapter;
+import gravit.code.auth.service.oauth.port.OAuthClient;
 import gravit.code.global.consts.RedirectHostConst;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.strategy.OAuthResponseFactory;
@@ -23,12 +23,12 @@ import static gravit.code.auth.util.oauth.OAuthConstants.OAUTH_PROVIDERS;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OAuthClientService {
+public class OAuthUserInfoService {
     private final static String GRANT_TYPE = "authorization_code";
 
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final OAuthResponseFactory oAuthResponseFactory;
-    private final WebClientAdapter webClientAdapter;
+    private final OAuthClient oAuthClient;
 
     public OAuthUserInfo getUserInfo(String authCode, String provider, String dest) {
         validateProvider(provider);
@@ -57,7 +57,7 @@ public class OAuthClientService {
         // 사용자 정보를 조회하기 위한 엔드포인트
         String userInfoUri = registration.getProviderDetails().getUserInfoEndpoint().getUri();
 
-        return webClientAdapter.getUserInfoWithAccessToken(userInfoUri, accessToken);
+        return oAuthClient.getUserInfoWithAccessToken(userInfoUri, accessToken);
     }
 
     private String getAccessToken(ClientRegistration registration, String decodedCode, String redirectUri) {
@@ -73,7 +73,7 @@ public class OAuthClientService {
         // AccessToken 을 발급받기 위한 엔드포인트
         String tokenUri = registration.getProviderDetails().getTokenUri();
 
-        Map<String, Object> tokenResponse = webClientAdapter.getAccessTokenResponse(tokenUri, tokenRequest);
+        Map<String, Object> tokenResponse = oAuthClient.getAccessTokenResponse(tokenUri, tokenRequest);
         return (String) tokenResponse.get("access_token");
     }
 

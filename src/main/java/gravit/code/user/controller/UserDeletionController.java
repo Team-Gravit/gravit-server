@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users/me/delete")
+@RequestMapping("/api/v1/users/deletion")
 public class UserDeletionController implements UserDeletionControllerDocs {
 
     private final UserDeletionService userDeleteWithMailService;

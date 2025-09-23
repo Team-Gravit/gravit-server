@@ -1,4 +1,4 @@
-package gravit.code.auth.jwt.exception;
+package gravit.code.security.exception;
 
 import gravit.code.global.exception.domain.ErrorCode;
 import lombok.Getter;

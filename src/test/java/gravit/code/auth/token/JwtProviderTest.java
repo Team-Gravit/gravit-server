@@ -1,4 +1,4 @@
-package gravit.code.auth.jwt;
+package gravit.code.auth.token;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.auth.domain.Subject;
@@ -16,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.Map;
 

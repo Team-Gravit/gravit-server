@@ -1,8 +1,8 @@
-package gravit.code.auth.jwt;
+package gravit.code.auth.token;
 
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.domain.Token;
-import gravit.code.auth.jwt.config.TokenProperties;
+import gravit.code.auth.token.config.TokenProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

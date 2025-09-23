@@ -1,4 +1,4 @@
-package gravit.code.auth.client.config;
+package gravit.code.auth.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

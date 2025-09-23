@@ -1,4 +1,4 @@
-package gravit.code.auth.jwt.config;
+package gravit.code.auth.token.config;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;

@@ -5,7 +5,7 @@ import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.android.IdTokenRequest;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.service.oauth.OAuthLoginProcessor;
-import gravit.code.auth.service.oauth.OAuthAndroidClientService;
+import gravit.code.auth.service.oauth.android.OAuthAndroidUserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/oauth/android")
 public class OAuthAndroidController implements OAuthAndroidControllerDocs {
 
-    private final OAuthAndroidClientService oAuthAndroidClientService;
+    private final OAuthAndroidUserInfoService oAuthAndroidClientService;
     private final OAuthLoginProcessor oAuthLoginProcessor;
 
     @PostMapping

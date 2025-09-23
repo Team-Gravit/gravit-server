@@ -2,7 +2,6 @@ package gravit.code.auth.oauth.processor;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
-import gravit.code.auth.jwt.JwtProvider;
 import gravit.code.auth.bootstrap.AdminRoleDecider;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;

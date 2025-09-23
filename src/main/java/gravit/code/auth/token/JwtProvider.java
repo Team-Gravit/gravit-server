@@ -1,18 +1,14 @@
-package gravit.code.auth.jwt;
+package gravit.code.auth.token;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.auth.domain.Subject;
-import gravit.code.auth.jwt.config.JwtProperties;
+import gravit.code.auth.token.config.JwtProperties;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

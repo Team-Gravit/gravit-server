@@ -1,10 +1,9 @@
-package gravit.code.global.config;
+package gravit.code.security.config;
 
 
-import gravit.code.auth.jwt.JwtAuthFilter;
-import gravit.code.auth.jwt.JwtProvider;
-import gravit.code.auth.jwt.exception.CustomAccessDeniedHandler;
-import gravit.code.auth.jwt.exception.CustomAuthenticationEntryPoint;
+import gravit.code.security.filter.JwtAuthFilter;
+import gravit.code.security.exception.CustomAccessDeniedHandler;
+import gravit.code.security.exception.CustomAuthenticationEntryPoint;
 import gravit.code.auth.service.AuthTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -47,11 +46,10 @@ public class SecurityConfig {
 
         //경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Swagger 관련 경로 허용
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 관련 경로 허용
                 .requestMatchers("/api/v1/oauth/**").permitAll()
-                .requestMatchers("/api/v1/oauth/android").permitAll()
                 .requestMatchers("/api/v1/users/me/delete/confirm").permitAll()
-                .requestMatchers("/api/v1/auth/refresh").permitAll()
+                .requestMatchers("/api/v1/auth/reissue").permitAll()
                 .requestMatchers("/api/v1/test/**").permitAll() // 테스트 할때만
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());

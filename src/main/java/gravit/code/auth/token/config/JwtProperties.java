@@ -1,4 +1,4 @@
-package gravit.code.auth.jwt.config;
+package gravit.code.auth.token.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
