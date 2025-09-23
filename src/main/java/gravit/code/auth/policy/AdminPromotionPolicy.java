@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AdminRolePolicy {
+public class AdminPromotionPolicy {
     private final AdminWhitelistProps props;
 
     public Role initRole(String email) {
@@ -20,7 +20,6 @@ public class AdminRolePolicy {
     }
 
     public boolean shouldPromoteToAdmin(String email) {
-        log.info("props email : {}", props.emails().get(0));
         return props.enabled() && props.emails().contains(email);
     }
 }

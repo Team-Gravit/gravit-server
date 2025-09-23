@@ -102,7 +102,7 @@ public interface FriendControllerDocs {
             )
     })
     @PostMapping("/unfollowing/{followeeId}")
-    ResponseEntity<String> unFollowing(
+    ResponseEntity<Void> unFollowing(
             @Parameter(description = "언팔로잉할 대상 유저 ID") @PathVariable("followeeId") Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser);
 

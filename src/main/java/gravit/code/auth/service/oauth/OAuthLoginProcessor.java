@@ -2,7 +2,7 @@ package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
-import gravit.code.auth.policy.AdminRolePolicy;
+import gravit.code.auth.policy.AdminPromotionPolicy;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.service.AuthTokenProvider;
@@ -23,7 +23,7 @@ public class OAuthLoginProcessor {
     private final UserRepository userRepository;
     private final AuthTokenProvider authTokenProvider;
     private final HandleGenerator handleGenerator;
-    private final AdminRolePolicy adminRoleDecider;
+    private final AdminPromotionPolicy adminPromotionPolicy;
 
     @Transactional
     public LoginResponse process(OAuthUserInfo oAuthUserInfo) {
@@ -47,7 +47,7 @@ public class OAuthLoginProcessor {
     private User registerNewUser(OAuthUserInfo oAuthUserInfo, String providerId) {
         log.info("첫 로그인, 회원가입 시작");
         String handle = handleGenerator.generateUniqueHandle();
-        Role initialRole = adminRoleDecider.initRole(oAuthUserInfo.getEmail());
+        Role initialRole = adminPromotionPolicy.initRole(oAuthUserInfo.getEmail());
 
         User user = User.create(
                 oAuthUserInfo.getEmail(),
@@ -65,8 +65,7 @@ public class OAuthLoginProcessor {
 
     private User promoteToAdminByWhitelist(User user, OAuthUserInfo oAuthUserInfo) {
         log.info("oAuthUserInfo.getEmail() : {}", oAuthUserInfo.getEmail());
-        if (user.getRole() != Role.ADMIN &&
-                adminRoleDecider.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {
+        if (user.getRole() != Role.ADMIN && adminPromotionPolicy.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {
             user.changeRole(Role.ADMIN);
             log.info("화이트리스트 일치: USER → ADMIN 승격 (userId={})", user.getId());
         }

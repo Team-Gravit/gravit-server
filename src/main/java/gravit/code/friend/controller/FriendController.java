@@ -8,6 +8,7 @@ import gravit.code.friend.service.FriendService;
 import gravit.code.friend.dto.response.FriendResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -26,30 +27,33 @@ public class FriendController implements FriendControllerDocs {
     public ResponseEntity<FriendResponse> following(@PathVariable("followeeId")Long followeeId,
                                                     @AuthenticationPrincipal LoginUser loginUser) {
         Long followerId = loginUser.getId();
-        log.info("[following] followerId : {} , followeeId : {}", followerId, followeeId);
-        FriendResponse friendResponse = friendService.following(loginUser.getId(), followeeId);
-        return ResponseEntity.ok(friendResponse);
+        FriendResponse friendResponse = friendService.following(followerId, followeeId);
+        HttpStatus status = HttpStatus.OK;
+        return ResponseEntity.status(status).body(friendResponse);
     }
 
     @PostMapping("/unfollowing/{followeeId}")
-    public ResponseEntity<String> unFollowing(@PathVariable("followeeId")Long followeeId,
+    public ResponseEntity<Void> unFollowing(@PathVariable("followeeId")Long followeeId,
                                               @AuthenticationPrincipal LoginUser loginUser) {
         friendService.unFollowing(loginUser.getId(), followeeId);
-        return ResponseEntity.ok("팔로우를 성공적으로 취소하였습니다. followeeId = " + followeeId);
+        HttpStatus status = HttpStatus.NO_CONTENT;
+        return ResponseEntity.status(status).build();
     }
 
     @GetMapping("/follower")
     public ResponseEntity<List<FollowerResponse>> getFollowers(@AuthenticationPrincipal LoginUser loginUser){
         Long followeeId = loginUser.getId();
         List<FollowerResponse> followers = friendService.getFollowers(followeeId);
-        return ResponseEntity.ok(followers);
+        HttpStatus status = HttpStatus.OK;
+        return ResponseEntity.status(status).body(followers);
     }
 
     @GetMapping("/following")
     public ResponseEntity<List<FollowingResponse>> getFollowings(@AuthenticationPrincipal LoginUser loginUser){
         Long followerId = loginUser.getId();
         List<FollowingResponse> followings = friendService.getFollowings(followerId);
-        return ResponseEntity.ok(followings);
+        HttpStatus status = HttpStatus.OK;
+        return ResponseEntity.status(status).body(followings);
     }
 
 }

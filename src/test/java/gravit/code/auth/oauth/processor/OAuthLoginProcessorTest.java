@@ -2,7 +2,7 @@ package gravit.code.auth.oauth.processor;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
-import gravit.code.auth.policy.AdminRolePolicy;
+import gravit.code.auth.policy.AdminPromotionPolicy;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.service.AuthTokenProvider;
@@ -41,7 +41,7 @@ class OAuthLoginProcessorTest {
     private OAuthUserInfo oAuthUserInfo;
 
     @Mock
-    private AdminRolePolicy adminRoleDecider;
+    private AdminPromotionPolicy adminRoleDecider;
 
 
     private final String testOAuthEmail = "test@test.com";
