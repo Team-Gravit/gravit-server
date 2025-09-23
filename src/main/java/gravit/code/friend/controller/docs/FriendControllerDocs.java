@@ -113,7 +113,10 @@ public interface FriendControllerDocs {
 
 
     @Operation(summary = "팔로워 목록 조회", description = "현재 사용자를 팔로우하고 있는 사용자 목록을 조회합니다<br>" +
-            "🔐 <strong>Jwt 필요</strong><br>")
+            "🔐 <strong>Jwt 필요</strong><br>" +
+            "<strong>Slice 페이징을 적용합니다</strong><br>" +
+            "쿼리 파라미터로 page, size, sort 값을 받습니다.(기본값 page = 0, size = 10, sort = created,DESC)"
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공"),
             @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
@@ -136,7 +139,10 @@ public interface FriendControllerDocs {
 
 
     @Operation(summary = "팔로잉 목록 조회", description = "현재 사용자가 팔로잉하고 있는 사용자 목록을 조회합니다<br>" +
-            "🔐 <strong>Jwt 필요</strong><br>")
+            "🔐 <strong>Jwt 필요</strong><br>" +
+            "<strong>Slice 페이징을 적용합니다</strong><br>" +
+            "쿼리 파라미터로 page, size, sort 값을 받습니다.(기본값 page = 0, size = 10, sort = created,DESC)"
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로잉 목록 조회 성공"),
             @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
