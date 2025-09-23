@@ -23,5 +23,5 @@ public interface MissionJpaRepository extends JpaRepository<Mission, Long> {
         FROM Mission m
         WHERE m.userId = :userId
     """)
-    MissionSummary findMissionSummaryByUserId(@Param("userid") long userId);
+    Optional<MissionSummary> findMissionSummaryByUserId(@Param("userId") long userId);
 }

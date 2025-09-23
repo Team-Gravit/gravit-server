@@ -10,5 +10,5 @@ public interface MissionRepository {
     Optional<Mission> findByUserId(long userId);
     Mission save(Mission mission);
     List<Mission> findAll(Pageable pageable);
-    MissionSummary findMissionSummaryByUserId(long userId);
+    Optional<MissionSummary> findMissionSummaryByUserId(long userId);
 }

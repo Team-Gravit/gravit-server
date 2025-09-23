@@ -5,6 +5,7 @@ import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.dto.MissionSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class MissionRepositoryImpl implements MissionRepository {
     }
 
     @Override
-    public MissionSummary findMissionSummaryByUserId(long userId){
+    public Optional<MissionSummary> findMissionSummaryByUserId(long userId){
         return missionJpaRepository.findMissionSummaryByUserId(userId);
     }
 }
