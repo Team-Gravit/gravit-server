@@ -100,10 +100,9 @@ class FriendServiceTest {
         friendRepository.save(friend3);
         Friend friend4 = Friend.create(user3.getId(), user1.getId());
         friendRepository.save(friend4);
-        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        SliceResponse<FollowerResponse> followerResponses = friendService.getFollowers(user1.getId(), pageable);
+        SliceResponse<FollowerResponse> followerResponses = friendService.getFollowers(user1.getId(), 0);
 
         // then
         assertEquals(2, followerResponses.contents().size());
@@ -132,10 +131,9 @@ class FriendServiceTest {
         friendRepository.save(friend3);
         Friend friend4 = Friend.create(user3.getId(), user1.getId());
         friendRepository.save(friend4);
-        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        SliceResponse<FollowingResponse> followingResponses = friendService.getFollowings(user1.getId(), pageable);
+        SliceResponse<FollowingResponse> followingResponses = friendService.getFollowings(user1.getId(), 0);
 
         // then
         assertEquals(2, followingResponses.contents().size());

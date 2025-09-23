@@ -22,7 +22,8 @@ public interface LeagueControllerSpecification {
 
     @Operation(
             summary = "리그 단건 조회",
-            description = "리그 ID로 리그 정보를 조회합니다<br> 리그 단건 조회는 현재 디자인상 사용하지 않아도 됩니다."
+            description = "리그 ID로 리그 정보를 조회합니다<br> " +
+                    "<strong>리그 단건 조회는 현재 디자인상 사용하지 않아도 됩니다</strong>"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 리그 조회 성공"),
