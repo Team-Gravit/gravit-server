@@ -4,6 +4,7 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.global.dto.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,12 +14,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -123,8 +128,11 @@ public interface FriendControllerDocs {
             )
     })
     @GetMapping("/follower")
-    ResponseEntity<List<FollowerResponse>> getFollowers(
-            @AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<SliceResponse<FollowerResponse>> getFollowers(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    );
 
 
     @Operation(summary = "팔로잉 목록 조회", description = "현재 사용자가 팔로잉하고 있는 사용자 목록을 조회합니다<br>" +
@@ -143,6 +151,9 @@ public interface FriendControllerDocs {
             )
     })
     @GetMapping("/following")
-    ResponseEntity<List<FollowingResponse>> getFollowings(
-            @AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<SliceResponse<FollowingResponse>> getFollowings(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    );
 }

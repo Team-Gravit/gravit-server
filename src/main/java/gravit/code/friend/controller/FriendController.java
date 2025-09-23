@@ -6,8 +6,13 @@ import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.service.FriendService;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.global.dto.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,8 +29,10 @@ public class FriendController implements FriendControllerDocs {
     private final FriendService friendService;
 
     @PostMapping("/following/{followeeId}")
-    public ResponseEntity<FriendResponse> following(@PathVariable("followeeId")Long followeeId,
-                                                    @AuthenticationPrincipal LoginUser loginUser) {
+    public ResponseEntity<FriendResponse> following(
+            @PathVariable("followeeId")Long followeeId,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
         Long followerId = loginUser.getId();
         FriendResponse friendResponse = friendService.following(followerId, followeeId);
         HttpStatus status = HttpStatus.OK;
@@ -33,25 +40,37 @@ public class FriendController implements FriendControllerDocs {
     }
 
     @PostMapping("/unfollowing/{followeeId}")
-    public ResponseEntity<Void> unFollowing(@PathVariable("followeeId")Long followeeId,
-                                              @AuthenticationPrincipal LoginUser loginUser) {
+    public ResponseEntity<Void> unFollowing(
+            @PathVariable("followeeId")Long followeeId,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
         friendService.unFollowing(loginUser.getId(), followeeId);
         HttpStatus status = HttpStatus.NO_CONTENT;
         return ResponseEntity.status(status).build();
     }
 
     @GetMapping("/follower")
-    public ResponseEntity<List<FollowerResponse>> getFollowers(@AuthenticationPrincipal LoginUser loginUser){
+    public ResponseEntity<SliceResponse<FollowerResponse>> getFollowers(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @ParameterObject
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ){
         Long followeeId = loginUser.getId();
-        List<FollowerResponse> followers = friendService.getFollowers(followeeId);
+        SliceResponse<FollowerResponse> followers = friendService.getFollowers(followeeId, pageable);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(followers);
     }
 
     @GetMapping("/following")
-    public ResponseEntity<List<FollowingResponse>> getFollowings(@AuthenticationPrincipal LoginUser loginUser){
+    public ResponseEntity<SliceResponse<FollowingResponse>> getFollowings(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @ParameterObject
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ){
         Long followerId = loginUser.getId();
-        List<FollowingResponse> followings = friendService.getFollowings(followerId);
+        SliceResponse<FollowingResponse> followings = friendService.getFollowings(followerId, pageable);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(followings);
     }

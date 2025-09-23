@@ -6,6 +6,7 @@ import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.global.dto.SliceResponse;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
@@ -13,6 +14,9 @@ import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +34,10 @@ public class FriendService {
     private final UserRepository userRepository;
 
     @Transactional
-    public FriendResponse following(Long followerId, Long followeeId) {
+    public FriendResponse following(
+            Long followerId,
+            Long followeeId
+    ) {
         log.info("팔로우 요청 순서 : follower : {}, followee : {}", followerId, followeeId);
 
         // 자기 자신에게 팔로잉 불가능
@@ -57,7 +64,10 @@ public class FriendService {
     }
 
     @Transactional
-    public void unFollowing(Long followerId, Long followeeId) {
+    public void unFollowing(
+            Long followerId,
+            Long followeeId
+    ) {
         Optional<Friend> friend = friendRepository.findByFolloweeIdAndFollowerId(followeeId, followerId);
 
         // 만약 팔로우 한 내역이 존재하지 않는다면
@@ -69,12 +79,20 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public List<FollowerResponse> getFollowers(Long followeeId) {
-        return friendRepository.findByFollowersByFolloweeId(followeeId);
+    public SliceResponse<FollowerResponse> getFollowers(
+            Long followeeId,
+            Pageable pageable
+    ) {
+        Slice<FollowerResponse> responses = friendRepository.findFollowersByFolloweeId(followeeId, pageable);
+        return SliceResponse.of(responses);
     }
 
     @Transactional(readOnly = true)
-    public List<FollowingResponse> getFollowings(Long followerId) {
-        return friendRepository.findByFollowingsByFollowerId(followerId);
+    public SliceResponse<FollowingResponse> getFollowings(
+            Long followerId,
+            Pageable pageable
+    ) {
+        Slice<FollowingResponse> responses = friendRepository.findFollowingsByFollowerId(followerId, pageable);
+        return SliceResponse.of(responses);
     }
 }
