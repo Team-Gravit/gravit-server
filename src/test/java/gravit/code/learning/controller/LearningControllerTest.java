@@ -274,8 +274,6 @@ class LearningControllerTest {
 
         private final LearningResultSaveRequest invalidRequest = new LearningResultSaveRequest(
                 null,
-                2L,
-                null,
                 null,
                 null,
                 List.of(
@@ -287,8 +285,6 @@ class LearningControllerTest {
 
         private final LearningResultSaveRequest validRequest = new LearningResultSaveRequest(
                 1L,
-                2L,
-                3L,
                 120,
                 85,
                 List.of(
@@ -304,9 +300,6 @@ class LearningControllerTest {
         @WithMockLoginUser
         @DisplayName("RequestBody가 유효하지 않으면 예외를 반환한다.")
         void withInvalidRequestBody() throws Exception {
-            //given
-            long userId = 1L;
-
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/results")
                     .contentType(MediaType.APPLICATION_JSON)

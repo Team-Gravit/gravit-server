@@ -1,7 +1,9 @@
 package gravit.code.learning.facade;
 
 import gravit.code.learning.domain.Problem;
+import gravit.code.learning.dto.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
+import gravit.code.learning.service.LessonService;
 import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.service.ChapterProgressService;
@@ -46,6 +48,9 @@ class LearningFacadeTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private LessonService lessonService;
 
     @Mock
     private ProblemService problemService;
@@ -291,7 +296,7 @@ class LearningFacadeTest {
 
         private final Long userId = 1L;
         private final LearningResultSaveRequest validRequest = new LearningResultSaveRequest(
-                1L, 2L, 3L, 150, 80,
+                1L, 150, 80,
                 List.of(
                         new ProblemResultRequest(1L, true, 0L),
                         new ProblemResultRequest(2L, false, 2L),
@@ -301,17 +306,34 @@ class LearningFacadeTest {
                 )
         );
 
+        private final LearningIds learningIds = new LearningIds(3L, 2L, 1L);
+
         @Nested
         @DisplayName("특정 학습 조회에 실패하면 예외를 반환한다.")
         class FailedAtFind{
 
             @Test
+            @DisplayName("레슨 조회에 실패한 경우")
+            void returnLesson404Exception(){
+                //given
+                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                        .thenThrow(new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
+
+                //when&then
+                assertThatThrownBy(() -> learningFacade.saveLearningResult(userId, validRequest))
+                        .isInstanceOf(RestApiException.class)
+                        .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.LESSON_NOT_FOUND);
+            }
+
+            @Test
             @DisplayName("유닛 조회에 실패한 경우")
             void returnUnit404Exception(){
                 //given
-                when(chapterProgressService.ensureChapterProgress(validRequest.chapterId(), userId))
+                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                        .thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenReturn(mock(ChapterProgress.class));
-                when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
+                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId))
                         .thenThrow(new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
 
                 //when&then
@@ -324,7 +346,9 @@ class LearningFacadeTest {
             @DisplayName("챕터 조회에 실패한 경우")
             void returnChapter404Exception(){
                 //given
-                when(chapterProgressService.ensureChapterProgress(validRequest.chapterId(), userId))
+                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                        .thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenThrow(new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
 
                 //when&then
@@ -345,9 +369,11 @@ class LearningFacadeTest {
                 ChapterProgress chapterProgress = mock(ChapterProgress.class);
                 UnitProgress unitProgress = mock(UnitProgress.class);
 
-                when(chapterProgressService.ensureChapterProgress(validRequest.chapterId(), userId))
+                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                        .thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenReturn(chapterProgress);
-                when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
+                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
                 doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
@@ -358,7 +384,7 @@ class LearningFacadeTest {
 
                 //then
                 verify(chapterProgressService, times(1)).updateChapterProgress(chapterProgress);
-                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, validRequest.chapterId()));
+                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
                 verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
 
@@ -369,9 +395,11 @@ class LearningFacadeTest {
                 ChapterProgress chapterProgress = mock(ChapterProgress.class);
                 UnitProgress unitProgress = mock(UnitProgress.class);
 
-                when(chapterProgressService.ensureChapterProgress(validRequest.chapterId(), userId))
+                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                        .thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenReturn(chapterProgress);
-                when(unitProgressService.ensureUnitProgress(validRequest.unitId(), userId))
+                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId))
                         .thenReturn(unitProgress);
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
                 doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
@@ -382,7 +410,7 @@ class LearningFacadeTest {
 
                 //then
                 verify(chapterProgressService, never()).updateChapterProgress(any());
-                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, validRequest.chapterId()));
+                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
                 verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
         }

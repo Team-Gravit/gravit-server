@@ -1,6 +1,7 @@
 package gravit.code.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gravit.code.GravitApplication;
 import gravit.code.common.auth.WithMockLoginUser;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.domain.FriendRepository;
@@ -23,12 +24,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(classes = GravitApplication.class)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase

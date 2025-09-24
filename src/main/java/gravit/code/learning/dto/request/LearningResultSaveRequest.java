@@ -11,20 +11,6 @@ import java.util.List;
 public record LearningResultSaveRequest(
 
         @Schema(
-                description = "챕터 아이디",
-                example = "1"
-        )
-        @NotNull(message = "챕터 아이디가 비어있습니다.")
-        Long chapterId,
-
-        @Schema(
-                description = "유닛 아이디",
-                example = "2"
-        )
-        @NotNull(message = "유닛 아이디가 비어있습니다.")
-        Long unitId,
-
-        @Schema(
                 description = "레슨 아이디",
                 example = "2"
         )
