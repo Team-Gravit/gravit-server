@@ -55,6 +55,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse<String>> handleDatabaseException(DataAccessException e){
         ErrorCode errorCode = CustomErrorCode.DATABASE_EXCEPTION;
 
+        log.error("DataAccessException occur with: {}", e.getMessage());
+
         return handleExceptionInternal(errorCode);
     }
 
