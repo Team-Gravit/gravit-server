@@ -27,15 +27,19 @@ public class UserController implements UserControllerDocs {
     }
 
     @PostMapping("/onboarding")
-    public ResponseEntity<UserResponse> onboardUser(@AuthenticationPrincipal LoginUser loginUser,
-                                                    @Valid @RequestBody OnboardingRequest request) {
+    public ResponseEntity<UserResponse> onboardUser(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid @RequestBody OnboardingRequest request
+    ) {
         UserResponse userResponse = userService.onboarding(loginUser.getId(), request);
         return ResponseEntity.ok(userResponse);
     }
 
     @PatchMapping
-    public ResponseEntity<UserResponse> updateProfile(@AuthenticationPrincipal LoginUser loginUser,
-                                                      @Valid @RequestBody UserProfileUpdateRequest request) {
+    public ResponseEntity<UserResponse> updateProfile(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid @RequestBody UserProfileUpdateRequest request
+    ) {
         UserResponse userResponse = userService.updateUserProfile(loginUser.getId(), request);
         return ResponseEntity.ok(userResponse);
     }

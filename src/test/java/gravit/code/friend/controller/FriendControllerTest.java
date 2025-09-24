@@ -84,8 +84,7 @@ public class FriendControllerTest {
         // when
         // then
         mockMvc.perform(post("/api/v1/friends/unfollowing/" + followeeId))
-                .andExpect(status().isOk())
-                .andExpect(content().string("팔로우를 성공적으로 취소하였습니다. followeeId = " + followeeId));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -106,14 +105,14 @@ public class FriendControllerTest {
         mockMvc.perform(get("/api/v1/friends/follower"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").isNotEmpty())
-                .andExpect(jsonPath("$[0].nickname").isNotEmpty())
-                .andExpect(jsonPath("$[0].profileImgNumber").isNotEmpty())
-                .andExpect(jsonPath("$[0].handle").isNotEmpty())
-                .andExpect(jsonPath("$[1].id").isNotEmpty())
-                .andExpect(jsonPath("$[1].nickname").isNotEmpty())
-                .andExpect(jsonPath("$[1].profileImgNumber").isNotEmpty())
-                .andExpect(jsonPath("$[1].handle").isNotEmpty());
+                .andExpect(jsonPath("$.contents[0].id").isNotEmpty())
+                .andExpect(jsonPath("$.contents[0].nickname").isNotEmpty())
+                .andExpect(jsonPath("$.contents[0].profileImgNumber").isNotEmpty())
+                .andExpect(jsonPath("$.contents[0].handle").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].id").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].nickname").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].profileImgNumber").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].handle").isNotEmpty());
     }
 
     @Test
@@ -133,14 +132,14 @@ public class FriendControllerTest {
         mockMvc.perform(get("/api/v1/friends/following"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").isNotEmpty())
-                .andExpect(jsonPath("$[0].nickname").isNotEmpty())
-                .andExpect(jsonPath("$[0].profileImgNumber").isNotEmpty())
-                .andExpect(jsonPath("$[0].handle").isNotEmpty())
-                .andExpect(jsonPath("$[1].id").isNotEmpty())
-                .andExpect(jsonPath("$[1].nickname").isNotEmpty())
-                .andExpect(jsonPath("$[1].profileImgNumber").isNotEmpty())
-                .andExpect(jsonPath("$[1].handle").isNotEmpty());
+                .andExpect(jsonPath("$.contents[0].id").isNotEmpty())
+                .andExpect(jsonPath("$.contents[0].nickname").isNotEmpty())
+                .andExpect(jsonPath("$.contents[0].profileImgNumber").isNotEmpty())
+                .andExpect(jsonPath("$.contents[0].handle").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].id").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].nickname").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].profileImgNumber").isNotEmpty())
+                .andExpect(jsonPath("$.contents[1].handle").isNotEmpty());
 
     }
 }
