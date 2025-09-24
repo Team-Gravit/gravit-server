@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface LessonJpaRepository extends JpaRepository<Lesson, Long> {
     @Query("""
         SELECT new gravit.code.learning.dto.LearningIds(c.id, u.id, l.id)
@@ -15,4 +17,6 @@ public interface LessonJpaRepository extends JpaRepository<Lesson, Long> {
         WHERE l.id = :lessonId
     """)
     LearningIds findLearningIdsByLessonId(@Param("lessonId")long lessonId);
+
+    Optional<String> findLessonNameById(Long id);
 }

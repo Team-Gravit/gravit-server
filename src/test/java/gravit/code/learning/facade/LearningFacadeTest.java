@@ -243,7 +243,7 @@ class LearningFacadeTest {
             );
         }
 
-        private final LessonResponse lessonResponse = LessonResponse.create(problemResponses);
+        private final LessonResponse lessonResponse = LessonResponse.create("스택 기본 개념", problemResponses);
 
         @Test
         @DisplayName("Problem의 리스트가 비어있으면 예외를 반환한다.")
@@ -279,6 +279,7 @@ class LearningFacadeTest {
             //given
             Long lessonId = 1L;
 
+            when(lessonService.findLessonName(lessonId)).thenReturn("스택 기본 개념");
             when(problemService.getAllProblemInLesson(lessonId)).thenReturn(problemResponses);
 
             //when
@@ -286,6 +287,7 @@ class LearningFacadeTest {
 
             //then
             assertThat(returnValue).isEqualTo(lessonResponse);
+            verify(lessonService, times(1)).findLessonName(lessonId);
             verify(problemService, times(1)).getAllProblemInLesson(lessonId);
         }
     }

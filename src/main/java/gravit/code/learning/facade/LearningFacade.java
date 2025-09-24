@@ -65,7 +65,8 @@ public class LearningFacade {
 
     @Transactional(readOnly = true)
     public LessonResponse getLesson(long lessonId){
-        return LessonResponse.create(problemService.getAllProblemInLesson(lessonId));
+        String lessonName = lessonService.findLessonName(lessonId);
+        return LessonResponse.create(lessonName, problemService.getAllProblemInLesson(lessonId));
     }
 
     @Transactional

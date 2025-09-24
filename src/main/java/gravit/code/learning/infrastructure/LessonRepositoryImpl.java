@@ -38,4 +38,9 @@ public class LessonRepositoryImpl implements LessonRepository {
     public LearningIds findLearningIdsByLessonId(long lessonId){
         return lessonJpaRepository.findLearningIdsByLessonId(lessonId);
     }
+
+    @Override
+    public Optional<String> findLessonNameById(long lessonId){
+        return lessonJpaRepository.findLessonNameById(lessonId);
+    }
 }

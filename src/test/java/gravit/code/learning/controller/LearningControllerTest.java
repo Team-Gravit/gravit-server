@@ -246,7 +246,7 @@ class LearningControllerTest {
                     ProblemResponse.builder().problemId(8L).problemType(ProblemType.OBJECTIVE).question("힙 자료구조의 특징이 아닌 것은?").content("1. 완전 이진 트리, 2. 부모가 자식보다 크거나 작음, 3. 중위 순회시 정렬됨, 4. 우선순위 큐 구현").answer("3").options(List.of()).build()
             );
 
-            LessonResponse lessonResponse = LessonResponse.create(problemResponses);
+            LessonResponse lessonResponse = LessonResponse.create("스택 기본 개념", problemResponses);
 
             when(learningFacade.getLesson(lessonId)).thenReturn(lessonResponse);
 
@@ -259,6 +259,7 @@ class LearningControllerTest {
             resultActions
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
+                    .andExpect(jsonPath("$.lessonName").value("스택 기본 개념"))
                     .andExpect(jsonPath("$.problems[0].problemId").value(1L))
                     .andExpect(jsonPath("$.problems[0].problemType").value("SUBJECTIVE"))
                     .andExpect(jsonPath("$.problems[0].question").value("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다."))
