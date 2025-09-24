@@ -8,12 +8,14 @@ import java.util.List;
 @Builder
 @Schema(description = "레슨 조회 Response")
 public record LessonResponse(
+        String lessonName,
         List<ProblemResponse> problems,
         int totalProblems
 ) {
 
-    public static LessonResponse create(List<ProblemResponse> problems){
+    public static LessonResponse create(String lessonName, List<ProblemResponse> problems){
         return LessonResponse.builder()
+                .lessonName(lessonName)
                 .problems(problems)
                 .totalProblems(problems.size())
                 .build();

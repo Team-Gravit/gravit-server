@@ -1,5 +1,6 @@
 package gravit.code.auth.oauth.service;
 
+import gravit.code.GravitApplication;
 import gravit.code.auth.service.oauth.OAuthLoginUrlService;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
+@SpringBootTest(classes = GravitApplication.class)
 @ActiveProfiles("test")
 class OAuthLoginUrlServiceTest {
 

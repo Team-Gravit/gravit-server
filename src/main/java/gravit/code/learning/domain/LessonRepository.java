@@ -1,9 +1,14 @@
 package gravit.code.learning.domain;
 
+import gravit.code.learning.dto.LearningIds;
+
 import java.util.Optional;
 
 public interface LessonRepository {
     Lesson save(Lesson lesson);
     Optional<Lesson> findById(Long lessonId);
     long count();
+    boolean existsById(Long lessonId);
+    LearningIds findLearningIdsByLessonId(long lessonId);
+    Optional<String> findLessonNameById(long lessonId);
 }
