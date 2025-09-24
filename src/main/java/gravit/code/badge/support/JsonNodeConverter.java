@@ -1,4 +1,4 @@
-package gravit.code.badge.converter;
+package gravit.code.badge.support;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
