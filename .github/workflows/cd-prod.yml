@@ -1,4 +1,4 @@
-name: Gravit CD
+name: 프로덕션 서버 CD
 
 on:
   push:
@@ -64,10 +64,10 @@ jobs:
           password: ${{secrets.DOCKER_HUB_PASSWORD}}
 
       - name: 도커 이미지 빌드
-        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:latest .
+        run: docker build --build-arg SPRING_PROFILE=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod .
 
       - name: 도커 이미지 푸쉬
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:latest
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod
 
   deploy:
     name: 앱센터 서버에 배포
@@ -76,17 +76,17 @@ jobs:
 
     steps:
       - name: 체크아웃
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: docker-compose, logstash 파일 전송
+      - name: docker-compose-prod 파일 전송
         uses: appleboy/scp-action@master
         with:
           host: ${{secrets.APPCENTER_SERVER_IP}}
           username: ${{secrets.APPCENTER_SERVER_USERNAME}}
           password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
           port: ${{secrets.APPCENTER_SERVER_PORT}}
-          source: "docker-compose.yml,logstash.conf"
-          target: "/home/serverking/gravit"
+          source: "docker-compose-prod.yml"
+          target: "/home/serverking/gravit/prod"
 
       - name: 앱센터 서버에 배포
         uses: appleboy/ssh-action@master
@@ -96,7 +96,7 @@ jobs:
           password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
           port: ${{secrets.APPCENTER_SERVER_PORT}}
           script: |
-            cd /home/serverking/gravit
+            cd /home/serverking/gravit/prod
 
             echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
 

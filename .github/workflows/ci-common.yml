@@ -1,4 +1,4 @@
-name: CI pipeline
+name: 공통 CI
 
 on:
   pull_request:

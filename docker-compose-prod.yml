@@ -1,0 +1,36 @@
+services:
+  gravit-server-prod:
+    container_name: gravit-server-prod
+    image: ${DOCKER_HUB_USERNAME}/gravit-server:prod
+    ports:
+      - "8520:8080"
+    environment:
+      - TZ=Asia/Seoul
+    networks:
+      - gravit-prod
+    depends_on:
+      gravit-redis-prod:
+        condition: service_started
+
+
+  gravit-redis-prod:
+    container_name: gravit-redis-prod
+    image: redis:latest
+    ports:
+      - "6388:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - gravit-prod
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+volumes:
+  redis_data:
+
+networks:
+  gravit-prod:
+    driver: bridge
