@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${POSTGRESQL_URL}
+    url: ${POSTGRESQL_DEV_URL}
     username: ${POSTGRESQL_USERNAME}
     password: ${POSTGRESQL_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -19,7 +19,7 @@ spring:
 
   data:
     redis:
-      host: gravit-redis-prod
+      host: gravit-redis-dev
       port: 6379
 
   mail:
@@ -28,7 +28,7 @@ spring:
     username: gravit4746@gmail.com
     password: ${SMTP_PASSWORD}
     properties:
-      mail.smtp.debug: true # prod 에선 이 설정을 고민해야함(보안문제)
+      mail.smtp.debug: true
       mail.smtp.auth: true
       mail.smtp.connectiontimeout: 5000
       mail.smtp.timeout: 5000
