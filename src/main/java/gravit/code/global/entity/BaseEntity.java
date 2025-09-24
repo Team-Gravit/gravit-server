@@ -1,4 +1,4 @@
-package gravit.code.global.doamin;
+package gravit.code.global.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

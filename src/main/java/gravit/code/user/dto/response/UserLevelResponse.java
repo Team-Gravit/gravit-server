@@ -25,7 +25,10 @@ public record UserLevelResponse(
         )
         int xp
 ){
-    public static UserLevelResponse create(int level, int xp){
+    public static UserLevelResponse create(
+            int level,
+            int xp
+    ){
         return UserLevelResponse.builder()
                 .currentLevel(level)
                 .nextLevel(level+1)

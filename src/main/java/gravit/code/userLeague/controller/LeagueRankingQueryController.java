@@ -23,15 +23,19 @@ public class LeagueRankingQueryController implements UserLeagueRankControllerDoc
     private final LeagueRankingQueryService leagueRankingQueryService;
 
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")
-    public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRanking(@PathVariable("leagueId") Long leagueId,
-                                                                         @PathVariable("pageNum") int pageNum){
+    public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRanking(
+            @PathVariable("leagueId") Long leagueId,
+            @PathVariable("pageNum") int pageNum
+    ){
         SliceResponse<LeagueRankRow> sliceResponse = leagueRankingQueryService.findLeagueRanking(leagueId, pageNum);
         return ResponseEntity.ok(sliceResponse);
     }
 
     @GetMapping("/user-leagues/page/{pageNum}")
-    public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRankingByUser(@PathVariable("pageNum") int pageNum,
-                                                                               @AuthenticationPrincipal LoginUser loginUser){
+    public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRankingByUser(
+            @PathVariable("pageNum") int pageNum,
+            @AuthenticationPrincipal LoginUser loginUser
+    ){
         Long userId = loginUser.getId();
         SliceResponse<LeagueRankRow> sliceResponse = leagueRankingQueryService.findLeagueRankingByUser(userId, pageNum);
         return ResponseEntity.ok(sliceResponse);

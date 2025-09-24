@@ -2,7 +2,7 @@ package gravit.code.badge.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import gravit.code.badge.converter.JsonNodeConverter;
-import gravit.code.global.doamin.BaseEntity;
+import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

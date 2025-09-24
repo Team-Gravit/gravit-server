@@ -28,8 +28,10 @@ public class OAuthController implements OAuthControllerDocs {
      * login url 를 프론트에 응답합니다.
      */
     @GetMapping("/login-url/{provider}")
-    public ResponseEntity<Map<String, String>> authorizeUrl(@PathVariable("provider") String provider,
-                                                            @RequestParam String dest) {
+    public ResponseEntity<Map<String, String>> authorizeUrl(
+            @PathVariable("provider") String provider,
+            @RequestParam String dest
+    ) {
         String loginUrl = oAuthLoginUrlService.generateLoginUrl(provider, dest);
         return ResponseEntity.ok(Map.of("loginUrl", loginUrl));
     }

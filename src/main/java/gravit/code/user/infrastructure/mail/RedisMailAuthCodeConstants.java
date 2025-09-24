@@ -1,4 +1,4 @@
-package gravit.code.user.util;
+package gravit.code.user.infrastructure.mail;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.data.redis.core.script.DefaultRedisScript;

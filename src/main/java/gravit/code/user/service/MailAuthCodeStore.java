@@ -1,4 +1,4 @@
-package gravit.code.user.service.port;
+package gravit.code.user.service;
 
 public interface MailAuthCodeStore {
     void save(String mailAuthCode, long userId, int expireTime);

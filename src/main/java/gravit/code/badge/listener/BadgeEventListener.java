@@ -81,7 +81,7 @@ public class BadgeEventListener {
     public void handleStreak(StreakUpdatedEvent event){
         try{
             badgeGrantService.evaluateStreak(
-                    event.userId(), event.steakCount()
+                    event.userId(), event.streakCount()
             );
         }catch(Exception e){
             log.error("handleStreak 리스너 에러: {}", e.getMessage());

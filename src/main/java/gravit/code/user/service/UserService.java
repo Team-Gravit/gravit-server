@@ -27,17 +27,19 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final MissionService missionService;
-
     private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
-    public UserResponse findById(Long userId) {
+    public UserResponse findById(long userId) {
         User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 
     @Transactional
-    public UserResponse onboarding(Long userId, OnboardingRequest request) {
+    public UserResponse onboarding(
+            long userId,
+            OnboardingRequest request
+    ) {
         User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
@@ -50,7 +52,10 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserProfile(Long userId, UserProfileUpdateRequest request){
+    public UserResponse updateUserProfile(
+            long userId,
+            UserProfileUpdateRequest request
+    ){
         User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         user.updateProfile(request.nickname(), request.profilePhotoNumber());
@@ -59,13 +64,16 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public MyPageResponse getMyPage(Long userId) {
+    public MyPageResponse getMyPage(long userId) {
         return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }
-
-
+    
     @Transactional
-    public UserLevelResponse updateUserLevelAndXp(long userId, int xp, int accuracy) {
+    public UserLevelResponse updateUserLevelAndXp(
+            long userId,
+            int xp,
+            int accuracy
+    ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
