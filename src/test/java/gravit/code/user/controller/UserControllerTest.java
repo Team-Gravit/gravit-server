@@ -98,13 +98,12 @@ class UserControllerTest {
         String testHandle = "@qwe123";
         OnboardingRequest onboardingRequest = new OnboardingRequest(testNickname, testProfileImgNumber);
 
-
         User user = User.create(testEmail, testProviderId, "test", testHandle, 0, Role.USER);
         userRepository.save(user);
 
         // when
         // then
-        mockMvc.perform(post("/api/v1/users/me/onboarding")
+        mockMvc.perform(post("/api/v1/users/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isOk())
@@ -130,7 +129,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(post("/api/v1/users/me/onboarding")
+        mockMvc.perform(post("/api/v1/users/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -155,7 +154,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(post("/api/v1/users/me/onboarding")
+        mockMvc.perform(post("/api/v1/users/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -180,7 +179,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(post("/api/v1/users/me/onboarding")
+        mockMvc.perform(post("/api/v1/users/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -205,7 +204,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(post("/api/v1/users/me/onboarding")
+        mockMvc.perform(post("/api/v1/users/onboarding")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(onboardingRequest)))
                 .andExpect(status().isBadRequest())
@@ -233,7 +232,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(patch("/api/v1/users/me")
+        mockMvc.perform(patch("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userProfileUpdateRequest)))
                 .andExpect(status().isOk())
@@ -264,7 +263,7 @@ class UserControllerTest {
 
         // when
         // then
-        mockMvc.perform(get("/api/v1/users/me/my-page"))
+        mockMvc.perform(get("/api/v1/users/my-page"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value(testNickname))
                 .andExpect(jsonPath("$.profileImgNumber").value(testProfileImgNumber))

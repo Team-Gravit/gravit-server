@@ -21,14 +21,18 @@ public class NoticeQueryController implements NoticeQueryControllerDocs {
     private final NoticeQueryService noticeQueryService;
 
     @GetMapping("/summaries/{page}")
-    public ResponseEntity<SliceResponse<NoticeSummaryResponse>> getNoticeSummaries(@PathVariable("page") int page){
+    public ResponseEntity<SliceResponse<NoticeSummaryResponse>> getNoticeSummaries(
+            @PathVariable("page") int page
+    ){
         SliceResponse<NoticeSummaryResponse> noticeSummaries = noticeQueryService.getNoticeSummaries(page);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(noticeSummaries);
     }
 
     @GetMapping("/{noticeId}")
-    public ResponseEntity<NoticeDetailResponse> getNoticeSummary(@PathVariable("noticeId") Long noticeId){
+    public ResponseEntity<NoticeDetailResponse> getNoticeSummary(
+            @PathVariable("noticeId") Long noticeId
+    ){
         NoticeDetailResponse noticeDetail = noticeQueryService.getNoticeDetail(noticeId);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(noticeDetail);

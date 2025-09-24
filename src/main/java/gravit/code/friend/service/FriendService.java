@@ -6,17 +6,21 @@ import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
-import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.user.domain.UserRepository;
+import gravit.code.global.dto.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.mission.dto.event.FollowMissionEvent;
+import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,13 +28,18 @@ import java.util.Optional;
 @Slf4j
 public class FriendService {
 
-    private final ApplicationEventPublisher publisher;
+    private static final int PAGE_SIZE = 10;
+    private static final Sort FOLLOW_SORT = Sort.by(Sort.Order.desc("createdAt"));
 
+    private final ApplicationEventPublisher publisher;
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
 
     @Transactional
-    public FriendResponse following(Long followerId, Long followeeId) {
+    public FriendResponse following(
+            Long followerId,
+            Long followeeId
+    ) {
         log.info("팔로우 요청 순서 : follower : {}, followee : {}", followerId, followeeId);
 
         // 자기 자신에게 팔로잉 불가능
@@ -57,7 +66,10 @@ public class FriendService {
     }
 
     @Transactional
-    public void unFollowing(Long followerId, Long followeeId) {
+    public void unFollowing(
+            Long followerId,
+            Long followeeId
+    ) {
         Optional<Friend> friend = friendRepository.findByFolloweeIdAndFollowerId(followeeId, followerId);
 
         // 만약 팔로우 한 내역이 존재하지 않는다면
@@ -69,12 +81,27 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public List<FollowerResponse> getFollowers(Long followeeId) {
-        return friendRepository.findByFollowersByFolloweeId(followeeId);
+    public SliceResponse<FollowerResponse> getFollowers(
+            Long followeeId,
+            int page
+    ) {
+        Pageable pageable = friendPageable(page);
+        Slice<FollowerResponse> responses = friendRepository.findFollowersByFolloweeId(followeeId, pageable);
+        return SliceResponse.of(responses);
     }
 
     @Transactional(readOnly = true)
-    public List<FollowingResponse> getFollowings(Long followerId) {
-        return friendRepository.findByFollowingsByFollowerId(followerId);
+    public SliceResponse<FollowingResponse> getFollowings(
+            Long followerId,
+            int page
+    ) {
+        Pageable pageable = friendPageable(page);
+        Slice<FollowingResponse> responses = friendRepository.findFollowingsByFollowerId(followerId, pageable);
+        return SliceResponse.of(responses);
+    }
+
+    private Pageable friendPageable(int page) {
+        int safePage = Math.max(0, page);
+        return PageRequest.of(safePage, PAGE_SIZE, FOLLOW_SORT);
     }
 }

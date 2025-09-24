@@ -5,12 +5,17 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static gravit.code.auth.util.oauth.OAuthClaimsUtil.*;
+import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.getClaimAsString;
+import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.extractProviderUserIdFromSub;
+import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.isBlank;
 
 @RequiredArgsConstructor
 public class GoogleAndroidUserInfo implements OAuthUserInfo {
 
     private static final String PROVIDER = "google";
+    private static final String CLAIM_SUB = "sub";
+    private static final String CLAIM_EMAIL = "email";
+    private static final String CLAIM_NAME = "name";
 
     private final Map<String, Object> claims;
 
@@ -21,19 +26,19 @@ public class GoogleAndroidUserInfo implements OAuthUserInfo {
 
     @Override
     public String getProviderId() {
-        String sub = getString(claims, "sub");
-        return providerUserIdFromSub(sub);
+        String sub = getClaimAsString(claims, CLAIM_SUB);
+        return extractProviderUserIdFromSub(sub);
     }
 
     @Override
     public String getEmail() {
-        String email = getString(claims, "email"); // scope에 email 필요
+        String email = getClaimAsString(claims, CLAIM_EMAIL);
         return isBlank(email) ? null : email;
     }
 
     @Override
     public String getName() {
-        String name = getString(claims, "name");
+        String name = getClaimAsString(claims, CLAIM_NAME);
         return isBlank(name) ? null : name;
     }
 

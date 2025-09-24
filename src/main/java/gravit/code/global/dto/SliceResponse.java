@@ -1,6 +1,7 @@
 package gravit.code.global.dto;
 
 import lombok.Builder;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
@@ -20,6 +21,13 @@ public record SliceResponse<T>(
         return SliceResponse.<T>builder()
                 .hasNextPage(false)
                 .contents(List.of())
+                .build();
+    }
+
+    public static <T> SliceResponse<T> of(Slice<T> slice) {
+        return SliceResponse.<T>builder()
+                .hasNextPage(slice.hasNext())
+                .contents(slice.getContent())
                 .build();
     }
 }

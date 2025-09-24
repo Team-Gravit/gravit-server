@@ -42,8 +42,8 @@ public interface AuthTokenControllerDocs {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PostMapping("/refresh")
-    ResponseEntity<ReissueResponse> refreshToken(@RequestBody RefreshTokenRequest request);
+    @PostMapping("/reissue")
+    ResponseEntity<ReissueResponse> reissueToken(@RequestBody RefreshTokenRequest request);
 
 
 }

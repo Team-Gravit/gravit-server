@@ -1,7 +1,7 @@
 package gravit.code.badge.domain.user;
 
 import gravit.code.badge.domain.Planet;
-import gravit.code.global.doamin.BaseEntity;
+import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -5,12 +5,16 @@ import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.global.dto.SliceResponse;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -68,13 +72,14 @@ class FriendServiceTest {
         User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, Role.USER);
         userRepository.save(user2);
         friendService.following(user1.getId(), user2.getId());
+        Pageable pageable = PageRequest.of(0, 10);
 
         // when
         friendService.unFollowing(user1.getId(), user2.getId());
 
         // then
-        List<FollowingResponse> followings = friendRepository.findByFollowingsByFollowerId(user1.getId());
-        assertThat(followings.isEmpty()).isTrue();
+        Slice<FollowingResponse> followings = friendRepository.findFollowingsByFollowerId(user1.getId(), pageable);
+        assertThat(followings.getContent().isEmpty()).isTrue();
     }
 
     @Test
@@ -97,11 +102,11 @@ class FriendServiceTest {
         friendRepository.save(friend4);
 
         // when
-        List<FollowerResponse> followerResponses = friendService.getFollowers(user1.getId());
+        SliceResponse<FollowerResponse> followerResponses = friendService.getFollowers(user1.getId(), 0);
 
         // then
-        assertEquals(2, followerResponses.size());
-        for (FollowerResponse followerResponse : followerResponses) {
+        assertEquals(2, followerResponses.contents().size());
+        for (FollowerResponse followerResponse : followerResponses.contents()) {
             assertNotNull(followerResponse.nickname());
             assertNotNull(followerResponse.handle());
             assertTrue(followerResponse.profileImgNumber() > 0);
@@ -128,11 +133,12 @@ class FriendServiceTest {
         friendRepository.save(friend4);
 
         // when
-        List<FollowingResponse> followingResponses = friendService.getFollowings(user1.getId());
+        SliceResponse<FollowingResponse> followingResponses = friendService.getFollowings(user1.getId(), 0);
 
         // then
-        assertEquals(2, followingResponses.size());
-        for (FollowingResponse followingResponse : followingResponses) {
+        assertEquals(2, followingResponses.contents().size());
+
+        for (FollowingResponse followingResponse : followingResponses.contents()) {
             assertNotNull(followingResponse.nickname());
             assertNotNull(followingResponse.handle());
             assertTrue(followingResponse.profileImgNumber() > 0);
