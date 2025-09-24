@@ -1,26 +1,24 @@
 package gravit.code.userLeague.domain;
 
+import gravit.code.global.entity.BaseEntity;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.season.domain.Season;
 import gravit.code.user.domain.User;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Table(name = "user_league")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class UserLeague {
+public class UserLeague extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,19 +39,23 @@ public class UserLeague {
     @Column(name = "league_point", columnDefinition = "integer", nullable = false)
     private int lp;
 
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
     @Builder
-    private UserLeague(User user, Season season, League league) {
+    private UserLeague(
+            User user,
+            Season season,
+            League league
+    ) {
         this.user = user;
         this.season = season;
         this.league = league;
         this.lp = 0;
     }
 
-    public static UserLeague create(User user, Season season, League league) {
+    public static UserLeague create(
+            User user,
+            Season season,
+            League league
+    ) {
         return UserLeague.builder()
                 .user(user)
                 .season(season)

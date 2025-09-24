@@ -1,6 +1,6 @@
 package gravit.code.notice.domain;
 
-import gravit.code.global.doamin.BaseEntity;
+import gravit.code.global.entity.BaseEntity;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 
 import static gravit.code.notice.domain.NoticeStatus.DRAFT;
 import static gravit.code.notice.domain.NoticeStatus.PUBLISHED;

@@ -1,8 +1,8 @@
 package gravit.code.userLeague.infrastructure;
 
-
 import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.global.dto.SliceResponse;
+import gravit.code.userLeague.service.LeagueRankingQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,7 +17,7 @@ import static gravit.code.userLeague.infrastructure.sql.LeagueRankingPagingQuery
 
 @Repository
 @RequiredArgsConstructor
-public class LeagueRankingQueryRepository {
+public class JdbcLeagueRankingQueryRepository implements LeagueRankingQueryRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final int PAGE_SIZE = 10;
@@ -43,7 +43,10 @@ public class LeagueRankingQueryRepository {
         );
     }
 
-    private SliceResponse<LeagueRankRow> fetchSlice(String sql, Map<String, Object> params){
+    private SliceResponse<LeagueRankRow> fetchSlice(
+            String sql,
+            Map<String, Object> params
+    ){
         List<LeagueRankRow> rows = jdbcTemplate.query(sql, params, RANK_ROW_MAPPER);
         boolean hasNextPage = rows.size() > PAGE_SIZE;
         List<LeagueRankRow> contents = hasNextPage ? rows.subList(0, PAGE_SIZE) : rows;
@@ -55,13 +58,21 @@ public class LeagueRankingQueryRepository {
         return SliceResponse.of(hasNextPage, contents);
     }
 
-    public SliceResponse<LeagueRankRow> findLeagueRanking(long leagueId, int safePage) {
+    @Override
+    public SliceResponse<LeagueRankRow> findLeagueRanking(
+            long leagueId,
+            int safePage
+    ) {
         Map<String, Object> params = new HashMap<>(pagingParams(safePage));
         params.put("leagueId", leagueId);
         return fetchSlice(FIND_RANKING_SQL, params);
     }
 
-    public SliceResponse<LeagueRankRow> findLeagueRankingByUser(Long userId, int safePage) {
+    @Override
+    public SliceResponse<LeagueRankRow> findLeagueRankingByUser(
+            long userId,
+            int safePage
+    ) {
         Map<String, Object> params = new HashMap<>(pagingParams(safePage));
         params.put("userId", userId);
         return fetchSlice(FIND_RANKING_BY_USER_SQL, params);

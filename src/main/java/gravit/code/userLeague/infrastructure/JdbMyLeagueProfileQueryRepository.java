@@ -1,6 +1,7 @@
 package gravit.code.userLeague.infrastructure;
 
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
+import gravit.code.userLeague.service.MyLeagueProfileQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,9 +12,10 @@ import static gravit.code.userLeague.infrastructure.sql.MyLeagueRankWithProfileQ
 
 @Repository
 @RequiredArgsConstructor
-public class MyLeagueProfileQueryRepository {
+public class JdbMyLeagueProfileQueryRepository implements MyLeagueProfileQueryRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Override
     public MyLeagueRankWithProfileResponse findLeagueRankAndProfile(Long userId) {
 
         Map<String, Object> params = Map.of("userId", userId);

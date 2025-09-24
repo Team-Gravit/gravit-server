@@ -2,8 +2,7 @@ package gravit.code.user.infrastructure.mail;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.user.service.port.MailSender;
-import gravit.code.user.util.MailHtmlRenderer;
+import gravit.code.user.service.MailSender;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,12 @@ public class StmpMailSender implements MailSender {
     private final JavaMailSender mailSender;
 
     @Override
-    public void sendEmailWithDeleteLink(String toEmail, String serviceEmail, String subject, String deleteLink) {
+    public void sendEmailWithDeleteLink(
+            String toEmail,
+            String serviceEmail,
+            String subject,
+            String deleteLink
+    ) {
         try{
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message,true, UTF_8.name());

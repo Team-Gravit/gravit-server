@@ -1,6 +1,6 @@
 package gravit.code.userLeagueHistory.domain;
 
-import gravit.code.global.doamin.BaseEntity;
+import gravit.code.global.entity.BaseEntity;
 import gravit.code.league.domain.League;
 import gravit.code.season.domain.Season;
 import gravit.code.user.domain.User;
@@ -41,7 +41,13 @@ public class UserLeagueHistory extends BaseEntity {
     private int finalLp;
 
     @Builder
-    private UserLeagueHistory(Season season, User user, League league, int finalRank, int finalLp) {
+    private UserLeagueHistory(
+            Season season,
+            User user,
+            League league,
+            int finalRank,
+            int finalLp
+    ) {
         this.season = season;
         this.user = user;
         this.finalLeague = league;
@@ -49,7 +55,13 @@ public class UserLeagueHistory extends BaseEntity {
         this.finalLp = finalLp;
     }
 
-    public static UserLeagueHistory create(Season season, User user, League league, int finalRank, int finalLp) {
+    public static UserLeagueHistory create(
+            Season season,
+            User user,
+            League league,
+            int finalRank,
+            int finalLp
+    ) {
         return UserLeagueHistory.builder()
                 .season(season).user(user).league(league).finalRank(finalRank).finalLp(finalLp).build();
     }

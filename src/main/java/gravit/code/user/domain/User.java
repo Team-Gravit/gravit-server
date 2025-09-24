@@ -1,6 +1,6 @@
 package gravit.code.user.domain;
 
-import gravit.code.global.doamin.BaseEntity;
+import gravit.code.global.entity.BaseEntity;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.*;
@@ -64,7 +64,8 @@ public class User extends BaseEntity {
             String nickname,
             String handle,
             int profileImgNumber,
-            Role role) {
+            Role role
+    ) {
         this.email = email;
         this.providerId = providerId;
         this.nickname = nickname;
@@ -77,7 +78,14 @@ public class User extends BaseEntity {
         this.status = UserStatus.ACTIVE;
     }
 
-    public static User create(String email, String providerId, String nickname, String handle, int profileImgNumber, Role role) {
+    public static User create(
+            String email,
+            String providerId,
+            String nickname,
+            String handle,
+            int profileImgNumber,
+            Role role
+    ) {
         return User.builder()
                 .email(email)
                 .providerId(providerId)
@@ -92,7 +100,10 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
-    public void onboard(String nickname, int profileImgNumber){
+    public void onboard(
+            String nickname,
+            int profileImgNumber
+    ){
         validateOnboard(nickname, profileImgNumber);
         this.nickname = nickname;
         this.profileImgNumber = profileImgNumber;
@@ -103,19 +114,28 @@ public class User extends BaseEntity {
         this.isOnboarded = true;
     }
 
-    public void updateProfile(String nickname, int profileImgNumber){
+    public void updateProfile(
+            String nickname,
+            int profileImgNumber
+    ){
         validateUpdateProfile(nickname, profileImgNumber);
         this.nickname = nickname;
         this.profileImgNumber = profileImgNumber;
     }
 
-    private void validateOnboard(String nickname, int profileImgNumber) {
+    private void validateOnboard(
+            String nickname,
+            int profileImgNumber
+    ) {
         validateIsOnboarded();
         validateNickname(nickname);
         validateProfileImgNum(profileImgNumber);
     }
 
-    private void validateUpdateProfile(String nickname, int profileImgNumber) {
+    private void validateUpdateProfile(
+            String nickname,
+            int profileImgNumber
+    ) {
         validateNickname(nickname);
         validateProfileImgNum(profileImgNumber);
     }
