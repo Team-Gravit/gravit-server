@@ -1,5 +1,6 @@
 package gravit.code.notice.controller;
 
+import gravit.code.global.dto.PageResponse;
 import gravit.code.global.dto.SliceResponse;
 import gravit.code.notice.controller.docs.NoticeQueryControllerDocs;
 import gravit.code.notice.dto.response.NoticeDetailResponse;
@@ -21,10 +22,10 @@ public class NoticeQueryController implements NoticeQueryControllerDocs {
     private final NoticeQueryService noticeQueryService;
 
     @GetMapping("/summaries/{page}")
-    public ResponseEntity<SliceResponse<NoticeSummaryResponse>> getNoticeSummaries(
+    public ResponseEntity<PageResponse<NoticeSummaryResponse>> getNoticeSummaries(
             @PathVariable("page") int page
     ){
-        SliceResponse<NoticeSummaryResponse> noticeSummaries = noticeQueryService.getNoticeSummaries(page);
+        PageResponse<NoticeSummaryResponse> noticeSummaries = noticeQueryService.getNoticeSummaries(page);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(noticeSummaries);
     }

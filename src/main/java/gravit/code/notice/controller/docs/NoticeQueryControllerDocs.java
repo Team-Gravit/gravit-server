@@ -1,10 +1,12 @@
 package gravit.code.notice.controller.docs;
 
 
+import gravit.code.global.dto.PageResponse;
 import gravit.code.global.dto.SliceResponse;
 import gravit.code.notice.dto.response.NoticeDetailResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,10 +28,40 @@ public interface NoticeQueryControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 조회 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SliceResponse.class),
+                            examples = @ExampleObject(
+                                    name = "notice-summaries",
+                                    value = """
+                                    {
+                                      "hasNext": true,
+                                      "content": [
+                                        {
+                                          "id": 123,
+                                          "title": "9월 정기 점검 안내",
+                                          "summary": "9/25(수) 02:00~05:00 점검으로 서비스 이용이 제한됩니다.",
+                                          "pinned": true,
+                                          "publishedAt": "2025-09-24T12:34:56"
+                                        },
+                                        {
+                                          "id": 122,
+                                          "title": "신규 기능 출시",
+                                          "summary": "프로필 커버 이미지 기능이 추가되었습니다.",
+                                          "pinned": false,
+                                          "publishedAt": "2025-09-20T10:00:00"
+                                        }
+                                      ]
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @GetMapping("/summaries/{page}")
-    ResponseEntity<SliceResponse<NoticeSummaryResponse>> getNoticeSummaries(@PathVariable("page") int page);
+    ResponseEntity<PageResponse<NoticeSummaryResponse>> getNoticeSummaries(
+            @Parameter(description = "1부터 시작하는 페이지 번호", example = "1")
+            @PathVariable("page") int page);
 
     @Operation(
             summary = "공지 상세 조회",
