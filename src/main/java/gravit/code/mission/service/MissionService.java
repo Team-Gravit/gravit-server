@@ -65,7 +65,8 @@ public class MissionService {
             )
     )
     public MissionSummary getMissionSummary(long userId){
-        return missionRepository.findMissionSummaryByUserId(userId);
+        return missionRepository.findMissionSummaryByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
     }
 
     @Retryable(
