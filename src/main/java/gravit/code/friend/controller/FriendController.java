@@ -45,7 +45,7 @@ public class FriendController implements FriendControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser
     ) {
         friendService.unFollowing(loginUser.getId(), followeeId);
-        HttpStatus status = HttpStatus.NO_CONTENT;
+        HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).build();
     }
 
