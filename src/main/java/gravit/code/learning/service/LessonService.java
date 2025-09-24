@@ -20,7 +20,7 @@ public class LessonService {
     }
 
     public String findLessonName(long lessonId){
-        return lessonRepository.findLessonNameById(lessonId)
+        return lessonRepository.findLessonNameByLessonId(lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
     }
 

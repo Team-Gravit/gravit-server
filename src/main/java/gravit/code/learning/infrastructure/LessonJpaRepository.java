@@ -18,5 +18,10 @@ public interface LessonJpaRepository extends JpaRepository<Lesson, Long> {
     """)
     LearningIds findLearningIdsByLessonId(@Param("lessonId")long lessonId);
 
-    Optional<String> findLessonNameById(Long id);
+    @Query("""
+        SELECT l.name
+        FROM Lesson l
+        WHERE l.id = :lessonId
+    """)
+    Optional<String> findLessonNameByLessonId(@Param("lessonId") long lessonId);
 }
