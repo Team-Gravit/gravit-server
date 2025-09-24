@@ -1,0 +1,106 @@
+name: 프로덕션 서버 CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: 빌드 후 도커 허브에 푸쉬
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: JDK 버전 설정
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: application-prod.yml 환경변수 주입
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application-prod.yml
+        env:
+          spring.datasource.url: ${{secrets.POSTGRESQL_URL}}
+          spring.datasource.username: ${{secrets.POSTGRESQL_USERNAME}}
+          spring.datasource.password: ${{secrets.POSTGRESQL_PASSWORD}}
+          jwt.secret: ${{secrets.JWT_SECRET}}
+
+          spring.flyway.user: ${{secrets.POSTGRESQL_USERNAME}}
+          spring.flyway.password: ${{secrets.POSTGRESQL_PASSWORD}}
+
+          spring.mail.password: ${{secrets.STMP_PASSWORD}}
+
+          spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          spring.security.oauth2.client.registration.google.redirect-uri: ${{ secrets.GOOGLE_REDIRECT_URI }}
+
+          spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_CLIENT_ID }}
+          spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          spring.security.oauth2.client.registration.kakao.redirect-uri: ${{ secrets.KAKAO_REDIRECT_URI }}
+
+          spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_CLIENT_ID }}
+          spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_CLIENT_SECRET }}
+          spring.security.oauth2.client.registration.naver.redirect-uri: ${{ secrets.NAVER_REDIRECT_URI }}
+
+          auth0.issuer: ${{ secrets.AUTH0_ISSUER }}
+          auth0.android-client-id: ${{ secrets.ANDROID_CLIENT_ID }}
+
+          admin.bootstrap.emails: ${{ secrets.ADMIN_BOOTSTRAP_EMAILS }}
+
+      - name: JAR 빌드
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build -x test -i --no-daemon -Dspring.profiles.active=prod
+
+      - name: 도커 허브 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_PASSWORD}}
+
+      - name: 도커 이미지 빌드
+        run: docker build --build-arg SPRING_PROFILE=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod .
+
+      - name: 도커 이미지 푸쉬
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod
+
+  deploy:
+    name: 앱센터 서버에 배포
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: docker-compose-prod 파일 전송
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{secrets.APPCENTER_SERVER_IP}}
+          username: ${{secrets.APPCENTER_SERVER_USERNAME}}
+          password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
+          port: ${{secrets.APPCENTER_SERVER_PORT}}
+          source: "docker-compose-prod.yml"
+          target: "/home/serverking/gravit/prod"
+
+      - name: 앱센터 서버에 배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.APPCENTER_SERVER_IP}}
+          username: ${{secrets.APPCENTER_SERVER_USERNAME}}
+          password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
+          port: ${{secrets.APPCENTER_SERVER_PORT}}
+          script: |
+            cd /home/serverking/gravit/prod
+
+            echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
+
+            docker-compose -f docker-compose-prod.yml down
+            docker-compose -f docker-compose-prod.yml pull
+            docker-compose -f docker-compose-prod.yml up -d
+            docker image prune -f

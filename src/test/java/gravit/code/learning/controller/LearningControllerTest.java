@@ -246,7 +246,7 @@ class LearningControllerTest {
                     ProblemResponse.builder().problemId(8L).problemType(ProblemType.OBJECTIVE).question("힙 자료구조의 특징이 아닌 것은?").content("1. 완전 이진 트리, 2. 부모가 자식보다 크거나 작음, 3. 중위 순회시 정렬됨, 4. 우선순위 큐 구현").answer("3").options(List.of()).build()
             );
 
-            LessonResponse lessonResponse = LessonResponse.create(problemResponses);
+            LessonResponse lessonResponse = LessonResponse.create("스택 기본 개념", problemResponses);
 
             when(learningFacade.getLesson(lessonId)).thenReturn(lessonResponse);
 
@@ -259,6 +259,7 @@ class LearningControllerTest {
             resultActions
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
+                    .andExpect(jsonPath("$.lessonName").value("스택 기본 개념"))
                     .andExpect(jsonPath("$.problems[0].problemId").value(1L))
                     .andExpect(jsonPath("$.problems[0].problemType").value("SUBJECTIVE"))
                     .andExpect(jsonPath("$.problems[0].question").value("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다."))
@@ -274,8 +275,6 @@ class LearningControllerTest {
 
         private final LearningResultSaveRequest invalidRequest = new LearningResultSaveRequest(
                 null,
-                2L,
-                null,
                 null,
                 null,
                 List.of(
@@ -287,8 +286,6 @@ class LearningControllerTest {
 
         private final LearningResultSaveRequest validRequest = new LearningResultSaveRequest(
                 1L,
-                2L,
-                3L,
                 120,
                 85,
                 List.of(
@@ -304,9 +301,6 @@ class LearningControllerTest {
         @WithMockLoginUser
         @DisplayName("RequestBody가 유효하지 않으면 예외를 반환한다.")
         void withInvalidRequestBody() throws Exception {
-            //given
-            long userId = 1L;
-
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/results")
                     .contentType(MediaType.APPLICATION_JSON)

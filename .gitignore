@@ -41,6 +41,3 @@ out/
 # OS Files
 .DS_Store
 *DS_Store
-
-src/main/resources/application-dev.yml
-src/test/resources/application.yml!/erdcloud_ddl.sql

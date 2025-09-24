@@ -4,6 +4,7 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.global.dto.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,12 +14,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -102,13 +107,16 @@ public interface FriendControllerDocs {
             )
     })
     @PostMapping("/unfollowing/{followeeId}")
-    ResponseEntity<String> unFollowing(
+    ResponseEntity<Void> unFollowing(
             @Parameter(description = "언팔로잉할 대상 유저 ID") @PathVariable("followeeId") Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser);
 
 
     @Operation(summary = "팔로워 목록 조회", description = "현재 사용자를 팔로우하고 있는 사용자 목록을 조회합니다<br>" +
-            "🔐 <strong>Jwt 필요</strong><br>")
+            "🔐 <strong>Jwt 필요</strong><br>" +
+            "<strong>Slice 페이징을 적용합니다</strong><br>" +
+            "쿼리 파라미터로 page 값을 보내주세요(0부터 시작)"
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공"),
             @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
@@ -123,12 +131,17 @@ public interface FriendControllerDocs {
             )
     })
     @GetMapping("/follower")
-    ResponseEntity<List<FollowerResponse>> getFollowers(
-            @AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<SliceResponse<FollowerResponse>> getFollowers(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @RequestParam int page
+    );
 
 
     @Operation(summary = "팔로잉 목록 조회", description = "현재 사용자가 팔로잉하고 있는 사용자 목록을 조회합니다<br>" +
-            "🔐 <strong>Jwt 필요</strong><br>")
+            "🔐 <strong>Jwt 필요</strong><br>" +
+            "<strong>Slice 페이징을 적용합니다</strong><br>" +
+            "쿼리 파라미터로 page 값을 보내주세요(0부터 시작)"
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로잉 목록 조회 성공"),
             @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
@@ -143,6 +156,8 @@ public interface FriendControllerDocs {
             )
     })
     @GetMapping("/following")
-    ResponseEntity<List<FollowingResponse>> getFollowings(
-            @AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<SliceResponse<FollowingResponse>> getFollowings(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @RequestParam int page
+    );
 }

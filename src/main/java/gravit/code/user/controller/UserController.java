@@ -26,21 +26,25 @@ public class UserController implements UserControllerDocs {
         return ResponseEntity.ok(userResponse);
     }
 
-    @PostMapping("/me/onboarding")
-    public ResponseEntity<UserResponse> onboardUser(@AuthenticationPrincipal LoginUser loginUser,
-                                                    @Valid @RequestBody OnboardingRequest request) {
+    @PostMapping("/onboarding")
+    public ResponseEntity<UserResponse> onboardUser(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid @RequestBody OnboardingRequest request
+    ) {
         UserResponse userResponse = userService.onboarding(loginUser.getId(), request);
         return ResponseEntity.ok(userResponse);
     }
 
-    @PatchMapping("/me")
-    public ResponseEntity<UserResponse> updateProfile(@AuthenticationPrincipal LoginUser loginUser,
-                                                      @Valid @RequestBody UserProfileUpdateRequest request) {
+    @PatchMapping
+    public ResponseEntity<UserResponse> updateProfile(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid @RequestBody UserProfileUpdateRequest request
+    ) {
         UserResponse userResponse = userService.updateUserProfile(loginUser.getId(), request);
         return ResponseEntity.ok(userResponse);
     }
 
-    @GetMapping("/me/my-page")
+    @GetMapping("/my-page")
     public ResponseEntity<MyPageResponse> getMyPage(@AuthenticationPrincipal LoginUser loginUser) {
         MyPageResponse myPageResponse = userService.getMyPage(loginUser.getId());
         return ResponseEntity.ok(myPageResponse);

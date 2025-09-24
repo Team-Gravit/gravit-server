@@ -2,9 +2,11 @@ package gravit.code.learning.facade;
 
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
+import gravit.code.learning.dto.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.learning.service.LessonService;
 import gravit.code.learning.service.ProblemService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.progress.domain.ChapterProgress;
@@ -33,6 +35,7 @@ public class LearningFacade {
     private final ApplicationEventPublisher publisher;
 
     private final UserService userService;
+    private final LessonService lessonService;
     private final ProblemService problemService;
 
     private final ChapterProgressService chapterProgressService;
@@ -62,14 +65,17 @@ public class LearningFacade {
 
     @Transactional(readOnly = true)
     public LessonResponse getLesson(long lessonId){
-        return LessonResponse.create(problemService.getAllProblemInLesson(lessonId));
+        String lessonName = lessonService.findLessonName(lessonId);
+        return LessonResponse.create(lessonName, problemService.getAllProblemInLesson(lessonId));
     }
 
     @Transactional
     public UserLevelResponse saveLearningResult(long userId, LearningResultSaveRequest request){
 
-        ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(request.chapterId(), userId);
-        UnitProgress unitProgress = unitProgressService.ensureUnitProgress(request.unitId(), userId);
+        LearningIds learningIds = lessonService.findLearningIdsByLessonId(request.lessonId());
+
+        ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId);
+        UnitProgress unitProgress = unitProgressService.ensureUnitProgress(learningIds.unitId(), userId);
 
         // 문제 풀이 결과 저장
         problemProgressService.saveProblemResults(userId, request.problemResults());
@@ -80,7 +86,7 @@ public class LearningFacade {
         if(unitProgressService.updateUnitProgress(unitProgress))
             chapterProgressService.updateChapterProgress(chapterProgress);
 
-        publisher.publishEvent(new UpdateLearningEvent(userId, request.chapterId()));
+        publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
         publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
         publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
         publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));

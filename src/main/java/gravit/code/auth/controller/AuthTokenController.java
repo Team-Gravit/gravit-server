@@ -19,8 +19,8 @@ public class AuthTokenController implements AuthTokenControllerDocs {
 
     private final AuthTokenService authTokenService;
 
-    @PostMapping("/refresh")
-    public ResponseEntity<ReissueResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+    @PostMapping("/reissue")
+    public ResponseEntity<ReissueResponse> reissueToken(@RequestBody RefreshTokenRequest request) {
         String refreshToken = request.refreshToken();
         ReissueResponse response = authTokenService.reissue(refreshToken);
         HttpStatus status = HttpStatus.OK;

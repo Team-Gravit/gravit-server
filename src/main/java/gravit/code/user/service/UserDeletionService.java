@@ -6,9 +6,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.config.UserDeleteMailProps;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
-import gravit.code.user.service.port.MailAuthCodeStore;
-import gravit.code.user.service.port.MailSender;
-import gravit.code.user.util.MailAuthCodeGenerator;
+import gravit.code.user.infrastructure.MailAuthCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,10 @@ public class UserDeletionService {
     private final UserRepository userRepository;
     private final MailAuthCodeStore mailAuthCodeStore;
 
-    public void requestDeleteMailWithMailAuthCode(long userId, String dest) {
+    public void requestDeleteMailWithMailAuthCode(
+            long userId,
+            String dest
+    ) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         // local, prod 환경별로 다름

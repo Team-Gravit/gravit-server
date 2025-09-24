@@ -23,9 +23,11 @@ public class FriendSearchController implements FriendSearchControllerDocs {
     private final FriendSearchService friendSearchService;
 
     @GetMapping
-    public ResponseEntity<SliceResponse<SearchUser>> search(@AuthenticationPrincipal LoginUser loginUser,
-                                                            @RequestParam String queryText,
-                                                            @RequestParam(defaultValue = "0") int page){
+    public ResponseEntity<SliceResponse<SearchUser>> search(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @RequestParam String queryText,
+            @RequestParam(defaultValue = "0") int page
+    ){
         SliceResponse<SearchUser> pageResponse = friendSearchService.searchUsersForFollowing(loginUser.getId(), queryText, page);
         return ResponseEntity.ok(pageResponse);
     }

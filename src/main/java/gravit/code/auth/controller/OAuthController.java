@@ -5,7 +5,7 @@ import gravit.code.auth.dto.oauth.AuthCodeRequest;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.service.oauth.OAuthLoginProcessor;
-import gravit.code.auth.service.oauth.OAuthClientService;
+import gravit.code.auth.service.oauth.OAuthUserInfoService;
 import gravit.code.auth.service.oauth.OAuthLoginUrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/oauth")
 @Slf4j
 public class OAuthController implements OAuthControllerDocs {
-    private final OAuthClientService oAuthClientService;
+    private final OAuthUserInfoService oAuthClientService;
     private final OAuthLoginProcessor oAuthLoginProcessor;
     private final OAuthLoginUrlService oAuthLoginUrlService;
 
@@ -28,8 +28,10 @@ public class OAuthController implements OAuthControllerDocs {
      * login url 를 프론트에 응답합니다.
      */
     @GetMapping("/login-url/{provider}")
-    public ResponseEntity<Map<String, String>> authorizeUrl(@PathVariable("provider") String provider,
-                                                            @RequestParam String dest) {
+    public ResponseEntity<Map<String, String>> authorizeUrl(
+            @PathVariable("provider") String provider,
+            @RequestParam String dest
+    ) {
         String loginUrl = oAuthLoginUrlService.generateLoginUrl(provider, dest);
         return ResponseEntity.ok(Map.of("loginUrl", loginUrl));
     }

@@ -11,10 +11,10 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
     Optional<League> findFirstByOrderBySortOrderAsc();
 
     @Query("""
-    select l
-        from League l
-    where :lp between l.minLp and l.maxLp
-    order by l.minLp asc
-""")
+                select l
+                    from League l
+                where :lp between l.minLp and l.maxLp
+                order by l.minLp asc
+            """)
     Optional<League> findByLpBetween(@Param("lp") int lp);
 }

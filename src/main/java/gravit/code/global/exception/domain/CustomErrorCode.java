@@ -115,6 +115,9 @@ public enum CustomErrorCode implements ErrorCode {
     // Badge
     NO_PLANET_MAPPING_CHAPTER_ID(HttpStatus.NOT_FOUND,"BADGE_4041", "챕터 아이디에 해당하는 행성을 찾을 수 없습니다."),
 
+    // Page
+    PAGE_MUST_START_FROM_1(HttpStatus.BAD_REQUEST, "PAGE_4001", "notice 페이지는 1번부터 시작합니다."),
+
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
     DATABASE_EXCEPTION(HttpStatus.BAD_REQUEST, "DB_4001", "데이터베이스 작업 중 예외 발생"),

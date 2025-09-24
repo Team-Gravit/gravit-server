@@ -16,7 +16,10 @@ public class UserLevel {
     @Column(name = "xp", nullable = false)
     private int xp;
 
-    public UserLevel(int level, int xp) {
+    public UserLevel(
+            int level,
+            int xp
+    ) {
         this.level = level;
         this.xp = xp;
     }
