@@ -6,7 +6,7 @@ services:
       - "8521:8080"
     environment:
       - TZ=Asia/Seoul
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILE=dev
     networks:
       - gravit-dev
     depends_on:
