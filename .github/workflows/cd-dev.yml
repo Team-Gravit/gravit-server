@@ -100,7 +100,7 @@ jobs:
 
             echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
 
-            docker-compose down
-            docker-compose pull
-            docker-compose up -d
+            docker-compose -f docker-compose-dev.yml down
+            docker-compose -f docker-compose-dev.yml pull
+            docker-compose -f docker-compose-dev.yml up -d
             docker image prune -f
