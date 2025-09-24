@@ -1,5 +1,6 @@
 package gravit.code.notice.service;
 
+import gravit.code.global.dto.PageResponse;
 import gravit.code.global.dto.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -9,10 +10,7 @@ import gravit.code.notice.dto.response.NoticeDetailResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
 import gravit.code.notice.infrastructure.NoticeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,11 +32,13 @@ public class NoticeQueryService {
     );
 
     @Transactional(readOnly = true)
-    public SliceResponse<NoticeSummaryResponse> getNoticeSummaries(int page){
-        Pageable pageable = noticePageable(page);
-        Slice<NoticeSummaryResponse> sliceResult = noticeRepository.findSummaries(NoticeStatus.PUBLISHED, SUMMARY_MAX_SIZE, pageable);
+    public PageResponse<NoticeSummaryResponse> getNoticeSummaries(int page){
+        if(page < 1) throw new RestApiException(CustomErrorCode.PAGE_MUST_START_FROM_1);
+        int realPage = page - 1;
+        Pageable pageable = noticePageable(realPage);
+        Page<NoticeSummaryResponse> pageResult = noticeRepository.findSummaries(NoticeStatus.PUBLISHED, SUMMARY_MAX_SIZE, pageable);
 
-        return SliceResponse.of(sliceResult.hasNext(), sliceResult.getContent());
+        return PageResponse.from(pageResult);
     }
 
     @Transactional(readOnly = true)
