@@ -5,7 +5,7 @@ import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
@@ -17,9 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;

@@ -47,7 +47,10 @@ public record ProblemResponse(
         List<OptionResponse> options
 
 ) {
-        public static ProblemResponse create(Problem problem, List<OptionResponse> options) {
+        public static ProblemResponse create(
+                Problem problem,
+                List<OptionResponse> options
+        ) {
                 return ProblemResponse.builder()
                         .problemId(problem.getId())
                         .problemType(problem.getProblemType())

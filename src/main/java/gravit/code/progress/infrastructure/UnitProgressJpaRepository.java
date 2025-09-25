@@ -19,6 +19,9 @@ public interface UnitProgressJpaRepository extends JpaRepository<UnitProgress,Lo
         WHERE u.chapterId = :chapterId AND EXISTS (SELECT 1 FROM User user WHERE user.id = :userId)
         ORDER BY u.id
     """)
-    List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(@Param("chapterId") long chapterId, @Param("userId") long userId);
+    List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(
+            @Param("chapterId") long chapterId,
+            @Param("userId") long userId
+    );
 
 }

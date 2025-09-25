@@ -1,7 +1,6 @@
 package gravit.code.notice.controller;
 
-import gravit.code.global.dto.PageResponse;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.PageResponse;
 import gravit.code.notice.controller.docs.NoticeQueryControllerDocs;
 import gravit.code.notice.dto.response.NoticeDetailResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
@@ -22,18 +21,14 @@ public class NoticeQueryController implements NoticeQueryControllerDocs {
     private final NoticeQueryService noticeQueryService;
 
     @GetMapping("/summaries/{page}")
-    public ResponseEntity<PageResponse<NoticeSummaryResponse>> getNoticeSummaries(
-            @PathVariable("page") int page
-    ){
+    public ResponseEntity<PageResponse<NoticeSummaryResponse>> getNoticeSummaries(@PathVariable("page") int page){
         PageResponse<NoticeSummaryResponse> noticeSummaries = noticeQueryService.getNoticeSummaries(page);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(noticeSummaries);
     }
 
     @GetMapping("/{noticeId}")
-    public ResponseEntity<NoticeDetailResponse> getNoticeSummary(
-            @PathVariable("noticeId") Long noticeId
-    ){
+    public ResponseEntity<NoticeDetailResponse> getNoticeSummary(@PathVariable("noticeId") Long noticeId){
         NoticeDetailResponse noticeDetail = noticeQueryService.getNoticeDetail(noticeId);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(noticeDetail);

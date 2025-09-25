@@ -7,7 +7,13 @@ import java.util.Optional;
 
 public interface LessonProgressRepository {
     LessonProgress save(LessonProgress lessonProgress);
-    Optional<LessonProgress> findByLessonIdAndUserId(long lessonId, long userId);
-    List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(long unitId, long userId);
+    Optional<LessonProgress> findByLessonIdAndUserId(
+            long lessonId,
+            long userId
+    );
+    List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(
+            long unitId,
+            long userId
+    );
     long countByUserId(long userId);
 }

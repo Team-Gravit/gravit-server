@@ -1,4 +1,4 @@
-package gravit.code.global.dto;
+package gravit.code.global.dto.response;
 
 import lombok.Builder;
 import org.springframework.data.domain.Slice;
@@ -10,7 +10,10 @@ public record SliceResponse<T>(
         boolean hasNextPage,
         List<T> contents
 ){
-    public static <T> SliceResponse<T> of(boolean hasNextPage, List<T> contents) {
+    public static <T> SliceResponse<T> of(
+            boolean hasNextPage,
+            List<T> contents
+    ) {
         return SliceResponse.<T>builder()
                 .hasNextPage(hasNextPage)
                 .contents(contents)

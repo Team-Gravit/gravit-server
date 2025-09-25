@@ -41,9 +41,11 @@ public class OAuthController implements OAuthControllerDocs {
      */
 
     @PostMapping("/{provider}")
-    public ResponseEntity<LoginResponse> oauthLogin(@PathVariable("provider") String provider,
-                                                    @RequestBody AuthCodeRequest authCodeRequest,
-                                                    @RequestParam String dest){
+    public ResponseEntity<LoginResponse> oauthLogin(
+            @PathVariable("provider") String provider,
+            @RequestBody AuthCodeRequest authCodeRequest,
+            @RequestParam String dest
+    ){
         String code = authCodeRequest.code();
 
         if(code == null){

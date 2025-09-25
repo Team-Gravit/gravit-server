@@ -32,7 +32,10 @@ public class LessonProgress {
     private long lessonId;
 
     @Builder
-    private LessonProgress(long userId, long lessonId) {
+    private LessonProgress(
+            long userId,
+            long lessonId
+    ) {
         this.userId = userId;
         this.attemptCount = 0;
         this.learningTime = 0;
@@ -40,7 +43,10 @@ public class LessonProgress {
         this.isCompleted = false;
     }
 
-    public static LessonProgress create(long userId, long lessonId) {
+    public static LessonProgress create(
+            long userId,
+            long lessonId
+    ) {
         return LessonProgress.builder()
                 .userId(userId)
                 .lessonId(lessonId)

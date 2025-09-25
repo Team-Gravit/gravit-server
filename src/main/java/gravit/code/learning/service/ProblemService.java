@@ -10,6 +10,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class ProblemService {
     private final ProblemRepository problemRepository;
     private final OptionRepository optionRepository;
 
+    @Transactional(readOnly = true)
     public List<ProblemResponse> getAllProblemInLesson(Long lessonId){
 
         // 문제 조회, 선지 포함 X

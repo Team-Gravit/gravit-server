@@ -37,7 +37,13 @@ public record ChapterProgressDetailResponse(
         )
         long completedUnits
 ) {
-    public static ChapterProgressDetailResponse create(long chapterId, String name, String description, long totalUnits, long completedUnits) {
+    public static ChapterProgressDetailResponse create(
+            long chapterId,
+            String name,
+            String description,
+            long totalUnits,
+            long completedUnits
+    ) {
         return ChapterProgressDetailResponse.builder()
                 .chapterId(chapterId)
                 .name(name)

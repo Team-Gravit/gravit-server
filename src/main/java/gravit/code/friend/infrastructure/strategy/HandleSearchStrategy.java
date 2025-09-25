@@ -18,7 +18,12 @@ public class HandleSearchStrategy implements FriendsSearchStrategy {
     }
 
     @Override
-    public SearchPlan buildPlan(long requesterId, String queryText, int page, int size) {
+    public SearchPlan buildPlan(
+            long requesterId,
+            String queryText,
+            int page,
+            int size
+    ) {
         String cleanText = QueryNormalizeUtil.handleNormalize(queryText);
 
         if(cleanText.isEmpty()){

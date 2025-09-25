@@ -13,7 +13,10 @@ public record LessonResponse(
         int totalProblems
 ) {
 
-    public static LessonResponse create(String lessonName, List<ProblemResponse> problems){
+    public static LessonResponse create(
+            String lessonName,
+            List<ProblemResponse> problems
+    ){
         return LessonResponse.builder()
                 .lessonName(lessonName)
                 .problems(problems)

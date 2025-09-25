@@ -3,7 +3,7 @@ package gravit.code.friend.controller.docs;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.dto.SearchUser;
 import gravit.code.friend.dto.response.PageSearchUserResponse;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

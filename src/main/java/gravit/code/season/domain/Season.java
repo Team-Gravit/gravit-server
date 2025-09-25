@@ -38,7 +38,12 @@ public class Season {
     private String tz;
 
     @Builder
-    private Season(String seasonKey, LocalDateTime startsAt, LocalDateTime endsAt, SeasonStatus status) {
+    private Season(
+            String seasonKey,
+            LocalDateTime startsAt,
+            LocalDateTime endsAt,
+            SeasonStatus status
+    ) {
         this.seasonKey = seasonKey;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
@@ -46,7 +51,11 @@ public class Season {
         this.tz = "Asia/Seoul";
     }
 
-    public static Season prep(String seasonKey, LocalDateTime startsAt, LocalDateTime endsAt){
+    public static Season prep(
+            String seasonKey,
+            LocalDateTime startsAt,
+            LocalDateTime endsAt
+    ){
         return Season.builder()
                 .seasonKey(seasonKey)
                 .startsAt(startsAt)
@@ -55,7 +64,11 @@ public class Season {
                 .build();
     }
 
-    public static Season active(String seasonKey, LocalDateTime startsAt, LocalDateTime endsAt){
+    public static Season active(
+            String seasonKey,
+            LocalDateTime startsAt,
+            LocalDateTime endsAt
+    ){
         return Season.builder()
                 .seasonKey(seasonKey)
                 .startsAt(startsAt)

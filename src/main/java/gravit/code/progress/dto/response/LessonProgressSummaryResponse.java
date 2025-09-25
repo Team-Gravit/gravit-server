@@ -24,7 +24,11 @@ public record LessonProgressSummaryResponse(
         )
         boolean isCompleted
 ) {
-        public static LessonProgressSummaryResponse create(long lessonId, String name, boolean isCompleted) {
+        public static LessonProgressSummaryResponse create(
+                long lessonId,
+                String name,
+                boolean isCompleted
+        ) {
                 return LessonProgressSummaryResponse.builder()
                         .lessonId(lessonId)
                         .name(name)

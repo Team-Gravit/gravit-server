@@ -20,7 +20,12 @@ public class FriendsSearchFactory {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.FRIEND_QUERY_STRATEGY_TYPE_INVALID));
     }
 
-    public SearchPlan buildPlan(long requesterId, String raw, int page, int size) {
+    public SearchPlan buildPlan(
+            long requesterId,
+            String raw,
+            int page,
+            int size
+    ) {
         return resolve(raw).buildPlan(requesterId, raw, page, size);
     }
 }

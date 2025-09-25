@@ -18,7 +18,10 @@ public class OAuthLoginUrlService {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    public String generateLoginUrl(String provider, String dest) {
+    public String generateLoginUrl(
+            String provider,
+            String dest
+    ) {
         String validProvider = getValidProvider(Provider.parse(provider));
         String baseHost = validateDest(dest);
 

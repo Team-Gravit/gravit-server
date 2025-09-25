@@ -31,7 +31,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponse findById(long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 
@@ -40,7 +41,8 @@ public class UserService {
             long userId,
             OnboardingRequest request
     ) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
 
@@ -56,7 +58,8 @@ public class UserService {
             long userId,
             UserProfileUpdateRequest request
     ){
-        User user = userRepository.findById(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         user.updateProfile(request.nickname(), request.profilePhotoNumber());
 
@@ -65,7 +68,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public MyPageResponse getMyPage(long userId) {
-        return userRepository.findMyPageByUserId(userId).orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
+        return userRepository.findMyPageByUserId(userId)
+                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }
     
     @Transactional

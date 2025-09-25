@@ -25,12 +25,18 @@ public class Friend extends BaseEntity {
 
 
     @Builder
-    private Friend(long followerId, long followeeId) {
+    private Friend(
+            long followerId,
+            long followeeId
+    ) {
         this.followerId = followerId;
         this.followeeId = followeeId;
     }
 
-    public static Friend create(long followerId, long followeeId) {
+    public static Friend create(
+            long followerId,
+            long followeeId
+    ) {
         return Friend.builder()
                 .followerId(followerId)
                 .followeeId(followeeId)

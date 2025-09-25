@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface UserPlanetCompletionRepository extends JpaRepository<UserPlanetCompletion, Long> {
-    boolean existsByUserIdAndPlanet(long userId, Planet planet);
+    boolean existsByUserIdAndPlanet(
+            long userId,
+            Planet planet
+    );
     long countByUserId(long userId);
 }

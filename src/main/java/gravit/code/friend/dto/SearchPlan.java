@@ -7,7 +7,11 @@ public record SearchPlan(
         boolean isEmpty
 ) {
 
-    public static SearchPlan of(String selectSql, String cleanText, boolean isQueryNeedContains) {
+    public static SearchPlan of(
+            String selectSql,
+            String cleanText,
+            boolean isQueryNeedContains
+    ) {
         return new SearchPlan(selectSql, cleanText, isQueryNeedContains, false);
     }
 

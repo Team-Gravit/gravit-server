@@ -216,7 +216,7 @@ class LearningControllerTest {
             //given
             long lessonId = 1L;
 
-            when(learningFacade.getLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+            when(learningFacade.getAllProblemsInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
 
             //when
             ResultActions resultActions = mockMvc.perform(get("/api/v1/learning/{lessonId}", lessonId)
@@ -248,7 +248,7 @@ class LearningControllerTest {
 
             LessonResponse lessonResponse = LessonResponse.create("스택 기본 개념", problemResponses);
 
-            when(learningFacade.getLesson(lessonId)).thenReturn(lessonResponse);
+            when(learningFacade.getAllProblemsInLesson(lessonId)).thenReturn(lessonResponse);
 
             //when
             ResultActions resultActions = mockMvc.perform(get("/api/v1/learning/{lessonId}", lessonId)

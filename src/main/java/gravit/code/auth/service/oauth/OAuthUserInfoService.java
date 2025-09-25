@@ -30,7 +30,11 @@ public class OAuthUserInfoService {
     private final OAuthResponseFactory oAuthResponseFactory;
     private final OAuthClient oAuthClient;
 
-    public OAuthUserInfo getUserInfo(String authCode, String provider, String dest) {
+    public OAuthUserInfo getUserInfo(
+            String authCode,
+            String provider,
+            String dest
+    ) {
         validateAuthCode(authCode);
         String baseHost = validateDest(dest);
 
@@ -52,7 +56,10 @@ public class OAuthUserInfoService {
         return oAuthResponseFactory.createOAuthUserInfo(validProvider, userInfo);
     }
 
-    private Map<String, Object> getUserInfo(ClientRegistration registration, String accessToken) {
+    private Map<String, Object> getUserInfo(
+            ClientRegistration registration,
+            String accessToken
+    ) {
 
         // 사용자 정보를 조회하기 위한 엔드포인트
         String userInfoUri = registration.getProviderDetails().getUserInfoEndpoint().getUri();
@@ -60,7 +67,11 @@ public class OAuthUserInfoService {
         return oAuthClient.getUserInfoWithAccessToken(userInfoUri, accessToken);
     }
 
-    private String getAccessToken(ClientRegistration registration, String decodedCode, String redirectUri) {
+    private String getAccessToken(
+            ClientRegistration registration,
+            String decodedCode,
+            String redirectUri
+    ) {
 
         // 요청 만들기
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();

@@ -28,14 +28,24 @@ public class League {
     private int sortOrder;
 
     @Builder
-    private League(String name, int maxLp, int minLp, int sortOrder) {
+    private League(
+            String name,
+            int maxLp,
+            int minLp,
+            int sortOrder
+    ) {
         this.name = name;
         this.maxLp = maxLp;
         this.minLp = minLp;
         this.sortOrder = sortOrder;
     }
 
-    public static League create(String name, int maxLp, int minLp, int sortOrder) {
+    public static League create(
+            String name,
+            int maxLp,
+            int minLp,
+            int sortOrder
+    ) {
         return League.builder()
                 .name(name)
                 .maxLp(maxLp)

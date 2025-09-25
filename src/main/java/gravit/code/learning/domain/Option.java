@@ -29,14 +29,24 @@ public class Option {
     private long problemId;
 
     @Builder
-    private Option(String content, String explanation, boolean isAnswer, long problemId) {
+    private Option(
+            String content,
+            String explanation,
+            boolean isAnswer,
+            long problemId
+    ) {
         this.content = content;
         this.explanation = explanation;
         this.isAnswer = isAnswer;
         this.problemId = problemId;
     }
 
-    public static Option create(String content, String explanation, boolean isAnswer, long problemId) {
+    public static Option create(
+            String content,
+            String explanation,
+            boolean isAnswer,
+            long problemId
+    ) {
         return Option.builder()
                 .content(content)
                 .explanation(explanation)

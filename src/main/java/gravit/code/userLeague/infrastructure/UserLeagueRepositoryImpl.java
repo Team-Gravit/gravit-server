@@ -36,7 +36,11 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
     }
 
     @Override
-    public int resetAllForNextSeason(Season currentSeason, Season nextSeason, League startLeague) {
+    public int resetAllForNextSeason(
+            Season currentSeason,
+            Season nextSeason,
+            League startLeague
+    ) {
         return userLeagueJpaRepository.resetAllForNextSeason(currentSeason, nextSeason, startLeague);
     }
 }

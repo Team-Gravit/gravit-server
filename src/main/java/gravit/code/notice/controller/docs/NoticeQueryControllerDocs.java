@@ -1,8 +1,8 @@
 package gravit.code.notice.controller.docs;
 
 
-import gravit.code.global.dto.PageResponse;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.PageResponse;
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.notice.dto.response.NoticeDetailResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;

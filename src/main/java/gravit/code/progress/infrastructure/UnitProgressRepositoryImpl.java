@@ -17,12 +17,18 @@ public class UnitProgressRepositoryImpl implements UnitProgressRepository {
     private final UnitProgressJpaRepository unitProgressJpaRepository;
 
     @Override
-    public Optional<UnitProgress> findByUnitIdAndUserId(long unitId, long userId){
+    public Optional<UnitProgress> findByUnitIdAndUserId(
+            long unitId,
+            long userId
+    ){
         return unitProgressJpaRepository.findByUnitIdAndUserId(unitId, userId);
     }
 
     @Override
-    public List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(@Param("chapterId") long chapterId, @Param("userId") long userId){
+    public List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(
+            @Param("chapterId") long chapterId,
+            @Param("userId") long userId
+    ){
         return  unitProgressJpaRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
     }
 

@@ -23,16 +23,12 @@ public class LeagueController implements LeagueControllerSpecification {
     private final LeagueService leagueService;
 
     @GetMapping("/{leagueId}")
-    public ResponseEntity<LeagueResponse> getLeague(
-            @PathVariable("leagueId") Long leagueId
-    ) {
+    public ResponseEntity<LeagueResponse> getLeague(@PathVariable("leagueId") Long leagueId) {
         return ResponseEntity.ok(leagueService.getLeague(leagueId));
     }
 
     @GetMapping("/home")
-    public ResponseEntity<LeagueHomeResponse> enterHome(
-            @AuthenticationPrincipal LoginUser loginUser
-    ) {
+    public ResponseEntity<LeagueHomeResponse> enterHome(@AuthenticationPrincipal LoginUser loginUser) {
         Long userId = loginUser.getId();
         LeagueHomeResponse leagueHome = leagueService.enterLeagueHome(userId);
         HttpStatus status = HttpStatus.OK;

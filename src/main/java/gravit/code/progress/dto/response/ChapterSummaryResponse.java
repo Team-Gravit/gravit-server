@@ -9,7 +9,12 @@ public record ChapterSummaryResponse(
         long totalUnits,
         long completedUnits
 ) {
-    public static ChapterSummaryResponse create(long chapterId, String name, long totalUnits, long completedUnits) {
+    public static ChapterSummaryResponse create(
+            long chapterId,
+            String name,
+            long totalUnits,
+            long completedUnits
+    ) {
         return ChapterSummaryResponse.builder()
                 .chapterId(chapterId)
                 .name(name)

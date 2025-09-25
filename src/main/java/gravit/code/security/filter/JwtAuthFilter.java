@@ -91,15 +91,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             List<HttpMethod> methods,
             MatchType type
     ){
-        static HttpEndpoint exact(String path, HttpMethod... methods){
+        static HttpEndpoint exact(
+                String path,
+                HttpMethod... methods
+        ){
             return new HttpEndpoint(path, List.of(methods), MatchType.EXACT);
         }
 
-        static HttpEndpoint prefix(String prefix, HttpMethod... methods){
+        static HttpEndpoint prefix(
+                String prefix,
+                HttpMethod... methods
+        ){
             return new HttpEndpoint(prefix, List.of(methods), MatchType.PREFIX);
         }
 
-        boolean isMatchedWith(String uri, String method){
+        boolean isMatchedWith(
+                String uri,
+                String method
+        ){
             if(methods.stream().noneMatch(m -> m.name().equalsIgnoreCase(method))){
                 return false;
             }

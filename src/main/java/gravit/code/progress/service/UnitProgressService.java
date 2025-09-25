@@ -9,6 +9,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,13 +20,18 @@ public class UnitProgressService {
     private final UnitRepository unitRepository;
     private final UnitProgressRepository unitProgressRepository;
 
+    @Transactional
     public boolean updateUnitProgress(UnitProgress unitProgress){
         unitProgress.updateCompletedLessons();
 
         return unitProgress.isComplete();
     }
 
-    public List<UnitProgressDetailResponse> findAllUnitProgress(long chapterId, long userId){
+    @Transactional(readOnly = true)
+    public List<UnitProgressDetailResponse> findAllUnitProgress(
+            long chapterId,
+            long userId
+    ){
 
         List<UnitProgressDetailResponse> unitProgressDetailResponses = unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
 
@@ -35,7 +41,11 @@ public class UnitProgressService {
         return unitProgressDetailResponses;
     }
 
-    public UnitProgress ensureUnitProgress(long unitId, long userId){
+    @Transactional
+    public UnitProgress ensureUnitProgress(
+            long unitId,
+            long userId
+    ){
 
         Unit targetUnit = unitRepository.findById(unitId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));

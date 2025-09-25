@@ -30,7 +30,12 @@ public record UnitProgressDetailResponse(
         )
         long completedLesson
 ) {
-        public static UnitProgressDetailResponse create(long unitId, String name, long totalLesson, long completedLesson) {
+        public static UnitProgressDetailResponse create(
+                long unitId,
+                String name,
+                long totalLesson,
+                long completedLesson
+        ) {
                 return UnitProgressDetailResponse.builder()
                         .unitId(unitId)
                         .name(name)

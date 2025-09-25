@@ -6,7 +6,7 @@ import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.dto.event.FollowMissionEvent;
@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class FriendService {
 
     private static final int PAGE_SIZE = 10;

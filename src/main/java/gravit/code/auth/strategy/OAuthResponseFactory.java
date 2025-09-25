@@ -21,7 +21,10 @@ public class OAuthResponseFactory {
                 .collect(Collectors.toMap(OAuthResponseStrategy::getProviderName, Function.identity()));
     }
 
-    public OAuthUserInfo createOAuthUserInfo(String registrationId, Map<String, Object> attributes){
+    public OAuthUserInfo createOAuthUserInfo(
+            String registrationId,
+            Map<String, Object> attributes
+    ){
         OAuthResponseStrategy strategy = strategies.get(registrationId);
         if(Objects.equals(strategy,null))
             throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);

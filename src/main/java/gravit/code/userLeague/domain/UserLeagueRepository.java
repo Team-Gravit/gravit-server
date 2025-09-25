@@ -16,5 +16,9 @@ public interface UserLeagueRepository {
 
     Optional<UserLeague> findByUserId(long userId);
 
-    int resetAllForNextSeason(Season currentSeason, Season nextSeason, League startLeague);
+    int resetAllForNextSeason(
+            Season currentSeason,
+            Season nextSeason,
+            League startLeague
+    );
 }

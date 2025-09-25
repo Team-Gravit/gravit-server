@@ -1,4 +1,4 @@
-package gravit.code.global.dto;
+package gravit.code.global.dto.response;
 
 import org.springframework.data.domain.Page;
 

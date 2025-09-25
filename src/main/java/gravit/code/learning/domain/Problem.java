@@ -32,7 +32,13 @@ public class Problem {
     private long lessonId;
 
     @Builder
-    private Problem(ProblemType problemType, String question, String content, String answer, long lessonId) {
+    private Problem(
+            ProblemType problemType,
+            String question,
+            String content,
+            String answer,
+            long lessonId
+    ) {
         this.problemType = problemType;
         this.question = question;
         this.content = content;
@@ -40,7 +46,13 @@ public class Problem {
         this.lessonId = lessonId;
     }
 
-    public static Problem create(ProblemType problemType, String question, String content, String answer, long lessonId) {
+    public static Problem create(
+            ProblemType problemType,
+            String question,
+            String content,
+            String answer,
+            long lessonId
+    ) {
         return Problem.builder()
                 .problemType(problemType)
                 .question(question)
