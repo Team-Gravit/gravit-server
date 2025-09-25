@@ -254,7 +254,7 @@ class LearningFacadeTest {
             when(problemService.getAllProblemInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
 
             //when&then
-            assertThatThrownBy(() -> learningFacade.getLesson(lessonId))
+            assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
         }
@@ -268,7 +268,7 @@ class LearningFacadeTest {
             when(problemService.getAllProblemInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.OPTION_NOT_FOUND));
 
             //when&then
-            assertThatThrownBy(() -> learningFacade.getLesson(lessonId))
+            assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.OPTION_NOT_FOUND);
         }
@@ -283,7 +283,7 @@ class LearningFacadeTest {
             when(problemService.getAllProblemInLesson(lessonId)).thenReturn(problemResponses);
 
             //when
-            LessonResponse returnValue = learningFacade.getLesson(lessonId);
+            LessonResponse returnValue = learningFacade.getAllProblemsInLesson(lessonId);
 
             //then
             assertThat(returnValue).isEqualTo(lessonResponse);

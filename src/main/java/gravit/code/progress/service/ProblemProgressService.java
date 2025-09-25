@@ -5,6 +5,7 @@ import gravit.code.progress.domain.ProblemProgress;
 import gravit.code.progress.domain.ProblemProgressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class ProblemProgressService {
 
     private final ProblemProgressRepository problemProgressRepository;
 
+    @Transactional
     public void saveProblemResults(
             Long userId,
             List<ProblemResultRequest> request

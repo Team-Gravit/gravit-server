@@ -1,6 +1,5 @@
 package gravit.code.mission.domain;
 
-import gravit.code.mission.util.MissionUtil;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -118,7 +117,7 @@ public class Mission {
     }
 
     public void reassignMission(){
-        this.missionType = MissionUtil.getRandomMissionType();
+        this.missionType = RandomMissionGenerator.getRandomMissionType();
         this.progressRate = 0.0;
     }
 }

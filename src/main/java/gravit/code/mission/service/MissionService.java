@@ -10,7 +10,7 @@ import gravit.code.mission.dto.MissionSummary;
 import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.event.LessonMissionEvent;
-import gravit.code.mission.util.MissionUtil;
+import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.progress.domain.LessonProgress;
 import gravit.code.progress.domain.LessonProgressRepository;
 import gravit.code.user.domain.User;
@@ -34,6 +34,7 @@ public class MissionService {
     private final MissionRepository missionRepository;
     private final LessonProgressRepository lessonProgressRepository;
     private final UserRepository userRepository;
+
     private final ApplicationEventPublisher publisher;
 
     @Transactional
@@ -122,7 +123,7 @@ public class MissionService {
 
     public void createMission(CreateMissionEvent createMissionDto) {
         Mission mission = Mission.builder()
-                .missionType(MissionUtil.getRandomMissionType())
+                .missionType(RandomMissionGenerator.getRandomMissionType())
                 .userId(createMissionDto.userId())
                 .build();
 

@@ -9,6 +9,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class LessonProgressService {
     private final LessonRepository lessonRepository;
     private final LessonProgressRepository lessonProgressRepository;
 
+    @Transactional
     public void updateLessonProgress(
             long lessonId,
             long userId,
@@ -36,6 +38,7 @@ public class LessonProgressService {
         lessonProgressRepository.save(lessonProgress);
     }
 
+    @Transactional(readOnly = true)
     public List<LessonProgressSummaryResponse> getLessonProgressSummaries(
             long unitId,
             long userId

@@ -67,7 +67,7 @@ public class LearningFacade {
     }
 
     @Transactional(readOnly = true)
-    public LessonResponse getLesson(long lessonId){
+    public LessonResponse getAllProblemsInLesson(long lessonId){
         String lessonName = lessonService.findLessonName(lessonId);
         return LessonResponse.create(lessonName, problemService.getAllProblemInLesson(lessonId));
     }
@@ -77,9 +77,10 @@ public class LearningFacade {
             long userId,
             LearningResultSaveRequest request
     ){
-
+        // 저장하려는 레슨이 속한 챕터, 유닛 아이디 조회
         LearningIds learningIds = lessonService.findLearningIdsByLessonId(request.lessonId());
 
+        // 챕터 진행도, 유닛 진행도가 없는 경우, 생성
         ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId);
         UnitProgress unitProgress = unitProgressService.ensureUnitProgress(learningIds.unitId(), userId);
 

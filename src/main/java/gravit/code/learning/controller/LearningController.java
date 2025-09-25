@@ -33,7 +33,7 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @GetMapping("/{chapterId}/units")
-    public ResponseEntity<List<UnitPageResponse>> getAllUnits(
+    public ResponseEntity<List<UnitPageResponse>> getAllUnitsInChapter(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("chapterId") Long chapterId
     ) {
@@ -41,8 +41,8 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @GetMapping("/{lessonId}")
-    public ResponseEntity<LessonResponse> getLesson(@PathVariable("lessonId") Long lessonsId){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getLesson(lessonsId));
+    public ResponseEntity<LessonResponse> getAllProblemsInLesson(@PathVariable("lessonId") Long lessonsId){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId));
     }
 
     @PostMapping("/results")
