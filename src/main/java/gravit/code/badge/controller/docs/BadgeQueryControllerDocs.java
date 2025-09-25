@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "Badge", description = "뱃지 조회 API")
 public interface BadgeQueryControllerDocs {
@@ -22,9 +23,7 @@ public interface BadgeQueryControllerDocs {
                     전체 뱃지 카탈로그를 **카테고리 → 뱃지 display_order** 기준으로 정렬하여 반환합니다.<br>
                     각 뱃지에는 현재 유저가 획득했는지 여부(earned)가 포함됩니다.<br>
                     응답의 earnedCount / totalCount로 전체 대비 획득 개수를 확인할 수 있습니다.
-                    """,
-            security = {@SecurityRequirement(name = "bearerAuth")}  // 설정에 맞춰 변경
-    )
+                    """)
     @ApiResponse(
             responseCode = "200",
             description = "✅ 내 뱃지 목록 조회 성공",
@@ -47,5 +46,6 @@ public interface BadgeQueryControllerDocs {
                     }
             )
     )
+    @GetMapping("/me")
     ResponseEntity<AllBadgesResponse> getAllMyBadges(@AuthenticationPrincipal LoginUser loginUser);
 }

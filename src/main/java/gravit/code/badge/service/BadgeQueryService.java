@@ -7,6 +7,7 @@ import gravit.code.badge.dto.response.BadgeResponse;
 import gravit.code.badge.infrastructure.BadgeRepository;
 import gravit.code.badge.infrastructure.user.UserBadgeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -14,19 +15,25 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BadgeQueryService {
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
 
     public AllBadgesResponse getAllMyBadges(long userId) {
+        log.info("getAllMyBadgesService");
+
         // 1. 정렬된 카탈로그들
         List<BadgeCatalogRowDto> rows = badgeRepository.findCatalogOrdered();
 
+        log.info("rows : {}", rows);
         // 2. 유저가 획득한 뱃지
         Set<Long> earnedBadgeIds = new HashSet<>(userBadgeRepository.findBadgeIdsByUserId(userId));
+        log.info("earnedBadgeIds : {}", rows);
 
         record CatKey(Long id, String name, int order) {
         }
+
         Map<CatKey, List<BadgeCatalogRowDto>> byCategory = rows.stream()
                 .collect(Collectors.groupingBy(
                         r -> new CatKey(r.categoryId(), r.categoryName(), r.categoryOrder()),
