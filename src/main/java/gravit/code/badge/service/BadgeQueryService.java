@@ -21,15 +21,12 @@ public class BadgeQueryService {
     private final UserBadgeRepository userBadgeRepository;
 
     public AllBadgesResponse getAllMyBadges(long userId) {
-        log.info("getAllMyBadgesService");
 
         // 1. 정렬된 카탈로그들
         List<BadgeCatalogRowDto> rows = badgeRepository.findCatalogOrdered();
 
-        log.info("rows : {}", rows);
         // 2. 유저가 획득한 뱃지
         Set<Long> earnedBadgeIds = new HashSet<>(userBadgeRepository.findBadgeIdsByUserId(userId));
-        log.info("earnedBadgeIds : {}", rows);
 
         record CatKey(Long id, String name, int order) {
         }
