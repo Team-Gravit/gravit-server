@@ -40,7 +40,7 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public Optional<String> findLessonNameById(long lessonId){
-        return lessonJpaRepository.findLessonNameById(lessonId);
+    public Optional<String> findLessonNameByLessonId(long lessonId){
+        return lessonJpaRepository.findLessonNameByLessonId(lessonId);
     }
 }
