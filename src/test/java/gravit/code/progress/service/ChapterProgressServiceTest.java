@@ -1,6 +1,8 @@
 package gravit.code.progress.service;
 
 import gravit.code.global.event.badge.PlanetCompletedEvent;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.ChapterRepository;
 import gravit.code.progress.domain.ChapterProgress;
@@ -8,9 +10,6 @@ import gravit.code.progress.domain.ChapterProgressRepository;
 import gravit.code.progress.dto.ChapterCompletedDto;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.ChapterSummaryResponse;
-import gravit.code.progress.service.ChapterProgressService;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

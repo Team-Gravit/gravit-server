@@ -2,6 +2,7 @@ package gravit.code.learning.facade;
 
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
+import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
@@ -68,8 +69,8 @@ public class LearningFacade {
 
     @Transactional(readOnly = true)
     public LessonResponse getAllProblemsInLesson(long lessonId){
-        String lessonName = lessonService.findLessonName(lessonId);
-        return LessonResponse.create(lessonName, problemService.getAllProblemInLesson(lessonId));
+        LearningAdditionalInfo learningAdditionalInfo = lessonService.getLearningAdditionalInfoByLessonId(lessonId);
+        return LessonResponse.create(learningAdditionalInfo, problemService.getAllProblemInLesson(lessonId));
     }
 
     @Transactional
@@ -78,7 +79,7 @@ public class LearningFacade {
             LearningResultSaveRequest request
     ){
         // 저장하려는 레슨이 속한 챕터, 유닛 아이디 조회
-        LearningIds learningIds = lessonService.findLearningIdsByLessonId(request.lessonId());
+        LearningIds learningIds = lessonService.getLearningIdsByLessonId(request.lessonId());
 
         // 챕터 진행도, 유닛 진행도가 없는 경우, 생성
         ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId);

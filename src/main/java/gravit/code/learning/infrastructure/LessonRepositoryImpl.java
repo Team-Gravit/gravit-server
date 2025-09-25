@@ -2,6 +2,7 @@ package gravit.code.learning.infrastructure;
 
 import gravit.code.learning.domain.Lesson;
 import gravit.code.learning.domain.LessonRepository;
+import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -42,5 +43,10 @@ public class LessonRepositoryImpl implements LessonRepository {
     @Override
     public Optional<String> findLessonNameByLessonId(long lessonId){
         return lessonJpaRepository.findLessonNameByLessonId(lessonId);
+    }
+
+    @Override
+    public Optional<LearningAdditionalInfo> findLearningAdditionalInfoByLessonId(long lessonId){
+        return lessonJpaRepository.findLearningAdditionalInfoByLessonId(lessonId);
     }
 }

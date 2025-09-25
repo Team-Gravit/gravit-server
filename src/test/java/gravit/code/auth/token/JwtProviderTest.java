@@ -2,10 +2,10 @@ package gravit.code.auth.token;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.auth.domain.Subject;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
-import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
