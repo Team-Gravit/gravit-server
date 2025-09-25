@@ -1,6 +1,7 @@
 package gravit.code.learning.infrastructure;
 
 import gravit.code.learning.domain.Lesson;
+import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,13 @@ public interface LessonJpaRepository extends JpaRepository<Lesson, Long> {
         WHERE l.id = :lessonId
     """)
     Optional<String> findLessonNameByLessonId(@Param("lessonId") long lessonId);
+
+    @Query("""
+        SELECT new gravit.code.learning.dto.LearningAdditionalInfo(c.id, l.name)
+        FROM Lesson l
+        INNER JOIN Unit u ON u.id = l.unitId
+        INNER JOIN Chapter c ON c.id = u.chapterId
+        WHERE l.id = :lessonId
+    """)
+    Optional<LearningAdditionalInfo> findLearningAdditionalInfoByLessonId(@Param("lessonId") long lessonId);
 }

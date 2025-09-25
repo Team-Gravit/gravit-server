@@ -4,7 +4,6 @@ import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.infrastructure.ChapterJpaRepository;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.infrastructure.ChapterProgressJpaRepository;
-import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.infrastructure.UserJpaRepository;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

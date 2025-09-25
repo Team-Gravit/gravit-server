@@ -1,13 +1,13 @@
 package gravit.code.learning.service;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.OptionRepository;
 import gravit.code.learning.domain.Problem;
 import gravit.code.learning.domain.ProblemRepository;
 import gravit.code.learning.domain.ProblemType;
 import gravit.code.learning.dto.response.OptionResponse;
 import gravit.code.learning.dto.response.ProblemResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

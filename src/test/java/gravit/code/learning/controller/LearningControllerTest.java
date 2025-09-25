@@ -5,6 +5,7 @@ import gravit.code.common.auth.WithMockLoginUser;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.ProblemType;
+import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.request.ProblemResultRequest;
 import gravit.code.learning.dto.response.LessonResponse;
@@ -30,8 +31,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -246,7 +247,8 @@ class LearningControllerTest {
                     ProblemResponse.builder().problemId(8L).problemType(ProblemType.OBJECTIVE).question("힙 자료구조의 특징이 아닌 것은?").content("1. 완전 이진 트리, 2. 부모가 자식보다 크거나 작음, 3. 중위 순회시 정렬됨, 4. 우선순위 큐 구현").answer("3").options(List.of()).build()
             );
 
-            LessonResponse lessonResponse = LessonResponse.create("스택 기본 개념", problemResponses);
+            LearningAdditionalInfo learningAdditionalInfo = new LearningAdditionalInfo(1L, "스택");
+            LessonResponse lessonResponse = LessonResponse.create(learningAdditionalInfo, problemResponses);
 
             when(learningFacade.getAllProblemsInLesson(lessonId)).thenReturn(lessonResponse);
 
@@ -259,7 +261,8 @@ class LearningControllerTest {
             resultActions
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
-                    .andExpect(jsonPath("$.lessonName").value("스택 기본 개념"))
+                    .andExpect(jsonPath("$.chapterId").value(1L))
+                    .andExpect(jsonPath("$.lessonName").value("스택"))
                     .andExpect(jsonPath("$.problems[0].problemId").value(1L))
                     .andExpect(jsonPath("$.problems[0].problemType").value("SUBJECTIVE"))
                     .andExpect(jsonPath("$.problems[0].question").value("스택에서 마지막에 삽입된 데이터가 가장 먼저 삭제되는 원리를 ( )라고 합니다."))
