@@ -13,7 +13,10 @@ import java.util.Optional;
 
 public interface ReportJpaRepository extends JpaRepository<Report,Long> {
 
-    boolean existsReportByProblemIdAndUserId(long problemId, long userId);
+    boolean existsReportByProblemIdAndUserId(
+            long problemId,
+            long userId
+    );
 
     @Query("""
         SELECT new gravit.code.admin.dto.response.ReportSummaryResponse(r.id, r.reportType, r.problemId, r.isResolved, r.submittedAt)

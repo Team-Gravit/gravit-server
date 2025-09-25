@@ -9,7 +9,10 @@ import java.util.Optional;
 
 public interface ReportRepository {
     void save(Report report);
-    boolean existsReportByProblemIdAndUserId(long problemId ,long userId);
+    boolean existsReportByProblemIdAndUserId(
+            long problemId,
+            long userId
+    );
     List<ReportSummaryResponse> findAllReportSummary(Pageable pageable);
     Optional<ReportDetailResponse> findReportDetailById(long reportId);
     Optional<Report> findById(long reportId);

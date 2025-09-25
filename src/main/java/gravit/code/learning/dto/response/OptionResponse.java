@@ -38,7 +38,13 @@ public record OptionResponse(
         long problemId
 ) {
 
-    public static OptionResponse create(long optionId, long problemId, String content, String explanation, Boolean isAnswer) {
+    public static OptionResponse create(
+            long optionId,
+            long problemId,
+            String content,
+            String explanation,
+            Boolean isAnswer
+    ) {
         return OptionResponse.builder()
                 .optionId(optionId)
                 .problemId(problemId)

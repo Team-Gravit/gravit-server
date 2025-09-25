@@ -44,7 +44,10 @@ public class OAuthLoginProcessor {
                 .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId)); // 유저가 존재하지 않으면 생성
     }
 
-    private User registerNewUser(OAuthUserInfo oAuthUserInfo, String providerId) {
+    private User registerNewUser(
+            OAuthUserInfo oAuthUserInfo,
+            String providerId
+    ) {
         log.info("첫 로그인, 회원가입 시작");
         String handle = handleGenerator.generateUniqueHandle();
         Role initialRole = adminPromotionPolicy.initRole(oAuthUserInfo.getEmail());
@@ -63,7 +66,10 @@ public class OAuthLoginProcessor {
         return user;
     }
 
-    private User promoteToAdminByWhitelist(User user, OAuthUserInfo oAuthUserInfo) {
+    private User promoteToAdminByWhitelist(
+            User user,
+            OAuthUserInfo oAuthUserInfo
+    ) {
         log.info("oAuthUserInfo.getEmail() : {}", oAuthUserInfo.getEmail());
         if (user.getRole() != Role.ADMIN && adminPromotionPolicy.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {
             user.changeRole(Role.ADMIN);

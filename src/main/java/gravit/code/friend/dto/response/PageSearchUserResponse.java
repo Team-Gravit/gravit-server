@@ -14,7 +14,12 @@ public record PageSearchUserResponse(
         boolean hasNext,
         List<SearchUser> searchUsers
 ){
-    public static PageSearchUserResponse of(int page, int size, long total,  List<SearchUser> searchUsers){
+    public static PageSearchUserResponse of(
+            int page,
+            int size,
+            long total,
+            List<SearchUser> searchUsers
+    ){
         long pages = (total == 0) ? 0 : ((total + size - 1) / size);
         log.info("pages: {}", pages);
         boolean hasNext = (page + 1) < pages;

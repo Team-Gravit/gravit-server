@@ -12,7 +12,10 @@ public class EnumValidator implements ConstraintValidator<Enum, String> {
     }
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
+    public boolean isValid(
+            String value,
+            ConstraintValidatorContext context
+    ) {
         Object[] enumValues = this.annotation.target().getEnumConstants();
         if (enumValues != null && value != null) {
             for (Object enumValue : enumValues) {

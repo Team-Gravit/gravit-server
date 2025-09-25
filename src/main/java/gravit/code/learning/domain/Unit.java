@@ -25,13 +25,21 @@ public class Unit {
     private long chapterId;
 
     @Builder
-    private Unit(String name, long totalLessons, long chapterId) {
+    private Unit(
+            String name,
+            long totalLessons,
+            long chapterId
+    ) {
         this.name = name;
         this.totalLessons = totalLessons;
         this.chapterId = chapterId;
     }
 
-    public static Unit create(String name, Long totalLessons, Long chapterId) {
+    public static Unit create(
+            String name,
+            Long totalLessons,
+            Long chapterId
+    ) {
         return Unit.builder()
                 .name(name)
                 .totalLessons(totalLessons)

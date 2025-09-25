@@ -4,8 +4,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
-import gravit.code.userLeague.infrastructure.JdbcLeagueRankingQueryRepository;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,13 +19,19 @@ public class LeagueRankingQueryService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public SliceResponse<LeagueRankRow> findLeagueRanking(long leagueId, int page){
+    public SliceResponse<LeagueRankRow> findLeagueRanking(
+            long leagueId,
+            int page
+    ){
         int safePage = Math.max(0, page);
         return rankingQueryRepository.findLeagueRanking(leagueId, safePage);
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<LeagueRankRow> findLeagueRankingByUser(long userId, int page){
+    public SliceResponse<LeagueRankRow> findLeagueRankingByUser(
+            long userId,
+            int page
+    ){
         int safePage = Math.max(0, page);
 
         if(!userRepository.existsById(userId)){

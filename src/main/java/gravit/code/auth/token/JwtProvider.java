@@ -37,7 +37,11 @@ public class JwtProvider {
         this.secretKey = new SecretKeySpec(jwtProperties.secret().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
 
-    public String generateToken(Subject subject, Map<String, String> claims, Duration expireTime) {
+    public String generateToken(
+            Subject subject,
+            Map<String, String> claims,
+            Duration expireTime
+    ) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + expireTime.toMillis());
         return Jwts.builder()
@@ -49,7 +53,10 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String generateToken(Subject subject, Duration expireTime) {
+    public String generateToken(
+            Subject subject,
+            Duration expireTime
+    ) {
         Date date = new Date();
         Date expiredDate = new Date(date.getTime() + expireTime.toMillis());
         return Jwts.builder()
@@ -98,7 +105,10 @@ public class JwtProvider {
         });
     }
 
-    private <T> T handleJwtException(String token, Function<String, T> function){
+    private <T> T handleJwtException(
+            String token,
+            Function<String, T> function
+    ){
         try{
             return function.apply(token);
         }catch (MalformedJwtException malformedJwtException){

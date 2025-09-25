@@ -1,7 +1,6 @@
 package gravit.code.mainPage.dto;
 
 public record MainPageSummary(
-
         String nickname,
         String leagueName,
         int xp,
@@ -13,6 +12,5 @@ public record MainPageSummary(
         String chapterDescription,
         long totalUnits,
         long completedUnits
-
 ) {
 }

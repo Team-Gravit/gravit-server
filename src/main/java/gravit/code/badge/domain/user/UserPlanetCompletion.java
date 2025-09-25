@@ -25,12 +25,18 @@ public class UserPlanetCompletion extends BaseEntity {
     private Planet planet;
 
     @Builder
-    private UserPlanetCompletion(Long userId, Planet planet) {
+    private UserPlanetCompletion(
+            Long userId,
+            Planet planet
+    ) {
         this.userId = userId;
         this.planet = planet;
     }
 
-    public static UserPlanetCompletion of(long userId, Planet planet) {
+    public static UserPlanetCompletion of(
+            long userId,
+            Planet planet
+    ) {
         return UserPlanetCompletion.builder().userId(userId).planet(planet).build();
     }
 }

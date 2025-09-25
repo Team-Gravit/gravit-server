@@ -25,13 +25,21 @@ public class Chapter {
     private long totalUnits;
 
     @Builder
-    private Chapter(String name, String description, long totalUnits) {
+    private Chapter(
+            String name,
+            String description,
+            long totalUnits
+    ) {
         this.name = name;
         this.description = description;
         this.totalUnits = totalUnits;
     }
 
-    public static Chapter create(String name, String description, long totalUnits) {
+    public static Chapter create(
+            String name,
+            String description,
+            long totalUnits
+    ) {
         return Chapter.builder()
                 .name(name)
                 .description(description)

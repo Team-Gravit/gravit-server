@@ -58,7 +58,8 @@ public class Notice extends BaseEntity {
             User author,
             NoticeStatus status,
             boolean pinned,
-            LocalDateTime publishedAt) {
+            LocalDateTime publishedAt
+    ) {
         this.title = title;
         this.content = content;
         this.author = author;
@@ -72,7 +73,8 @@ public class Notice extends BaseEntity {
             String content,
             User author,
             NoticeStatus status,
-            boolean pinned) {
+            boolean pinned
+    ) {
         validate(title, content, status, pinned);
         LocalDateTime publishedAt = getLocalDateTime(status);
 
@@ -90,7 +92,8 @@ public class Notice extends BaseEntity {
             String title,
             String content,
             NoticeStatus status,
-            boolean pinned) {
+            boolean pinned
+    ) {
         validateTitle(title);
         validateContent(content);
         validateAndUpdateStatus(status);
@@ -149,7 +152,10 @@ public class Notice extends BaseEntity {
         }
     }
 
-    private static void validatePinned(NoticeStatus status, boolean pinned) {
+    private static void validatePinned(
+            NoticeStatus status,
+            boolean pinned
+    ) {
         if(pinned && status.equals(DRAFT)){
             throw new RestApiException(CustomErrorCode.NOTICE_PINNED_MUST_BE_PUBLISHED);
         }

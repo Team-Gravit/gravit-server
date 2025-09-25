@@ -33,8 +33,10 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @GetMapping("/{chapterId}/units")
-    public ResponseEntity<List<UnitPageResponse>> getAllUnits(@AuthenticationPrincipal LoginUser loginUser,
-                                                              @PathVariable("chapterId") Long chapterId){
+    public ResponseEntity<List<UnitPageResponse>> getAllUnits(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("chapterId") Long chapterId
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllUnitsInChapter(loginUser.getId(), chapterId));
     }
 
@@ -44,14 +46,18 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @PostMapping("/results")
-    public ResponseEntity<UserLevelResponse> saveLearningResult(@AuthenticationPrincipal LoginUser loginUser,
-                                                                @Valid@RequestBody LearningResultSaveRequest request){
+    public ResponseEntity<UserLevelResponse> saveLearningResult(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid@RequestBody LearningResultSaveRequest request
+    ){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.saveLearningResult(loginUser.getId(), request));
     }
 
     @PostMapping("/reports")
-    public ResponseEntity<Void> submitProblemReport(@AuthenticationPrincipal LoginUser loginUser,
-                                                    @Valid@RequestBody ProblemReportSubmitRequest request){
+    public ResponseEntity<Void> submitProblemReport(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid@RequestBody ProblemReportSubmitRequest request
+    ){
         reportService.submitProblemReport(loginUser.getId(), request);
         return ResponseEntity.ok().build();
     }

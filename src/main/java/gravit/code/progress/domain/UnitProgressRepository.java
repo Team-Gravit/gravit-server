@@ -7,6 +7,12 @@ import java.util.Optional;
 
 public interface UnitProgressRepository {
     UnitProgress save(UnitProgress unitProgress);
-    Optional<UnitProgress> findByUnitIdAndUserId(long unitId, long userId);
-    List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(long chapterId, long userId);
+    Optional<UnitProgress> findByUnitIdAndUserId(
+            long unitId,
+            long userId
+    );
+    List<UnitProgressDetailResponse> findAllUnitProgressDetailsByChapterIdAndUserId(
+            long chapterId,
+            long userId
+    );
 }

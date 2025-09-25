@@ -37,14 +37,24 @@ public class ProblemProgress {
     private LocalDateTime createdAt;
 
     @Builder
-    private ProblemProgress(Boolean isCorrect, long incorrectCounts, long userId, long problemId) {
+    private ProblemProgress(
+            Boolean isCorrect,
+            long incorrectCounts,
+            long userId,
+            long problemId
+    ) {
         this.isCorrect = isCorrect ;
         this.incorrectCounts = incorrectCounts;
         this.userId = userId;
         this.problemId = problemId;
     }
 
-    public static ProblemProgress create(Boolean isCorrect, long incorrectCounts, long userId, long problemId) {
+    public static ProblemProgress create(
+            Boolean isCorrect,
+            long incorrectCounts,
+            long userId,
+            long problemId
+    ) {
         return ProblemProgress.builder()
                 .isCorrect(isCorrect)
                 .incorrectCounts(incorrectCounts)

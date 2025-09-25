@@ -30,14 +30,22 @@ public class ChapterProgress {
     private long chapterId;
 
     @Builder
-    private ChapterProgress(long totalUnits, long userId, long chapterId) {
+    private ChapterProgress(
+            long totalUnits,
+            long userId,
+            long chapterId
+    ) {
         this.totalUnits = totalUnits;
         this.completedUnits = 0L;
         this.userId = userId;
         this.chapterId = chapterId;
     }
 
-    public static ChapterProgress create(long totalUnits, long userId, long chapterId) {
+    public static ChapterProgress create(
+            long totalUnits,
+            long userId,
+            long chapterId
+    ) {
         return ChapterProgress.builder()
                 .totalUnits(totalUnits)
                 .userId(userId)

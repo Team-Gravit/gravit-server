@@ -14,7 +14,10 @@ public class ProblemProgressService {
 
     private final ProblemProgressRepository problemProgressRepository;
 
-    public void saveProblemResults(Long userId, List<ProblemResultRequest> request){
+    public void saveProblemResults(
+            Long userId,
+            List<ProblemResultRequest> request
+    ){
         List<ProblemProgress> problemProgresses = request.stream()
                 .map(problemResult ->
                         ProblemProgress.create(problemResult.isCorrect(), problemResult.incorrectCounts(), userId, problemResult.problemId())

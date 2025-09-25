@@ -22,7 +22,10 @@ public class AdminNoticeCommandService {
     private final UserRepository userRepository;
 
     @Transactional
-    public NoticeResponse createNotice(long authorId, NoticeCreateRequest request) {
+    public NoticeResponse createNotice(
+            long authorId,
+            NoticeCreateRequest request
+    ) {
         User author = userRepository.findById(authorId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
         String title = request.title();
         String content = request.content();
@@ -37,7 +40,10 @@ public class AdminNoticeCommandService {
     }
 
     @Transactional
-    public NoticeResponse updateNotice(long authorId, NoticeUpdateRequest request) {
+    public NoticeResponse updateNotice(
+            long authorId,
+            NoticeUpdateRequest request
+    ) {
         if(!userRepository.existsById(authorId)){
             throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
         }
@@ -55,7 +61,10 @@ public class AdminNoticeCommandService {
     }
 
     @Transactional
-    public void deleteNotice(long authorId, long noticeId) {
+    public void deleteNotice(
+            long authorId,
+            long noticeId
+    ) {
         if(!userRepository.existsById(authorId)){
             throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
         }

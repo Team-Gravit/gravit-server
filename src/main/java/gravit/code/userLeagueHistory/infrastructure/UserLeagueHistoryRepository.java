@@ -36,7 +36,13 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
             """, nativeQuery = true)
     int insertFromCurrent(@Param("seasonId") long seasonId);
 
-    boolean existsByUserIdAndSeasonId(long userId, long seasonId);
+    boolean existsByUserIdAndSeasonId(
+            long userId,
+            long seasonId
+    );
 
-    Optional<UserLeagueHistory> findByUserIdAndSeasonId(long userId, long seasonId);
+    Optional<UserLeagueHistory> findByUserIdAndSeasonId(
+            long userId,
+            long seasonId
+    );
 }

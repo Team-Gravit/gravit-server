@@ -18,7 +18,10 @@ public enum Planet {
     private final long chapterId;
     private final String koName;
 
-    Planet(long chapterId, String koName) {
+    Planet(
+            long chapterId,
+            String koName
+    ) {
         this.chapterId = chapterId;
         this.koName = koName;
     }

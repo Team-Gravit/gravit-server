@@ -129,7 +129,10 @@ public class MissionService {
         missionRepository.save(mission);
     }
 
-    private void awardMissionXp(long userId, int awardXp) {
+    private void awardMissionXp(
+            long userId,
+            int awardXp
+    ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
@@ -137,7 +140,10 @@ public class MissionService {
         userRepository.save(user);
     }
 
-    private boolean checkFirstAttemptLesson(long userId, long lessonId) {
+    private boolean checkFirstAttemptLesson(
+            long userId,
+            long lessonId
+    ) {
         LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(userId, lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_PROGRESS_NOT_FOUND));
 

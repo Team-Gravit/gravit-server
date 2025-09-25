@@ -23,7 +23,7 @@ public class AdminOptionController implements AdminOptionControllerDocs {
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateOption(@Valid @RequestBody OptionUpdateRequest request){
+    public ResponseEntity<Void> updateOption(@Valid@RequestBody OptionUpdateRequest request){
         adminOptionService.updateOption(request);
         return ResponseEntity.noContent().build();
     }

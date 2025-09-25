@@ -49,7 +49,10 @@ public class LearningFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<UnitPageResponse> getAllUnitsInChapter(long userId, long chapterId){
+    public List<UnitPageResponse> getAllUnitsInChapter(
+            long userId,
+            long chapterId
+    ){
         // 사용자의 유닛 진행도 조회
         List<UnitProgressDetailResponse> unitProgresses = unitProgressService.findAllUnitProgress(chapterId, userId);
 
@@ -70,7 +73,10 @@ public class LearningFacade {
     }
 
     @Transactional
-    public UserLevelResponse saveLearningResult(long userId, LearningResultSaveRequest request){
+    public UserLevelResponse saveLearningResult(
+            long userId,
+            LearningResultSaveRequest request
+    ){
 
         LearningIds learningIds = lessonService.findLearningIdsByLessonId(request.lessonId());
 

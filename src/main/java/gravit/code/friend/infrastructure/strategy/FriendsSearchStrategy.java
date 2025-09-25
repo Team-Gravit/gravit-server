@@ -6,5 +6,10 @@ public interface FriendsSearchStrategy {
 
     boolean supports(String queryText);
 
-    SearchPlan buildPlan(long requesterId, String queryText, int page, int size);
+    SearchPlan buildPlan(
+            long requesterId,
+            String queryText,
+            int page,
+            int size
+    );
 }

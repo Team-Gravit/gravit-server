@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BadgeRepository extends JpaRepository<Badge, Long> {
-    List<Badge> findByCriteriaTypeAndCodeNot(CriteriaType criteriaType, String excludeCode);
+    List<Badge> findByCriteriaTypeAndCodeNot(
+            CriteriaType criteriaType,
+            String excludeCode
+    );
     long countByCriteriaType(CriteriaType criteriaType);
     Optional<Badge> findByCode(String code);
     List<Badge> findByCategory(BadgeCategory category);
-
 
     @Query("""
         select new gravit.code.badge.dto.BadgeCatalogRowDto(

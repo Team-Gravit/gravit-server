@@ -32,7 +32,10 @@ public class Mission {
     private long version;
 
     @Builder
-    private Mission(MissionType missionType, long userId) {
+    private Mission(
+            MissionType missionType,
+            long userId
+    ) {
         this.missionType = missionType;
         this.progressRate = 0.0;
         this.isCompleted = false;
@@ -40,7 +43,10 @@ public class Mission {
         this.version = 0L;
     }
 
-    public static Mission create(MissionType missionType, long userId) {
+    public static Mission create(
+            MissionType missionType,
+            long userId
+    ) {
         return Mission.builder()
                 .missionType(missionType)
                 .userId(userId)

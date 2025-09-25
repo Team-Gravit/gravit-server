@@ -1,7 +1,6 @@
 package gravit.code.notice.service;
 
-import gravit.code.global.dto.PageResponse;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.PageResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notice.domain.Notice;
@@ -13,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

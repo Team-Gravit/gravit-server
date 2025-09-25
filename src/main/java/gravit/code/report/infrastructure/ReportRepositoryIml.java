@@ -23,7 +23,10 @@ public class ReportRepositoryIml implements ReportRepository {
     }
 
     @Override
-    public boolean existsReportByProblemIdAndUserId(long problemId, long userId){
+    public boolean existsReportByProblemIdAndUserId(
+            long problemId,
+            long userId
+    ){
         return reportJpaRepository.existsReportByProblemIdAndUserId(problemId,userId);
     }
 

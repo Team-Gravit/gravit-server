@@ -33,7 +33,10 @@ public class ChapterProgressService {
         return chapterProgressDetailResponses;
     }
 
-    public ChapterSummaryResponse getChapterSummary(long chapterId, long userId) {
+    public ChapterSummaryResponse getChapterSummary(
+            long chapterId,
+            long userId
+    ) {
         return chapterProgressRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_SUMMARY_NOT_FOUND));
     }
@@ -45,7 +48,10 @@ public class ChapterProgressService {
         );
     }
 
-    public ChapterProgress ensureChapterProgress(long chapterId, long userId){
+    public ChapterProgress ensureChapterProgress(
+            long chapterId,
+            long userId
+    ){
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
 
