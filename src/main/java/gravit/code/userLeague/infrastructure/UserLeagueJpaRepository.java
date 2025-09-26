@@ -32,7 +32,9 @@ public interface UserLeagueJpaRepository extends JpaRepository<UserLeague,Long> 
             ul.updatedAt = CURRENT_TIMESTAMP
         where ul.season = :currentSeason
     """)
-    int resetAllForNextSeason(@Param("currentSeason") Season currentSeason,
-                              @Param("nextSeason") Season nextSeason,
-                              @Param("startLeague") League startLeague);
+    int resetAllForNextSeason(
+            @Param("currentSeason") Season currentSeason,
+            @Param("nextSeason") Season nextSeason,
+            @Param("startLeague") League startLeague
+    );
 }

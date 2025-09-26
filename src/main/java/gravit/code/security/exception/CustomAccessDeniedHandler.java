@@ -23,7 +23,11 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AccessDeniedException accessDeniedException
+    ) throws IOException, ServletException {
         log.info("AccessDeniedHandler 실행");
         CustomErrorCode errorCode = CustomErrorCode.ACCESS_DENIED;
         String result = objectMapper.writeValueAsString(makeErrorResponse(errorCode));

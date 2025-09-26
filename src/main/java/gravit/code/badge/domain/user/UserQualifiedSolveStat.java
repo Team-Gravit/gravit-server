@@ -34,7 +34,10 @@ public class UserQualifiedSolveStat extends BaseEntity {
                 .build();
     }
 
-    public int applySolve(int accuracy, int seconds){
+    public int applySolve(
+            int accuracy,
+            int seconds
+    ){
         boolean qualified = (accuracy >= 85) && (seconds <= 120);
         if(qualified){
             this.qualifiedCount +=1;

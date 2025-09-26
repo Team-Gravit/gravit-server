@@ -1,29 +1,30 @@
 package gravit.code.learning.facade;
 
-import gravit.code.learning.domain.Problem;
-import gravit.code.learning.dto.LearningIds;
-import gravit.code.learning.dto.event.UpdateLearningEvent;
-import gravit.code.learning.service.LessonService;
-import gravit.code.progress.domain.ChapterProgress;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.progress.service.ChapterProgressService;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.progress.service.LessonProgressService;
-import gravit.code.learning.domain.ProblemType;
-import gravit.code.learning.dto.request.ProblemResultRequest;
-import gravit.code.learning.dto.response.OptionResponse;
-import gravit.code.learning.dto.response.ProblemResponse;
-import gravit.code.learning.service.ProblemService;
-import gravit.code.progress.service.ProblemProgressService;
-import gravit.code.progress.domain.UnitProgress;
-import gravit.code.progress.dto.response.UnitPageResponse;
-import gravit.code.progress.dto.response.UnitProgressDetailResponse;
-import gravit.code.progress.service.UnitProgressService;
-import gravit.code.user.service.UserService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.learning.domain.Problem;
+import gravit.code.learning.domain.ProblemType;
+import gravit.code.learning.dto.LearningAdditionalInfo;
+import gravit.code.learning.dto.LearningIds;
+import gravit.code.learning.dto.event.UpdateLearningEvent;
+import gravit.code.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.learning.dto.request.ProblemResultRequest;
+import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.learning.dto.response.OptionResponse;
+import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.learning.service.LessonService;
+import gravit.code.learning.service.ProblemService;
+import gravit.code.progress.domain.ChapterProgress;
+import gravit.code.progress.domain.UnitProgress;
+import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
+import gravit.code.progress.dto.response.UnitPageResponse;
+import gravit.code.progress.dto.response.UnitProgressDetailResponse;
+import gravit.code.progress.service.ChapterProgressService;
+import gravit.code.progress.service.LessonProgressService;
+import gravit.code.progress.service.ProblemProgressService;
+import gravit.code.progress.service.UnitProgressService;
+import gravit.code.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -243,7 +244,8 @@ class LearningFacadeTest {
             );
         }
 
-        private final LessonResponse lessonResponse = LessonResponse.create("스택 기본 개념", problemResponses);
+        private final LearningAdditionalInfo learningAdditionalInfo = new LearningAdditionalInfo(1L, "스택");
+        private final LessonResponse lessonResponse = LessonResponse.create(learningAdditionalInfo, problemResponses);
 
         @Test
         @DisplayName("Problem의 리스트가 비어있으면 예외를 반환한다.")
@@ -254,7 +256,7 @@ class LearningFacadeTest {
             when(problemService.getAllProblemInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
 
             //when&then
-            assertThatThrownBy(() -> learningFacade.getLesson(lessonId))
+            assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
         }
@@ -268,7 +270,7 @@ class LearningFacadeTest {
             when(problemService.getAllProblemInLesson(lessonId)).thenThrow(new RestApiException(CustomErrorCode.OPTION_NOT_FOUND));
 
             //when&then
-            assertThatThrownBy(() -> learningFacade.getLesson(lessonId))
+            assertThatThrownBy(() -> learningFacade.getAllProblemsInLesson(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.OPTION_NOT_FOUND);
         }
@@ -279,15 +281,15 @@ class LearningFacadeTest {
             //given
             Long lessonId = 1L;
 
-            when(lessonService.findLessonName(lessonId)).thenReturn("스택 기본 개념");
+            when(lessonService.getLearningAdditionalInfoByLessonId(lessonId)).thenReturn(learningAdditionalInfo);
             when(problemService.getAllProblemInLesson(lessonId)).thenReturn(problemResponses);
 
             //when
-            LessonResponse returnValue = learningFacade.getLesson(lessonId);
+            LessonResponse returnValue = learningFacade.getAllProblemsInLesson(lessonId);
 
             //then
             assertThat(returnValue).isEqualTo(lessonResponse);
-            verify(lessonService, times(1)).findLessonName(lessonId);
+            verify(lessonService, times(1)).getLearningAdditionalInfoByLessonId(lessonId);
             verify(problemService, times(1)).getAllProblemInLesson(lessonId);
         }
     }
@@ -318,7 +320,7 @@ class LearningFacadeTest {
             @DisplayName("레슨 조회에 실패한 경우")
             void returnLesson404Exception(){
                 //given
-                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
                         .thenThrow(new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
 
                 //when&then
@@ -331,7 +333,7 @@ class LearningFacadeTest {
             @DisplayName("유닛 조회에 실패한 경우")
             void returnUnit404Exception(){
                 //given
-                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
                         .thenReturn(learningIds);
                 when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenReturn(mock(ChapterProgress.class));
@@ -348,7 +350,7 @@ class LearningFacadeTest {
             @DisplayName("챕터 조회에 실패한 경우")
             void returnChapter404Exception(){
                 //given
-                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
                         .thenReturn(learningIds);
                 when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenThrow(new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
@@ -371,7 +373,7 @@ class LearningFacadeTest {
                 ChapterProgress chapterProgress = mock(ChapterProgress.class);
                 UnitProgress unitProgress = mock(UnitProgress.class);
 
-                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
                         .thenReturn(learningIds);
                 when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenReturn(chapterProgress);
@@ -397,7 +399,7 @@ class LearningFacadeTest {
                 ChapterProgress chapterProgress = mock(ChapterProgress.class);
                 UnitProgress unitProgress = mock(UnitProgress.class);
 
-                when(lessonService.findLearningIdsByLessonId(validRequest.lessonId()))
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
                         .thenReturn(learningIds);
                 when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
                         .thenReturn(chapterProgress);

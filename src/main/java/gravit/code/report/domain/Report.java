@@ -38,7 +38,12 @@ public class Report {
     private LocalDateTime submittedAt;
 
     @Builder
-    private Report(ReportType reportType, String content, long problemId, long userId) {
+    private Report(
+            ReportType reportType,
+            String content,
+            long problemId,
+            long userId
+    ) {
         this.reportType = reportType;
         this.content = content;
         this.problemId = problemId;
@@ -47,7 +52,12 @@ public class Report {
         this.submittedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
-    public static Report create(ReportType reportType, String content, long problemId, long userId){
+    public static Report create(
+            ReportType reportType,
+            String content,
+            long problemId,
+            long userId
+    ){
         return Report.builder()
                 .reportType(reportType)
                 .content(content)

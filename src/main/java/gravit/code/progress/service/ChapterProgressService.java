@@ -13,6 +13,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,8 +23,10 @@ public class ChapterProgressService {
 
     private final ChapterRepository chapterRepository;
     private final ChapterProgressRepository chapterProgressRepository;
+
     private final ApplicationEventPublisher publisher;
 
+    @Transactional(readOnly = true)
     public List<ChapterProgressDetailResponse> getChapterProgressDetails(long userId){
         List<ChapterProgressDetailResponse> chapterProgressDetailResponses = chapterProgressRepository.findAllChapterProgressDetailByUserId(userId);
 
@@ -33,11 +36,16 @@ public class ChapterProgressService {
         return chapterProgressDetailResponses;
     }
 
-    public ChapterSummaryResponse getChapterSummary(long chapterId, long userId) {
+    @Transactional(readOnly = true)
+    public ChapterSummaryResponse getChapterSummary(
+            long chapterId,
+            long userId
+    ) {
         return chapterProgressRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_SUMMARY_NOT_FOUND));
     }
 
+    @Transactional
     public void updateChapterProgress(ChapterProgress chapterProgress){
         ChapterCompletedDto dto = chapterProgress.updateCompletedUnits();
         publisher.publishEvent(new PlanetCompletedEvent(
@@ -45,7 +53,11 @@ public class ChapterProgressService {
         );
     }
 
-    public ChapterProgress ensureChapterProgress(long chapterId, long userId){
+    @Transactional
+    public ChapterProgress ensureChapterProgress(
+            long chapterId,
+            long userId
+    ){
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
 

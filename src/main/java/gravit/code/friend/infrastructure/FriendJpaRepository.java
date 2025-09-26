@@ -9,13 +9,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface FriendJpaRepository extends JpaRepository<Friend, Long> {
-    boolean existsByFollowerIdAndFolloweeId(long followerId, long followeeId);
+    boolean existsByFollowerIdAndFolloweeId(
+            long followerId,
+            long followeeId
+    );
 
-    Optional<Friend> findByFolloweeIdAndFollowerId(long followeeId, long followerId);
+    Optional<Friend> findByFolloweeIdAndFollowerId(
+            long followeeId,
+            long followerId
+    );
 
     @Query("""
         select new gravit.code.friend.dto.response.FollowerResponse(

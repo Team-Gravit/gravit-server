@@ -2,9 +2,9 @@ package gravit.code.auth.oauth.processor;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
-import gravit.code.auth.policy.AdminPromotionPolicy;
-import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
+import gravit.code.auth.dto.response.LoginResponse;
+import gravit.code.auth.policy.AdminPromotionPolicy;
 import gravit.code.auth.service.AuthTokenProvider;
 import gravit.code.auth.service.oauth.OAuthLoginProcessor;
 import gravit.code.user.domain.HandleGenerator;

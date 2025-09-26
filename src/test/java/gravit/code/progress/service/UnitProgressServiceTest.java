@@ -1,12 +1,12 @@
 package gravit.code.progress.service;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Unit;
 import gravit.code.learning.domain.UnitRepository;
 import gravit.code.progress.domain.UnitProgress;
 import gravit.code.progress.domain.UnitProgressRepository;
 import gravit.code.progress.dto.response.UnitProgressDetailResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

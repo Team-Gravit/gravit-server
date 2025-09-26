@@ -28,12 +28,18 @@ public class UserBadge extends BaseEntity {
     private Badge badge;
 
     @Builder
-    private UserBadge(Long userId, Badge badge) {
+    private UserBadge(
+            Long userId,
+            Badge badge
+    ) {
         this.userId = userId;
         this.badge = badge;
     }
 
-    public static UserBadge of(long userId, Badge badge) {
+    public static UserBadge of(
+            long userId,
+            Badge badge
+    ) {
         return UserBadge.builder().userId(userId).badge(badge).build();
     }
 }

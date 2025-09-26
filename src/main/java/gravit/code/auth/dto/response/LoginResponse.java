@@ -8,7 +8,11 @@ public record LoginResponse(
         String refreshToken,
         boolean isOnboarded
 ) {
-    public static LoginResponse of(AccessToken accessToken, RefreshToken refreshToken, boolean isOnboarded) {
+    public static LoginResponse of(
+            AccessToken accessToken,
+            RefreshToken refreshToken,
+            boolean isOnboarded
+    ) {
         return new LoginResponse(accessToken.token(), refreshToken.token(), isOnboarded);
     }
 }

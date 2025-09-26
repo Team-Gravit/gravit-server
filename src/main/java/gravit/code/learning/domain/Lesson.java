@@ -25,13 +25,21 @@ public class Lesson {
     private long unitId;
 
     @Builder
-    private Lesson(String name, long totalProblems, long unitId) {
+    private Lesson(
+            String name,
+            long totalProblems,
+            long unitId
+    ) {
         this.name = name;
         this.totalProblems = totalProblems;
         this.unitId = unitId;
     }
 
-    public static Lesson create(String name, long totalProblems, long unitId) {
+    public static Lesson create(
+            String name,
+            long totalProblems,
+            long unitId
+    ) {
         return Lesson.builder()
                 .name(name)
                 .totalProblems(totalProblems)

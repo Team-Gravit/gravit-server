@@ -3,7 +3,7 @@ package gravit.code.friend.infrastructure;
 import gravit.code.friend.dto.SearchPlan;
 import gravit.code.friend.dto.SearchUser;
 import gravit.code.friend.infrastructure.strategy.FriendsSearchFactory;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,7 +32,11 @@ public class FriendSearchRepository {
                     rs.getBoolean("is_following")
             );
 
-    public SliceResponse<SearchUser> searchUsersByQueryText(long requesterId, String queryText, int page) {
+    public SliceResponse<SearchUser> searchUsersByQueryText(
+            long requesterId,
+            String queryText,
+            int page
+    ) {
 
         // 1. nickname, handle 에 맞는 쿼리 가져오기
         SearchPlan plan = searchFactory.buildPlan(requesterId, queryText, page, PAGE_SIZE);
@@ -65,7 +69,12 @@ public class FriendSearchRepository {
         return SliceResponse.of(hasNext, contents);
     }
 
-    private MapSqlParameterSource buildParams(long requesterId, String cleanText, int page, boolean enableContains) {
+    private MapSqlParameterSource buildParams(
+            long requesterId,
+            String cleanText,
+            int page,
+            boolean enableContains
+    ) {
         int pagePlusOneForNextPage = PAGE_SIZE + 1;
         int offset = page * PAGE_SIZE;
         MapSqlParameterSource params = new MapSqlParameterSource()

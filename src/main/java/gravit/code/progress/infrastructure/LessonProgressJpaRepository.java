@@ -14,7 +14,10 @@ import java.util.Optional;
 public interface LessonProgressJpaRepository extends JpaRepository<LessonProgress, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<LessonProgress> findByLessonIdAndUserId(long lessonId, long userId);
+    Optional<LessonProgress> findByLessonIdAndUserId(
+            long lessonId,
+            long userId
+    );
 
     @Query("""
         SELECT new gravit.code.progress.dto.response.LessonProgressSummaryResponse(l.id, l.name, COALESCE(lp.isCompleted, false))
@@ -23,7 +26,10 @@ public interface LessonProgressJpaRepository extends JpaRepository<LessonProgres
         WHERE l.unitId = :unitId AND EXISTS (SELECT 1 FROM User u WHERE u.id = :userId)
         ORDER BY l.id
     """)
-    List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(@Param("unitId") long unitId, @Param("userId") long userId);
+    List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(
+            @Param("unitId") long unitId,
+            @Param("userId") long userId
+    );
 
     long countByUserId(long userId);
 }

@@ -29,5 +29,8 @@ public interface ChapterProgressJpaRepository extends JpaRepository<ChapterProgr
         JOIN Chapter c ON cp.chapterId = c.id
         WHERE cp.chapterId = :chapterId AND cp.userId = :userId
     """)
-    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(@Param("chapterId") long chapterId, @Param("userId") long userId);
+    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(
+            @Param("chapterId") long chapterId,
+            @Param("userId") long userId
+    );
 }

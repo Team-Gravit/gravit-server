@@ -92,7 +92,10 @@ public record MainPageResponse(
         boolean isCompleted
 ) {
 
-    public static MainPageResponse create(MainPageSummary mainPageSummary, MissionSummary missionSummary) {
+    public static MainPageResponse create(
+            MainPageSummary mainPageSummary,
+            MissionSummary missionSummary
+    ) {
         return MainPageResponse.builder()
                 .nickname(mainPageSummary.nickname())
                 .leagueName(mainPageSummary.leagueName())

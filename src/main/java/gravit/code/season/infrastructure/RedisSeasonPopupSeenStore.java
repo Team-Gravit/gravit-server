@@ -15,7 +15,11 @@ public class RedisSeasonPopupSeenStore implements SeasonPopupSeenStore {
     private static final String KEY = "season:seen:%d:%d";
 
     @Override
-    public boolean markSeenIfFirst(long userId, long seasonId, Duration ttl) {
+    public boolean markSeenIfFirst(
+            long userId,
+            long seasonId,
+            Duration ttl
+    ) {
         String key = KEY.formatted(seasonId, userId);
         String seenFlag = "1";
         Boolean isNotSeen = redisTemplate.opsForValue().setIfAbsent(key, seenFlag, ttl);

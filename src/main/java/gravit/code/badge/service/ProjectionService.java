@@ -23,7 +23,13 @@ public class ProjectionService {
     private final UserQualifiedSolveStatRepository userQualifiedSolveStatRepository;
 
     @Transactional
-    public PlanetCompletionDto recordPlanetCompletion(long userId, long chapterId, long beforeCount, long afterCount , long totalCounts) {
+    public PlanetCompletionDto recordPlanetCompletion(
+            long userId,
+            long chapterId,
+            long beforeCount,
+            long afterCount,
+            long totalCounts
+    ) {
         Planet planet = Planet.getPlanetByChapterId(chapterId);
 
         if(beforeCount == afterCount || afterCount != totalCounts){
@@ -57,7 +63,11 @@ public class ProjectionService {
     // 메서드명 수정하자
 
     @Transactional
-    public  QualifiedSolveCountDto recordQualifiedSolveStat(long userId, int accurate, int seconds) {
+    public  QualifiedSolveCountDto recordQualifiedSolveStat(
+            long userId,
+            int accurate,
+            int seconds
+    ) {
         UserQualifiedSolveStat userSolveCountStat = userQualifiedSolveStatRepository.findByUserId(userId).orElseGet(
                 () -> userQualifiedSolveStatRepository.save(UserQualifiedSolveStat.of(userId))
         );
@@ -65,6 +75,4 @@ public class ProjectionService {
         int qualifiedCount = userSolveCountStat.applySolve(accurate, seconds);
         return new QualifiedSolveCountDto(userId, qualifiedCount);
     }
-
-
 }

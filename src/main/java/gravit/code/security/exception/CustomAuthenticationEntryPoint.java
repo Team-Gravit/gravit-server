@@ -22,7 +22,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException authException
+    ) throws IOException, ServletException {
         log.info("AuthenticationEntryPoint 실행");
         ErrorCode errorCode = resolveErrorCode(authException);
         String result = objectMapper.writeValueAsString(makeErrorResponse(errorCode));

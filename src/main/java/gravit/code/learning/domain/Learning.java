@@ -51,7 +51,10 @@ public class Learning {
                 .build();
     }
 
-    public StreakDto updateLearningStatus(long chapterId, Integer planetConquestRate){
+    public StreakDto updateLearningStatus(
+            long chapterId,
+            Integer planetConquestRate
+    ){
         int before = this.consecutiveDays;
 
         if (this.todaySolved){

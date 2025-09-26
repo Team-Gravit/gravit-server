@@ -83,7 +83,7 @@ public interface LearningControllerDocs {
             )
     })
     @GetMapping("/{chapterId}/units")
-    ResponseEntity<List<UnitPageResponse>> getAllUnits(@AuthenticationPrincipal LoginUser loginUser,
+    ResponseEntity<List<UnitPageResponse>> getAllUnitsInChapter(@AuthenticationPrincipal LoginUser loginUser,
                                                        @PathVariable("chapterId") Long chapterId);
 
     @Operation(summary = "레슨 문제 목록 조회", description = "특정 레슨에 포함된 문제 목록을 조회합니다<br>" +
@@ -112,7 +112,7 @@ public interface LearningControllerDocs {
             )
     })
     @GetMapping("/{lessonId}")
-    ResponseEntity<LessonResponse> getLesson(@PathVariable("lessonId") Long lessonsId);
+    ResponseEntity<LessonResponse> getAllProblemsInLesson(@PathVariable("lessonId") Long lessonsId);
 
     @Operation(summary = "학습 결과 저장", description = "레슨 완료 후 문제 풀이 결과를 저장하고 사용자 레벨을 업데이트합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

@@ -1,6 +1,5 @@
-package gravit.code.mission.util;
+package gravit.code.mission.domain;
 
-import gravit.code.mission.domain.MissionType;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
@@ -8,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 @UtilityClass
-public class MissionUtil {
+public class RandomMissionGenerator {
 
     private static final Random random = new Random();
     

@@ -4,7 +4,7 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.controller.docs.FriendSearchControllerDocs;
 import gravit.code.friend.dto.SearchUser;
 import gravit.code.friend.service.FriendSearchService;
-import gravit.code.global.dto.SliceResponse;
+import gravit.code.global.dto.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

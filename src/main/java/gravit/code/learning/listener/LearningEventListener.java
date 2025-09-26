@@ -1,15 +1,10 @@
 package gravit.code.learning.listener;
 
 import gravit.code.global.event.badge.StreakUpdatedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.learning.domain.Learning;
-import gravit.code.learning.domain.LearningRepository;
-import gravit.code.learning.domain.LessonRepository;
 import gravit.code.learning.dto.StreakDto;
 import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
-import gravit.code.progress.domain.LessonProgressRepository;
+import gravit.code.learning.service.LearningService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,33 +18,19 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class LearningEventListener {
 
-    private final LearningRepository learningRepository;
-
-    private final LessonRepository lessonRepository;
-    private final LessonProgressRepository lessonProgressRepository;
+    private final LearningService learningService;
 
     private final ApplicationEventPublisher publisher;
 
     @Async("learningAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void updateLearning(UpdateLearningEvent updateLearningEvent){
+    public void updateLearning(UpdateLearningEvent event){
         try{
-            Learning learning = learningRepository.findByUserId(updateLearningEvent.userId())
-                    .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
-
-            long totalLesson = lessonRepository.count();
-            Long solvedLesson = lessonProgressRepository.countByUserId(updateLearningEvent.userId());
-
-            int planetConquestRate = Math.toIntExact(
-                    Math.round((solvedLesson.doubleValue() / totalLesson) * 100)
-            );
-
-            StreakDto streakDto = learning.updateLearningStatus(updateLearningEvent.chapterId(), planetConquestRate);
+            StreakDto streakDto = learningService.updateLearningStatus(event.userId(), event.chapterId());
 
             if(streakDto.before() != streakDto.after())
-                publisher.publishEvent(new StreakUpdatedEvent(updateLearningEvent.userId(), streakDto.after()));
+                publisher.publishEvent(new StreakUpdatedEvent(event.userId(), streakDto.after()));
 
-            learningRepository.save(learning);
         }catch (Exception e){
             log.error("Exception occurred while updating Learning with {}", e.getMessage());
         }
@@ -57,14 +38,11 @@ public class LearningEventListener {
 
     @Async("learningAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void createLearning(CreateLearningEvent createLearningEvent){
+    public void createLearning(CreateLearningEvent event){
         try{
-            Learning learning = Learning.create(createLearningEvent.userId());
-
-            learningRepository.save(learning);
+            learningService.createLearning(event.userId());
         }catch (Exception e){
             log.error("Exception occurred while creating Learning with {}", e.getMessage());
-
         }
     }
 }

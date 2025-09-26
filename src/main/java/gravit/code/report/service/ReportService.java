@@ -19,7 +19,10 @@ public class ReportService {
     private final ProblemRepository problemRepository;
 
     @Transactional
-    public void submitProblemReport(long userId, ProblemReportSubmitRequest request){
+    public void submitProblemReport(
+            long userId,
+            ProblemReportSubmitRequest request
+    ){
 
         if(!problemRepository.existsProblemById(request.problemId()))
             throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);

@@ -24,7 +24,10 @@ public class OAuthHttpClientAdapter implements OAuthClient {
     private final WebClient webClient;
 
     @Override
-    public Map<String, Object> getAccessTokenResponse(String tokenUri, MultiValueMap<String, String> tokenRequest) {
+    public Map<String, Object> getAccessTokenResponse(
+            String tokenUri,
+            MultiValueMap<String, String> tokenRequest
+    ) {
         try {
             return webClient.post()
                     .uri(tokenUri)
@@ -44,7 +47,10 @@ public class OAuthHttpClientAdapter implements OAuthClient {
     }
 
     @Override
-    public Map<String, Object> getUserInfoWithAccessToken(String uri, String accessToken) {
+    public Map<String, Object> getUserInfoWithAccessToken(
+            String uri,
+            String accessToken
+    ) {
         try {
             return webClient.get()
                     .uri(uri)

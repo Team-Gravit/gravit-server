@@ -31,14 +31,22 @@ public class UnitProgress {
     private long unitId;
 
     @Builder
-    private UnitProgress(long totalLessons, long userId, long unitId) {
+    private UnitProgress(
+            long totalLessons,
+            long userId,
+            long unitId
+    ) {
         this.totalLessons = totalLessons;
         this.completedLessons = 0L;
         this.userId = userId;
         this.unitId = unitId;
     }
 
-    public static UnitProgress create(long totalLessons, long userId, long unitId) {
+    public static UnitProgress create(
+            long totalLessons,
+            long userId,
+            long unitId
+    ) {
         return UnitProgress.builder()
                 .totalLessons(totalLessons)
                 .userId(userId)

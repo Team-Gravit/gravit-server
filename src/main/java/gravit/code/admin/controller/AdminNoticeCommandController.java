@@ -19,8 +19,10 @@ public class AdminNoticeCommandController implements AdminNoticeCommandControlle
     private final AdminNoticeCommandService adminNoticeCommandService;
 
     @PostMapping
-    public ResponseEntity<NoticeResponse> createNotice(@AuthenticationPrincipal LoginUser loginUser,
-                                                       @RequestBody NoticeCreateRequest noticeCreateResponse) {
+    public ResponseEntity<NoticeResponse> createNotice(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @RequestBody NoticeCreateRequest noticeCreateResponse
+    ) {
         Long authorId = loginUser.getId();
         NoticeResponse notice = adminNoticeCommandService.createNotice(authorId, noticeCreateResponse);
         HttpStatus status = HttpStatus.CREATED;
@@ -28,8 +30,10 @@ public class AdminNoticeCommandController implements AdminNoticeCommandControlle
     }
 
     @PatchMapping
-    public ResponseEntity<NoticeResponse> updateNotice(@AuthenticationPrincipal LoginUser loginUser,
-                                                       @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
+    public ResponseEntity<NoticeResponse> updateNotice(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @RequestBody NoticeUpdateRequest noticeUpdateRequest
+    ) {
         Long authorId = loginUser.getId();
         NoticeResponse notice = adminNoticeCommandService.updateNotice(authorId, noticeUpdateRequest);
         HttpStatus status = HttpStatus.CREATED;
@@ -37,8 +41,10 @@ public class AdminNoticeCommandController implements AdminNoticeCommandControlle
     }
 
     @DeleteMapping("/{noticeId}")
-    public ResponseEntity<Void> deleteNotice(@AuthenticationPrincipal LoginUser loginUser,
-                                             @PathVariable("noticeId") Long noticeId) {
+    public ResponseEntity<Void> deleteNotice(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("noticeId") Long noticeId
+    ) {
         Long authorId = loginUser.getId();
         adminNoticeCommandService.deleteNotice(authorId, noticeId);
         HttpStatus status = HttpStatus.OK;

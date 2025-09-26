@@ -19,7 +19,10 @@ public record UnitPageResponse(
         )
         List<LessonProgressSummaryResponse> lessonProgressSummaryResponses
 ) {
-    public static UnitPageResponse create(UnitProgressDetailResponse unitProgressDetailResponse, List<LessonProgressSummaryResponse> lessonProgressSummaryResponses) {
+    public static UnitPageResponse create(
+            UnitProgressDetailResponse unitProgressDetailResponse,
+            List<LessonProgressSummaryResponse> lessonProgressSummaryResponses
+    ) {
         return UnitPageResponse.builder()
                 .unitProgressDetailResponse(unitProgressDetailResponse)
                 .lessonProgressSummaryResponses(lessonProgressSummaryResponses)

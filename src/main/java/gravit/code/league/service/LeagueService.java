@@ -56,7 +56,10 @@ public class LeagueService {
                 .orElseGet(() -> LeagueHomeResponse.normal(current));
     }
 
-    private Optional<LastSeasonPopupDto> computeLastSeasonPopup(long userId, Season activeSeason){
+    private Optional<LastSeasonPopupDto> computeLastSeasonPopup(
+            long userId,
+            Season activeSeason
+    ){
         // 이전 시즌이 없다면 그냥 리턴
         Long lastClosedSeasonId = seasonClosedCache.getLastClosedSeasonId().orElse(null);
         if (lastClosedSeasonId == null) return Optional.empty();
