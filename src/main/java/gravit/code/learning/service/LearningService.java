@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class LearningService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public StreakDto updateLearningStatus(
             long userId,
             long chapterId
@@ -64,6 +66,7 @@ public class LearningService {
         return learning.updateLearningStatus(chapterId, planetConquestRate);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createLearning(long userId){
         Learning learning = Learning.create(userId);
 
