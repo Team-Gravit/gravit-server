@@ -12,6 +12,7 @@ import gravit.code.badge.infrastructure.user.UserPlanetCompletionRepository;
 import gravit.code.badge.infrastructure.user.UserQualifiedSolveStatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -22,7 +23,7 @@ public class ProjectionService {
     private final UserMissionStatRepository userMissionStatRepository;
     private final UserQualifiedSolveStatRepository userQualifiedSolveStatRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PlanetCompletionDto recordPlanetCompletion(
             long userId,
             long chapterId,
@@ -51,7 +52,7 @@ public class ProjectionService {
                 userId, planet.name(), allPlanetsCompleted);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public MissionCompleteDto recordMissionStat(long userId) {
         UserMissionStat userMissionStat = userMissionStatRepository.findByUserId(userId).orElseGet(
                 () -> userMissionStatRepository.save(UserMissionStat.of(userId))
@@ -62,7 +63,7 @@ public class ProjectionService {
     }
     // 메서드명 수정하자
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public  QualifiedSolveCountDto recordQualifiedSolveStat(
             long userId,
             int accurate,

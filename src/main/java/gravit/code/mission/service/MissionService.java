@@ -23,6 +23,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -78,6 +79,7 @@ public class MissionService {
                     random = true
             )
     )
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLessonMission(LessonMissionEvent lessonMissionDto){
         Mission mission = missionRepository.findByUserId(lessonMissionDto.userId())
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
@@ -108,7 +110,7 @@ public class MissionService {
         publisher.publishEvent(new MissionCompletedEvent(lessonMissionDto.userId()));
     }
 
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFollowMission(FollowMissionEvent followMissionDto) {
         Mission mission = missionRepository.findByUserId(followMissionDto.userId())
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
@@ -121,6 +123,7 @@ public class MissionService {
         awardMissionXp(followMissionDto.userId(), mission.getMissionType().getAwardXp());
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createMission(CreateMissionEvent createMissionDto) {
         Mission mission = Mission.builder()
                 .missionType(RandomMissionGenerator.getRandomMissionType())
