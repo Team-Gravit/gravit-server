@@ -2,7 +2,7 @@ package gravit.code.admin.service;
 
 import gravit.code.admin.dto.request.NoticeCreateRequest;
 import gravit.code.admin.dto.request.NoticeUpdateRequest;
-import gravit.code.admin.dto.response.NoticeResponse;
+import gravit.code.admin.dto.response.AdminNoticeDetailResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notice.domain.Notice;
@@ -22,7 +22,7 @@ public class AdminNoticeCommandService {
     private final UserRepository userRepository;
 
     @Transactional
-    public NoticeResponse createNotice(
+    public AdminNoticeDetailResponse createNotice(
             long authorId,
             NoticeCreateRequest request
     ) {
@@ -36,11 +36,11 @@ public class AdminNoticeCommandService {
 
         noticeRepository.save(notice);
 
-        return NoticeResponse.from(notice);
+        return AdminNoticeDetailResponse.from(notice);
     }
 
     @Transactional
-    public NoticeResponse updateNotice(
+    public AdminNoticeDetailResponse updateNotice(
             long authorId,
             NoticeUpdateRequest request
     ) {
@@ -57,7 +57,7 @@ public class AdminNoticeCommandService {
 
         notice.update(title, content, status, pinned);
 
-        return NoticeResponse.from(notice);
+        return AdminNoticeDetailResponse.from(notice);
     }
 
     @Transactional

@@ -10,22 +10,24 @@ public record NoticeDetailResponse(
         long id,
         String title,
         String content,
-        boolean pinned,
-        String status,
+        String authorName,
         LocalDateTime publishedAt,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        String status,
+        boolean pinned
 ) {
     public static NoticeDetailResponse from(Notice notice) {
         return NoticeDetailResponse.builder()
                 .id(notice.getId())
                 .title(notice.getTitle())
                 .content(notice.getContent())
-                .pinned(notice.isPinned())
-                .status(notice.getStatus().name())
-                .publishedAt(notice.getPublishedAt())
+                .authorName(notice.getAuthor().getNickname())
                 .createdAt(notice.getCreatedAt())
                 .updatedAt(notice.getUpdatedAt())
+                .publishedAt(notice.getPublishedAt())
+                .status(notice.getStatus().name())
+                .pinned(notice.isPinned())
                 .build();
     }
 }

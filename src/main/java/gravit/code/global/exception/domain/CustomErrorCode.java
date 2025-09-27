@@ -10,7 +10,6 @@ public enum CustomErrorCode implements ErrorCode {
 
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_4041", "존재하지 않는 유저입니다."),
-    //USER_NICKNAME_CONFLICT(HttpStatus.CONFLICT, "USER_4091", "이미 존재하는 닉네임 입니다."),
     USER_PAGE_NOT_FOUND(HttpStatus.NOT_FOUND,"USER_PAGE_4041", "유저 페이지가 존재하지 않습니다."),
     ALREADY_ONBOARDING(HttpStatus.BAD_REQUEST,"USER_4001","이미 온보딩이 완료된 유저입니다."),
     NICKNAME_NOT_NULL(HttpStatus.BAD_REQUEST,"USER_4002", "닉네임이 null 이거나 empty 일 순 없습니다."),
@@ -117,6 +116,9 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Page
     PAGE_MUST_START_FROM_1(HttpStatus.BAD_REQUEST, "PAGE_4001", "notice 페이지는 1번부터 시작합니다."),
+
+    // Admin
+    ADMIN_ONLY_FEATURE(HttpStatus.UNAUTHORIZED, "ADMIN_4011", "admin 전용 기능입니다."),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
