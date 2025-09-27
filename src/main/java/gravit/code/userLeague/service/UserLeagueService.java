@@ -34,14 +34,12 @@ public class UserLeagueService {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        log.info("initUserLeague : 유저 리그 초기화");
         if(userLeagueRepository.existsByUserId(userId)) {
             throw new RestApiException(CustomErrorCode.USER_LEAGUE_CONFLICT);
         }
 
         League startLeague = leagueRepository.findFirstByOrderBySortOrderAsc().orElseThrow(()-> new RestApiException(CustomErrorCode.LEAGUE_NOT_FOUND));
 
-        log.info("initUserLeague : 유저 리그 생성");
         Season season = seasonService.getOrCreateActiveSeason();
         userLeagueRepository.save(UserLeague.create(user, season, startLeague));
     }
