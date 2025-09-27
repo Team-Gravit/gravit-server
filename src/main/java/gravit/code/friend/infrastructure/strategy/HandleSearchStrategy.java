@@ -2,7 +2,7 @@ package gravit.code.friend.infrastructure.strategy;
 
 import gravit.code.friend.dto.SearchPlan;
 import gravit.code.friend.infrastructure.sql.select.FriendsHandleSearchQuerySql;
-import gravit.code.friend.util.QueryNormalizeUtil;
+import gravit.code.friend.support.HandleNormalize;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class HandleSearchStrategy implements FriendsSearchStrategy {
             int page,
             int size
     ) {
-        String cleanText = QueryNormalizeUtil.handleNormalize(queryText);
+        String cleanText = HandleNormalize.handleNormalize(queryText);
 
         if(cleanText.isEmpty()){
             return SearchPlan.empty();
