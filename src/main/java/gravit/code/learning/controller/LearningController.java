@@ -3,13 +3,13 @@ package gravit.code.learning.controller;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.learning.controller.docs.LearningControllerDocs;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
-import gravit.code.user.dto.response.UserLevelResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @PostMapping("/results")
-    public ResponseEntity<UserLevelResponse> saveLearningResult(
+    public ResponseEntity<LearningResultSaveResponse> saveLearningResult(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid@RequestBody LearningResultSaveRequest request
     ){

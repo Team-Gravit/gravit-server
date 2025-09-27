@@ -2,7 +2,6 @@ package gravit.code.friend.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.dto.SearchUser;
-import gravit.code.friend.dto.response.PageSearchUserResponse;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,16 +43,13 @@ public interface FriendSearchControllerDocs {
                     description = "✅ 검색 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PageSearchUserResponse.class),
+                            schema = @Schema(implementation = SliceResponse.class),
                             examples = @ExampleObject(
                                     name = "검색 결과 예시",
                                     value = """
                                             {
-                                              "page": 0,
-                                              "size": 10,
-                                              "total": 1,
-                                              "hasNext": false,
-                                              "searchUsers": [
+                                              "hasNextPage": false,
+                                              "contents": [
                                                 {
                                                   "userId": 6,
                                                   "profileImgNumber": 6,

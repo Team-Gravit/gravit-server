@@ -8,6 +8,7 @@ import gravit.code.learning.domain.ProblemType;
 import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.request.ProblemResultRequest;
+import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.learning.dto.response.ProblemResponse;
 import gravit.code.learning.facade.LearningFacade;
@@ -344,8 +345,9 @@ class LearningControllerTest {
             //given
             long userId = 1L;
             UserLevelResponse userLevelResponse = UserLevelResponse.create(3, 150);
+            LearningResultSaveResponse learningResultSaveResponse = LearningResultSaveResponse.create(userLevelResponse, "브론즈 1");
 
-            when(learningFacade.saveLearningResult(userId, validRequest)).thenReturn(userLevelResponse);
+            when(learningFacade.saveLearningResult(userId, validRequest)).thenReturn(learningResultSaveResponse);
 
             //when
             ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/results")

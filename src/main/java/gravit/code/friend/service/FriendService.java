@@ -3,6 +3,7 @@ package gravit.code.friend.service;
 
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.domain.FriendRepository;
+import gravit.code.friend.dto.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
@@ -103,5 +104,17 @@ public class FriendService {
     private Pageable friendPageable(int page) {
         int safePage = Math.max(0, page);
         return PageRequest.of(safePage, PAGE_SIZE, FOLLOW_SORT);
+    }
+
+    @Transactional(readOnly = true)
+    public FollowCountsResponse getFollowAndFollowingCounts(long userId){
+        if(!userRepository.existsById(userId)){
+            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
+        }
+
+        long followerCount = friendRepository.countByFolloweeId(userId);
+        long followeeCount = friendRepository.countByFollowerId(userId);
+
+        return new FollowCountsResponse(followerCount, followeeCount);
     }
 }

@@ -3,11 +3,11 @@ package gravit.code.learning.controller.docs;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
-import gravit.code.user.dto.response.UserLevelResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -180,8 +180,8 @@ public interface LearningControllerDocs {
             )
     })
     @PostMapping("/results")
-    ResponseEntity<UserLevelResponse> saveLearningResult(@AuthenticationPrincipal LoginUser loginUser,
-                                                         @Valid @RequestBody LearningResultSaveRequest request);
+    ResponseEntity<LearningResultSaveResponse> saveLearningResult(@AuthenticationPrincipal LoginUser loginUser,
+                                                                  @Valid @RequestBody LearningResultSaveRequest request);
 
     @Operation(summary = "문제 신고 제출", description = "특정 문제에 대한 오류를 신고합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

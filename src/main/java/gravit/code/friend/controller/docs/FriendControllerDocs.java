@@ -1,6 +1,7 @@
 package gravit.code.friend.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.friend.dto.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
@@ -72,7 +73,8 @@ public interface FriendControllerDocs {
     })
     @PostMapping("/following/{followeeId}")
     ResponseEntity<FriendResponse> following(
-            @Parameter(description = "팔로잉할 대상 유저 ID") @PathVariable("followeeId") Long followeeId,
+            @Parameter(description = "팔로잉할 대상 유저 ID")
+            @PathVariable("followeeId") Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser);
 
 
@@ -103,7 +105,8 @@ public interface FriendControllerDocs {
     })
     @PostMapping("/unfollowing/{followeeId}")
     ResponseEntity<Void> unFollowing(
-            @Parameter(description = "언팔로잉할 대상 유저 ID") @PathVariable("followeeId") Long followeeId,
+            @Parameter(description = "언팔로잉할 대상 유저 ID")
+            @PathVariable("followeeId") Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser);
 
 
@@ -155,4 +158,74 @@ public interface FriendControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam int page
     );
+
+
+    @Operation(
+            summary = "팔로워/팔로잉 카운트 조회",
+            description = """
+                현재 사용자의 팔로워 수와 팔로잉 수를 조회합니다.<br>
+                🔐 <strong>Jwt 필요</strong><br>
+                """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "✅ 카운트 조회 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = FollowCountsResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "성공 예시",
+                                            value = """
+                                                {
+                                                  "followerCount": 4,
+                                                  "followingCount": 10
+                                                }
+                                                """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "USER_4041",
+                    description = "🚨 존재하지 않는 유저입니다",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "존재하지 않는 유저입니다.",
+                                            value = """
+                                                {
+                                                  "error": "USER_4041",
+                                                  "message": "존재하지 않는 유저입니다."
+                                                }
+                                                """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "GLOBAL_5001",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외",
+                                            value = """
+                                                {
+                                                  "error": "GLOBAL_5001",
+                                                  "message": "예기치 못한 예외 발생"
+                                                }
+                                                """
+                                    )
+                            }
+                    )
+            )
+    })
+    @GetMapping("/count")
+    ResponseEntity<FollowCountsResponse> getFollowAndFollowingCount(@AuthenticationPrincipal LoginUser loginUser);
 }
