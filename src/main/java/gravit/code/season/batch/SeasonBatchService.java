@@ -48,7 +48,7 @@ public class SeasonBatchService {
 
         // 히스토리, UserLeague 스냅샷
         historyRepository.deleteBySeasonId(currentSeason); // 멱등성 보장
-        int snap = historyRepository.insertFromCurrent(currentSeason.getId());
+        int snap = historyRepository.insertFromCurrent(currentSeason.getId(), nowKst);
 
         // 다음 시즌 확보
         LocalDateTime nextStartsAt = currentSeason.getEndsAt();
