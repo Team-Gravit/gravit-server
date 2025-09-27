@@ -5,8 +5,8 @@ import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.learning.dto.response.UnitPageResponse;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -83,8 +83,8 @@ public interface LearningControllerDocs {
             )
     })
     @GetMapping("/{chapterId}/units")
-    ResponseEntity<List<UnitPageResponse>> getAllUnitsInChapter(@AuthenticationPrincipal LoginUser loginUser,
-                                                       @PathVariable("chapterId") Long chapterId);
+    ResponseEntity<UnitPageResponse> getAllUnitsInChapter(@AuthenticationPrincipal LoginUser loginUser,
+                                                          @PathVariable("chapterId") Long chapterId);
 
     @Operation(summary = "레슨 문제 목록 조회", description = "특정 레슨에 포함된 문제 목록을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

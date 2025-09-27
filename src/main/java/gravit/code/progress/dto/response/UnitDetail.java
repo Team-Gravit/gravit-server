@@ -7,7 +7,7 @@ import java.util.List;
 
 @Builder
 @Schema(description = "유닛 페이지 조회 Response")
-public record UnitPageResponse(
+public record UnitDetail(
 
         @Schema(
                 description = "유닛 정보"
@@ -19,11 +19,11 @@ public record UnitPageResponse(
         )
         List<LessonProgressSummaryResponse> lessonProgressSummaryResponses
 ) {
-    public static UnitPageResponse create(
+    public static UnitDetail create(
             UnitProgressDetailResponse unitProgressDetailResponse,
             List<LessonProgressSummaryResponse> lessonProgressSummaryResponses
     ) {
-        return UnitPageResponse.builder()
+        return UnitDetail.builder()
                 .unitProgressDetailResponse(unitProgressDetailResponse)
                 .lessonProgressSummaryResponses(lessonProgressSummaryResponses)
                 .build();

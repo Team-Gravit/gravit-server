@@ -5,9 +5,9 @@ import gravit.code.learning.controller.docs.LearningControllerDocs;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.learning.dto.response.UnitPageResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @GetMapping("/{chapterId}/units")
-    public ResponseEntity<List<UnitPageResponse>> getAllUnitsInChapter(
+    public ResponseEntity<UnitPageResponse> getAllUnitsInChapter(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("chapterId") Long chapterId
     ) {
