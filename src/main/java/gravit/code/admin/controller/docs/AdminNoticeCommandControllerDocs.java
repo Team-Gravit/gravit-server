@@ -2,7 +2,7 @@ package gravit.code.admin.controller.docs;
 
 import gravit.code.admin.dto.request.NoticeCreateRequest;
 import gravit.code.admin.dto.request.NoticeUpdateRequest;
-import gravit.code.admin.dto.response.NoticeResponse;
+import gravit.code.admin.dto.response.AdminNoticeDetailResponse;
 import gravit.code.auth.domain.LoginUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,11 +27,11 @@ public interface AdminNoticeCommandControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "✅ 공지 생성 성공",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NoticeResponse.class)))
+                            schema = @Schema(implementation = AdminNoticeDetailResponse.class)))
     })
     @PostMapping
-    ResponseEntity<NoticeResponse> createNotice(@AuthenticationPrincipal LoginUser loginUser,
-                                                @RequestBody NoticeCreateRequest noticeCreateResponse);
+    ResponseEntity<AdminNoticeDetailResponse> createNotice(@AuthenticationPrincipal LoginUser loginUser,
+                                                           @RequestBody NoticeCreateRequest noticeCreateResponse);
 
     @Operation(
             summary = "공지 수정",
@@ -40,11 +40,11 @@ public interface AdminNoticeCommandControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "✅ 공지 수정 성공",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NoticeResponse.class)))
+                            schema = @Schema(implementation = AdminNoticeDetailResponse.class)))
     })
     @PostMapping
-    ResponseEntity<NoticeResponse> updateNotice(@AuthenticationPrincipal LoginUser loginUser,
-                                                @RequestBody NoticeUpdateRequest noticeUpdateRequest);
+    ResponseEntity<AdminNoticeDetailResponse> updateNotice(@AuthenticationPrincipal LoginUser loginUser,
+                                                           @RequestBody NoticeUpdateRequest noticeUpdateRequest);
 
     @Operation(
             summary = "공지 삭제",

@@ -40,7 +40,8 @@ public class NoticeQueryService {
 
     @Transactional(readOnly = true)
     public NoticeDetailResponse getNoticeDetail(long noticeId){
-        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new RestApiException(CustomErrorCode.NOTICE_NOT_FOUND));
+        Notice notice = noticeRepository.findByIdAndStatus(noticeId, NoticeStatus.PUBLISHED)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.NOTICE_NOT_FOUND));
         return NoticeDetailResponse.from(notice);
     }
 
