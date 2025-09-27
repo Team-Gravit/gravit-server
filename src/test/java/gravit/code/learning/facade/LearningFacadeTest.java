@@ -4,6 +4,7 @@ import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.Problem;
 import gravit.code.learning.domain.ProblemType;
 import gravit.code.learning.dto.LearningAdditionalInfo;
@@ -14,6 +15,8 @@ import gravit.code.learning.dto.request.ProblemResultRequest;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.learning.dto.response.OptionResponse;
 import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.learning.dto.response.UnitPageResponse;
+import gravit.code.learning.service.ChapterService;
 import gravit.code.learning.service.LessonService;
 import gravit.code.learning.service.ProblemService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
@@ -21,7 +24,6 @@ import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.UnitProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.progress.dto.response.UnitPageResponse;
 import gravit.code.progress.dto.response.UnitProgressDetailResponse;
 import gravit.code.progress.service.ChapterProgressService;
 import gravit.code.progress.service.LessonProgressService;
@@ -54,6 +56,9 @@ class LearningFacadeTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private ChapterService chapterService;
 
     @Mock
     private LessonService lessonService;
@@ -143,7 +148,7 @@ class LearningFacadeTest {
             when(unitProgressService.findAllUnitProgress(chapterId, userId)).thenThrow(new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
             //when&then
-            assertThatThrownBy(() -> learningFacade.getAllUnitsInChapter(chapterId, userId))
+            assertThatThrownBy(() -> learningFacade.getAllUnitsInChapter(userId, chapterId))
                     .isInstanceOf(RestApiException.class)
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.USER_NOT_FOUND);
         }
@@ -155,6 +160,21 @@ class LearningFacadeTest {
             Long chapterId = 1L;
             Long userId = 1L;
 
+            Chapter mockChapter = Chapter.builder()
+                    .name("자료구조")
+                    .description("스택, 큐, 힙, 트리 등의 기본 자료구조를 학습합니다.")
+                    .totalUnits(4L)
+                    .build();
+
+            try {
+                java.lang.reflect.Field idField = Chapter.class.getDeclaredField("id");
+                idField.setAccessible(true);
+                idField.set(mockChapter, chapterId);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            when(chapterService.getChapterById(chapterId)).thenReturn(mockChapter);
             when(unitProgressService.findAllUnitProgress(chapterId, userId)).thenReturn(notEmptyProgresses);
 
             when(lessonProgressService.getLessonProgressSummaries(1L, userId))
@@ -189,10 +209,14 @@ class LearningFacadeTest {
                             LessonProgressSummaryResponse.create(26L, "해시 응용", false)
                     ));
             //when
-            List<UnitPageResponse> unitPageResponses = learningFacade.getAllUnitsInChapter(userId, chapterId);
+            UnitPageResponse response = learningFacade.getAllUnitsInChapter(userId, chapterId);
 
             // then
-            assertThat(unitPageResponses).hasSize(4);
+            assertThat(response.chapterId()).isEqualTo(chapterId);
+            assertThat(response.chapterName()).isEqualTo("자료구조");
+            assertThat(response.chapterDescription()).isEqualTo("스택, 큐, 힙, 트리 등의 기본 자료구조를 학습합니다.");
+            assertThat(response.unitDetails()).hasSize(4);
+            verify(chapterService).getChapterById(chapterId);
             verify(lessonProgressService, times(4)).getLessonProgressSummaries(anyLong(), anyLong());
         }
     }

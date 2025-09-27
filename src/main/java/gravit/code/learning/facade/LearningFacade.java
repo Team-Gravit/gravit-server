@@ -2,14 +2,15 @@ package gravit.code.learning.facade;
 
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
-import gravit.code.league.service.LeagueService;
+import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
 import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.learning.service.LearningService;
+import gravit.code.learning.dto.response.UnitPageResponse;
+import gravit.code.learning.service.ChapterService;
 import gravit.code.learning.service.LessonService;
 import gravit.code.learning.service.ProblemService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
@@ -17,7 +18,7 @@ import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.UnitProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.progress.dto.response.UnitPageResponse;
+import gravit.code.progress.dto.response.UnitDetail;
 import gravit.code.progress.dto.response.UnitProgressDetailResponse;
 import gravit.code.progress.service.ChapterProgressService;
 import gravit.code.progress.service.LessonProgressService;
@@ -40,6 +41,7 @@ public class LearningFacade {
     private final ApplicationEventPublisher publisher;
 
     private final UserService userService;
+    private final ChapterService chapterService;
     private final LessonService lessonService;
     private final ProblemService problemService;
     private final UserLeagueService userLeagueService;
@@ -48,8 +50,6 @@ public class LearningFacade {
     private final UnitProgressService unitProgressService;
     private final LessonProgressService lessonProgressService;
     private final ProblemProgressService problemProgressService;
-    private final LearningService learningService;
-    private final LeagueService leagueService;
 
     @Transactional(readOnly = true)
     public List<ChapterProgressDetailResponse> getAllChapters(long userId){
@@ -57,21 +57,26 @@ public class LearningFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<UnitPageResponse> getAllUnitsInChapter(
+    public UnitPageResponse getAllUnitsInChapter(
             long userId,
             long chapterId
     ){
+        // 유닛 페이지에 들어갈 챕터 조회
+        Chapter chapter = chapterService.getChapterById(chapterId);
+
         // 사용자의 유닛 진행도 조회
         List<UnitProgressDetailResponse> unitProgresses = unitProgressService.findAllUnitProgress(chapterId, userId);
 
         // 유닛 정보 + 유닛 진행도
-        return unitProgresses.stream()
+        List<UnitDetail> unitPageResponses =  unitProgresses.stream()
                 .map(unitProgress -> {
                     List<LessonProgressSummaryResponse> lessonProgressSummaries = lessonProgressService.getLessonProgressSummaries(unitProgress.unitId(), userId);
 
-                    return UnitPageResponse.create(unitProgress, lessonProgressSummaries);
+                    return UnitDetail.create(unitProgress, lessonProgressSummaries);
                 })
                 .toList();
+
+        return UnitPageResponse.create(chapter, unitPageResponses);
     }
 
     @Transactional(readOnly = true)
