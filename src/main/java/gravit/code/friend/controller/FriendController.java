@@ -2,6 +2,7 @@ package gravit.code.friend.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.controller.docs.FriendControllerDocs;
+import gravit.code.friend.dto.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.service.FriendService;
@@ -63,6 +64,14 @@ public class FriendController implements FriendControllerDocs {
         SliceResponse<FollowingResponse> followings = friendService.getFollowings(followerId, page);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(followings);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<FollowCountsResponse> getFollowAndFollowingCount(@AuthenticationPrincipal LoginUser loginUser){
+        long userId = loginUser.getId();
+        FollowCountsResponse followAndFollowingCounts = friendService.getFollowAndFollowingCounts(userId);
+        HttpStatus status = HttpStatus.OK;
+        return ResponseEntity.status(status).body(followAndFollowingCounts);
     }
 
 }

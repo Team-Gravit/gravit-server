@@ -53,4 +53,8 @@ public interface FriendJpaRepository extends JpaRepository<Friend, Long> {
             @Param("followerId") long followerId,
             Pageable pageable
     );
+
+    long countByFollowerId(long userId);
+
+    long countByFolloweeId(long userId);
 }
