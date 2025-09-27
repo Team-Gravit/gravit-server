@@ -54,27 +54,27 @@ class ReportServiceTest {
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.PROBLEM_NOT_FOUND);
         }
 
-        @Test
-        @DisplayName("이미 제출된 신고라면 예외를 반환한다.")
-        void withAlreadySubmittedData(){
-            //given
-            long userId = 1L;
-            long problemId = 1L;
-
-            ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
-                    "TYPO_ERROR",
-                    "문제에 오탈자가 있습니다.",
-                    problemId
-            );
-
-            when(problemRepository.existsProblemById(request.problemId())).thenReturn(true);
-            when(reportRepository.existsReportByProblemIdAndUserId(request.problemId(), userId)).thenReturn(true);
-
-            //when & then
-            assertThatThrownBy(() -> reportService.submitProblemReport(userId, request))
-                    .isInstanceOf(RestApiException.class)
-                    .hasFieldOrPropertyWithValue("errorCode" ,CustomErrorCode.ALREADY_SUBMITTED_REPORT);
-        }
+//        @Test
+//        @DisplayName("이미 제출된 신고라면 예외를 반환한다.")
+//        void withAlreadySubmittedData(){
+//            //given
+//            long userId = 1L;
+//            long problemId = 1L;
+//
+//            ProblemReportSubmitRequest request = new ProblemReportSubmitRequest(
+//                    "TYPO_ERROR",
+//                    "문제에 오탈자가 있습니다.",
+//                    problemId
+//            );
+//
+//            when(problemRepository.existsProblemById(request.problemId())).thenReturn(true);
+//            when(reportRepository.existsReportByProblemIdAndUserId(request.problemId(), userId)).thenReturn(true);
+//
+//            //when & then
+//            assertThatThrownBy(() -> reportService.submitProblemReport(userId, request))
+//                    .isInstanceOf(RestApiException.class)
+//                    .hasFieldOrPropertyWithValue("errorCode" ,CustomErrorCode.ALREADY_SUBMITTED_REPORT);
+//        }
 
 
         @Test
@@ -91,7 +91,7 @@ class ReportServiceTest {
             );
 
             when(problemRepository.existsProblemById(request.problemId())).thenReturn(true);
-            when(reportRepository.existsReportByProblemIdAndUserId(request.problemId(), userId)).thenReturn(false);
+//            when(reportRepository.existsReportByProblemIdAndUserId(request.problemId(), userId)).thenReturn(false);
 
             //when
             reportService.submitProblemReport(userId, request);

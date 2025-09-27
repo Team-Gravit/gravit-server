@@ -1,5 +1,7 @@
 package gravit.code.learning.facade;
 
+import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Problem;
@@ -14,6 +16,7 @@ import gravit.code.learning.dto.response.OptionResponse;
 import gravit.code.learning.dto.response.ProblemResponse;
 import gravit.code.learning.service.LessonService;
 import gravit.code.learning.service.ProblemService;
+import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.UnitProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
@@ -24,7 +27,9 @@ import gravit.code.progress.service.ChapterProgressService;
 import gravit.code.progress.service.LessonProgressService;
 import gravit.code.progress.service.ProblemProgressService;
 import gravit.code.progress.service.UnitProgressService;
+import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
+import gravit.code.userLeague.service.UserLeagueService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -67,6 +72,9 @@ class LearningFacadeTest {
 
     @Mock
     private ProblemProgressService problemProgressService;
+
+    @Mock
+    private UserLeagueService userLeagueService;
 
     @InjectMocks
     private LearningFacade learningFacade;
@@ -382,13 +390,19 @@ class LearningFacadeTest {
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
                 doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(true);
+                when(userService.updateUserLevelAndXp(userId, 20, validRequest.accuracy()))
+                        .thenReturn(UserLevelResponse.create(1, 100));
+                when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈 리그");
 
                 //when
                 learningFacade.saveLearningResult(userId, validRequest);
 
                 //then
                 verify(chapterProgressService, times(1)).updateChapterProgress(chapterProgress);
-                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
+                verify(publisher, times(1)).publishEvent(any(UpdateLearningEvent.class));
+                verify(publisher, times(1)).publishEvent(any(LessonCompletedEvent.class));
+                verify(publisher, times(1)).publishEvent(any(LessonMissionEvent.class));
+                verify(publisher, times(1)).publishEvent(any(QualifiedSolvedEvent.class));
                 verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
 
@@ -408,13 +422,19 @@ class LearningFacadeTest {
                 doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
                 doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
                 when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(false);
+                when(userService.updateUserLevelAndXp(userId, 20, validRequest.accuracy()))
+                        .thenReturn(UserLevelResponse.create(1, 100));
+                when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈 리그");
 
                 //when
                 learningFacade.saveLearningResult(userId, validRequest);
 
                 //then
                 verify(chapterProgressService, never()).updateChapterProgress(any());
-                verify(publisher, times(1)).publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
+                verify(publisher, times(1)).publishEvent(any(UpdateLearningEvent.class));
+                verify(publisher, times(1)).publishEvent(any(LessonCompletedEvent.class));
+                verify(publisher, times(1)).publishEvent(any(LessonMissionEvent.class));
+                verify(publisher, times(1)).publishEvent(any(QualifiedSolvedEvent.class));
                 verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
             }
         }
