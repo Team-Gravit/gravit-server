@@ -2,11 +2,14 @@ package gravit.code.learning.facade;
 
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
+import gravit.code.league.service.LeagueService;
 import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningResultSaveRequest;
+import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
+import gravit.code.learning.service.LearningService;
 import gravit.code.learning.service.LessonService;
 import gravit.code.learning.service.ProblemService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
@@ -22,6 +25,7 @@ import gravit.code.progress.service.ProblemProgressService;
 import gravit.code.progress.service.UnitProgressService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
+import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -38,11 +42,14 @@ public class LearningFacade {
     private final UserService userService;
     private final LessonService lessonService;
     private final ProblemService problemService;
+    private final UserLeagueService userLeagueService;
 
     private final ChapterProgressService chapterProgressService;
     private final UnitProgressService unitProgressService;
     private final LessonProgressService lessonProgressService;
     private final ProblemProgressService problemProgressService;
+    private final LearningService learningService;
+    private final LeagueService leagueService;
 
     @Transactional(readOnly = true)
     public List<ChapterProgressDetailResponse> getAllChapters(long userId){
@@ -74,7 +81,7 @@ public class LearningFacade {
     }
 
     @Transactional
-    public UserLevelResponse saveLearningResult(
+    public LearningResultSaveResponse saveLearningResult(
             long userId,
             LearningResultSaveRequest request
     ){
@@ -94,11 +101,14 @@ public class LearningFacade {
         if(unitProgressService.updateUnitProgress(unitProgress))
             chapterProgressService.updateChapterProgress(chapterProgress);
 
+        UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 20, request.accuracy());
+        String leagueName = userLeagueService.getUserLeagueName(userId);
+
         publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
         publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
         publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
         publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
 
-        return userService.updateUserLevelAndXp(userId,20, request.accuracy());
+        return LearningResultSaveResponse.create(userLevelResponse, leagueName);
     }
 }

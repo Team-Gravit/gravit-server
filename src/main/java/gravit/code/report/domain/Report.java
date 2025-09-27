@@ -1,5 +1,6 @@
 package gravit.code.report.domain;
 
+import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -53,15 +54,13 @@ public class Report {
     }
 
     public static Report create(
-            ReportType reportType,
-            String content,
-            long problemId,
+            ProblemReportSubmitRequest request,
             long userId
     ){
         return Report.builder()
-                .reportType(reportType)
-                .content(content)
-                .problemId(problemId)
+                .reportType(ReportType.from(request.reportType()))
+                .content(request.content() == null ? "-" : request.content())
+                .problemId(request.problemId())
                 .userId(userId)
                 .build();
     }
