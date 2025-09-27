@@ -55,7 +55,8 @@ public class ChapterProgress {
 
     public ChapterCompletedDto updateCompletedUnits(){
         long before = this.completedUnits;
-        long after = this.completedUnits++;
+        this.completedUnits += 1;
+        long after = this.completedUnits;
 
         return new ChapterCompletedDto(
                 before, after, this.totalUnits

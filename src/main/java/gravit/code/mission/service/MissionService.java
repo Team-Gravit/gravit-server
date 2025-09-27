@@ -148,7 +148,7 @@ public class MissionService {
             long userId,
             long lessonId
     ) {
-        LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(userId, lessonId)
+        LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_PROGRESS_NOT_FOUND));
 
         return lessonProgress.getAttemptCount() == 1;

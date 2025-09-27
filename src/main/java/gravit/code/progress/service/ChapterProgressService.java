@@ -11,6 +11,7 @@ import gravit.code.progress.dto.response.ChapterSummaryResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChapterProgressService {
 
     private final ChapterRepository chapterRepository;
@@ -48,6 +50,9 @@ public class ChapterProgressService {
     @Transactional
     public void updateChapterProgress(ChapterProgress chapterProgress){
         ChapterCompletedDto dto = chapterProgress.updateCompletedUnits();
+        log.info("chapter Update 이벤트 발행!");
+        log.info("userId : {}, chapterId : {}, before : {}, after : {}, totalUnit : {}",
+                chapterProgress.getUserId(), chapterProgress.getChapterId(), dto.before(), dto.after(), dto.totalUnits());
         publisher.publishEvent(new PlanetCompletedEvent(
                 chapterProgress.getUserId(), chapterProgress.getChapterId(), dto.before(), dto.after(), dto.totalUnits())
         );
