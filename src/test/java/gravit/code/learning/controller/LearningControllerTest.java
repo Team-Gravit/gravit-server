@@ -11,10 +11,11 @@ import gravit.code.learning.dto.request.ProblemResultRequest;
 import gravit.code.learning.dto.response.LearningResultSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
 import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.learning.dto.response.UnitPageResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.progress.dto.response.UnitPageResponse;
+import gravit.code.progress.dto.response.UnitDetail;
 import gravit.code.progress.dto.response.UnitProgressDetailResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
@@ -147,8 +148,8 @@ class LearningControllerTest {
             //given
             long chapterId = 1L;
             long userId = 1L;
-            List<UnitPageResponse> response = List.of(
-                    UnitPageResponse.create(
+            List<UnitDetail> unitDetails = List.of(
+                    UnitDetail.create(
                             UnitProgressDetailResponse.create(1L, "스택", 4L, 3L),
                             List.of(
                                     LessonProgressSummaryResponse.create(1L, "스택 기본 개념", true),
@@ -157,7 +158,7 @@ class LearningControllerTest {
                                     LessonProgressSummaryResponse.create(4L, "스택 심화 응용", false)
                             )
                     ),
-                    UnitPageResponse.create(
+                    UnitDetail.create(
                             UnitProgressDetailResponse.create(2L, "큐", 3L, 1L),
                             List.of(
                                     LessonProgressSummaryResponse.create(5L, "큐 기본 개념", true),
@@ -165,7 +166,7 @@ class LearningControllerTest {
                                     LessonProgressSummaryResponse.create(7L, "우선순위 큐", false)
                             )
                     ),
-                    UnitPageResponse.create(
+                    UnitDetail.create(
                             UnitProgressDetailResponse.create(3L, "트리", 5L, 0L),
                             List.of(
                                     LessonProgressSummaryResponse.create(8L, "트리 기본 개념", false),
@@ -175,7 +176,7 @@ class LearningControllerTest {
                                     LessonProgressSummaryResponse.create(12L, "AVL 트리", false)
                             )
                     ),
-                    UnitPageResponse.create(
+                    UnitDetail.create(
                             UnitProgressDetailResponse.create(4L, "해시", 3L, 3L),
                             List.of(
                                     LessonProgressSummaryResponse.create(13L, "해시 테이블", true),
@@ -184,6 +185,13 @@ class LearningControllerTest {
                             )
                     )
             );
+
+            UnitPageResponse response = UnitPageResponse.builder()
+                    .chapterId(chapterId)
+                    .chapterName("자료구조")
+                    .chapterDescription("스택, 큐, 힙, 트리 등의 기본 자료구조를 학습합니다.")
+                    .unitDetails(unitDetails)
+                    .build();
 
             when(learningFacade.getAllUnitsInChapter(userId, chapterId)).thenReturn(response);
 
@@ -196,14 +204,18 @@ class LearningControllerTest {
             resultActions
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
-                    .andExpect(jsonPath("$[0].unitProgressDetailResponse.unitId").value(1L))
-                    .andExpect(jsonPath("$[0].unitProgressDetailResponse.name").value("스택"))
-                    .andExpect(jsonPath("$[0].unitProgressDetailResponse.totalLesson").value(4L))
-                    .andExpect(jsonPath("$[0].unitProgressDetailResponse.completedLesson").value(3L))
-                    .andExpect(jsonPath("$[0].lessonProgressSummaryResponses[0].lessonId").value(1L))
-                    .andExpect(jsonPath("$[0].lessonProgressSummaryResponses[0].name").value("스택 기본 개념"))
-                    .andExpect(jsonPath("$[0].lessonProgressSummaryResponses[0].isCompleted").value(true))
-                    .andExpect(jsonPath("$[0].lessonProgressSummaryResponses.length()").value(4));
+                    .andExpect(jsonPath("$.chapterId").value(1L))
+                    .andExpect(jsonPath("$.chapterName").value("자료구조"))
+                    .andExpect(jsonPath("$.chapterDescription").value("스택, 큐, 힙, 트리 등의 기본 자료구조를 학습합니다."))
+                    .andExpect(jsonPath("$.unitDetails[0].unitProgressDetailResponse.unitId").value(1L))
+                    .andExpect(jsonPath("$.unitDetails[0].unitProgressDetailResponse.name").value("스택"))
+                    .andExpect(jsonPath("$.unitDetails[0].unitProgressDetailResponse.totalLesson").value(4L))
+                    .andExpect(jsonPath("$.unitDetails[0].unitProgressDetailResponse.completedLesson").value(3L))
+                    .andExpect(jsonPath("$.unitDetails[0].lessonProgressSummaryResponses[0].lessonId").value(1L))
+                    .andExpect(jsonPath("$.unitDetails[0].lessonProgressSummaryResponses[0].name").value("스택 기본 개념"))
+                    .andExpect(jsonPath("$.unitDetails[0].lessonProgressSummaryResponses[0].isCompleted").value(true))
+                    .andExpect(jsonPath("$.unitDetails[0].lessonProgressSummaryResponses.length()").value(4))
+                    .andExpect(jsonPath("$.unitDetails.length()").value(4));
         }
     }
 
