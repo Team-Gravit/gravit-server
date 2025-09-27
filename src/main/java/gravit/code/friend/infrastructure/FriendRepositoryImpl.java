@@ -59,4 +59,14 @@ public class FriendRepositoryImpl implements FriendRepository {
     ) {
         return jpaRepository.findFollowingsByFollowerId(followerId, pageable);
     }
+
+    @Override
+    public long countByFollowerId(long userId) {
+        return jpaRepository.countByFollowerId(userId);
+    }
+
+    @Override
+    public long countByFolloweeId(long userId) {
+        return jpaRepository.countByFolloweeId(userId);
+    }
 }

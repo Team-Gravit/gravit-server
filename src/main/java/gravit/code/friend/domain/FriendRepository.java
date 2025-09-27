@@ -31,4 +31,8 @@ public interface FriendRepository {
             long followerId,
             Pageable pageable
     );
+
+    long countByFollowerId(long userId);
+
+    long countByFolloweeId(long userId);
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHistory, Long> {
@@ -29,12 +30,15 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
                     ORDER BY ul.league_point DESC, ul.updated_at ASC, ul.user_id ASC
                 ) AS final_rank,
                 ul.league_point AS final_lp,
-                CURRENT_TIMESTAMP AS created_at,
-                CURRENT_TIMESTAMP AS updated_at
+                :nowKst AS created_at,
+                :nowKst AS updated_at
             FROM user_league ul
             WHERE ul.season_id = :seasonId
             """, nativeQuery = true)
-    int insertFromCurrent(@Param("seasonId") long seasonId);
+    int insertFromCurrent(
+            @Param("seasonId") long seasonId,
+            @Param("nowKst") LocalDateTime nowKst
+    );
 
     boolean existsByUserIdAndSeasonId(
             long userId,

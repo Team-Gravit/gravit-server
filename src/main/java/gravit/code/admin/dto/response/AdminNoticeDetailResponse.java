@@ -6,22 +6,24 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record NoticeResponse(
-        Long noticeId,
+public record AdminNoticeDetailResponse(
+        long noticeId,
         String title,
         String contents,
         String authorName,
+        LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime publishedAt,
         String noticeType,
         boolean pinned
 ) {
-    public static NoticeResponse from(Notice notice) {
-        return NoticeResponse.builder()
+    public static AdminNoticeDetailResponse from(Notice notice) {
+        return AdminNoticeDetailResponse.builder()
                 .noticeId(notice.getId())
                 .title(notice.getTitle())
                 .contents(notice.getContent())
                 .authorName(notice.getAuthor().getNickname())
+                .createdAt(notice.getCreatedAt())
                 .updatedAt(notice.getUpdatedAt())
                 .publishedAt(notice.getPublishedAt())
                 .noticeType(notice.getStatus().name())

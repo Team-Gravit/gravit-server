@@ -1,6 +1,5 @@
 //package gravit.code.domain.friend.infrastructure;
 //
-//import gravit.code.domain.friend.dto.response.PageSearchUserResponse;
 //import lombok.extern.slf4j.Slf4j;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;

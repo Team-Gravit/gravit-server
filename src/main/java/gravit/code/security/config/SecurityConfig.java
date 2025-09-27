@@ -48,7 +48,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 관련 경로 허용
                 .requestMatchers("/api/v1/oauth/**").permitAll()
-                .requestMatchers("/api/v1/users/me/delete/confirm").permitAll()
+                .requestMatchers("/api/v1/users/deletion/confirm").permitAll()
                 .requestMatchers("/api/v1/auth/reissue").permitAll()
                 .requestMatchers("/api/v1/test/**").permitAll() // 테스트 할때만
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
