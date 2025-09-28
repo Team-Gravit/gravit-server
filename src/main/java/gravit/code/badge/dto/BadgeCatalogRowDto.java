@@ -4,10 +4,11 @@ public record BadgeCatalogRowDto(
         long categoryId,
         String categoryName,
         int categoryOrder,
+        String categoryDescription,
         long badgeId,
         String code,
         String badgeName,
-        String description,
+        String badgeDescription,
         int iconId,
         int badgeOrder
 ) {
