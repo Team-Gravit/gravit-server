@@ -17,10 +17,9 @@ public record ProblemReportSubmitRequest(
         String reportType,
 
         @Schema(
-                description = "신고 사유(입력이 없을 경우 \"-\" 이렇게 보내주세요.)",
+                description = "신고 사유",
                 example = "문제에 오타가 있어요."
         )
-        @NotBlank(message = "신고 사유가 비어있습니다.")
         String content,
 
         @Schema(
