@@ -22,5 +22,8 @@ public class BadgeCategory extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
     private int displayOrder;
 }
