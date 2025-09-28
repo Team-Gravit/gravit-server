@@ -28,12 +28,12 @@ public class BadgeQueryService {
         // 2. 유저가 획득한 뱃지
         Set<Long> earnedBadgeIds = new HashSet<>(userBadgeRepository.findBadgeIdsByUserId(userId));
 
-        record CatKey(Long id, String name, int order) {
+        record CatKey(Long id, String name, int order, String description) {
         }
 
         Map<CatKey, List<BadgeCatalogRowDto>> byCategory = rows.stream()
                 .collect(Collectors.groupingBy(
-                        r -> new CatKey(r.categoryId(), r.categoryName(), r.categoryOrder()),
+                        r -> new CatKey(r.categoryId(), r.categoryName(), r.categoryOrder(), r.categoryDescription()),
                         LinkedHashMap::new, Collectors.toList()));
 
         List<BadgeCategoryResponse> categories = byCategory.entrySet().stream()
@@ -41,9 +41,9 @@ public class BadgeQueryService {
                     CatKey key = e.getKey();
                     List<BadgeResponse> badgeResponses = e.getValue().stream()
                             .map(r -> new BadgeResponse(
-                                    r.badgeId(), r.code(), r.badgeName(), r.description(), r.badgeOrder(), r.iconId(), earnedBadgeIds.contains(r.badgeId())
+                                    r.badgeId(), r.code(), r.badgeName(), r.badgeDescription(), r.badgeOrder(), r.iconId(), earnedBadgeIds.contains(r.badgeId())
                             )).toList();
-                    return new BadgeCategoryResponse(key.id, key.name, key.order, badgeResponses);
+                    return new BadgeCategoryResponse(key.id, key.name, key.order, key.description, badgeResponses);
                 }).toList();
 
         int total = rows.size();

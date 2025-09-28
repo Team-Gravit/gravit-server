@@ -6,6 +6,7 @@ public record BadgeCategoryResponse(
         long categoryId,
         String categoryName,
         int order,
+        String categoryDescription,
         List<BadgeResponse> badgeResponses
 ) {
 }

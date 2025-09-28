@@ -17,11 +17,10 @@ public interface BadgeRepository extends JpaRepository<Badge, Long> {
     );
     long countByCriteriaType(CriteriaType criteriaType);
     Optional<Badge> findByCode(String code);
-    List<Badge> findByCategory(BadgeCategory category);
 
     @Query("""
         select new gravit.code.badge.dto.BadgeCatalogRowDto(
-            bc.id, bc.name, bc.displayOrder,
+            bc.id, bc.name, bc.displayOrder,bc.description,
             b.id, b.code, b.name, b.description,
             b.iconId, b.displayOrder
         )
