@@ -25,7 +25,7 @@ public class UserLevel {
     }
 
     public void updateXp(int xp){
-        this.xp = xp;
+        this.xp += xp;
         updateLevel(this.xp);
     }
 
