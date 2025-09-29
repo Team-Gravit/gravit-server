@@ -13,4 +13,5 @@ public interface OptionRepository {
     Optional<Option> findById(Long optionId);
     void deleteById(Long optionId);
     void deleteAllByProblemId(Long problemId);
+    boolean existsById(Long optionId);
 }
