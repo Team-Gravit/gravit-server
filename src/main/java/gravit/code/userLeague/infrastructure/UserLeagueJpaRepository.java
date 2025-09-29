@@ -19,9 +19,9 @@ public interface UserLeagueJpaRepository extends JpaRepository<UserLeague,Long> 
     """)
     String findUserLeagueNameByUserId(@Param("userId") Long userId);
 
-    boolean existsByUserId(Long userId);
+    boolean existsByUser_Id(Long userId);
 
-    Optional<UserLeague> findByUserId(Long userId);
+    Optional<UserLeague> findByUser_Id(Long userId);
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
     @Query("""
