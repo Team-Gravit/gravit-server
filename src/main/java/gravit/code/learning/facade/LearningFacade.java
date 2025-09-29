@@ -15,6 +15,7 @@ import gravit.code.learning.service.LessonService;
 import gravit.code.learning.service.ProblemService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.progress.domain.ChapterProgress;
+import gravit.code.progress.domain.LessonProgress;
 import gravit.code.progress.domain.UnitProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
@@ -90,29 +91,48 @@ public class LearningFacade {
             long userId,
             LearningResultSaveRequest request
     ){
-        // 저장하려는 레슨이 속한 챕터, 유닛 아이디 조회
+        LessonProgress lessonProgress = lessonProgressService.getLessonProgressAndUpdateStatus(request.lessonId(), userId, request.learningTime());
+
         LearningIds learningIds = lessonService.getLearningIdsByLessonId(request.lessonId());
 
-        // 챕터 진행도, 유닛 진행도가 없는 경우, 생성
-        ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId);
-        UnitProgress unitProgress = unitProgressService.ensureUnitProgress(learningIds.unitId(), userId);
+        LearningResultSaveResponse response;
+        if(lessonProgress.getAttemptCount() == 1){ // 첫번째 시도라면,
 
-        // 문제 풀이 결과 저장
+            ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId);
+            UnitProgress unitProgress = unitProgressService.ensureUnitProgress(learningIds.unitId(), userId);
+
+            if(unitProgressService.updateUnitProgress(unitProgress))
+                chapterProgressService.updateChapterProgress(chapterProgress);
+
+            response = saveLearningResultForFirstAttemptUser(userId, request);
+
+            publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
+            publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
+            publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
+            publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
+        }else{ // 첫번째 시도가 아니라면,
+            response = saveLearningResultForRetryUser(userId, request);
+
+            publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
+        }
+
+        return response;
+    }
+
+    private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request){
+
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
-        // lesson, unit, chapter 진행도 업데이트
-        lessonProgressService.updateLessonProgress(request.lessonId(), userId, request.learningTime());
-
-        if(unitProgressService.updateUnitProgress(unitProgress))
-            chapterProgressService.updateChapterProgress(chapterProgress);
-
-        UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 20, request.accuracy());
         String leagueName = userLeagueService.getUserLeagueName(userId);
+        UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 20, request.accuracy());
 
-        publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
-        publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
-        publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
-        publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
+        return LearningResultSaveResponse.create(userLevelResponse, leagueName);
+    }
+
+    private LearningResultSaveResponse saveLearningResultForRetryUser(long userId, LearningResultSaveRequest request){
+
+        String leagueName = userLeagueService.getUserLeagueName(userId);
+        UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 0, request.accuracy());
 
         return LearningResultSaveResponse.create(userLevelResponse, leagueName);
     }

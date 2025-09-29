@@ -21,6 +21,7 @@ import gravit.code.learning.service.LessonService;
 import gravit.code.learning.service.ProblemService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.progress.domain.ChapterProgress;
+import gravit.code.progress.domain.LessonProgress;
 import gravit.code.progress.domain.UnitProgress;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
@@ -345,15 +346,142 @@ class LearningFacadeTest {
         private final LearningIds learningIds = new LearningIds(3L, 2L, 1L);
 
         @Nested
-        @DisplayName("특정 학습 조회에 실패하면 예외를 반환한다.")
-        class FailedAtFind{
+        @DisplayName("첫 번째 시도인 경우")
+        class FirstAttemptCase{
 
             @Test
-            @DisplayName("레슨 조회에 실패한 경우")
-            void returnLesson404Exception(){
+            @DisplayName("모든 진행도 업데이트와 이벤트가 발행되어야 한다.")
+            void shouldProcessFirstAttemptSuccessfully(){
                 //given
-                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
-                        .thenThrow(new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
+                LessonProgress mockLessonProgress = mock(LessonProgress.class);
+                ChapterProgress mockChapterProgress = mock(ChapterProgress.class);
+                UnitProgress mockUnitProgress = mock(UnitProgress.class);
+                UserLevelResponse mockUserLevelResponse = UserLevelResponse.create(2, 120);
+
+                when(lessonProgressService.getLessonProgressAndUpdateStatus(validRequest.lessonId(), userId, validRequest.learningTime())).thenReturn(mockLessonProgress);
+                when(mockLessonProgress.getAttemptCount()).thenReturn(1);
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId())).thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId)).thenReturn(mockChapterProgress);
+                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId)).thenReturn(mockUnitProgress);
+                when(unitProgressService.updateUnitProgress(mockUnitProgress)).thenReturn(true);
+                when(userService.updateUserLevelAndXp(userId, 20, validRequest.accuracy())).thenReturn(mockUserLevelResponse);
+                when(userLeagueService.getUserLeagueName(userId)).thenReturn("실버 리그");
+
+                //when
+                learningFacade.saveLearningResult(userId, validRequest);
+
+                //then
+                verify(problemProgressService, times(1)).saveProblemResults(userId, validRequest.problemResults());
+                verify(chapterProgressService, times(1)).updateChapterProgress(mockChapterProgress);
+                verify(unitProgressService, times(1)).updateUnitProgress(mockUnitProgress);
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
+
+                verify(publisher, times(1)).publishEvent(any(UpdateLearningEvent.class));
+                verify(publisher, times(1)).publishEvent(any(LessonCompletedEvent.class));
+                verify(publisher, times(1)).publishEvent(any(LessonMissionEvent.class));
+                verify(publisher, times(1)).publishEvent(any(QualifiedSolvedEvent.class));
+            }
+
+            @Test
+            @DisplayName("유닛 진행도 업데이트가 false면 챕터 진행도는 업데이트하지 않는다.")
+            void shouldNotUpdateChapterProgressWhenUnitProgressReturnsFalse(){
+                //given
+                LessonProgress mockLessonProgress = mock(LessonProgress.class);
+                ChapterProgress mockChapterProgress = mock(ChapterProgress.class);
+                UnitProgress mockUnitProgress = mock(UnitProgress.class);
+                UserLevelResponse mockUserLevelResponse = UserLevelResponse.create(2, 120);
+
+                when(lessonProgressService.getLessonProgressAndUpdateStatus(validRequest.lessonId(), userId, validRequest.learningTime())).thenReturn(mockLessonProgress);
+                when(mockLessonProgress.getAttemptCount()).thenReturn(1);
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId())).thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId)).thenReturn(mockChapterProgress);
+                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId)).thenReturn(mockUnitProgress);
+                when(unitProgressService.updateUnitProgress(mockUnitProgress)).thenReturn(false);
+                when(userService.updateUserLevelAndXp(userId, 20, validRequest.accuracy())).thenReturn(mockUserLevelResponse);
+                when(userLeagueService.getUserLeagueName(userId)).thenReturn("실버 리그");
+
+                //when
+                learningFacade.saveLearningResult(userId, validRequest);
+
+                //then
+                verify(chapterProgressService, never()).updateChapterProgress(any(ChapterProgress.class));
+                verify(unitProgressService, times(1)).updateUnitProgress(mockUnitProgress);
+                verify(problemProgressService, times(1)).saveProblemResults(userId, validRequest.problemResults());
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
+            }
+        }
+
+        @Nested
+        @DisplayName("재시도인 경우")
+        class RetryAttemptCase{
+
+            @Test
+            @DisplayName("문제 결과 저장 없이 XP 0으로 업데이트되고 제한된 이벤트만 발행되어야 한다.")
+            void shouldProcessRetryAttemptCorrectly(){
+                //given
+                LessonProgress mockLessonProgress = mock(LessonProgress.class);
+                UserLevelResponse mockUserLevelResponse = UserLevelResponse.create(2, 100);
+
+                when(lessonProgressService.getLessonProgressAndUpdateStatus(validRequest.lessonId(), userId, validRequest.learningTime())).thenReturn(mockLessonProgress);
+                when(mockLessonProgress.getAttemptCount()).thenReturn(2);
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId())).thenReturn(learningIds);
+                when(userService.updateUserLevelAndXp(userId, 0, validRequest.accuracy())).thenReturn(mockUserLevelResponse);
+                when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈 리그");
+
+                //when
+                var result = learningFacade.saveLearningResult(userId, validRequest);
+
+                //then
+                assertThat(result).isNotNull();
+                verify(problemProgressService, never()).saveProblemResults(anyLong(), anyList());
+                verify(chapterProgressService, never()).ensureChapterProgress(anyLong(), anyLong());
+                verify(unitProgressService, never()).ensureUnitProgress(anyLong(), anyLong());
+                verify(chapterProgressService, never()).updateChapterProgress(any(ChapterProgress.class));
+                verify(unitProgressService, never()).updateUnitProgress(any(UnitProgress.class));
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 0, validRequest.accuracy());
+
+                verify(publisher, times(1)).publishEvent(any(UpdateLearningEvent.class));
+                verify(publisher, never()).publishEvent(any(LessonCompletedEvent.class));
+                verify(publisher, never()).publishEvent(any(LessonMissionEvent.class));
+                verify(publisher, never()).publishEvent(any(QualifiedSolvedEvent.class));
+            }
+
+            @Test
+            @DisplayName("3번째 시도도 재시도로 처리되어야 한다.")
+            void shouldProcessThirdAttemptAsRetry(){
+                //given
+                LessonProgress mockLessonProgress = mock(LessonProgress.class);
+                UserLevelResponse mockUserLevelResponse = UserLevelResponse.create(2, 100);
+
+                when(lessonProgressService.getLessonProgressAndUpdateStatus(validRequest.lessonId(), userId, validRequest.learningTime())).thenReturn(mockLessonProgress);
+                when(mockLessonProgress.getAttemptCount()).thenReturn(3);
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId())).thenReturn(learningIds);
+                when(userService.updateUserLevelAndXp(userId, 0, validRequest.accuracy())).thenReturn(mockUserLevelResponse);
+                when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈 리그");
+
+                //when
+                learningFacade.saveLearningResult(userId, validRequest);
+
+                //then
+                verify(problemProgressService, never()).saveProblemResults(any(), any());
+                verify(userService, times(1)).updateUserLevelAndXp(userId, 0, validRequest.accuracy());
+                verify(publisher, times(1)).publishEvent(any(UpdateLearningEvent.class));
+                verify(publisher, never()).publishEvent(any(LessonCompletedEvent.class));
+            }
+        }
+
+        @Nested
+        @DisplayName("예외 상황")
+        class ExceptionCases{
+
+            @Test
+            @DisplayName("레슨 조회에 실패한 경우 예외를 발생시킨다.")
+            void shouldThrowExceptionWhenLessonNotFound(){
+                //given
+                LessonProgress mockLessonProgress = mock(LessonProgress.class);
+
+                when(lessonProgressService.getLessonProgressAndUpdateStatus(validRequest.lessonId(), userId, validRequest.learningTime())).thenReturn(mockLessonProgress);
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId())).thenThrow(new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
 
                 //when&then
                 assertThatThrownBy(() -> learningFacade.saveLearningResult(userId, validRequest))
@@ -362,104 +490,39 @@ class LearningFacadeTest {
             }
 
             @Test
-            @DisplayName("유닛 조회에 실패한 경우")
-            void returnUnit404Exception(){
+            @DisplayName("첫 시도에서 챕터 진행도 생성에 실패한 경우 예외를 발생시킨다.")
+            void shouldThrowExceptionWhenChapterProgressCreationFails(){
                 //given
-                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
-                        .thenReturn(learningIds);
-                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
-                        .thenReturn(mock(ChapterProgress.class));
-                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId))
-                        .thenThrow(new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+                LessonProgress mockLessonProgress = mock(LessonProgress.class);
 
-                //when&then
-                assertThatThrownBy(() -> learningFacade.saveLearningResult(userId, validRequest))
-                        .isInstanceOf(RestApiException.class)
-                        .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.UNIT_NOT_FOUND);
-            }
-
-            @Test
-            @DisplayName("챕터 조회에 실패한 경우")
-            void returnChapter404Exception(){
-                //given
-                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
-                        .thenReturn(learningIds);
-                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
-                        .thenThrow(new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
+                when(lessonProgressService.getLessonProgressAndUpdateStatus(validRequest.lessonId(), userId, validRequest.learningTime())).thenReturn(mockLessonProgress);
+                when(mockLessonProgress.getAttemptCount()).thenReturn(1);
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId())).thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId)).thenThrow(new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
 
                 //when&then
                 assertThatThrownBy(() -> learningFacade.saveLearningResult(userId, validRequest))
                         .isInstanceOf(RestApiException.class)
                         .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_NOT_FOUND);
             }
-        }
-
-        @Nested
-        @DisplayName("updateUnitProgress가")
-        class UnitProgressServiceReturn{
 
             @Test
-            @DisplayName("true를 반환하면 updateChapterProgress를 호출한다.")
-            void invokeUpdateChapterProgress(){
+            @DisplayName("첫 시도에서 유닛 진행도 생성에 실패한 경우 예외를 발생시킨다.")
+            void shouldThrowExceptionWhenUnitProgressCreationFails(){
                 //given
-                ChapterProgress chapterProgress = mock(ChapterProgress.class);
-                UnitProgress unitProgress = mock(UnitProgress.class);
+                LessonProgress mockLessonProgress = mock(LessonProgress.class);
+                ChapterProgress mockChapterProgress = mock(ChapterProgress.class);
 
-                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
-                        .thenReturn(learningIds);
-                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
-                        .thenReturn(chapterProgress);
-                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId))
-                        .thenReturn(unitProgress);
-                doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
-                when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(true);
-                when(userService.updateUserLevelAndXp(userId, 20, validRequest.accuracy()))
-                        .thenReturn(UserLevelResponse.create(1, 100));
-                when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈 리그");
+                when(lessonProgressService.getLessonProgressAndUpdateStatus(validRequest.lessonId(), userId, validRequest.learningTime())).thenReturn(mockLessonProgress);
+                when(mockLessonProgress.getAttemptCount()).thenReturn(1);
+                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId())).thenReturn(learningIds);
+                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId)).thenReturn(mockChapterProgress);
+                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId)).thenThrow(new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
 
-                //when
-                learningFacade.saveLearningResult(userId, validRequest);
-
-                //then
-                verify(chapterProgressService, times(1)).updateChapterProgress(chapterProgress);
-                verify(publisher, times(1)).publishEvent(any(UpdateLearningEvent.class));
-                verify(publisher, times(1)).publishEvent(any(LessonCompletedEvent.class));
-                verify(publisher, times(1)).publishEvent(any(LessonMissionEvent.class));
-                verify(publisher, times(1)).publishEvent(any(QualifiedSolvedEvent.class));
-                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
-            }
-
-            @Test
-            @DisplayName("false를 반환하면 updateChapterProgress를 호출하지 않는다.")
-            void notInvokeUpdateChapterProgress(){
-                //given
-                ChapterProgress chapterProgress = mock(ChapterProgress.class);
-                UnitProgress unitProgress = mock(UnitProgress.class);
-
-                when(lessonService.getLearningIdsByLessonId(validRequest.lessonId()))
-                        .thenReturn(learningIds);
-                when(chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId))
-                        .thenReturn(chapterProgress);
-                when(unitProgressService.ensureUnitProgress(learningIds.unitId(), userId))
-                        .thenReturn(unitProgress);
-                doNothing().when(problemProgressService).saveProblemResults(userId, validRequest.problemResults());
-                doNothing().when(lessonProgressService).updateLessonProgress(validRequest.lessonId(), userId, validRequest.learningTime());
-                when(unitProgressService.updateUnitProgress(unitProgress)).thenReturn(false);
-                when(userService.updateUserLevelAndXp(userId, 20, validRequest.accuracy()))
-                        .thenReturn(UserLevelResponse.create(1, 100));
-                when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈 리그");
-
-                //when
-                learningFacade.saveLearningResult(userId, validRequest);
-
-                //then
-                verify(chapterProgressService, never()).updateChapterProgress(any());
-                verify(publisher, times(1)).publishEvent(any(UpdateLearningEvent.class));
-                verify(publisher, times(1)).publishEvent(any(LessonCompletedEvent.class));
-                verify(publisher, times(1)).publishEvent(any(LessonMissionEvent.class));
-                verify(publisher, times(1)).publishEvent(any(QualifiedSolvedEvent.class));
-                verify(userService, times(1)).updateUserLevelAndXp(userId, 20, validRequest.accuracy());
+                //when&then
+                assertThatThrownBy(() -> learningFacade.saveLearningResult(userId, validRequest))
+                        .isInstanceOf(RestApiException.class)
+                        .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.UNIT_NOT_FOUND);
             }
         }
     }
