@@ -91,7 +91,8 @@ CREATE TABLE chapter_progress
     user_id         BIGINT NOT NULL,
     chapter_id      BIGINT NOT NULL,
     total_units     BIGINT NOT NULL,
-    completed_units BIGINT NOT NULL
+    completed_units BIGINT NOT NULL,
+    CONSTRAINT ux_cp_user UNIQUE (chapter_id, user_id)
 );
 
 CREATE TABLE unit_progress
@@ -100,7 +101,8 @@ CREATE TABLE unit_progress
     user_id           BIGINT NOT NULL,
     unit_id           BIGINT NOT NULL,
     total_lessons     BIGINT NOT NULL,
-    completed_lessons BIGINT NOT NULL
+    completed_lessons BIGINT NOT NULL,
+    CONSTRAINT ux_up_user UNIQUE (unit_id, user_id)
 );
 
 CREATE TABLE lesson_progress
@@ -110,7 +112,8 @@ CREATE TABLE lesson_progress
     lesson_id     BIGINT  NOT NULL,
     attempt_count INTEGER NOT NULL DEFAULT 0,
     learning_time INTEGER NOT NULL DEFAULT 0,
-    is_completed  BOOLEAN NOT NULL
+    is_completed  BOOLEAN NOT NULL,
+    CONSTRAINT ux_lp_user UNIQUE (lesson_id, user_id)
 );
 
 CREATE TABLE problem_progress
