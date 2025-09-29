@@ -29,7 +29,7 @@ import java.util.List;
 @Tag(name = "Learning API", description = "학습 관련 API")
 public interface LearningControllerDocs {
 
-    @Operation(summary = "챕터 목록 조회", description = "사용자의 챕터 진행 상황과 함께 전체 챕터 목록을 조회합니다<br>" +
+    @Operation(summary = "챕터 조회", description = "유저의 챕터 진행도를 포함한 챕터 목록을 조회합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 챕터 목록 조회 성공"),
@@ -42,25 +42,25 @@ public interface LearningControllerDocs {
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     @GetMapping("/chapters")
     ResponseEntity<List<ChapterProgressDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser);
 
-    @Operation(summary = "유닛 목록 조회", description = "특정 챕터의 유닛 목록과 레슨 진행 상황을 조회합니다<br>" +
+    @Operation(summary = "유닛 조회", description = "유저의 유닛 진행도를 포함한 유닛 목록을 조회합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 유닛 목록 조회 성공"),
+            @ApiResponse(responseCode = "CHAPTER_4041", description = "🚨 챕터 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "챕터 조회 실패",
+                                            value = "{\"error\" : \"CHAPTER_4041\", \"message\" : \"챕터 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
             @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -70,26 +70,36 @@ public interface LearningControllerDocs {
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     @GetMapping("/{chapterId}/units")
     ResponseEntity<UnitPageResponse> getAllUnitsInChapter(@AuthenticationPrincipal LoginUser loginUser,
                                                           @PathVariable("chapterId") Long chapterId);
 
-    @Operation(summary = "레슨 문제 목록 조회", description = "특정 레슨에 포함된 문제 목록을 조회합니다<br>" +
+    @Operation(summary = "레슨 문제 조회", description = "특정 레슨을 구성하는 문제 목록을 조회합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 레슨 문제 목록 조회 성공"),
+            @ApiResponse(responseCode = "CHAPTER_4041", description = "🚨 챕터 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "챕터 조회 실패",
+                                            value = "{\"error\" : \"CHAPTER_4041\", \"message\" : \"챕터 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "LESSON_4041", description = "🚨 레슨 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "레슨 조회 실패",
+                                            value = "{\"error\" : \"LESSON_4041\", \"message\" : \"레슨 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
             @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -100,12 +110,12 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "OPTION_4041", description = "🚨 옵션 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                            name = "옵션 조회 실패",
+                                            value = "{\"error\" : \"OPTION_4041\", \"message\" : \"옵션 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -128,16 +138,6 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "LESSON_4041", description = "🚨 레슨 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "레슨 조회 실패",
-                                            value = "{\"error\" : \"LESSON_4041\", \"message\" : \"레슨 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
             @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -148,32 +148,12 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "CHAPTER_4041", description = "🚨 챕터 조회 실패",
+            @ApiResponse(responseCode = "LESSON_4041", description = "🚨 레슨 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "챕터 조회 실패",
-                                            value = "{\"error\" : \"CHAPTER_4041\", \"message\" : \"챕터 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_4001", description = "🚨 유효성 검사 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                            name = "레슨 조회 실패",
+                                            value = "{\"error\" : \"LESSON_4041\", \"message\" : \"레슨 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -187,52 +167,12 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 문제 신고 제출 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
             @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
                                             name = "문제 조회 실패",
                                             value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "REPORT_DUPLICATE", description = "🚨 중복 신고",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "중복 신고",
-                                            value = "{\"error\" : \"REPORT_DUPLICATE\", \"message\" : \"이미 신고한 문제입니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_4001", description = "🚨 유효성 검사 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))

@@ -55,6 +55,10 @@ public class AdminProblemService {
 
     @Transactional
     public void deleteProblem(Long problemId){
+
+        if(!problemRepository.existsProblemById(problemId))
+            throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
+
         problemRepository.deleteById(problemId);
         optionRepository.deleteAllByProblemId(problemId);
     }

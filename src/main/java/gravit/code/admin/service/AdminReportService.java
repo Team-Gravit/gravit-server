@@ -33,7 +33,7 @@ public class AdminReportService {
     }
 
     @Transactional
-    public Boolean updateResolvedStatus(Long reportId){
+    public void updateResolvedStatus(Long reportId){
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.REPORT_NOT_FOUND));
 
@@ -41,6 +41,5 @@ public class AdminReportService {
 
         reportRepository.save(report);
 
-        return report.isResolved();
     }
 }

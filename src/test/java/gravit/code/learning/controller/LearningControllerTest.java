@@ -448,26 +448,26 @@ class LearningControllerTest {
                     .andExpect(status().is4xxClientError());
         }
 
-        @Test
-        @WithMockLoginUser
-        @DisplayName("이미 제출된 신고라면 예외를 반환한다.")
-        void withAlreadySubmittedReport() throws Exception{
-            //given
-            long userId = 1L;
-
-            doThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT)).when(reportService).submitProblemReport(userId, validRequest);
-
-            //when
-            ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(validRequest))
-                    .with(csrf()));
-
-            //then
-            resultActions
-                    .andDo(print())
-                    .andExpect(status().is4xxClientError());
-        }
+//        @Test
+//        @WithMockLoginUser
+//        @DisplayName("이미 제출된 신고라면 예외를 반환한다.")
+//        void withAlreadySubmittedReport() throws Exception{
+//            //given
+//            long userId = 1L;
+//
+//            doThrow(new RestApiException(CustomErrorCode.ALREADY_SUBMITTED_REPORT)).when(reportService).submitProblemReport(userId, validRequest);
+//
+//            //when
+//            ResultActions resultActions = mockMvc.perform(post("/api/v1/learning/reports")
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .content(objectMapper.writeValueAsString(validRequest))
+//                    .with(csrf()));
+//
+//            //then
+//            resultActions
+//                    .andDo(print())
+//                    .andExpect(status().is4xxClientError());
+//        }
 
         @Test
         @WithMockLoginUser

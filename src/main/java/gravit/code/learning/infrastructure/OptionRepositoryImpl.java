@@ -49,4 +49,9 @@ public class OptionRepositoryImpl implements OptionRepository {
     public void deleteAllByProblemId(Long problemId){
         optionJpaRepository.deleteAllByProblemId(problemId);
     }
+
+    @Override
+    public boolean existsById(Long optionId){
+        return optionJpaRepository.existsById(optionId);
+    }
 }

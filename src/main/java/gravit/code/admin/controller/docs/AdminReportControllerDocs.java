@@ -25,17 +25,7 @@ public interface AdminReportControllerDocs {
     @Operation(summary = "신고 목록 조회", description = "페이징된 신고 목록을 조회합니다<br>" +
             "🔐 <strong>관리자 권한 필요</strong><br>")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "✅ 신고 목록 조회 성공"),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            )
+            @ApiResponse(responseCode = "200", description = "✅ 신고 목록 조회 성공")
     })
     @GetMapping
     ResponseEntity<List<ReportSummaryResponse>> getAllReports(@RequestParam(defaultValue = "0") int page);
@@ -50,16 +40,6 @@ public interface AdminReportControllerDocs {
                                     @ExampleObject(
                                             name = "신고 조회 실패",
                                             value = "{\"error\" : \"REPORT_4041\", \"message\" : \"신고 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -78,16 +58,6 @@ public interface AdminReportControllerDocs {
                                     @ExampleObject(
                                             name = "신고 조회 실패",
                                             value = "{\"error\" : \"REPORT_4041\", \"message\" : \"신고 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))

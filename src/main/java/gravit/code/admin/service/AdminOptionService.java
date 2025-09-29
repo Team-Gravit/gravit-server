@@ -37,6 +37,9 @@ public class AdminOptionService {
 
     @Transactional
     public void deleteOption(Long optionId){
+        if(!optionRepository.existsById(optionId))
+            throw new RestApiException(CustomErrorCode.OPTION_NOT_FOUND);
+
         optionRepository.deleteById(optionId);
     }
 }
