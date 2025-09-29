@@ -22,16 +22,6 @@ public interface MainPageControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 메인 페이지 정보 조회 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
             @ApiResponse(responseCode = "RECENT_LEARNING_4041", description = "🚨 최근 학습 정보 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -42,16 +32,6 @@ public interface MainPageControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            )
     })
     @GetMapping
     ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser);

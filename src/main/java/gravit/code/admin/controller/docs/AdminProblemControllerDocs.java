@@ -32,16 +32,6 @@ public interface AdminProblemControllerDocs {
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     @GetMapping("/{problemId}")
@@ -50,27 +40,7 @@ public interface AdminProblemControllerDocs {
     @Operation(summary = "문제 생성", description = "새로운 문제를 생성합니다<br>" +
             "🔐 <strong>관리자 권한 필요</strong><br>")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "✅ 문제 생성 성공"),
-            @ApiResponse(responseCode = "GLOBAL_4001", description = "🚨 유효성 검사 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            )
+            @ApiResponse(responseCode = "201", description = "✅ 문제 생성 성공")
     })
     @PostMapping
     ResponseEntity<Void> createProblem(@Valid @RequestBody ProblemCreateRequest request);
@@ -85,26 +55,6 @@ public interface AdminProblemControllerDocs {
                                     @ExampleObject(
                                             name = "문제 조회 실패",
                                             value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_4001", description = "🚨 유효성 검사 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -123,16 +73,6 @@ public interface AdminProblemControllerDocs {
                                     @ExampleObject(
                                             name = "문제 조회 실패",
                                             value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
