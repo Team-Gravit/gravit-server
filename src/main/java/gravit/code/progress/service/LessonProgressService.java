@@ -22,14 +22,12 @@ public class LessonProgressService {
             long userId,
             int learningTime
     ) {
-        return lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId)
-                .orElseGet(() -> {
-                    LessonProgress newLessonProgress = LessonProgress.create(userId, lessonId);
+        LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId)
+                .orElseGet(() -> LessonProgress.create(userId, lessonId));
 
-                    newLessonProgress.updateStatus(learningTime);
+        lessonProgress.updateStatus(learningTime);
 
-                    return lessonProgressRepository.save(newLessonProgress);
-                });
+        return lessonProgressRepository.save(lessonProgress);
     }
 
     @Transactional(readOnly = true)
