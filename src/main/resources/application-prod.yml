@@ -103,7 +103,7 @@ token:
 
 scheduler:
   season:
-    rollover-cron: "0/30 * * * * *"
+    rollover-cron: "0 */2 * * * *"
 
 auth0:
   issuer: ${AUTH0_ISSUER}
