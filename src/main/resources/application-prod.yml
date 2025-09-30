@@ -101,6 +101,10 @@ token:
     storage-key-prefix: "refreshToken:"
     expire-time: 14d
 
+scheduler:
+  season:
+    rollover-cron: "0/30 * * * * *"
+
 auth0:
   issuer: ${AUTH0_ISSUER}
   android-client-id: ${ANDROID_CLIENT_ID}
