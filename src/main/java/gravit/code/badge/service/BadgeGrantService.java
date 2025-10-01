@@ -18,8 +18,6 @@ public class BadgeGrantService {
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
 
-    private static final int MAX_STREAK = 50;
-
     private static final String CODE_PLANETS_ALL = "PLANETS_ALL_COMPLETE";
     private static final String CODE_STREAK_ALL  = "STREAK_ALL_STAR";
     private static final String CODE_SPEED_ALL   = "SPEED_ALL_STAR";
@@ -31,6 +29,7 @@ public class BadgeGrantService {
             String planet,
             boolean allPlanetsCompleted
     ) {
+        log.info("evaluatePlanet 성공");
         for(Badge b : badgeRepository.findByCriteriaTypeAndCodeNot(CriteriaType.PLANET_COMPLETE, CODE_PLANETS_ALL)) {
             String need = b.getCriteriaParams().path("planet").asText();
             if(planet.equalsIgnoreCase(need)) grantIfAbsent(userId, b);

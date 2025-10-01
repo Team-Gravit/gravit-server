@@ -11,10 +11,12 @@ import gravit.code.badge.infrastructure.user.UserMissionStatRepository;
 import gravit.code.badge.infrastructure.user.UserPlanetCompletionRepository;
 import gravit.code.badge.infrastructure.user.UserQualifiedSolveStatRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProjectionService {
@@ -33,6 +35,8 @@ public class ProjectionService {
     ) {
         Planet planet = Planet.getPlanetByChapterId(chapterId);
 
+        log.info("ProjectionService 호출");
+        log.info("beforeCount = {}, afterCount = {}, totalCounts = {}", beforeCount, afterCount, totalCounts);
         if(beforeCount == afterCount || afterCount != totalCounts){
             return null;
         }
@@ -41,6 +45,7 @@ public class ProjectionService {
             return null;
         }
 
+        log.info("UserPlanetCompletion 저장");
         planetCompletionRepository.save(UserPlanetCompletion.of(userId, planet));
 
         // 모든 챕터를 완료했는지 확인

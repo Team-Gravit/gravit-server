@@ -29,6 +29,7 @@ import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LearningFacade {
 
     private final ApplicationEventPublisher publisher;
@@ -120,8 +122,10 @@ public class LearningFacade {
         ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(chapterId, userId);
         UnitProgress unitProgress = unitProgressService.ensureUnitProgress(unitId, userId);
 
-        if(unitProgressService.updateUnitProgress(unitProgress))
+        if(unitProgressService.updateUnitProgress(unitProgress)){
             chapterProgressService.updateChapterProgress(chapterProgress);
+            log.info("=== 행성 클리어 업데이트 로직 실행 ===");
+        }
     }
 
     private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request){
