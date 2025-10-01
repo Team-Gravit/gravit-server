@@ -22,7 +22,7 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
 
     @Override
     public boolean existsByUserId(long userId) {
-        return userLeagueJpaRepository.existsByUserId(userId);
+        return userLeagueJpaRepository.existsByUser_Id(userId);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
 
     @Override
     public Optional<UserLeague> findByUserId(long userId) {
-        return userLeagueJpaRepository.findById(userId);
+        return userLeagueJpaRepository.findByUser_Id(userId);
     }
 
     @Override
