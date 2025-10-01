@@ -95,14 +95,10 @@ public class LearningFacade {
 
         LearningIds learningIds = lessonService.getLearningIdsByLessonId(request.lessonId());
 
+        checkAndUpdateLearningProgress(learningIds.chapterId(), learningIds.unitId(), userId);
+
         LearningResultSaveResponse response;
-        if(lessonProgress.getAttemptCount() == 1){ // 첫번째 시도라면,
-
-            ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(learningIds.chapterId(), userId);
-            UnitProgress unitProgress = unitProgressService.ensureUnitProgress(learningIds.unitId(), userId);
-
-            if(unitProgressService.updateUnitProgress(unitProgress))
-                chapterProgressService.updateChapterProgress(chapterProgress);
+        if(lessonProgress.getAttemptCount() == 1){ // 레슨 첫번째 풀이라면,
 
             response = saveLearningResultForFirstAttemptUser(userId, request);
 
@@ -110,13 +106,22 @@ public class LearningFacade {
             publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
             publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
             publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
-        }else{ // 첫번째 시도가 아니라면,
+        }else{ // 레슨 첫번째 풀이가 아니라면,
             response = saveLearningResultForRetryUser(userId, request);
 
             publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
         }
 
         return response;
+    }
+
+    private void checkAndUpdateLearningProgress(long chapterId, long unitId, long userId){
+
+        ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(chapterId, userId);
+        UnitProgress unitProgress = unitProgressService.ensureUnitProgress(unitId, userId);
+
+        if(unitProgressService.updateUnitProgress(unitProgress))
+            chapterProgressService.updateChapterProgress(chapterProgress);
     }
 
     private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request){
