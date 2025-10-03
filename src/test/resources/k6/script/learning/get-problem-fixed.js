@@ -17,7 +17,7 @@ export const options = {
 }
 
 const BASE_URL = 'http://localhost:8521'
-const JWT = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0NTEiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1OTUwMzQxNCwiZXhwIjoxNzU5NTEwNjE0fQ.eL2KDK4ZjQd63XQu0SZEvuelNKBK9oR6zwwRu-khhck'
+const JWT = ''
 
 export default function (){
     const lessonId = Math.floor(Math.random() * 8) + 1
