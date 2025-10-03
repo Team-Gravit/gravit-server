@@ -114,3 +114,9 @@ admin:
   bootstrap:
     enabled: true
     emails: ${ADMIN_BOOTSTRAP_EMAILS}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
