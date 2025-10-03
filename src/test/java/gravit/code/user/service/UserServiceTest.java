@@ -3,11 +3,18 @@ package gravit.code.user.service;
 import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.event.CreateLearningEvent;
+import gravit.code.mainPage.dto.MainPageSummary;
+import gravit.code.mainPage.dto.response.MainPageResponse;
+import gravit.code.mission.domain.MissionType;
+import gravit.code.mission.dto.MissionSummary;
+import gravit.code.mission.service.MissionService;
 import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserLevel;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
+import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
 import gravit.code.user.fixture.UserFixtureBuilder;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +45,9 @@ public class UserServiceTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private MissionService missionService;
 
 
     @DisplayName("온보딩 할 때")
@@ -350,7 +360,137 @@ public class UserServiceTest {
             // then
             assertThrows(RestApiException.class, ()-> userService.updateUserProfile(userId, request));
         }
+    }
+    
+    @DisplayName("학습 후 제공되는 xp 를 적용한 유저 레벨 증가 관련")
+    @Nested
+    class UserLevelAndXpUpdate{
+        @Test
+        void 레벨_변동_없음(){
+            // given
+            long userId = 1L;
+            int preLevel = 1;
+            int preXp = 0;
+            User testUser = UserFixtureBuilder.builder()
+                    .onboarded()
+                    .buildWithLevelAndId(
+                            userId,
+                            new UserLevel(preLevel, preXp)
+                    );
 
+            int xp = 10;
+            int accuracy = 50;
+
+            int currentLevel = preLevel;
+            int nextLevel = currentLevel + 1;
+
+            when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+            // when
+            UserLevelResponse result = userService.updateUserLevelAndXp(userId, xp, accuracy);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.currentLevel()).isEqualTo(currentLevel);
+                softly.assertThat(result.nextLevel()).isEqualTo(nextLevel);
+            });
+        }
+
+        @Test
+        void 레벨이_증가(){
+            // given
+            long userId = 1L;
+            int preLevel = 1;
+            int preXp = 99;
+            User testUser = UserFixtureBuilder.builder()
+                    .onboarded()
+                    .buildWithLevelAndId(
+                            userId,
+                            new UserLevel(preLevel, preXp)
+                    );
+
+            int xp = 20;
+            int accuracy = 50;
+
+            int currentLevel = preLevel + 1;
+            int nextLevel = currentLevel + 1;
+
+            when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+            // when
+            UserLevelResponse result = userService.updateUserLevelAndXp(userId, xp, accuracy);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.currentLevel()).isEqualTo(currentLevel);
+                softly.assertThat(result.nextLevel()).isEqualTo(nextLevel);
+            });
+        }
+    }
+
+    @DisplayName("유저의 메인 페이지 관련")
+    @Nested
+    class UserMainPage{
+        @Test
+        void 유저_Id_기반으로_유저의_메인_페이지를_조회합니다(){
+
+            // given
+            long userId = 1L;
+            String nickname = "test";
+            String leagueName = "testLeague";
+            int xp = 0;
+            int level = 1;
+            int planetConquestRate = 15;
+            int consecutiveDays = 10;
+            long chapterId = 1L;
+            String chapterName = "testChater";
+            String chapterDescription = "testDescription";
+            long totalUnits = 10;
+            long completedUnits = 10;
+
+            MainPageSummary mainPageSummary = new MainPageSummary(
+                    nickname,
+                    leagueName,
+                    xp,
+                    level,
+                    planetConquestRate,
+                    consecutiveDays,
+                    chapterId,
+                    chapterName,
+                    chapterDescription,
+                    totalUnits,
+                    completedUnits
+            );
+
+            MissionType missionType = MissionType.COMPLETE_LESSON_ONE;
+            boolean isMissionCompleted = false;
+
+            MissionSummary missionSummary = new MissionSummary(missionType, isMissionCompleted);
+
+            when(userRepository.findMainPageByUserId(userId)).thenReturn(mainPageSummary);
+            when(missionService.getMissionSummary(userId)).thenReturn(missionSummary);
+
+            // when
+            MainPageResponse result = userService.getMainPage(userId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.nickname()).isEqualTo(nickname);
+                softly.assertThat(result.leagueName()).isEqualTo(leagueName);
+                softly.assertThat(result.xp()).isEqualTo(xp);
+                softly.assertThat(result.level()).isEqualTo(level);
+                softly.assertThat(result.planetConquestRate()).isEqualTo(planetConquestRate);
+                softly.assertThat(result.consecutiveDays()).isEqualTo(consecutiveDays);
+                softly.assertThat(result.chapterId()).isEqualTo(chapterId);
+                softly.assertThat(result.chapterName()).isEqualTo(chapterName);
+                softly.assertThat(result.chapterDescription()).isEqualTo(chapterDescription);
+                softly.assertThat(result.totalUnits()).isEqualTo(totalUnits);
+                softly.assertThat(result.completedUnits()).isEqualTo(completedUnits);
+                softly.assertThat(result.missionName()).isEqualTo(missionType.getDescription());
+                softly.assertThat(result.awardXp()).isEqualTo(missionType.getAwardXp());
+                softly.assertThat(result.isCompleted()).isEqualTo(isMissionCompleted);
+            });
+        }
 
     }
 

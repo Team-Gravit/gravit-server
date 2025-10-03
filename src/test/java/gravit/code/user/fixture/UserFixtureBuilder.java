@@ -6,6 +6,8 @@ import gravit.code.user.domain.UserLevel;
 import gravit.code.user.domain.UserStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.sql.Ref;
+
 
 public class UserFixtureBuilder {
 
@@ -55,20 +57,11 @@ public class UserFixtureBuilder {
         return this;
     }
 
-    public UserFixtureBuilder level(UserLevel level) {
-        this.level = level;
-        return this;
-    }
-
     public UserFixtureBuilder profileImgNumber(int profileImgNumber) {
         this.profileImgNumber = profileImgNumber;
         return this;
     }
 
-    public UserFixtureBuilder status(UserStatus status) {
-        this.status = status;
-        return this;
-    }
 
     public UserFixtureBuilder role(Role role) {
         this.role = role;
@@ -96,7 +89,7 @@ public class UserFixtureBuilder {
         );
     }
 
-    public User buildWithId(Long id){
+    public User buildWithId(long id){
         User user = User.create(
                 this.email,
                 this.providerId,
@@ -106,6 +99,21 @@ public class UserFixtureBuilder {
                 this.role
         );
         ReflectionTestUtils.setField(user, "id", id);
+
+        return user;
+    }
+
+    public User buildWithLevelAndId(long id, UserLevel level){
+        User user = User.create(
+                this.email,
+                this.providerId,
+                this.nickname,
+                this.handle,
+                this.profileImgNumber,
+                this.role
+        );
+        ReflectionTestUtils.setField(user, "id", id);
+        ReflectionTestUtils.setField(user, "level", level, UserLevel.class); // vo 클래스 명시해야한다.
 
         return user;
     }
