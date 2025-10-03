@@ -362,9 +362,9 @@ public class UserServiceTest {
         }
     }
     
-    @DisplayName("학습 후 제공되는 xp 를 적용한 유저 레벨 증가 관련")
+//    @DisplayName("학습 후 제공되는 xp 를 적용한 유저 레벨 증가 관련")
     @Nested
-    class UserLevelAndXpUpdate{
+    class UserLevelAndXp{
         @Test
         void 레벨_변동_없음(){
             // given
