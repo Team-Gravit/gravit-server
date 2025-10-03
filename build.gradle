@@ -73,6 +73,9 @@ dependencies {
     // Redis
     implementation "org.springframework.boot:spring-boot-starter-data-redis"
 
+    // monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 // 현재 migration 실행까지 테스트 하려면 TestContainer 가 필요할 듯 싶습니다.
