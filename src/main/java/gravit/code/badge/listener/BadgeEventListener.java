@@ -28,6 +28,7 @@ public class BadgeEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePlanetCompleted(PlanetCompletedEvent event){
         try{
+            log.info("handlePlanetCompleted 이벤트 리슨");
             PlanetCompletionDto dto = projectionService.recordPlanetCompletion(
                     event.userId(), event.chapterId(), event.beforeCount(),event.afterCount(), event.totalUnitCount()
             );
