@@ -14,7 +14,8 @@ CREATE TABLE users
     created_at         TIMESTAMP(6) NOT NULL,
     is_onboarded       BOOLEAN,
     profile_img_number INTEGER      NOT NULL,
-    CONSTRAINT uk_users_handle UNIQUE (handle)
+    CONSTRAINT uk_users_handle UNIQUE (handle),
+    CONSTRAINT uk_users_provider_id UNIQUE (provider_id)
 );
 
 CREATE TABLE league
