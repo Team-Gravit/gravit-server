@@ -28,7 +28,7 @@ public class User extends BaseEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "provider_id", nullable = false)
+    @Column(name = "provider_id", nullable = false, unique = true)
     private String providerId;
 
     @Column(name = "nickname", nullable = false)
