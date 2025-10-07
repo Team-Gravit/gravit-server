@@ -1,4 +1,4 @@
-package gravit.code.global.config;
+package gravit.code.support;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -7,7 +7,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
-public class TestContainerConfig {
+public class PostgreSQLTestContainerConfig {
 
     @Bean
     @ServiceConnection

@@ -1,4 +1,4 @@
-package gravit.code.global.config;
+package gravit.code.support;
 
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @ActiveProfiles("test")
 @DataJpaTest
 @Testcontainers
-@Import(TestContainerConfig.class)
+@Import(PostgreSQLTestContainerConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Target(ElementType.TYPE)

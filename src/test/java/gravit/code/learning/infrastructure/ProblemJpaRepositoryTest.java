@@ -1,6 +1,6 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.global.config.TCRepositoryTest;
+import gravit.code.support.TCRepositoryTest;
 import gravit.code.learning.domain.Problem;
 import gravit.code.learning.domain.ProblemType;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TCRepositoryTest
-class ProblemJpaTCRepositoryTest {
+class ProblemJpaRepositoryTest {
 
     @Autowired
     private ProblemJpaRepository problemJpaRepository;
@@ -46,7 +46,7 @@ class ProblemJpaTCRepositoryTest {
     }
 
     @Nested
-    @DisplayName("lessonId로 Problem을 조회할 떄")
+    @DisplayName("레슨 아이디로 문제를 조회할 때")
     class FindProblemsByLessonId{
 
         @Test

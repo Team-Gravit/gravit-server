@@ -1,6 +1,6 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.global.config.TCRepositoryTest;
+import gravit.code.support.TCRepositoryTest;
 import gravit.code.learning.domain.Option;
 import gravit.code.learning.dto.response.OptionResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TCRepositoryTest
-class OptionJpaTCRepositoryTest {
+class OptionJpaRepositoryTest {
 
     @Autowired
     private OptionJpaRepository optionJpaRepository;
@@ -51,7 +51,7 @@ class OptionJpaTCRepositoryTest {
     }
 
     @Nested
-    @DisplayName("여러 problemId로 Option을 조회할 때")
+    @DisplayName("여러 문제 아이디로 선지를 조회할 때")
     class FindOptionsByProblemIds{
 
         @Test
@@ -86,7 +86,7 @@ class OptionJpaTCRepositoryTest {
     }
 
     @Nested
-    @DisplayName("단일 problemId로 Option을 조회할 때")
+    @DisplayName("단일 문제 아이디로 선지를 조회할 때")
     class FindOptionByProblemId{
 
         @Test

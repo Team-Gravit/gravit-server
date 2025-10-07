@@ -1,6 +1,6 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.global.config.TCRepositoryTest;
+import gravit.code.support.TCRepositoryTest;
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.Lesson;
 import gravit.code.learning.domain.Unit;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TCRepositoryTest
-class LessonJpaTCRepositoryTest {
+class LessonJpaRepositoryTest {
 
     @Autowired
     private LessonJpaRepository lessonJpaRepository;
@@ -71,7 +71,7 @@ class LessonJpaTCRepositoryTest {
     }
 
     @Nested
-    @DisplayName("lessonId를 통해 레슨이 속한 유닛, 챕터, 레슨 아이디를 조회할 때")
+    @DisplayName("레슨 아이디로 레슨이 속한 유닛, 챕터, 레슨 아이디를 조회할 때")
     class FindLearningIdsByLessonId {
 
         @Test
@@ -106,7 +106,7 @@ class LessonJpaTCRepositoryTest {
     }
 
     @Nested
-    @DisplayName("lessonId를 통해 lessonName을 조회할 때,")
+    @DisplayName("레슨 아이디로 레슨 이름을 조회할 때")
     class FindLessonNameByLessonId{
 
         @Test
@@ -136,7 +136,7 @@ class LessonJpaTCRepositoryTest {
     }
 
     @Nested
-    @DisplayName("lessonId를 통해 LearningAdditionalInfo를 조회할 때")
+    @DisplayName("레슨 아이디로 학습 부가 정보를 조회할 때")
     class FindLearningAdditionalInfoByLessonId{
 
         @Test
