@@ -23,12 +23,6 @@ public class LessonService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
     }
 
-    @Transactional(readOnly = true)
-    public String getLessonNameByLessonId(long lessonId){
-        return lessonRepository.findLessonNameByLessonId(lessonId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
-    }
-
     public LearningAdditionalInfo getLearningAdditionalInfoByLessonId(long lessonId){
         return lessonRepository.findLearningAdditionalInfoByLessonId(lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));

@@ -12,13 +12,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
+@ActiveProfiles("test")
 @DataJpaTest
 @Testcontainers
-@ActiveProfiles("test")
 @Import(TestContainerConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public @interface RepositoryTest {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TCRepositoryTest {
 }

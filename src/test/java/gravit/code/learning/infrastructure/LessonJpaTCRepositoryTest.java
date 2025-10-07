@@ -1,6 +1,6 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.global.config.RepositoryTest;
+import gravit.code.global.config.TCRepositoryTest;
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.Lesson;
 import gravit.code.learning.domain.Unit;
@@ -17,8 +17,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class LessonJpaRepositoryTest {
+@TCRepositoryTest
+class LessonJpaTCRepositoryTest {
 
     @Autowired
     private LessonJpaRepository lessonJpaRepository;

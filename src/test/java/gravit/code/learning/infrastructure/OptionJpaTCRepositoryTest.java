@@ -1,6 +1,6 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.global.config.RepositoryTest;
+import gravit.code.global.config.TCRepositoryTest;
 import gravit.code.learning.domain.Option;
 import gravit.code.learning.dto.response.OptionResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +13,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class OptionJpaRepositoryTest {
+@TCRepositoryTest
+class OptionJpaTCRepositoryTest {
 
     @Autowired
     private OptionJpaRepository optionJpaRepository;
