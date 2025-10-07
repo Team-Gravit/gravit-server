@@ -22,7 +22,7 @@ class ProblemJpaRepositoryTest {
     long lessonId = 1;
 
     @BeforeEach
-    void saveProblems(){
+    void setUpTest(){
         Problem problem1 = Problem.create(ProblemType.OBJECTIVE, "질문1", "내용1", "정답1", lessonId);
         Problem problem2 = Problem.create(ProblemType.OBJECTIVE, "질문2", "내용2", "정답2", lessonId);
         Problem problem3 = Problem.create(ProblemType.OBJECTIVE, "질문3", "내용3", "정답3", lessonId);
@@ -50,8 +50,7 @@ class ProblemJpaRepositoryTest {
     class FindProblemsByLessonId{
 
         @Test
-        @DisplayName("lessonId가 유효하면 정상적으로 Problem을 반환한다.")
-        void withValidLessonId(){
+        void 문제를_성공적으로_조회한다(){
             //given
 
             //when
@@ -70,8 +69,7 @@ class ProblemJpaRepositoryTest {
         }
 
         @Test
-        @DisplayName("lessonId가 유효하지 않으면 빈 리스트를 반환한다.")
-        void withInvalidLessonId(){
+        void 레슨_아이디가_유효하지_않으면_빈_리스트를_반환한다(){
             //given
             long invalidLessonId = 999L;
 

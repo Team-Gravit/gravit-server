@@ -19,7 +19,8 @@ public class LessonService {
         if(!lessonRepository.existsById(lessonId))
             throw new RestApiException(CustomErrorCode.LESSON_NOT_FOUND);
 
-        return lessonRepository.findLearningIdsByLessonId(lessonId);
+        return lessonRepository.findLearningIdsByLessonId(lessonId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

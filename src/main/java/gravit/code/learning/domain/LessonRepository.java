@@ -10,7 +10,7 @@ public interface LessonRepository {
     Optional<Lesson> findById(Long lessonId);
     long count();
     boolean existsById(Long lessonId);
-    LearningIds findLearningIdsByLessonId(long lessonId);
+    Optional<LearningIds> findLearningIdsByLessonId(long lessonId);
     Optional<String> findLessonNameByLessonId(long lessonId);
     Optional<LearningAdditionalInfo> findLearningAdditionalInfoByLessonId(long lessonId);
 }

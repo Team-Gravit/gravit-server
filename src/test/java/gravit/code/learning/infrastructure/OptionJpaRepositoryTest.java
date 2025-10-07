@@ -25,8 +25,7 @@ class OptionJpaRepositoryTest {
     long problem3Id = 3L;
 
     @BeforeEach
-    void saveOptions(){
-
+    void setUpTest(){
         Option option1 = Option.create("content1", "explanation1", true, problem1Id);
         Option option2 = Option.create("content2", "explanation2", false, problem1Id);
         Option option3 = Option.create("content3", "explanation3", false, problem1Id);
@@ -56,8 +55,7 @@ class OptionJpaRepositoryTest {
     class FindOptionsByProblemIds{
 
         @Test
-        @DisplayName("problemId가 유효하면 정상적으로 Option을 조회한다.")
-        void withValidProblemIds(){
+        void 선지를_성공적으로_조회한다(){
             //given
             List<Long> validProblemIds = List.of(problem1Id, problem2Id, problem3Id);
 
@@ -75,8 +73,7 @@ class OptionJpaRepositoryTest {
         }
 
         @Test
-        @DisplayName("problemId가 유효하지 않으면 빈 리스트를 반환한다.")
-        void withInvalidProblemIds(){
+        void 문제_아이디가_유효하지_않으면_빈_리스트를_반환한다(){
             //given
             List<Long> invalidProblemIds = List.of(999L, 9999L, 99999L);
 
@@ -93,8 +90,7 @@ class OptionJpaRepositoryTest {
     class FindOptionByProblemId{
 
         @Test
-        @DisplayName("problemId가 유효하면 정상적으로 Option을 반환한다.")
-        void withValidProblemId(){
+        void 선지를_성공적으로_조회한다(){
             //given
             long validProblemId = problem1Id;
 
@@ -112,8 +108,7 @@ class OptionJpaRepositoryTest {
         }
 
         @Test
-        @DisplayName("problemId가 유효하지 않으면, 빈 리스트를 반환한다.")
-        void withInvalidProblemId(){
+        void 문제_아이디가_유효하지_않으면_빈_리스트를_반환한다(){
             //given
             long invalidProblemId = 999L;
 

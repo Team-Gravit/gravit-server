@@ -36,7 +36,7 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public LearningIds findLearningIdsByLessonId(long lessonId){
+    public Optional<LearningIds> findLearningIdsByLessonId(long lessonId){
         return lessonJpaRepository.findLearningIdsByLessonId(lessonId);
     }
 
