@@ -52,12 +52,12 @@ class OptionJpaRepositoryTest {
     }
 
     @Nested
-    @DisplayName("problemId로 Option을 조회할 때")
-    class FindOptions{
+    @DisplayName("여러 problemId로 Option을 조회할 때")
+    class FindOptionsByProblemIds{
 
         @Test
         @DisplayName("problemId가 유효하면 정상적으로 Option을 조회한다.")
-        void withValidProblemId(){
+        void withValidProblemIds(){
             //given
             List<Long> validProblemIds = List.of(problem1Id, problem2Id, problem3Id);
 
@@ -76,12 +76,49 @@ class OptionJpaRepositoryTest {
 
         @Test
         @DisplayName("problemId가 유효하지 않으면 빈 리스트를 반환한다.")
-        void withInvalidProblemId(){
+        void withInvalidProblemIds(){
             //given
             List<Long> invalidProblemIds = List.of(999L, 9999L, 99999L);
 
             //when
             List<OptionResponse> optionResponses = optionJpaRepository.findAllByProblemIdInIds(invalidProblemIds);
+
+            //then
+            assertThat(optionResponses).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("단일 problemId로 Option을 조회할 때")
+    class FindOptionByProblemId{
+
+        @Test
+        @DisplayName("problemId가 유효하면 정상적으로 Option을 반환한다.")
+        void withValidProblemId(){
+            //given
+            long validProblemId = problem1Id;
+
+            //when
+            List<OptionResponse> optionResponses = optionJpaRepository.findByProblemId(validProblemId);
+
+            //then
+            assertThat(optionResponses).hasSize(4);
+
+            assertThat(optionResponses.get(0).optionId()).isEqualTo(1L);
+            assertThat(optionResponses.get(0).content()).isEqualTo("content1");
+
+            assertThat(optionResponses.get(1).optionId()).isEqualTo(2L);
+            assertThat(optionResponses.get(1).content()).isEqualTo("content2");
+        }
+
+        @Test
+        @DisplayName("problemId가 유효하지 않으면, 빈 리스트를 반환한다.")
+        void withInvalidProblemId(){
+            //given
+            long invalidProblemId = 999L;
+
+            //when
+            List<OptionResponse> optionResponses = optionJpaRepository.findByProblemId(invalidProblemId);
 
             //then
             assertThat(optionResponses).isEmpty();
