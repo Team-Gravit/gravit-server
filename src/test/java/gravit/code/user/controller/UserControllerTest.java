@@ -2,7 +2,7 @@ package gravit.code.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.GravitApplication;
-import gravit.code.common.auth.WithMockLoginUser;
+import gravit.code.global.authentication.WithMockLoginUser;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.domain.FriendRepository;
 import gravit.code.user.domain.Role;

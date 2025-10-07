@@ -1,4 +1,4 @@
-package gravit.code.common.auth;
+package gravit.code.global.authentication;
 
 import org.springframework.security.test.context.support.WithSecurityContext;
 

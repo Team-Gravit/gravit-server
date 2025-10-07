@@ -1,4 +1,4 @@
-package gravit.code.common.auth;
+package gravit.code.global.authentication;
 
 import gravit.code.auth.domain.LoginUser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
