@@ -38,13 +38,11 @@ public class FriendService {
 
     @Transactional
     public FriendResponse following(
-            Long followerId,
-            Long followeeId
+            long followerId,
+            long followeeId
     ) {
-        log.info("팔로우 요청 순서 : follower : {}, followee : {}", followerId, followeeId);
-
         // 자기 자신에게 팔로잉 불가능
-        if(followeeId.equals(followerId)){
+        if(followeeId == followerId){
             throw new RestApiException(CustomErrorCode.UNABLE_FOLLOWING_YOURSELF);
         }
 
@@ -68,8 +66,8 @@ public class FriendService {
 
     @Transactional
     public void unFollowing(
-            Long followerId,
-            Long followeeId
+            long followerId,
+            long followeeId
     ) {
         Optional<Friend> friend = friendRepository.findByFolloweeIdAndFollowerId(followeeId, followerId);
 
@@ -81,9 +79,23 @@ public class FriendService {
         friendRepository.delete(friend.get());
     }
 
+    @Transactional
+    public void rejectFollowing(
+            long followeeId,
+            long followerId
+    ) {
+        Optional<Friend> friend = friendRepository.findByFolloweeIdAndFollowerId(followeeId, followerId);
+
+        if(friend.isEmpty()){
+            throw new RestApiException(CustomErrorCode.FRIEND_NOT_FOUND);
+        }
+
+        friendRepository.delete(friend.get());
+    }
+
     @Transactional(readOnly = true)
     public SliceResponse<FollowerResponse> getFollowers(
-            Long followeeId,
+            long followeeId,
             int page
     ) {
         Pageable pageable = friendPageable(page);
@@ -93,7 +105,7 @@ public class FriendService {
 
     @Transactional(readOnly = true)
     public SliceResponse<FollowingResponse> getFollowings(
-            Long followerId,
+            long followerId,
             int page
     ) {
         Pageable pageable = friendPageable(page);
