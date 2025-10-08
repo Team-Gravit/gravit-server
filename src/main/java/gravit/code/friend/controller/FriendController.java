@@ -28,7 +28,7 @@ public class FriendController implements FriendControllerDocs {
             @PathVariable("followeeId")Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser
     ) {
-        Long followerId = loginUser.getId();
+        long followerId = loginUser.getId();
         FriendResponse friendResponse = friendService.following(followerId, followeeId);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).body(friendResponse);
@@ -39,7 +39,18 @@ public class FriendController implements FriendControllerDocs {
             @PathVariable("followeeId")Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser
     ) {
-        friendService.unFollowing(loginUser.getId(), followeeId);
+        long userId = loginUser.getId();
+        friendService.unFollowing(userId, followeeId);
+        HttpStatus status = HttpStatus.OK;
+        return ResponseEntity.status(status).build();
+    }
+
+    @PostMapping("/reject-following/{followerId}")
+    public ResponseEntity<Void> rejectFollowing(
+            @PathVariable("followerId") Long followerId,
+            @AuthenticationPrincipal LoginUser loginUser) {
+        long userId = loginUser.getId();
+        friendService.rejectFollowing(userId, followerId);
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.status(status).build();
     }
