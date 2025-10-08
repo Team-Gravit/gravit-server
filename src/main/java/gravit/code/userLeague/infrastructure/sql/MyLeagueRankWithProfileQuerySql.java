@@ -33,7 +33,7 @@ public class MyLeagueRankWithProfileQuerySql {
               u.xp,
               u.level
             FROM me
-            JOIN users u ON u.id = me.user_id
+            JOIN users u ON u.id = me.user_id AND u.deleted_at IS NULL
             JOIN league l ON l.id = me.league_id
             """;
 }
