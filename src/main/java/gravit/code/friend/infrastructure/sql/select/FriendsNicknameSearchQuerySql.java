@@ -21,6 +21,7 @@ public class FriendsNicknameSearchQuerySql {
             SELECT id, profile_img_number, nickname, handle
             FROM users
             WHERE id <> p.me
+              AND deleted_at IS NULL
               AND lower(nickname) = p.q
             ORDER BY nickname, id
             LIMIT p.lim + p.off
@@ -32,6 +33,7 @@ public class FriendsNicknameSearchQuerySql {
             SELECT id, profile_img_number, nickname, handle
             FROM users
             WHERE id <> p.me
+              AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
             ORDER BY nickname, id
@@ -57,6 +59,7 @@ public class FriendsNicknameSearchQuerySql {
             SELECT id
             FROM users
             WHERE id <> p.me
+              AND deleted_at IS NULL
               AND nickname ILIKE p.q_contains
               AND lower(nickname) <> p.q
               AND lower(nickname) NOT LIKE p.q_prefix
@@ -67,6 +70,7 @@ public class FriendsNicknameSearchQuerySql {
           SELECT u.id, u.profile_img_number, u.nickname, u.handle
           FROM users u
           JOIN contains_ids c ON c.id = u.id
+          WHERE u.deleted_at IS NULL
         ),
         unioned AS (
           SELECT id, profile_img_number, nickname, handle, 3 AS w FROM exact
@@ -105,6 +109,7 @@ public class FriendsNicknameSearchQuerySql {
             SELECT id, profile_img_number, nickname, handle
             FROM users
             WHERE id <> p.me
+              AND deleted_at IS NULL
               AND lower(nickname) = p.q
             ORDER BY nickname, id
             LIMIT p.lim + p.off
@@ -116,6 +121,7 @@ public class FriendsNicknameSearchQuerySql {
             SELECT id, profile_img_number, nickname, handle
             FROM users
             WHERE id <> p.me
+              AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
             ORDER BY nickname, id
