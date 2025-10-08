@@ -1,4 +1,4 @@
-package gravit.code.badge.test;
+package gravit.code.test.badge;
 
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.event.badge.PlanetCompletedEvent;
