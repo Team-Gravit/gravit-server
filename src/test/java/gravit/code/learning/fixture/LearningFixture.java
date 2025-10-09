@@ -10,7 +10,7 @@ public class LearningFixture {
 
     private final LearningFixtureBuilder learningFixtureBuilder;
 
-    public Learning 학습정보(
+    private Learning 학습_정보(
             long recentChapterId,
             boolean todaySolved,
             int consecutiveDays,
@@ -19,33 +19,25 @@ public class LearningFixture {
             long version
 
     ){
-        return learningFixtureBuilder.learning()
+        return learningFixtureBuilder.builder()
                 .recentChapterId(recentChapterId)
                 .todaySolved(todaySolved)
                 .consecutiveDays(consecutiveDays)
                 .planetConquestRate(planetConquestRate)
                 .userId(userId)
                 .version(version)
-                .create();
+                .build();
     }
 
-    public Learning 당일_학습_완료(
-            long recentChapterId,
-            int consecutiveDays,
-            int planetConquestRate,
-            long userId,
-            long version
-    ){
-        return 학습정보(recentChapterId, true, consecutiveDays, planetConquestRate, userId, version)
+    public Learning 기본_학습_정보(long userId){
+        return 학습_정보(1L, true, 10, 10, userId, 0L);
     }
 
-    public Learning 당일_학습_미완료(
-            long recentChapterId,
-            int consecutiveDays,
-            int planetConquestRate,
-            long userId,
-            long version
-    ){
-        return 학습정보(recentChapterId, false, consecutiveDays, planetConquestRate, userId, version)
+    public Learning 당일_학습_완료(long userId){
+        return 학습_정보(1L, true, 10, 10, userId, 0L);
+    }
+
+    public Learning 당일_학습_미완료(long userId){
+        return 학습_정보(1L, false, 10, 10, userId, 0L);
     }
 }

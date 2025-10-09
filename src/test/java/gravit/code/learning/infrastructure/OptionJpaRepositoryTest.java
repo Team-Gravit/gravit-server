@@ -1,8 +1,8 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.support.TCRepositoryTest;
-import gravit.code.learning.domain.Option;
 import gravit.code.learning.dto.response.OptionResponse;
+import gravit.code.learning.fixture.OptionFixture;
+import gravit.code.support.TCRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,35 +19,30 @@ class OptionJpaRepositoryTest {
     @Autowired
     private OptionJpaRepository optionJpaRepository;
 
+    @Autowired
+    private OptionFixture optionFixture;
+
     // problemIds
     long problem1Id = 1L;
     long problem2Id = 2L;
     long problem3Id = 3L;
 
     @BeforeEach
-    void setUpTest(){
-        Option option1 = Option.create("content1", "explanation1", true, problem1Id);
-        Option option2 = Option.create("content2", "explanation2", false, problem1Id);
-        Option option3 = Option.create("content3", "explanation3", false, problem1Id);
-        Option option4 = Option.create("content4", "explanation4", false, problem1Id);
+    void setUp(){
+        optionFixture.정답_선지(problem1Id);
+        optionFixture.오답_선지(problem1Id);
+        optionFixture.오답_선지(problem1Id);
+        optionFixture.오답_선지(problem1Id);
 
-        Option option5 = Option.create("content5", "explanation5", true, problem2Id);
-        Option option6 = Option.create("content6", "explanation6", false, problem2Id);
-        Option option7 = Option.create("content7", "explanation7", false, problem2Id);
-        Option option8 = Option.create("content8", "explanation8", false, problem2Id);
+        optionFixture.정답_선지(problem2Id);
+        optionFixture.오답_선지(problem2Id);
+        optionFixture.오답_선지(problem2Id);
+        optionFixture.오답_선지(problem2Id);
 
-        Option option9 = Option.create("content9", "explanation9", true, problem3Id);
-        Option option10 = Option.create("content10", "explanation10", false, problem3Id);
-        Option option11 = Option.create("content11", "explanation11", false, problem3Id);
-        Option option12 = Option.create("content12", "explanation12", false, problem3Id);
-
-        List<Option> dummyOptions = List.of(
-                option1, option2, option3, option4,
-                option5, option6, option7, option8,
-                option9, option10, option11, option12
-        );
-
-        optionJpaRepository.saveAll(dummyOptions);
+        optionFixture.정답_선지(problem3Id);
+        optionFixture.오답_선지(problem3Id);
+        optionFixture.오답_선지(problem3Id);
+        optionFixture.오답_선지(problem3Id);
     }
 
     @Nested
@@ -66,10 +61,10 @@ class OptionJpaRepositoryTest {
             assertThat(optionResponses).hasSize(validProblemIds.size() * 4);
 
             assertThat(optionResponses.get(0).optionId()).isEqualTo(1L);
-            assertThat(optionResponses.get(0).content()).isEqualTo("content1");
+            assertThat(optionResponses.get(0).content()).isEqualTo("선지내용");
 
             assertThat(optionResponses.get(1).optionId()).isEqualTo(2L);
-            assertThat(optionResponses.get(1).content()).isEqualTo("content2");
+            assertThat(optionResponses.get(1).content()).isEqualTo("선지내용");
         }
 
         @Test
@@ -101,10 +96,10 @@ class OptionJpaRepositoryTest {
             assertThat(optionResponses).hasSize(4);
 
             assertThat(optionResponses.get(0).optionId()).isEqualTo(1L);
-            assertThat(optionResponses.get(0).content()).isEqualTo("content1");
+            assertThat(optionResponses.get(0).content()).isEqualTo("선지내용");
 
             assertThat(optionResponses.get(1).optionId()).isEqualTo(2L);
-            assertThat(optionResponses.get(1).content()).isEqualTo("content2");
+            assertThat(optionResponses.get(1).content()).isEqualTo("선지내용");
         }
 
         @Test

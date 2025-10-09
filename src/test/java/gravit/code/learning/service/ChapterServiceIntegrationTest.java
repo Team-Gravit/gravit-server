@@ -1,10 +1,11 @@
 package gravit.code.learning.service;
 
-import gravit.code.support.TCSpringBootTest;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.ChapterRepository;
+import gravit.code.learning.fixture.ChapterFixture;
+import gravit.code.support.TCSpringBootTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,9 +24,12 @@ class ChapterServiceIntegrationTest {
     @Autowired
     private ChapterRepository chapterRepository;
 
+    @Autowired
+    private ChapterFixture chapterFixture;
+
     @BeforeEach
     void setUpTest(){
-        Chapter chapter = Chapter.create("챕터1", "챕터 설명1", 10L);
+        Chapter chapter = chapterFixture.기본_챕터();
         chapterRepository.save(chapter);
     }
 

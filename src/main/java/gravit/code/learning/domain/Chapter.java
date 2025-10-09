@@ -1,14 +1,12 @@
 package gravit.code.learning.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Chapter {
 
     @Id
@@ -23,27 +21,4 @@ public class Chapter {
 
     @Column(name = "total_units",columnDefinition = "bigint", nullable = false)
     private long totalUnits;
-
-    @Builder
-    private Chapter(
-            String name,
-            String description,
-            long totalUnits
-    ) {
-        this.name = name;
-        this.description = description;
-        this.totalUnits = totalUnits;
-    }
-
-    public static Chapter create(
-            String name,
-            String description,
-            long totalUnits
-    ) {
-        return Chapter.builder()
-                .name(name)
-                .description(description)
-                .totalUnits(totalUnits)
-                .build();
-    }
 }

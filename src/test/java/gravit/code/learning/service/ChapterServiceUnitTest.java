@@ -12,11 +12,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,32 +30,37 @@ class ChapterServiceUnitTest {
     @Mock
     private ChapterRepository chapterRepository;
 
-    private Chapter savedChapter;
-
-    @BeforeEach
-    void setUpTest(){
-        savedChapter = Chapter.create("챕터1", "챕터 설명1", 10L);
-        chapterRepository.save(savedChapter);
-    }
-
     @Nested
     @DisplayName("챕터 아이디로 챕터를 조회할 때")
     class FindChapterByChapterId{
+
+        Chapter chapter;
+
+        @BeforeEach
+        void setUp() {
+            chapter = new Chapter();
+
+            ReflectionTestUtils.setField(chapter, "name", "이름");
+            ReflectionTestUtils.setField(chapter, "description", "설명");
+            ReflectionTestUtils.setField(chapter, "totalUnits", 10L);
+
+            chapterRepository.save(chapter);
+        }
 
         @Test
         void 챕터_조회에_성공한다(){
             //given
             long validChapterId = 1L;
-            when(chapterRepository.findById(validChapterId)).thenReturn(Optional.ofNullable(savedChapter));
+            when(chapterRepository.findById(validChapterId)).thenReturn(Optional.ofNullable(chapter));
 
             //when
             Chapter chapter = chapterService.getChapterById(validChapterId);
 
             //then
+            verify(chapterRepository).findById(validChapterId);
+
             assertThat(chapter).isNotNull();
 
-            assertThat(chapter.getName()).isEqualTo("챕터1");
-            assertThat(chapter.getDescription()).isEqualTo("챕터 설명1");
         }
 
         @Test

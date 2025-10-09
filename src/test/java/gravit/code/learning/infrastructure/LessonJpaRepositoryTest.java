@@ -1,18 +1,19 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.support.TCRepositoryTest;
 import gravit.code.learning.domain.Chapter;
-import gravit.code.learning.domain.Lesson;
 import gravit.code.learning.domain.Unit;
 import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
+import gravit.code.learning.fixture.ChapterFixture;
+import gravit.code.learning.fixture.LessonFixture;
+import gravit.code.learning.fixture.UnitFixture;
+import gravit.code.support.TCRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,47 +28,40 @@ class LessonJpaRepositoryTest {
     private ChapterJpaRepository chapterJpaRepository;
 
     @Autowired
-    private UnitJpaRepository unitJpaRepository;
+    private ChapterFixture chapterFixture;
+
+    @Autowired
+    private LessonFixture lessonFixture;
+
+    @Autowired
+    private UnitFixture unitFixture;
 
     @BeforeEach
     void setUpTest(){
-        Chapter chapter = Chapter.create("챕터1", "설명1", 10);
+        Chapter chapter = chapterFixture.기본_챕터();
         chapterJpaRepository.save(chapter);
 
-        Unit unit1 = Unit.create("유닛1", 1L, chapter.getId());
-        Unit unit2 = Unit.create("유닛2", 1L, chapter.getId());
-        Unit unit3 = Unit.create("유닛3", 1L, chapter.getId());
-        Unit unit4 = Unit.create("유닛4", 1L, chapter.getId());
-        Unit unit5 = Unit.create("유닛5", 1L, chapter.getId());
-        Unit unit6 = Unit.create("유닛6", 1L, chapter.getId());
-        Unit unit7 = Unit.create("유닛7", 1L, chapter.getId());
-        Unit unit8 = Unit.create("유닛8", 1L, chapter.getId());
-        Unit unit9 = Unit.create("유닛9", 1L, chapter.getId());
-        Unit unit10 = Unit.create("유닛10", 1L, chapter.getId());
+        Unit unit1 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit2 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit3 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit4 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit5 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit6 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit7 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit8 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit9 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit10 = unitFixture.기본_유닛(chapter.getId());
 
-        List<Unit> dummyUnits = List.of(
-                unit1, unit2, unit3, unit4, unit5,
-                unit6, unit7, unit8, unit9, unit10
-        );
-        unitJpaRepository.saveAll(dummyUnits);
-
-        Lesson lesson1 = Lesson.create("레슨1", 1L, unit1.getId());
-        Lesson lesson2 = Lesson.create("레슨2", 1L, unit2.getId());
-        Lesson lesson3 = Lesson.create("레슨3", 1L, unit3.getId());
-        Lesson lesson4 = Lesson.create("레슨4", 1L, unit4.getId());
-        Lesson lesson5 = Lesson.create("레슨5", 1L, unit5.getId());
-        Lesson lesson6 = Lesson.create("레슨6", 1L, unit6.getId());
-        Lesson lesson7 = Lesson.create("레슨7", 1L, unit7.getId());
-        Lesson lesson8 = Lesson.create("레슨8", 1L, unit8.getId());
-        Lesson lesson9 = Lesson.create("레슨9", 1L, unit9.getId());
-        Lesson lesson10 = Lesson.create("레슨10", 1L, unit10.getId());
-
-        List<Lesson> dummyLessons = List.of(
-                lesson1, lesson2, lesson3, lesson4, lesson5,
-                lesson6, lesson7, lesson8, lesson9, lesson10
-        );
-
-        lessonJpaRepository.saveAll(dummyLessons);
+        lessonFixture.기본_레슨(unit1.getId());
+        lessonFixture.기본_레슨(unit2.getId());
+        lessonFixture.기본_레슨(unit3.getId());
+        lessonFixture.기본_레슨(unit4.getId());
+        lessonFixture.기본_레슨(unit5.getId());
+        lessonFixture.기본_레슨(unit6.getId());
+        lessonFixture.기본_레슨(unit7.getId());
+        lessonFixture.기본_레슨(unit8.getId());
+        lessonFixture.기본_레슨(unit9.getId());
+        lessonFixture.기본_레슨(unit10.getId());
     }
 
     @Nested

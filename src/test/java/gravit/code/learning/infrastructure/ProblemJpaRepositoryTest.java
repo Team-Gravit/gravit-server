@@ -3,6 +3,7 @@ package gravit.code.learning.infrastructure;
 import gravit.code.support.TCRepositoryTest;
 import gravit.code.learning.domain.Problem;
 import gravit.code.learning.domain.ProblemType;
+import gravit.code.learning.fixture.ProblemFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,30 +20,25 @@ class ProblemJpaRepositoryTest {
     @Autowired
     private ProblemJpaRepository problemJpaRepository;
 
+    @Autowired
+    private ProblemFixture problemFixture;
+
     long lessonId = 1;
 
     @BeforeEach
     void setUpTest(){
-        Problem problem1 = Problem.create(ProblemType.OBJECTIVE, "질문1", "내용1", "정답1", lessonId);
-        Problem problem2 = Problem.create(ProblemType.OBJECTIVE, "질문2", "내용2", "정답2", lessonId);
-        Problem problem3 = Problem.create(ProblemType.OBJECTIVE, "질문3", "내용3", "정답3", lessonId);
-        Problem problem4 = Problem.create(ProblemType.OBJECTIVE, "질문4", "내용4", "정답4", lessonId);
-        Problem problem5 = Problem.create(ProblemType.OBJECTIVE, "질문5", "내용5", "정답5", lessonId);
-        Problem problem6 = Problem.create(ProblemType.OBJECTIVE, "질문6", "내용6", "정답6", lessonId);
-        Problem problem7 = Problem.create(ProblemType.OBJECTIVE, "질문7", "내용7", "정답7", lessonId);
-        Problem problem8 = Problem.create(ProblemType.OBJECTIVE, "질문8", "내용8", "정답8", lessonId);
-        Problem problem9 = Problem.create(ProblemType.OBJECTIVE, "질문9", "내용9", "정답9", lessonId);
-        Problem problem10 = Problem.create(ProblemType.OBJECTIVE, "질문10", "내용10", "정답10", lessonId);
-        Problem problem11 = Problem.create(ProblemType.OBJECTIVE, "질문11", "내용11", "정답11", lessonId);
-        Problem problem12 = Problem.create(ProblemType.OBJECTIVE, "질문12", "내용12", "정답12", lessonId);
-
-        List<Problem> dummyProblems = List.of(
-                problem1, problem2, problem3, problem4,
-                problem5, problem6, problem7, problem8,
-                problem9, problem10, problem11, problem12
-        );
-
-        problemJpaRepository.saveAll(dummyProblems);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
+        problemFixture.객관식_문제(lessonId);
     }
 
     @Nested
@@ -61,11 +57,11 @@ class ProblemJpaRepositoryTest {
 
             assertThat(problems.get(0).getId()).isEqualTo(1L);
             assertThat(problems.get(0).getProblemType()).isEqualTo(ProblemType.OBJECTIVE);
-            assertThat(problems.get(0).getQuestion()).isEqualTo("질문1");
+            assertThat(problems.get(0).getQuestion()).isEqualTo("질문");
 
             assertThat(problems.get(1).getId()).isEqualTo(2L);
             assertThat(problems.get(0).getProblemType()).isEqualTo(ProblemType.OBJECTIVE);
-            assertThat(problems.get(1).getQuestion()).isEqualTo("질문2");
+            assertThat(problems.get(1).getQuestion()).isEqualTo("질문");
         }
 
         @Test
