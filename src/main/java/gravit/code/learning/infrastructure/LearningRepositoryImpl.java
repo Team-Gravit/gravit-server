@@ -16,8 +16,8 @@ public class LearningRepositoryImpl implements LearningRepository {
     private final LearningJpaRepository learningJpaRepository;
 
     @Override
-    public void save(Learning learning){
-        learningJpaRepository.save(learning);
+    public Learning save(Learning learning){
+        return learningJpaRepository.save(learning);
     }
 
     @Override

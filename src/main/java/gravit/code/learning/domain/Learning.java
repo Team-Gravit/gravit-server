@@ -36,13 +36,29 @@ public class Learning {
     private long version;
 
     @Builder
-    private Learning(Long userId) {
+    public Learning(Long userId) {
         this.recentChapterId = 0L;
         this.todaySolved = false;
         this.consecutiveDays = 0;
         this.planetConquestRate = 0;
         this.userId = userId;
         this.version = 0L;
+    }
+
+    public Learning(
+            long recentChapterId,
+            boolean todaySolved,
+            int consecutiveDays,
+            int planetConquestRate,
+            long userId,
+            long version
+    ) {
+        this.recentChapterId = recentChapterId;
+        this.todaySolved = todaySolved;
+        this.consecutiveDays = consecutiveDays;
+        this.planetConquestRate = planetConquestRate;
+        this.userId = userId;
+        this.version = version;
     }
 
     public static Learning create(long userId){
