@@ -99,17 +99,19 @@ public class LearningFacade {
 
         checkAndUpdateLearningProgress(learningIds.chapterId(), learningIds.unitId(), userId);
 
+        String lessonName = lessonService.getLessonNameByLessonId(request.lessonId());
+
         LearningResultSaveResponse response;
         if(lessonProgress.getAttemptCount() == 1){ // 레슨 첫번째 풀이라면,
 
-            response = saveLearningResultForFirstAttemptUser(userId, request);
+            response = saveLearningResultForFirstAttemptUser(userId, request, learningIds.chapterId(), lessonName);
 
             publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
             publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
             publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
             publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
         }else{ // 레슨 첫번째 풀이가 아니라면,
-            response = saveLearningResultForRetryUser(userId, request);
+            response = saveLearningResultForRetryUser(userId, request, learningIds.chapterId(), lessonName);
 
             publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
         }
@@ -128,21 +130,21 @@ public class LearningFacade {
         }
     }
 
-    private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request){
+    private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request, Long chapterId, String lessonName){
 
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
         String leagueName = userLeagueService.getUserLeagueName(userId);
         UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 20, request.accuracy());
 
-        return LearningResultSaveResponse.create(userLevelResponse, leagueName);
+        return LearningResultSaveResponse.create(userLevelResponse, leagueName, chapterId, lessonName);
     }
 
-    private LearningResultSaveResponse saveLearningResultForRetryUser(long userId, LearningResultSaveRequest request){
+    private LearningResultSaveResponse saveLearningResultForRetryUser(long userId, LearningResultSaveRequest request, Long chapterId, String lessonName){
 
         String leagueName = userLeagueService.getUserLeagueName(userId);
         UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 0, request.accuracy());
 
-        return LearningResultSaveResponse.create(userLevelResponse, leagueName);
+        return LearningResultSaveResponse.create(userLevelResponse, leagueName, chapterId, lessonName);
     }
 }

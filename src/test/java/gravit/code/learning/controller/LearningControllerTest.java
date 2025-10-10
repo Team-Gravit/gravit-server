@@ -357,7 +357,7 @@ class LearningControllerTest {
             //given
             long userId = 1L;
             UserLevelResponse userLevelResponse = UserLevelResponse.create(3, 150);
-            LearningResultSaveResponse learningResultSaveResponse = LearningResultSaveResponse.create(userLevelResponse, "브론즈 1");
+            LearningResultSaveResponse learningResultSaveResponse = LearningResultSaveResponse.create(userLevelResponse, "브론즈 1", 1L, "배열 기초");
 
             when(learningFacade.saveLearningResult(userId, validRequest)).thenReturn(learningResultSaveResponse);
 
