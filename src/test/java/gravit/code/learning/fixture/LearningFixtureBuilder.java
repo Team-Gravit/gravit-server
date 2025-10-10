@@ -1,16 +1,11 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Learning;
-import gravit.code.learning.domain.LearningRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestComponent
-@RequiredArgsConstructor
 public class LearningFixtureBuilder {
-
-    private final LearningRepository learningRepository;
 
     private long recentChapterId;
     private boolean todaySolved;
@@ -20,7 +15,7 @@ public class LearningFixtureBuilder {
     private long version;
 
     public LearningFixtureBuilder builder(){
-        return new LearningFixtureBuilder(learningRepository);
+        return new LearningFixtureBuilder();
     }
 
     public LearningFixtureBuilder recentChapterId(long recentChapterId){
@@ -62,6 +57,6 @@ public class LearningFixtureBuilder {
         ReflectionTestUtils.setField(learning, "planetConquestRate", planetConquestRate);
         ReflectionTestUtils.setField(learning, "version", version);
 
-        return learningRepository.save(learning);
+        return learning;
     }
 }

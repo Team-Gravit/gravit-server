@@ -41,4 +41,8 @@ public class LessonProgressRepositoryImpl implements LessonProgressRepository {
         return lessonProgressJpaRepository.countByUserId(userId);
     }
 
+    @Override
+    public void saveAll(List<LessonProgress> lessonProgresses){
+        lessonProgressJpaRepository.saveAll(lessonProgresses);
+    }
 }

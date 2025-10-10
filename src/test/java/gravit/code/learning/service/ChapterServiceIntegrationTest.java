@@ -48,7 +48,7 @@ class ChapterServiceIntegrationTest {
             assertThat(chapter).isNotNull();
 
             assertThat(chapter.getId()).isEqualTo(validChapterId);
-            assertThat(chapter.getName()).isEqualTo("챕터1");
+            assertThat(chapter.getName()).isEqualTo("챕터이름");
         }
 
         @Test

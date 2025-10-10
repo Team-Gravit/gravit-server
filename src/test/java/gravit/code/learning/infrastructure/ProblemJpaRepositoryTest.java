@@ -1,9 +1,9 @@
 package gravit.code.learning.infrastructure;
 
-import gravit.code.support.TCRepositoryTest;
 import gravit.code.learning.domain.Problem;
 import gravit.code.learning.domain.ProblemType;
 import gravit.code.learning.fixture.ProblemFixture;
+import gravit.code.support.TCRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,18 +27,20 @@ class ProblemJpaRepositoryTest {
 
     @BeforeEach
     void setUpTest(){
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
-        problemFixture.객관식_문제(lessonId);
+        problemJpaRepository.saveAll(List.of(
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId),
+                problemFixture.객관식_문제(lessonId)
+        ));
     }
 
     @Nested

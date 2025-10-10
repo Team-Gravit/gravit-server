@@ -1,23 +1,18 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Chapter;
-import gravit.code.learning.domain.ChapterRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestComponent
-@RequiredArgsConstructor
 public class ChapterFixtureBuilder {
-
-    private final ChapterRepository chapterRepository;
 
     private String name;
     private String description;
     private long totalUnits;
 
     public ChapterFixtureBuilder builder() {
-        return new ChapterFixtureBuilder(chapterRepository);
+        return new ChapterFixtureBuilder();
     }
 
     public ChapterFixtureBuilder name(String name) {
@@ -42,6 +37,6 @@ public class ChapterFixtureBuilder {
         ReflectionTestUtils.setField(chapter, "description", description);
         ReflectionTestUtils.setField(chapter, "totalUnits", totalUnits);
 
-        return chapterRepository.save(chapter);
+        return chapter;
     }
 }

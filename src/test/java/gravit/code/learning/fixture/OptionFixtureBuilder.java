@@ -1,16 +1,11 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Option;
-import gravit.code.learning.domain.OptionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestComponent
-@RequiredArgsConstructor
 public class OptionFixtureBuilder {
-
-    private final OptionRepository optionRepository;
 
     private String content;
     private String explanation;
@@ -18,7 +13,7 @@ public class OptionFixtureBuilder {
     private long problemId;
 
     public OptionFixtureBuilder builder() {
-        return new OptionFixtureBuilder(optionRepository);
+        return new OptionFixtureBuilder();
     }
 
     public OptionFixtureBuilder content(String content) {
@@ -49,6 +44,6 @@ public class OptionFixtureBuilder {
         ReflectionTestUtils.setField(option, "isAnswer", isAnswer);
         ReflectionTestUtils.setField(option, "problemId", problemId);
 
-        return optionRepository.save(option);
+        return option;
     }
 }

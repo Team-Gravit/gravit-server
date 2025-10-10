@@ -1,16 +1,11 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.progress.domain.LessonProgress;
-import gravit.code.progress.domain.LessonProgressRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestComponent
-@RequiredArgsConstructor
 public class LessonProgressFixtureBuilder {
-
-    private final LessonProgressRepository lessonProgressRepository;
 
     private int attemptCount;
     private int learningTime;
@@ -19,7 +14,7 @@ public class LessonProgressFixtureBuilder {
     private long lessonId;
 
     public LessonProgressFixtureBuilder builder() {
-        return new LessonProgressFixtureBuilder(lessonProgressRepository);
+        return new LessonProgressFixtureBuilder();
     }
 
     public LessonProgressFixtureBuilder attemptCount(int attemptCount) {
@@ -54,6 +49,6 @@ public class LessonProgressFixtureBuilder {
         ReflectionTestUtils.setField(lessonProgress, "learningTime", learningTime);
         ReflectionTestUtils.setField(lessonProgress, "isCompleted", isCompleted);
 
-        return lessonProgressRepository.save(lessonProgress);
+        return lessonProgress;
     }
 }

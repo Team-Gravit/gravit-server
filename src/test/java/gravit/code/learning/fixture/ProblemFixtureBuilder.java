@@ -1,17 +1,12 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Problem;
-import gravit.code.learning.domain.ProblemRepository;
 import gravit.code.learning.domain.ProblemType;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestComponent
-@RequiredArgsConstructor
 public class ProblemFixtureBuilder {
-
-    private final ProblemRepository problemRepository;
 
     private ProblemType problemType;
     private String question;
@@ -20,7 +15,7 @@ public class ProblemFixtureBuilder {
     private long lessonId;
 
     public ProblemFixtureBuilder builder() {
-        return new ProblemFixtureBuilder(problemRepository);
+        return new ProblemFixtureBuilder();
     }
 
     public ProblemFixtureBuilder problemType(ProblemType problemType) {
@@ -57,6 +52,6 @@ public class ProblemFixtureBuilder {
         ReflectionTestUtils.setField(problem, "answer", answer);
         ReflectionTestUtils.setField(problem, "lessonId", lessonId);
 
-        return problemRepository.save(problem);
+        return problem;
     }
 }

@@ -4,9 +4,7 @@ import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.Unit;
 import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
-import gravit.code.learning.fixture.ChapterFixture;
-import gravit.code.learning.fixture.LessonFixture;
-import gravit.code.learning.fixture.UnitFixture;
+import gravit.code.learning.fixture.*;
 import gravit.code.support.TCRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,13 +27,16 @@ class LessonJpaRepositoryTest {
     private ChapterJpaRepository chapterJpaRepository;
 
     @Autowired
+    private UnitJpaRepository unitJpaRepository;
+
+    @Autowired
     private ChapterFixture chapterFixture;
 
     @Autowired
     private LessonFixture lessonFixture;
 
     @Autowired
-    private UnitFixture unitFixture;
+    private UnitFixture unitFixture ;
 
     @BeforeEach
     void setUpTest(){
@@ -52,16 +54,20 @@ class LessonJpaRepositoryTest {
         Unit unit9 = unitFixture.기본_유닛(chapter.getId());
         Unit unit10 = unitFixture.기본_유닛(chapter.getId());
 
-        lessonFixture.기본_레슨(unit1.getId());
-        lessonFixture.기본_레슨(unit2.getId());
-        lessonFixture.기본_레슨(unit3.getId());
-        lessonFixture.기본_레슨(unit4.getId());
-        lessonFixture.기본_레슨(unit5.getId());
-        lessonFixture.기본_레슨(unit6.getId());
-        lessonFixture.기본_레슨(unit7.getId());
-        lessonFixture.기본_레슨(unit8.getId());
-        lessonFixture.기본_레슨(unit9.getId());
-        lessonFixture.기본_레슨(unit10.getId());
+        unitJpaRepository.saveAll(List.of(unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8, unit9, unit10));
+
+        lessonJpaRepository.saveAll(List.of(
+                lessonFixture.기본_레슨(unit1.getId()),
+                lessonFixture.기본_레슨(unit2.getId()),
+                lessonFixture.기본_레슨(unit3.getId()),
+                lessonFixture.기본_레슨(unit4.getId()),
+                lessonFixture.기본_레슨(unit5.getId()),
+                lessonFixture.기본_레슨(unit6.getId()),
+                lessonFixture.기본_레슨(unit7.getId()),
+                lessonFixture.기본_레슨(unit8.getId()),
+                lessonFixture.기본_레슨(unit9.getId()),
+                lessonFixture.기본_레슨(unit10.getId())
+        ));
     }
 
     @Nested
@@ -113,7 +119,7 @@ class LessonJpaRepositoryTest {
 
             //then
             assertThat(lessonName).isPresent();
-            assertThat(lessonName.get()).isEqualTo("레슨1");
+            assertThat(lessonName.get()).isEqualTo("레슨이름");
         }
 
         @Test
@@ -145,7 +151,7 @@ class LessonJpaRepositoryTest {
             assertThat(learningAdditionalInfo).isPresent();
 
             assertThat(learningAdditionalInfo.get().chapterId()).isEqualTo(1L);
-            assertThat(learningAdditionalInfo.get().lessonName()).isEqualTo("레슨1");
+            assertThat(learningAdditionalInfo.get().lessonName()).isEqualTo("레슨이름");
         }
 
         @Test

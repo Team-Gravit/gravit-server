@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -32,6 +34,9 @@ class LearningServiceIntegrationTest {
     private LearningRepository learningRepository;
 
     @Autowired
+    private ChapterRepository chapterRepository;
+
+    @Autowired
     private LessonRepository lessonRepository;
 
     @Autowired
@@ -41,9 +46,6 @@ class LearningServiceIntegrationTest {
     private LearningFixture learningFixture;
 
     @Autowired
-    private UserFixtureBuilder userFixtureBuilder;
-
-    @Autowired
     private LessonProgressFixture lessonProgressFixture;
 
     @Autowired
@@ -51,7 +53,6 @@ class LearningServiceIntegrationTest {
 
     @Autowired
     private ChapterFixture chapterFixture;
-
 
     @Nested
     @DisplayName("연속학습일을 업데이트할 때")
@@ -66,12 +67,14 @@ class LearningServiceIntegrationTest {
         @BeforeEach
         void setUp(){
             // 학습 비진행 유저
-            learningUser =  userFixtureBuilder.buildWithId(1L);
+            learningUser =  UserFixtureBuilder.builder().buildWithId(1L);
             user1Learning = learningFixture.당일_학습_완료(learningUser.getId());
+            learningRepository.save(user1Learning);
 
             // 학습 진행 유저
-            notLearningUser = userFixtureBuilder.buildWithId(2L);
+            notLearningUser = UserFixtureBuilder.builder().buildWithId(2L);
             user2Learning = learningFixture.당일_학습_미완료(notLearningUser.getId());
+            learningRepository.save(user2Learning);
        }
 
         @Test
@@ -118,10 +121,11 @@ class LearningServiceIntegrationTest {
 
         @BeforeEach
         void setUp(){
-            user1WithLearning = userFixtureBuilder.buildWithId(1L);
-            user1WithNoLearning = userFixtureBuilder.buildWithId(2L);
+            user1WithLearning = UserFixtureBuilder.builder().buildWithId(1L);
+            user1WithNoLearning = UserFixtureBuilder.builder().buildWithId(2L);
 
             chapter = chapterFixture.기본_챕터();
+            chapterRepository.save(chapter);
 
             lesson1 = lessonFixture.기본_레슨(1L);
             lesson2 = lessonFixture.기본_레슨(1L);
@@ -129,11 +133,16 @@ class LearningServiceIntegrationTest {
             lesson4 = lessonFixture.기본_레슨(1L);
             lesson5 = lessonFixture.기본_레슨(1L);
 
+            lessonRepository.saveAll(List.of(lesson1, lesson2, lesson3, lesson4, lesson5));
+
             lesson1Progress = lessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson1.getId());
             lesson2Progress = lessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson2.getId());
             lesson3Progress = lessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson3.getId());
 
+            lessonProgressRepository.saveAll(List.of(lesson1Progress, lesson2Progress, lesson3Progress));
+
             learning1 = learningFixture.기본_학습_정보(user1WithLearning.getId());
+            learningRepository.save(learning1);
         }
 
         @Test
