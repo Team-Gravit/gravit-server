@@ -11,6 +11,12 @@ import java.util.Optional;
 
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 
+    @Query(value = """
+        SELECT * FROM users 
+        WHERE provider_id = :providerId
+        LIMIT 1
+        """, nativeQuery = true
+    )
     Optional<User> findByProviderId(String providerId);
 
     @Query("""
@@ -53,4 +59,5 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         where u.id = :userId
     """)
     Optional<MyPageResponse> findMyPageByUserId(@Param("userId") long userId);
+
 }

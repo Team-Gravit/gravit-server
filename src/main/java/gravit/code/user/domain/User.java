@@ -123,6 +123,17 @@ public class User extends BaseEntity {
         this.profileImgNumber = profileImgNumber;
     }
 
+    public void restoreUser(String handle){
+        if(!isDeleted()) return;
+        this.deletedAt = null;
+        this.status = UserStatus.ACTIVE;
+        this.handle = handle;
+    }
+
+    public boolean isDeleted(){
+        return this.deletedAt != null;
+    }
+
     private void validateOnboard(
             String nickname,
             int profileImgNumber
