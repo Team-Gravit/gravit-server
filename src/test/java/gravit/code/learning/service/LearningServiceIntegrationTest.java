@@ -144,9 +144,10 @@ class LearningServiceIntegrationTest {
             StreakDto streakDto =  learningService.updateLearningStatus(user1WithLearning.getId(), chapter.getId());
 
             //then
-            assertThat(learningRepository.findByUserId(user1WithLearning.getId()).get()).satisfies( l ->{
-                assertThat(l.getRecentChapterId()).isEqualTo(chapter.getId());
-                assertThat(l.getPlanetConquestRate()).isEqualTo(60);
+            assertThat(learningRepository.findByUserId(user1WithLearning.getId())).satisfies( l ->{
+                assertThat(l.get()).isNotNull();
+                assertThat(l.get().getRecentChapterId()).isEqualTo(chapter.getId());
+                assertThat(l.get().getPlanetConquestRate()).isEqualTo(60);
             });
             assertThat(streakDto.before()).isEqualTo(streakDto.after());
         }
@@ -161,5 +162,25 @@ class LearningServiceIntegrationTest {
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.LEARNING_NOT_FOUND);
 
         }
+    }
+
+    @Test
+    void 학습_정보_생성에_성공한다(){
+        //given
+        long userId = 1L;
+
+        //when
+        learningService.createLearning(userId);
+
+        //then
+        assertThat(learningRepository.findByUserId(userId)).satisfies(l -> {
+            assertThat(l.get()).isNotNull();
+            assertThat(l.get().getUserId()).isEqualTo(userId);
+            assertThat(l.get().getRecentChapterId()).isZero();
+            assertThat(l.get().isTodaySolved()).isFalse();
+            assertThat(l.get().getConsecutiveDays()).isZero();
+            assertThat(l.get().getPlanetConquestRate()).isZero();
+            assertThat(l.get().getVersion()).isZero();
+        });
     }
 }
