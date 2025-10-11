@@ -5,7 +5,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class ChapterFixture {
 
-    private static Chapter 챕터_정보(
+    private static Chapter 챕터(
             String name,
             String description,
             long totalUnits
@@ -20,6 +20,6 @@ public class ChapterFixture {
     }
 
     public static Chapter 기본_챕터() {
-        return 챕터_정보("챕터이름", "챕터설명", 10L);
+        return 챕터("챕터이름", "챕터설명", 10L);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class ProblemFixture {
 
-    private static Problem 문제_정보(
+    private static Problem 문제(
             ProblemType problemType,
             String question,
             String content,
@@ -25,10 +25,26 @@ public class ProblemFixture {
     }
 
     public static Problem 객관식_문제(long lessonId) {
-        return 문제_정보(ProblemType.OBJECTIVE, "질문", "내용", "-", lessonId);
+        return 문제(ProblemType.OBJECTIVE, "질문", "내용", "-", lessonId);
     }
 
     public static Problem 주관식_문제(long lessonId) {
-        return 문제_정보(ProblemType.SUBJECTIVE, "질문", "내용", "답", lessonId);
+        return 문제(ProblemType.SUBJECTIVE, "질문", "내용", "답", lessonId);
+    }
+
+    public static Problem 저장된_객관식_문제(long problemId, long lessonId){
+        Problem problem = 문제(ProblemType.OBJECTIVE, "질문", "내용", "-", lessonId);
+
+        ReflectionTestUtils.setField(problem, "id", problemId);
+
+        return problem;
+    }
+
+    public static Problem 저장된_주관식_문제(long problemId, long lessonId){
+        Problem problem = 문제(ProblemType.SUBJECTIVE, "질문", "내용", "-", lessonId);
+
+        ReflectionTestUtils.setField(problem, "id", problemId);
+
+        return problem;
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class LearningFixture {
 
-    private static Learning 학습_정보(
+    private static Learning 학습(
             long recentChapterId,
             boolean todaySolved,
             int consecutiveDays,
@@ -25,14 +25,14 @@ public class LearningFixture {
     }
 
     public static Learning 기본_학습_정보(long userId) {
-        return 학습_정보(1L, true, 10, 10, userId, 0L);
+        return 학습(1L, true, 10, 10, userId, 0L);
     }
 
     public static Learning 당일_학습_완료(long userId) {
-        return 학습_정보(1L, true, 10, 10, userId, 0L);
+        return 학습(1L, true, 10, 10, userId, 0L);
     }
 
     public static Learning 당일_학습_미완료(long userId) {
-        return 학습_정보(1L, false, 10, 10, userId, 0L);
+        return 학습(1L, false, 10, 10, userId, 0L);
     }
 }

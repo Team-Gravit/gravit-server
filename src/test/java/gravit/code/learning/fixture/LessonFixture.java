@@ -5,7 +5,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class LessonFixture {
 
-    private static Lesson 레슨_정보(
+    private static Lesson 레슨(
             String name,
             long totalProblems,
             long unitId
@@ -20,6 +20,6 @@ public class LessonFixture {
     }
 
     public static Lesson 기본_레슨(long unitId) {
-        return 레슨_정보("레슨이름", 12L, unitId);
+        return 레슨("레슨이름", 12L, unitId);
     }
 }

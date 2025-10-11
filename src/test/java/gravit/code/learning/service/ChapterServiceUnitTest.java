@@ -60,7 +60,6 @@ class ChapterServiceUnitTest {
             verify(chapterRepository).findById(validChapterId);
 
             assertThat(chapter).isNotNull();
-
         }
 
         @Test
@@ -75,6 +74,4 @@ class ChapterServiceUnitTest {
                     .hasFieldOrPropertyWithValue("errorCode", CustomErrorCode.CHAPTER_NOT_FOUND);
         }
     }
-
-
 }

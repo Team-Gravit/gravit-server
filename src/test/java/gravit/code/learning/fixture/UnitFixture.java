@@ -5,7 +5,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class UnitFixture {
 
-    private static Unit 유닛_정보(
+    private static Unit 유닛(
             String name,
             long totalLessons,
             long chapterId
@@ -20,6 +20,6 @@ public class UnitFixture {
     }
 
     public static Unit 기본_유닛(long chapterId) {
-        return 유닛_정보("유닛이름", 1L, chapterId);
+        return 유닛("유닛이름", 1L, chapterId);
     }
 }

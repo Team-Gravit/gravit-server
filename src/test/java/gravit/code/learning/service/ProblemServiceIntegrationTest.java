@@ -9,8 +9,6 @@ import gravit.code.learning.fixture.OptionFixture;
 import gravit.code.learning.fixture.ProblemFixture;
 import gravit.code.support.TCSpringBootTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -89,31 +87,25 @@ class ProblemServiceIntegrationTest {
         problemRepository.saveAll(List.of(subjectiveProblem1, subjectiveProblem2, subjectiveProblem3));
     }
 
-    @Nested
-    @DisplayName("레슨을 구성하는 문제를 조회할 때")
-    class findAllProblemsInLesson{
+    @Test
+    void 성공적으로_문제를_조회한다(){
+        //given
+        long lessonId = 1L;
 
-        @Test
-        void 성공적으로_문제를_조회한다(){
-            //given
-            long lessonId = 1L;
+        //when
+        List<ProblemResponse> problemResponses = problemService.getAllProblemInLesson(lessonId);
 
-            //when
-            List<ProblemResponse> problemResponses = problemService.getAllProblemInLesson(lessonId);
-
-            //then
-            assertThat(problemResponses).hasSize(6);
-            assertThat(problemResponses.get(0)).satisfies(p -> {
-                assertThat(p.problemId()).isEqualTo(objectiveProblem1.getId());
-                assertThat(p.answer()).isEqualTo(objectiveProblem1.getAnswer());
-                assertThat(p.options()).hasSize(4);
-            });
-            assertThat(problemResponses.get(3)).satisfies(p -> {
-                assertThat(p.problemId()).isEqualTo(subjectiveProblem1.getId());
-                assertThat(p.answer()).isEqualTo(subjectiveProblem1.getAnswer());
-                assertThat(p.options()).isEmpty();
-            });
-
-        }
+        //then
+        assertThat(problemResponses).hasSize(6);
+        assertThat(problemResponses.get(0)).satisfies(p -> {
+            assertThat(p.problemId()).isEqualTo(objectiveProblem1.getId());
+            assertThat(p.answer()).isEqualTo(objectiveProblem1.getAnswer());
+            assertThat(p.options()).hasSize(4);
+        });
+        assertThat(problemResponses.get(3)).satisfies(p -> {
+            assertThat(p.problemId()).isEqualTo(subjectiveProblem1.getId());
+            assertThat(p.answer()).isEqualTo(subjectiveProblem1.getAnswer());
+            assertThat(p.options()).isEmpty();
+        });
     }
 }

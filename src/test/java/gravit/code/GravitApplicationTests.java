@@ -1,11 +1,9 @@
 package gravit.code;
 
+import gravit.code.support.TCSpringBootTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(classes = GravitApplication.class)
-@ActiveProfiles("test")
+@TCSpringBootTest
 class GravitApplicationTests {
 
     @Test
