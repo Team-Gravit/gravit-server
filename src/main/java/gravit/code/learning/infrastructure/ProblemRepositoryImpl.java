@@ -38,4 +38,9 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     public void deleteById(Long problemId){
         problemJpaRepository.deleteById(problemId);
     }
+
+    @Override
+    public void saveAll(List<Problem> problems) {
+        problemJpaRepository.saveAll(problems);
+    }
 }

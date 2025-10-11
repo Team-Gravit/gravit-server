@@ -25,7 +25,7 @@ public class ProblemFixture {
     }
 
     public static Problem 객관식_문제(long lessonId) {
-        return 문제_정보(ProblemType.OBJECTIVE, "질문", "내용", "답", lessonId);
+        return 문제_정보(ProblemType.OBJECTIVE, "질문", "내용", "-", lessonId);
     }
 
     public static Problem 주관식_문제(long lessonId) {

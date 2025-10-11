@@ -9,4 +9,5 @@ public interface ProblemRepository {
     boolean existsProblemById(Long problemId);
     Optional<Problem> findById(Long problemId);
     void deleteById(Long problemId);
+    void saveAll(List<Problem> problems);
 }
