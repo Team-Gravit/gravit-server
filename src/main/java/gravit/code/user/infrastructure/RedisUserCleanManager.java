@@ -21,7 +21,7 @@ public class RedisUserCleanManager {
 
     public void storeDeletionUser(long userId) {
         ZonedDateTime now = ZonedDateTime.now(clock);
-        Instant purgeAt = now.plusWeeks(7).toInstant();
+        Instant purgeAt = now.plusDays(7).toInstant();
 
         redisTemplate.opsForZSet()
                 .add(DUE_KEY, Long.toString(userId), purgeAt.getEpochSecond());

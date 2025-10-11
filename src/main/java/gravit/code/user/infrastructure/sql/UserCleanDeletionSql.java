@@ -11,6 +11,7 @@ public class UserCleanDeletionSql {
                 DELETE FROM friends
                 WHERE follower_id = :id OR followee_id = :id
               ),
+              d_notice AS (DELETE FROM notice WHERE author_id = :id),
               d_chapter AS (DELETE FROM chapter_progress WHERE user_id = :id),
               d_unit    AS (DELETE FROM unit_progress    WHERE user_id = :id),
               d_lesson  AS (DELETE FROM lesson_progress  WHERE user_id = :id),

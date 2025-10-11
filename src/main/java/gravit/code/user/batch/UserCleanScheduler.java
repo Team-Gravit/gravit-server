@@ -18,7 +18,7 @@ public class UserCleanScheduler {
     private final RedisUserCleanManager cleanManager;
 
     @Scheduled(
-            cron = "${scheduler.season.rollover-cron:0 0 0 * * MON}",
+            cron = "0 0 * * * *", // 매 시간마다 한번씩
             zone = "Asia/Seoul"
     )
     public void cleanUsers(){
