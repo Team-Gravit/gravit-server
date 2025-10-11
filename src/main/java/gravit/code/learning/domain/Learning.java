@@ -28,7 +28,7 @@ public class Learning {
     @Column(name = "planet_conquest_rate", columnDefinition = "integer", nullable = false)
     private int planetConquestRate;
 
-    @Column(name = "user_id", columnDefinition = "bigint",  nullable = false)
+    @Column(name = "user_id", columnDefinition = "bigint",  nullable = false, unique = true)
     private long userId;
 
     @Version

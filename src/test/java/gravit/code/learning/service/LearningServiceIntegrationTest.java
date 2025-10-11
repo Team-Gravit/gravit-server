@@ -18,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
@@ -161,23 +162,40 @@ class LearningServiceIntegrationTest {
         }
     }
 
-    @Test
-    void 학습_정보_생성에_성공한다(){
-        //given
-        long userId = 1L;
+    @Nested
+    @DisplayName("학습 정보를 생성할 때")
+    class CreateLearning{
 
-        //when
-        learningService.createLearning(userId);
+        @Test
+        void 학습_정보_생성에_성공한다(){
+            //given
+            long userId = 1L;
 
-        //then
-        assertThat(learningRepository.findByUserId(userId)).satisfies(l -> {
-            assertThat(l.get()).isNotNull();
-            assertThat(l.get().getUserId()).isEqualTo(userId);
-            assertThat(l.get().getRecentChapterId()).isZero();
-            assertThat(l.get().isTodaySolved()).isFalse();
-            assertThat(l.get().getConsecutiveDays()).isZero();
-            assertThat(l.get().getPlanetConquestRate()).isZero();
-            assertThat(l.get().getVersion()).isZero();
-        });
+            //when
+            learningService.createLearning(userId);
+
+            //then
+            assertThat(learningRepository.findByUserId(userId)).satisfies(l -> {
+                assertThat(l.get()).isNotNull();
+                assertThat(l.get().getUserId()).isEqualTo(userId);
+                assertThat(l.get().getRecentChapterId()).isZero();
+                assertThat(l.get().isTodaySolved()).isFalse();
+                assertThat(l.get().getConsecutiveDays()).isZero();
+                assertThat(l.get().getPlanetConquestRate()).isZero();
+                assertThat(l.get().getVersion()).isZero();
+            });
+        }
+
+        @Test
+        void 이미_학습_정보가_존재하면_예외를_반환한다(){
+            //given
+            long userId = 2L;
+            Learning learning = LearningFixture.기본_학습_정보(2L);
+            learningRepository.save(learning);
+
+            //when & then
+            assertThatThrownBy(() -> learningService.createLearning(userId))
+                    .isInstanceOf(DataAccessException.class);
+        }
     }
 }
