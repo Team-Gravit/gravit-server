@@ -17,7 +17,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         LIMIT 1
         """, nativeQuery = true
     )
-    Optional<User> findByProviderId(String providerId);
+    Optional<User> findByProviderId(@Param("providerId") String providerId);
 
     @Query("""
         SELECT new gravit.code.mainPage.dto.MainPageSummary(

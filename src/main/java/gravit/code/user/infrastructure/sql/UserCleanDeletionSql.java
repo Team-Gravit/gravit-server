@@ -11,6 +11,7 @@ public class UserCleanDeletionSql {
                 DELETE FROM friends
                 WHERE follower_id = :id OR followee_id = :id
               ),
+              d_notice AS (DELETE FROM notice WHERE author_id = :id),
               d_chapter AS (DELETE FROM chapter_progress WHERE user_id = :id),
               d_unit    AS (DELETE FROM unit_progress    WHERE user_id = :id),
               d_lesson  AS (DELETE FROM lesson_progress  WHERE user_id = :id),
@@ -19,7 +20,6 @@ public class UserCleanDeletionSql {
               d_ulh AS (DELETE FROM user_league_history WHERE user_id = :id),
               d_ul  AS (DELETE FROM user_league         WHERE user_id = :id),
               d_mission AS (DELETE FROM mission  WHERE user_id = :id),
-              d_report  AS (DELETE FROM report   WHERE user_id = :id),
               d_ub   AS (DELETE FROM user_badge              WHERE user_id = :id),
               d_ums  AS (DELETE FROM user_mission_stat       WHERE user_id = :id),
               d_upc  AS (DELETE FROM user_planet_completion  WHERE user_id = :id),
@@ -30,6 +30,7 @@ public class UserCleanDeletionSql {
     /**
      * 삭제 건수를 함께 리턴하는 버전 (운영 로그/모니터링에 유용)
      * - 단일 로우를 반환하며 각 컬럼에 테이블별 삭제 건수가 들어감
+     * - 현재 사용은 x, 추후 지표 관리 할 때 힌트로 남겨둠
      */
     public static final String CLEAN_USER_DELETION_WITH_COUNTS_SQL = """
         WITH

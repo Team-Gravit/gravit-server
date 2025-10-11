@@ -124,7 +124,9 @@ public class User extends BaseEntity {
     }
 
     public void restoreUser(String handle){
-        if(!isDeleted()) return;
+        if(!isDeleted()){
+            throw new RestApiException(CustomErrorCode.USER_RESTORE_ONLY_POSSIBLE_DELETED_STATUS_USER);
+        }
         this.deletedAt = null;
         this.status = UserStatus.ACTIVE;
         this.handle = handle;
