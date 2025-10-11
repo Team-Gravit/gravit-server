@@ -29,44 +29,35 @@ class LessonJpaRepositoryTest {
     @Autowired
     private UnitJpaRepository unitJpaRepository;
 
-    @Autowired
-    private ChapterFixture chapterFixture;
-
-    @Autowired
-    private LessonFixture lessonFixture;
-
-    @Autowired
-    private UnitFixture unitFixture ;
-
     @BeforeEach
     void setUpTest(){
-        Chapter chapter = chapterFixture.기본_챕터();
+        Chapter chapter = ChapterFixture.기본_챕터();
         chapterJpaRepository.save(chapter);
 
-        Unit unit1 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit2 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit3 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit4 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit5 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit6 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit7 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit8 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit9 = unitFixture.기본_유닛(chapter.getId());
-        Unit unit10 = unitFixture.기본_유닛(chapter.getId());
+        Unit unit1 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit2 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit3 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit4 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit5 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit6 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit7 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit8 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit9 = UnitFixture.기본_유닛(chapter.getId());
+        Unit unit10 = UnitFixture.기본_유닛(chapter.getId());
 
         unitJpaRepository.saveAll(List.of(unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8, unit9, unit10));
 
         lessonJpaRepository.saveAll(List.of(
-                lessonFixture.기본_레슨(unit1.getId()),
-                lessonFixture.기본_레슨(unit2.getId()),
-                lessonFixture.기본_레슨(unit3.getId()),
-                lessonFixture.기본_레슨(unit4.getId()),
-                lessonFixture.기본_레슨(unit5.getId()),
-                lessonFixture.기본_레슨(unit6.getId()),
-                lessonFixture.기본_레슨(unit7.getId()),
-                lessonFixture.기본_레슨(unit8.getId()),
-                lessonFixture.기본_레슨(unit9.getId()),
-                lessonFixture.기본_레슨(unit10.getId())
+                LessonFixture.기본_레슨(unit1.getId()),
+                LessonFixture.기본_레슨(unit2.getId()),
+                LessonFixture.기본_레슨(unit3.getId()),
+                LessonFixture.기본_레슨(unit4.getId()),
+                LessonFixture.기본_레슨(unit5.getId()),
+                LessonFixture.기본_레슨(unit6.getId()),
+                LessonFixture.기본_레슨(unit7.getId()),
+                LessonFixture.기본_레슨(unit8.getId()),
+                LessonFixture.기본_레슨(unit9.getId()),
+                LessonFixture.기본_레슨(unit10.getId())
         ));
     }
 

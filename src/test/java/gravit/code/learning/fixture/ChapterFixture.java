@@ -1,28 +1,25 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Chapter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.test.context.TestComponent;
+import org.springframework.test.util.ReflectionTestUtils;
 
-@TestComponent
-@RequiredArgsConstructor
 public class ChapterFixture {
 
-    private final ChapterFixtureBuilder chapterFixtureBuilder;
-
-    private Chapter 챕터_정보(
+    private static Chapter 챕터_정보(
             String name,
             String description,
             long totalUnits
     ) {
-        return chapterFixtureBuilder.builder()
-                .name(name)
-                .description(description)
-                .totalUnits(totalUnits)
-                .build();
+        Chapter chapter = new Chapter();
+
+        ReflectionTestUtils.setField(chapter, "name", name);
+        ReflectionTestUtils.setField(chapter, "description", description);
+        ReflectionTestUtils.setField(chapter, "totalUnits", totalUnits);
+
+        return chapter;
     }
 
-    public Chapter 기본_챕터() {
+    public static Chapter 기본_챕터() {
         return 챕터_정보("챕터이름", "챕터설명", 10L);
     }
 }

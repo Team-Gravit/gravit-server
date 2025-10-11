@@ -23,14 +23,12 @@ class LearningServiceUnitTest {
     @InjectMocks
     private LearningService learningService;
 
-//    @Nested
-//    @DisplayName("연속학습일을 업데이트할 때")
-//    class UpdateConsecutiveDays{
+//    @Autowired
+//    private LearningFixture learningFixture;
 //
-//        Learning learning =
-//        @BeforeEach
-//        void setUp(){
-//
-//        }
+//    @Test
+//    void 연속학습일수_업데이트에_성공한다(){
+//        //given
+//        Learning learning = spy(Learning);
 //    }
 }

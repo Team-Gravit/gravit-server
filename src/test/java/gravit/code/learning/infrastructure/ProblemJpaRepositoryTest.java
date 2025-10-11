@@ -20,26 +20,23 @@ class ProblemJpaRepositoryTest {
     @Autowired
     private ProblemJpaRepository problemJpaRepository;
 
-    @Autowired
-    private ProblemFixture problemFixture;
-
     long lessonId = 1;
 
     @BeforeEach
     void setUpTest(){
         problemJpaRepository.saveAll(List.of(
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId),
-                problemFixture.객관식_문제(lessonId)
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId),
+                ProblemFixture.객관식_문제(lessonId)
         ));
     }
 

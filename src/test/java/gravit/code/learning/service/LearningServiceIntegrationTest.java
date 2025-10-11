@@ -42,18 +42,6 @@ class LearningServiceIntegrationTest {
     @Autowired
     private LessonProgressRepository lessonProgressRepository;
 
-    @Autowired
-    private LearningFixture learningFixture;
-
-    @Autowired
-    private LessonProgressFixture lessonProgressFixture;
-
-    @Autowired
-    private LessonFixture lessonFixture;
-
-    @Autowired
-    private ChapterFixture chapterFixture;
-
     @Nested
     @DisplayName("연속학습일을 업데이트할 때")
     class UpdateConsecutiveDays{
@@ -68,12 +56,12 @@ class LearningServiceIntegrationTest {
         void setUp(){
             // 학습 비진행 유저
             learningUser =  UserFixtureBuilder.builder().buildWithId(1L);
-            user1Learning = learningFixture.당일_학습_완료(learningUser.getId());
+            user1Learning = LearningFixture.당일_학습_완료(learningUser.getId());
             learningRepository.save(user1Learning);
 
             // 학습 진행 유저
             notLearningUser = UserFixtureBuilder.builder().buildWithId(2L);
-            user2Learning = learningFixture.당일_학습_미완료(notLearningUser.getId());
+            user2Learning = LearningFixture.당일_학습_미완료(notLearningUser.getId());
             learningRepository.save(user2Learning);
        }
 
@@ -124,24 +112,24 @@ class LearningServiceIntegrationTest {
             user1WithLearning = UserFixtureBuilder.builder().buildWithId(1L);
             user1WithNoLearning = UserFixtureBuilder.builder().buildWithId(2L);
 
-            chapter = chapterFixture.기본_챕터();
+            chapter = ChapterFixture.기본_챕터();
             chapterRepository.save(chapter);
 
-            lesson1 = lessonFixture.기본_레슨(1L);
-            lesson2 = lessonFixture.기본_레슨(1L);
-            lesson3 = lessonFixture.기본_레슨(1L);
-            lesson4 = lessonFixture.기본_레슨(1L);
-            lesson5 = lessonFixture.기본_레슨(1L);
+            lesson1 = LessonFixture.기본_레슨(1L);
+            lesson2 = LessonFixture.기본_레슨(1L);
+            lesson3 = LessonFixture.기본_레슨(1L);
+            lesson4 = LessonFixture.기본_레슨(1L);
+            lesson5 = LessonFixture.기본_레슨(1L);
 
             lessonRepository.saveAll(List.of(lesson1, lesson2, lesson3, lesson4, lesson5));
 
-            lesson1Progress = lessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson1.getId());
-            lesson2Progress = lessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson2.getId());
-            lesson3Progress = lessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson3.getId());
+            lesson1Progress = LessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson1.getId());
+            lesson2Progress = LessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson2.getId());
+            lesson3Progress = LessonProgressFixture.일반_레슨_진행도(user1WithLearning.getId(), lesson3.getId());
 
             lessonProgressRepository.saveAll(List.of(lesson1Progress, lesson2Progress, lesson3Progress));
 
-            learning1 = learningFixture.기본_학습_정보(user1WithLearning.getId());
+            learning1 = LearningFixture.기본_학습_정보(user1WithLearning.getId());
             learningRepository.save(learning1);
         }
 

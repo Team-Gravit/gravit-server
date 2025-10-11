@@ -1,28 +1,25 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Lesson;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.test.context.TestComponent;
+import org.springframework.test.util.ReflectionTestUtils;
 
-@TestComponent
-@RequiredArgsConstructor
 public class LessonFixture {
 
-    private final LessonFixtureBuilder lessonFixtureBuilder;
-
-    private Lesson 레슨_정보(
+    private static Lesson 레슨_정보(
             String name,
             long totalProblems,
             long unitId
     ) {
-        return lessonFixtureBuilder.builder()
-                .name(name)
-                .totalProblems(totalProblems)
-                .unitId(unitId)
-                .build();
+        Lesson lesson = new Lesson();
+
+        ReflectionTestUtils.setField(lesson, "name", name);
+        ReflectionTestUtils.setField(lesson, "totalProblems", totalProblems);
+        ReflectionTestUtils.setField(lesson, "unitId", unitId);
+
+        return lesson;
     }
 
-    public Lesson 기본_레슨(long unitId) {
+    public static Lesson 기본_레슨(long unitId) {
         return 레슨_정보("레슨이름", 12L, unitId);
     }
 }

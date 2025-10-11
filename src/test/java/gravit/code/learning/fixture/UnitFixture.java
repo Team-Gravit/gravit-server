@@ -1,28 +1,25 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Unit;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.test.context.TestComponent;
+import org.springframework.test.util.ReflectionTestUtils;
 
-@TestComponent
-@RequiredArgsConstructor
 public class UnitFixture {
 
-    private final UnitFixtureBuilder unitFixtureBuilder;
-
-    private Unit 유닛_정보(
+    private static Unit 유닛_정보(
             String name,
             long totalLessons,
             long chapterId
     ) {
-        return unitFixtureBuilder.builder()
-                .name(name)
-                .totalLessons(totalLessons)
-                .chapterId(chapterId)
-                .build();
+        Unit unit = new Unit();
+
+        ReflectionTestUtils.setField(unit, "name", name);
+        ReflectionTestUtils.setField(unit, "totalLessons", totalLessons);
+        ReflectionTestUtils.setField(unit, "chapterId", chapterId);
+
+        return unit;
     }
 
-    public Unit 기본_유닛(long chapterId) {
+    public static Unit 기본_유닛(long chapterId) {
         return 유닛_정보("유닛이름", 1L, chapterId);
     }
 }

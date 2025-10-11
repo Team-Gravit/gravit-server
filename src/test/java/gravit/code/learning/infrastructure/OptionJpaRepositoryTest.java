@@ -19,9 +19,6 @@ class OptionJpaRepositoryTest {
     @Autowired
     private OptionJpaRepository optionJpaRepository;
 
-    @Autowired
-    private OptionFixture optionFixture;
-
     // problemIds
     long problem1Id = 1L;
     long problem2Id = 2L;
@@ -30,20 +27,20 @@ class OptionJpaRepositoryTest {
     @BeforeEach
     void setUp(){
         optionJpaRepository.saveAll(List.of(
-                optionFixture.정답_선지(problem1Id),
-                optionFixture.오답_선지(problem1Id),
-                optionFixture.오답_선지(problem1Id),
-                optionFixture.오답_선지(problem1Id),
+                OptionFixture.정답_선지(problem1Id),
+                OptionFixture.오답_선지(problem1Id),
+                OptionFixture.오답_선지(problem1Id),
+                OptionFixture.오답_선지(problem1Id),
 
-                optionFixture.정답_선지(problem2Id),
-                optionFixture.오답_선지(problem2Id),
-                optionFixture.오답_선지(problem2Id),
-                optionFixture.오답_선지(problem2Id),
+                OptionFixture.정답_선지(problem2Id),
+                OptionFixture.오답_선지(problem2Id),
+                OptionFixture.오답_선지(problem2Id),
+                OptionFixture.오답_선지(problem2Id),
 
-                optionFixture.정답_선지(problem3Id),
-                optionFixture.오답_선지(problem3Id),
-                optionFixture.오답_선지(problem3Id),
-                optionFixture.오답_선지(problem3Id)
+                OptionFixture.정답_선지(problem3Id),
+                OptionFixture.오답_선지(problem3Id),
+                OptionFixture.오답_선지(problem3Id),
+                OptionFixture.오답_선지(problem3Id)
         ));
     }
 

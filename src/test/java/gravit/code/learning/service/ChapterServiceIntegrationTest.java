@@ -24,12 +24,9 @@ class ChapterServiceIntegrationTest {
     @Autowired
     private ChapterRepository chapterRepository;
 
-    @Autowired
-    private ChapterFixture chapterFixture;
-
     @BeforeEach
     void setUpTest(){
-        Chapter chapter = chapterFixture.기본_챕터();
+        Chapter chapter = ChapterFixture.기본_챕터();
         chapterRepository.save(chapter);
     }
 
