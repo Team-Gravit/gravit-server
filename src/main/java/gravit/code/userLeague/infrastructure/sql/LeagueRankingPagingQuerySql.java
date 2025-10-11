@@ -19,7 +19,7 @@ public class LeagueRankingPagingQuerySql {
                        ORDER BY ul.league_point DESC, ul.user_id ASC
                      ) AS rank
               FROM user_league ul
-              JOIN users u ON ul.user_id = u.user_id
+              JOIN users u ON ul.user_id = u.id
               WHERE ul.league_id = :leagueId
                 AND u.deleted_at IS NULL
             ),

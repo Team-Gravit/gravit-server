@@ -9,6 +9,7 @@ import gravit.code.mainPage.dto.response.MainPageResponse;
 import gravit.code.mission.dto.MissionSummary;
 import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.mission.service.MissionService;
+import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -28,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final MissionService missionService;
     private final ApplicationEventPublisher publisher;
+    private final HandleGenerator handleGenerator;
 
     @Transactional(readOnly = true)
     public UserResponse findById(long userId) {
@@ -92,5 +94,13 @@ public class UserService {
         MissionSummary missionSummary = missionService.getMissionSummary(userId);
 
         return MainPageResponse.create(mainPageSummary, missionSummary);
+    }
+
+    @Transactional
+    public void restoreUser(String providerId){
+        User user = userRepository.findByProviderId(providerId)
+                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        String newHandle = handleGenerator.generateUniqueHandle();
+        user.restoreUser(newHandle);
     }
 }

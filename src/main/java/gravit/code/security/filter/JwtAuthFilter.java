@@ -39,6 +39,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             /* delete account */
             HttpEndpoint.exact("/api/v1/users/deletion/confirm", HttpMethod.POST),
 
+            /* restore account */
+            HttpEndpoint.exact("/api/v1/users/restore", HttpMethod.POST),
+
             /* metrics monitoring */
             HttpEndpoint.prefix("/actuator", HttpMethod.GET)
 

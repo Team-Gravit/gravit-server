@@ -33,6 +33,7 @@ public class UserDataCleanController {
         }
 
         exec("DELETE FROM friends WHERE follower_id = :id OR followee_id = :id", userId);
+        exec("DELETE FROM notice WHERE author_id = :id", userId);
         exec("DELETE FROM chapter_progress WHERE user_id = :id", userId);
         exec("DELETE FROM unit_progress WHERE user_id = :id", userId);
         exec("DELETE FROM lesson_progress WHERE user_id = :id", userId);
