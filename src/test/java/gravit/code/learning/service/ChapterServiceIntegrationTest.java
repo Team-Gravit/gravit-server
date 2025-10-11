@@ -24,15 +24,16 @@ class ChapterServiceIntegrationTest {
     @Autowired
     private ChapterRepository chapterRepository;
 
-    @BeforeEach
-    void setUpTest(){
-        Chapter chapter = ChapterFixture.기본_챕터();
-        chapterRepository.save(chapter);
-    }
-
     @Nested
     @DisplayName("챕터 아이디로 챕터를 조회할 때")
     class FindChapterByChapterId{
+
+        @BeforeEach
+        void setUpTest(){
+            Chapter chapter = ChapterFixture.기본_챕터();
+            chapterRepository.save(chapter);
+        }
+
         @Test
         void 챕터_조회에_성공한다(){
             //given

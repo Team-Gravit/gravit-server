@@ -16,9 +16,6 @@ public class LessonService {
 
     @Transactional(readOnly = true)
     public LearningIds getLearningIdsByLessonId(long lessonId){
-        if(!lessonRepository.existsById(lessonId))
-            throw new RestApiException(CustomErrorCode.LESSON_NOT_FOUND);
-
         return lessonRepository.findLearningIdsByLessonId(lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
     }
