@@ -15,9 +15,10 @@ public class LessonService {
     private final LessonRepository lessonRepository;
 
     /**
-     * TODO
-     * findLearningIdsByLessonId가 Optional.empty()를 반환한다는 것이 레슨 조회에 실패했다는 것을 의미할 수 있는가?
-     * Lesson Not Found보다 Invalid LessonId 이렇게 예외 처리를 하는 것이 더 좋아보인다.
+     * POINT
+     * findLearningIdsByLessonId의 행위는 레슨이 속한 챕터, 유닛 아이디를 조회하는 것이다.
+     * 조회에 실패하였다는 것은 챕터, 유닛 아이디 조회의 실패를 의미하기도 하지만, 레슨 아이디가 유효하지 않다는 것을 의미하기도 한다.
+     * 따라서, LearningIds 조회에 실패. 즉 해당 레슨이 속한 챕터, 유닛의 아이디 조회에 실패하였음을 알리는게 더 좋아보인다.
      */
     @Transactional(readOnly = true)
     public LearningIds getLearningIdsByLessonId(long lessonId){
@@ -26,8 +27,8 @@ public class LessonService {
     }
 
     /**
-     * TODO
-     * 여기도 위와 동일함.
+     * POINT
+     * 여기도 위와 동일한 맥락이다.
      */
     public LearningAdditionalInfo getLearningAdditionalInfoByLessonId(long lessonId){
         return lessonRepository.findLearningAdditionalInfoByLessonId(lessonId)
