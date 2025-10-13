@@ -50,4 +50,9 @@ public class UserController implements UserControllerDocs {
         return ResponseEntity.ok(myPageResponse);
     }
 
+    @PostMapping("/restore")
+    public ResponseEntity<Void> restoreUser(@RequestParam("providerId") String providerId) {
+        userService.restoreUser(providerId);
+        return ResponseEntity.ok().build();
+    }
 }

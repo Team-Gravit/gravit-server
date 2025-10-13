@@ -7,6 +7,7 @@ import gravit.code.user.config.UserDeleteMailProps;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.infrastructure.MailAuthCodeGenerator;
+import gravit.code.user.infrastructure.RedisUserCleanManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class UserDeletionService {
     private final MailSender mailSender;
     private final UserRepository userRepository;
     private final MailAuthCodeStore mailAuthCodeStore;
+    private final RedisUserCleanManager cleanManager;
 
     public void requestDeleteMailWithMailAuthCode(
             long userId,
@@ -72,5 +74,13 @@ public class UserDeletionService {
         // 유저가 조회되면(Active 상태로 존재하면) soft delete
         userRepository.findById(userId)
                 .ifPresent(user -> userRepository.deleteById(user.getId()));
+
+        // 7일 뒤 삭제하기 위해 삭제 대상 유저의 key 저장
+        cleanManager.storeDeletionUser(userId);
+    }
+
+    @Transactional
+    public void cleanUserDeletion(long userId){
+        userRepository.cleanUserDeletion(userId);
     }
 }

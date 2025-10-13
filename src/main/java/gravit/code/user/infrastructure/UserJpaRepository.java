@@ -11,7 +11,13 @@ import java.util.Optional;
 
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByProviderId(String providerId);
+    @Query(value = """
+        SELECT * FROM users 
+        WHERE provider_id = :providerId
+        LIMIT 1
+        """, nativeQuery = true
+    )
+    Optional<User> findByProviderId(@Param("providerId") String providerId);
 
     @Query("""
         SELECT new gravit.code.mainPage.dto.MainPageSummary(
@@ -53,4 +59,5 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         where u.id = :userId
     """)
     Optional<MyPageResponse> findMyPageByUserId(@Param("userId") long userId);
+
 }

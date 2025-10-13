@@ -14,4 +14,5 @@ public interface UserRepository {
     Optional<MyPageResponse> findMyPageByUserId(long userId);
     MainPageSummary findMainPageByUserId(long userId);
     void deleteById(long id);
+    void cleanUserDeletion(long userId);
 }
