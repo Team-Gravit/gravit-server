@@ -2,6 +2,7 @@ package gravit.code.learning.listener;
 
 import gravit.code.global.event.badge.StreakUpdatedEvent;
 import gravit.code.learning.dto.StreakDto;
+import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.service.LearningService;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,7 @@ class LearningEventListenerUnitTest {
     class UpdateLearning{
 
         @Test
-        void 성공적으로_유저의_학습정보를_업데이트한다(){
+        void 유저_학습정보를_성공적으로_업데이트한다(){
             //given
             long userId = 1L;
             long chapterId = 1L;
@@ -77,5 +78,19 @@ class LearningEventListenerUnitTest {
             verify(learningService).updateLearningStatus(userId, chapterId);
             verify(publisher, never()).publishEvent(streakUpdatedEvent);
         }
+    }
+
+    @Test
+    void 유저_학습정보_생성_이벤트가_발행되면_유저_학습정보를_성공적으로_생성한다(){
+        //given
+        long userId = 1L;
+
+        CreateLearningEvent createLearningEvent = CreateLearningEvent.of(userId);
+
+        //when
+        learningEventListener.createLearning(createLearningEvent);
+
+        //then
+        verify(learningService).createLearning(createLearningEvent.userId());
     }
 }
