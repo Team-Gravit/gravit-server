@@ -167,4 +167,45 @@ public interface UserControllerDocs {
     @GetMapping("/my-page")
     ResponseEntity<MyPageResponse> getMyPage(@AuthenticationPrincipal LoginUser loginUser);
 
+    @Operation(
+            summary = "소프트 삭제 계정 복구",
+            description = """
+    소셜 providerId로 소프트 삭제된 계정을 복구합니다.<br>
+    - 이미 활성 상태여도 200(OK)으로 응답합니다(멱등적 동작).<br>
+    - 예시 providerId: <code>google 1234567890</code>
+    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 복구 완료(또는 이미 활성 상태)"),
+            @ApiResponse(
+                    responseCode = "USER_4041",
+                    description = "🚨 유저 조회 실패",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 조회 실패",
+                                            value = "{\"error\":\"USER_4041\",\"message\":\"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "GLOBAL_5001",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외",
+                                            value = "{\"error\":\"GLOBAL_5001\",\"message\":\"예기치 못한 예외 발생\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
+    @PatchMapping("/restore")
+    ResponseEntity<Void> restoreUser(@RequestParam("providerId") String providerId);
 }
