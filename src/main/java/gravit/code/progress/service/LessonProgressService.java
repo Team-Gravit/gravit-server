@@ -1,5 +1,7 @@
 package gravit.code.progress.service;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.LessonRepository;
 import gravit.code.progress.domain.LessonProgress;
 import gravit.code.progress.domain.LessonProgressRepository;
@@ -15,6 +17,7 @@ import java.util.List;
 public class LessonProgressService {
 
     private final LessonProgressRepository lessonProgressRepository;
+    private final LessonRepository lessonRepository;
 
     @Transactional
     public LessonProgress getLessonProgressAndUpdateStatus(
@@ -22,6 +25,9 @@ public class LessonProgressService {
             long userId,
             int learningTime
     ) {
+        if(!lessonRepository.existsById(lessonId))
+            throw new RestApiException(CustomErrorCode.LESSON_NOT_FOUND);
+
         LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId)
                 .orElseGet(() -> LessonProgress.create(userId, lessonId));
 

@@ -32,7 +32,10 @@ public class ProblemFixture {
         return 문제(ProblemType.SUBJECTIVE, "질문", "내용", "답", lessonId);
     }
 
-    public static Problem 저장된_객관식_문제(long problemId, long lessonId){
+    public static Problem 저장된_객관식_문제(
+            long problemId,
+            long lessonId
+    ){
         Problem problem = 문제(ProblemType.OBJECTIVE, "질문", "내용", "-", lessonId);
 
         ReflectionTestUtils.setField(problem, "id", problemId);
@@ -40,7 +43,10 @@ public class ProblemFixture {
         return problem;
     }
 
-    public static Problem 저장된_주관식_문제(long problemId, long lessonId){
+    public static Problem 저장된_주관식_문제(
+            long problemId,
+            long lessonId
+    ){
         Problem problem = 문제(ProblemType.SUBJECTIVE, "질문", "내용", "-", lessonId);
 
         ReflectionTestUtils.setField(problem, "id", problemId);

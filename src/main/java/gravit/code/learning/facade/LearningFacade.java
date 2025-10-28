@@ -29,16 +29,16 @@ import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class LearningFacade {
 
     private final ApplicationEventPublisher publisher;
@@ -141,6 +141,8 @@ public class LearningFacade {
     private LearningResultSaveResponse saveLearningResultForRetryUser(long userId, LearningResultSaveRequest request){
 
         String leagueName = userLeagueService.getUserLeagueName(userId);
+
+        // TODO 불필요 로직
         UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 0, request.accuracy());
 
         return LearningResultSaveResponse.create(userLevelResponse, leagueName);

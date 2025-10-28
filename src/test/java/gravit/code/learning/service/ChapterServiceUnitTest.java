@@ -4,6 +4,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.ChapterRepository;
+import gravit.code.learning.fixture.ChapterFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -38,13 +38,7 @@ class ChapterServiceUnitTest {
 
         @BeforeEach
         void setUp() {
-            chapter = new Chapter();
-
-            ReflectionTestUtils.setField(chapter, "name", "이름");
-            ReflectionTestUtils.setField(chapter, "description", "설명");
-            ReflectionTestUtils.setField(chapter, "totalUnits", 10L);
-
-            chapterRepository.save(chapter);
+            chapter = ChapterFixture.기본_챕터();
         }
 
         @Test

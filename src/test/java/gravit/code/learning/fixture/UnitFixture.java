@@ -1,7 +1,6 @@
 package gravit.code.learning.fixture;
 
 import gravit.code.learning.domain.Unit;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class UnitFixture {
 
@@ -10,13 +9,7 @@ public class UnitFixture {
             long totalLessons,
             long chapterId
     ) {
-        Unit unit = new Unit();
-
-        ReflectionTestUtils.setField(unit, "name", name);
-        ReflectionTestUtils.setField(unit, "totalLessons", totalLessons);
-        ReflectionTestUtils.setField(unit, "chapterId", chapterId);
-
-        return unit;
+        return Unit.create(name, totalLessons, chapterId);
     }
 
     public static Unit 기본_유닛(long chapterId) {

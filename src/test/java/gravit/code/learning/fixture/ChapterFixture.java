@@ -10,16 +10,27 @@ public class ChapterFixture {
             String description,
             long totalUnits
     ) {
-        Chapter chapter = new Chapter();
-
-        ReflectionTestUtils.setField(chapter, "name", name);
-        ReflectionTestUtils.setField(chapter, "description", description);
-        ReflectionTestUtils.setField(chapter, "totalUnits", totalUnits);
-
-        return chapter;
+        return Chapter.create(name, description, totalUnits);
     }
 
     public static Chapter 기본_챕터() {
         return 챕터("챕터이름", "챕터설명", 10L);
+    }
+
+    public static Chapter 특정_챕터(
+            String name,
+            String description
+    ){
+        return 챕터(name, description, 10L);
+    }
+
+    public static Chapter 저장된_기본_챕터(
+            long chapterId
+    ){
+        Chapter chapter = 챕터("챕터이름", "챕터설명", 10L);
+
+        ReflectionTestUtils.setField(chapter, "id", chapterId);
+
+        return chapter;
     }
 }

@@ -35,6 +35,7 @@ public class UnitProgressService {
 
         List<UnitProgressDetailResponse> unitProgressDetailResponses = unitProgressRepository.findAllUnitProgressDetailsByChapterIdAndUserId(chapterId, userId);
 
+        // TODO 예외 수정하기
         if (unitProgressDetailResponses.isEmpty())
             throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
 
