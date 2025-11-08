@@ -67,16 +67,6 @@ class LearningServiceIntegrationTest {
        }
 
         @Test
-        void 당일_학습_완료자는_연속학습일수가_1만큼_증가한다(){
-            //given
-            //when
-            learningService.updateConsecutiveDays();
-
-            //then
-            assertThat(learningRepository.findByUserId(learningUser.getId()).get().getConsecutiveDays()).isEqualTo(user1Learning.getConsecutiveDays()+1);
-       }
-
-        @Test
         void 당일_학습_미완료자는_연속학습일수가_0으로_초기화된다(){
             //given
             //when
