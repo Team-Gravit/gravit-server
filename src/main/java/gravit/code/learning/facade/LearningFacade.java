@@ -29,16 +29,16 @@ import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class LearningFacade {
 
     private final ApplicationEventPublisher publisher;
@@ -99,19 +99,17 @@ public class LearningFacade {
 
         checkAndUpdateLearningProgress(learningIds.chapterId(), learningIds.unitId(), userId);
 
-        String lessonName = lessonService.getLessonNameByLessonId(request.lessonId());
-
         LearningResultSaveResponse response;
         if(lessonProgress.getAttemptCount() == 1){ // 레슨 첫번째 풀이라면,
 
-            response = saveLearningResultForFirstAttemptUser(userId, request, learningIds.chapterId(), lessonName);
+            response = saveLearningResultForFirstAttemptUser(userId, request);
 
             publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
             publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
             publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
             publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
         }else{ // 레슨 첫번째 풀이가 아니라면,
-            response = saveLearningResultForRetryUser(userId, request, learningIds.chapterId(), lessonName);
+            response = saveLearningResultForRetryUser(userId, request);
 
             publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
         }
@@ -130,21 +128,23 @@ public class LearningFacade {
         }
     }
 
-    private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request, Long chapterId, String lessonName){
+    private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request){
 
         problemProgressService.saveProblemResults(userId, request.problemResults());
 
         String leagueName = userLeagueService.getUserLeagueName(userId);
         UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 20, request.accuracy());
 
-        return LearningResultSaveResponse.create(userLevelResponse, leagueName, chapterId, lessonName);
+        return LearningResultSaveResponse.create(userLevelResponse, leagueName);
     }
 
-    private LearningResultSaveResponse saveLearningResultForRetryUser(long userId, LearningResultSaveRequest request, Long chapterId, String lessonName){
+    private LearningResultSaveResponse saveLearningResultForRetryUser(long userId, LearningResultSaveRequest request){
 
         String leagueName = userLeagueService.getUserLeagueName(userId);
+
+        // TODO 불필요 로직
         UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 0, request.accuracy());
 
-        return LearningResultSaveResponse.create(userLevelResponse, leagueName, chapterId, lessonName);
+        return LearningResultSaveResponse.create(userLevelResponse, leagueName);
     }
 }

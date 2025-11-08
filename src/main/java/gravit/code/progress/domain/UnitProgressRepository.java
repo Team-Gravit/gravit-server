@@ -15,4 +15,5 @@ public interface UnitProgressRepository {
             long chapterId,
             long userId
     );
+    void saveAll(List<UnitProgress> unitProgresses);
 }

@@ -15,7 +15,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "varchar(50)", nullable = false, unique = true)
+    @Column(columnDefinition = "varchar(50)", nullable = false)
     private String name;
 
     @Column(name = "total_problems",columnDefinition = "bigint", nullable = false)

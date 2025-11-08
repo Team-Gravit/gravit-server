@@ -41,6 +41,9 @@ public enum CustomErrorCode implements ErrorCode {
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT_4015", "토큰을 찾을 수 없습니다."),
     REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4016", "만료된 리프레시 토큰입니다."),
 
+    // Learning
+    LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "LEARNING_4041", "학습 정보 조회에 실패하였습니다."),
+
     // Chapter
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),
     CHAPTER_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4042", "챕터 진행도 조회에 실패하였습니다."),

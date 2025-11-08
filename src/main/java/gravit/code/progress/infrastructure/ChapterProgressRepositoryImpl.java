@@ -3,7 +3,6 @@ package gravit.code.progress.infrastructure;
 import gravit.code.progress.domain.ChapterProgress;
 import gravit.code.progress.domain.ChapterProgressRepository;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.progress.dto.response.ChapterSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -34,11 +33,8 @@ public class ChapterProgressRepositoryImpl implements ChapterProgressRepository 
     }
 
     @Override
-    public Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(
-            long chapterId,
-            long userId
-    ){
-        return chapterProgressJpaRepository.findChapterSummaryByChapterIdAndUserId(chapterId, userId);
+    public void saveAll(List<ChapterProgress> chapterProgresses){
+        chapterProgressJpaRepository.saveAll(chapterProgresses);
     }
 
 }

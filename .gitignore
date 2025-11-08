@@ -38,6 +38,10 @@ out/
 ### VS Code ###
 .vscode/
 
-# OS Files
+### OS Files ###
 .DS_Store
-*DS_Store
+
+### Claude Code ###
+CLAUDE.md
+TASKS.md
+

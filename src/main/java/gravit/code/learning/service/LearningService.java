@@ -52,7 +52,7 @@ public class LearningService {
             long chapterId
     ){
         Learning learning = learningRepository.findByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
 
         long totalLesson = lessonRepository.count();
         long solvedLesson = lessonProgressRepository.countByUserId(userId);
@@ -61,9 +61,11 @@ public class LearningService {
                 Math.round(((double) solvedLesson / totalLesson) * 100)
         );
 
+        StreakDto streakDto = learning.updateLearningStatus(chapterId, planetConquestRate);
+
         learningRepository.save(learning);
 
-        return learning.updateLearningStatus(chapterId, planetConquestRate);
+        return streakDto;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

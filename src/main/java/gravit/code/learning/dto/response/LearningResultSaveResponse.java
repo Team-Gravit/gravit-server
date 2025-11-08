@@ -7,19 +7,6 @@ import lombok.Builder;
 @Builder
 @Schema(description = "풀이 결과 저장 Response")
 public record LearningResultSaveResponse(
-
-        @Schema(
-                description = "챕터 아이디",
-                example = "1"
-        )
-        long chapterId,
-
-        @Schema(
-                description = "레슨 이름",
-                example = "배열 기초"
-        )
-        String lessonName,
-
         @Schema(
                 description = "리그 이름",
                 example = "브론즈 1"
@@ -40,13 +27,9 @@ public record LearningResultSaveResponse(
 ) {
     public static  LearningResultSaveResponse create(
             UserLevelResponse userLevelResponse,
-            String leagueName,
-            long chapterId,
-            String lessonName
+            String leagueName
     ){
         return LearningResultSaveResponse.builder()
-                .chapterId(chapterId)
-                .lessonName(lessonName)
                 .leagueName(leagueName)
                 .currentLevel(userLevelResponse.currentLevel())
                 .xp(userLevelResponse.xp())

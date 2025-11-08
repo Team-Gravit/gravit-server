@@ -28,14 +28,14 @@ public class Learning {
     @Column(name = "planet_conquest_rate", columnDefinition = "integer", nullable = false)
     private int planetConquestRate;
 
-    @Column(name = "user_id", columnDefinition = "bigint",  nullable = false)
+    @Column(name = "user_id", columnDefinition = "bigint",  nullable = false, unique = true)
     private long userId;
 
     @Version
     @Column(columnDefinition = "bigint", nullable = false)
     private long version;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Learning(Long userId) {
         this.recentChapterId = 0L;
         this.todaySolved = false;
@@ -59,6 +59,7 @@ public class Learning {
 
         if (this.todaySolved){
             this.recentChapterId = chapterId;
+            this.planetConquestRate = planetConquestRate;
 
             int after = this.consecutiveDays;
             return new StreakDto(before, after);
@@ -74,7 +75,7 @@ public class Learning {
     }
 
     public void updateConsecutiveDays(){
-        if(!this.todaySolved && consecutiveDays > 0){
+        if(!this.todaySolved) {
             this.consecutiveDays = 0;
         }else{
             this.todaySolved = false;

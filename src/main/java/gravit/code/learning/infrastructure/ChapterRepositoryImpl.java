@@ -5,6 +5,7 @@ import gravit.code.learning.domain.ChapterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,4 +23,10 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     public Chapter save(Chapter chapter) {
         return chapterJpaRepository.save(chapter);
     }
+
+    @Override
+    public void saveAll(List<Chapter> chapters){
+        chapterJpaRepository.saveAll(chapters);
+    }
+
 }

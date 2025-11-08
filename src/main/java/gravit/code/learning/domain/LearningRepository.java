@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LearningRepository {
-    void save(Learning learning);
+    Learning save(Learning learning);
     Optional<Learning> findByUserId(Long userId);
     List<Learning> findAll(Pageable pageable);
     void saveAll(List<Learning> learnings);

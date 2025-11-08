@@ -1,5 +1,6 @@
 package gravit.code.learning.dto.response;
 
+import gravit.code.learning.domain.Option;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -37,20 +38,13 @@ public record OptionResponse(
         )
         long problemId
 ) {
-
-    public static OptionResponse create(
-            long optionId,
-            long problemId,
-            String content,
-            String explanation,
-            Boolean isAnswer
-    ) {
+    public static OptionResponse from(Option option) {
         return OptionResponse.builder()
-                .optionId(optionId)
-                .problemId(problemId)
-                .content(content)
-                .explanation(explanation)
-                .isAnswer(isAnswer)
+                .optionId(option.getId())
+                .problemId(option.getProblemId())
+                .content(option.getContent())
+                .explanation(option.getExplanation())
+                .isAnswer(option.isAnswer())
                 .build();
     }
 }

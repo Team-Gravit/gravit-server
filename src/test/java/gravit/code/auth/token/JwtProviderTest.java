@@ -3,6 +3,7 @@ package gravit.code.auth.token;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.auth.domain.Subject;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
@@ -10,10 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -23,8 +22,7 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@TCSpringBootTest
 @Transactional
 class JwtProviderTest {
 

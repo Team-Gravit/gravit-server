@@ -37,8 +37,8 @@ public class Unit {
 
     public static Unit create(
             String name,
-            Long totalLessons,
-            Long chapterId
+            long totalLessons,
+            long chapterId
     ) {
         return Unit.builder()
                 .name(name)

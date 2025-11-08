@@ -17,7 +17,7 @@ public interface LessonJpaRepository extends JpaRepository<Lesson, Long> {
         INNER JOIN Chapter c ON c.id = u.chapterId
         WHERE l.id = :lessonId
     """)
-    LearningIds findLearningIdsByLessonId(@Param("lessonId")long lessonId);
+    Optional<LearningIds> findLearningIdsByLessonId(@Param("lessonId")long lessonId);
 
     @Query("""
         SELECT l.name

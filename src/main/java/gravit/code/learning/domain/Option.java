@@ -2,14 +2,13 @@ package gravit.code.learning.domain;
 
 import gravit.code.admin.dto.request.OptionUpdateRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Option {
 
     @Id

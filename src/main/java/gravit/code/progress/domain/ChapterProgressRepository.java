@@ -1,6 +1,5 @@
 package gravit.code.progress.domain;
 
-import gravit.code.progress.dto.response.ChapterSummaryResponse;
 import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 
 import java.util.List;
@@ -13,8 +12,5 @@ public interface ChapterProgressRepository {
             long userId
     );
     List<ChapterProgressDetailResponse> findAllChapterProgressDetailByUserId(long userId);
-    Optional<ChapterSummaryResponse> findChapterSummaryByChapterIdAndUserId(
-            long chapterId,
-            long userId
-    );
+    void saveAll(List<ChapterProgress> chapterProgresses);
 }

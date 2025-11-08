@@ -3,6 +3,7 @@ package gravit.code.learning.domain;
 import gravit.code.learning.dto.LearningAdditionalInfo;
 import gravit.code.learning.dto.LearningIds;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LessonRepository {
@@ -10,7 +11,7 @@ public interface LessonRepository {
     Optional<Lesson> findById(Long lessonId);
     long count();
     boolean existsById(Long lessonId);
-    LearningIds findLearningIdsByLessonId(long lessonId);
-    Optional<String> findLessonNameByLessonId(long lessonId);
+    Optional<LearningIds> findLearningIdsByLessonId(long lessonId);
     Optional<LearningAdditionalInfo> findLearningAdditionalInfoByLessonId(long lessonId);
+    void saveAll(List<Lesson> lessons);
 }

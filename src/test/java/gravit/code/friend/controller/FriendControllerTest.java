@@ -1,10 +1,10 @@
 package gravit.code.friend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gravit.code.GravitApplication;
-import gravit.code.common.auth.WithMockLoginUser;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.domain.FriendRepository;
+import gravit.code.global.authentication.WithMockLoginUser;
+import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,8 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = GravitApplication.class)
-@ActiveProfiles("test")
+@TCSpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

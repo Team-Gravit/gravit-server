@@ -16,4 +16,5 @@ public interface LessonProgressRepository {
             long userId
     );
     long countByUserId(long userId);
+    void saveAll(List<LessonProgress> lessonProgresses);
 }

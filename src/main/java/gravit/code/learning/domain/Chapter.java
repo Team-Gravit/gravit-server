@@ -46,4 +46,5 @@ public class Chapter {
                 .totalUnits(totalUnits)
                 .build();
     }
+
 }
