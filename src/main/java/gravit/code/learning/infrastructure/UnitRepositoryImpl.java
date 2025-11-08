@@ -5,6 +5,7 @@ import gravit.code.learning.domain.UnitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,4 +24,8 @@ public class UnitRepositoryImpl implements UnitRepository {
         return unitJpaRepository.findById(unitId);
     }
 
+    @Override
+    public void saveAll(List<Unit> units){
+        unitJpaRepository.saveAll(units);
+    }
 }

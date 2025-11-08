@@ -231,7 +231,7 @@ public class LearningFacadeUnitTest {
         }
 
         @Test
-        void 챕터_아아디가_유효하지_않으면_예외를_반환한다(){
+        void 챕터_아이디가_유효하지_않으면_예외를_반환한다(){
             // given
             final long validUserId = userId;
             final long invalidChapterId = 999L;

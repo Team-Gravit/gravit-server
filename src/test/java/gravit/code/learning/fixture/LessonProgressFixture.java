@@ -21,11 +21,24 @@ public class LessonProgressFixture {
         return lessonProgress;
     }
 
-    public static LessonProgress 일반_레슨_진행도(long userId, long lessonId) {
+    public static LessonProgress 일반_레슨_진행도(
+            long userId,
+            long lessonId
+    ) {
         return 레슨_진행도(1, 180, true, userId, lessonId);
     }
 
-    public static LessonProgress 완료_레슨_진행도(long userId, long lessonId) {
+    public static LessonProgress 완료_레슨_진행도(
+            long userId,
+            long lessonId
+    ) {
         return 레슨_진행도(2, 180, true, userId, lessonId);
+    }
+
+    public static LessonProgress 미완료_레슨_진행도(
+            long userId,
+            long lessonId
+    ) {
+        return 레슨_진행도(2, 180, false, userId, lessonId);
     }
 }

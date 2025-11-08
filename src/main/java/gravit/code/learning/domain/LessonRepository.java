@@ -12,7 +12,6 @@ public interface LessonRepository {
     long count();
     boolean existsById(Long lessonId);
     Optional<LearningIds> findLearningIdsByLessonId(long lessonId);
-    Optional<String> findLessonNameByLessonId(long lessonId);
     Optional<LearningAdditionalInfo> findLearningAdditionalInfoByLessonId(long lessonId);
     void saveAll(List<Lesson> lessons);
 }

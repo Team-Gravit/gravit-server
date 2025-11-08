@@ -36,4 +36,9 @@ public class UnitProgressRepositoryImpl implements UnitProgressRepository {
     public UnitProgress save(UnitProgress unitProgress) {
         return unitProgressJpaRepository.save(unitProgress);
     }
+
+    @Override
+    public void saveAll(List<UnitProgress> unitProgresses) {
+        unitProgressJpaRepository.saveAll(unitProgresses);
+    }
 }

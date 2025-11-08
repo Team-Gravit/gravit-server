@@ -55,12 +55,12 @@ class LearningServiceIntegrationTest {
 
         @BeforeEach
         void setUp(){
-            // 학습 비진행 유저
+            // 학습 진행 유저
             learningUser =  UserFixtureBuilder.builder().buildWithId(1L);
             user1Learning = LearningFixture.당일_학습_완료(learningUser.getId());
             learningRepository.save(user1Learning);
 
-            // 학습 진행 유저
+            // 학습 미진행 유저
             notLearningUser = UserFixtureBuilder.builder().buildWithId(2L);
             user2Learning = LearningFixture.당일_학습_미완료(notLearningUser.getId());
             learningRepository.save(user2Learning);
@@ -88,7 +88,7 @@ class LearningServiceIntegrationTest {
     }
 
     @Nested
-    @DisplayName("사용자가 학습을 완료하여 학습 정보를 업데이트할 떄")
+    @DisplayName("사용자가 학습을 완료하여 학습 정보를 업데이트할 때")
     class UpdateLearning{
 
         User user1WithLearning;
