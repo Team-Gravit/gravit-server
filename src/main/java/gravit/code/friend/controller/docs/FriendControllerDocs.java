@@ -109,6 +109,37 @@ public interface FriendControllerDocs {
             @PathVariable("followeeId") Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser);
 
+    @Operation(summary = "팔로잉 거절 ", description = "다른 사용자가 나에게 보낸 팔로잉을 거절합니다.<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 팔로잉 거절 성공"),
+            @ApiResponse(responseCode = "FRIEND_4041", description = "🚨 팔로우 내역 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "팔로우 내역 조회 실패",
+                                            value = "{\"error\" : \"FRIEND_4041\", \"message\" : \"팔로우 내역이 존재하지 않습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외 발생",
+                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @PostMapping("/reject-following/{followerId}")
+    ResponseEntity<Void> rejectFollowing(
+            @Parameter(description = "나를 팔로잉한 대상 유저 ID")
+            @PathVariable("followerId") Long followerId,
+            @AuthenticationPrincipal LoginUser loginUser);
+
 
     @Operation(summary = "팔로워 목록 조회", description = "현재 사용자를 팔로우하고 있는 사용자 목록을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>" +

@@ -6,6 +6,7 @@ import gravit.code.auth.policy.AdminPromotionPolicy;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.service.AuthTokenProvider;
+import gravit.code.user.exception.AccountSoftDeletedException;
 import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
@@ -40,7 +41,12 @@ public class OAuthLoginProcessor {
         String providerId = oAuthUserInfo.getProvider() + " " + oAuthUserInfo.getProviderId();
 
         return userRepository.findByProviderId(providerId)
-                .map(u -> promoteToAdminByWhitelist(u, oAuthUserInfo)) // 유저가 존재하고, admin 승격 가능성 확인
+                .map(u -> {
+                    if(u.isDeleted()){
+                        throw new AccountSoftDeletedException(u.getProviderId());
+                    }
+                    return promoteToAdminByWhitelist(u, oAuthUserInfo);
+                }) // 유저가 존재하고, admin 승격 가능성 확인
                 .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId)); // 유저가 존재하지 않으면 생성
     }
 

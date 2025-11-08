@@ -20,7 +20,9 @@ public class FriendsHandleSearchQuerySql {
               CROSS JOIN LATERAL (
                 SELECT id, profile_img_number, nickname, handle
                 FROM users
-                WHERE id <> p.me AND handle = p.q
+                WHERE id <> p.me
+                  AND deleted_at IS NULL
+                  AND handle = p.q
                 ORDER BY handle, id
                 LIMIT p.lim + p.off
               ) u
@@ -31,6 +33,7 @@ public class FriendsHandleSearchQuerySql {
                 SELECT id, profile_img_number, nickname, handle
                 FROM users
                 WHERE id <> p.me
+                  AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
                 ORDER BY handle, id
@@ -56,6 +59,7 @@ public class FriendsHandleSearchQuerySql {
                 SELECT id
                 FROM users
                 WHERE id <> p.me
+                  AND deleted_at IS NULL
                   AND handle LIKE p.q_contains
                   AND handle <> p.q
                   AND handle NOT LIKE p.q_prefix
@@ -66,6 +70,7 @@ public class FriendsHandleSearchQuerySql {
               SELECT u.id, u.profile_img_number, u.nickname, u.handle
               FROM users u
               JOIN contains_ids c ON c.id = u.id
+              WHERE u.deleted_at IS NULL
             ),
             unioned AS (
               SELECT id, profile_img_number, nickname, handle, 3 AS w FROM exact
@@ -103,7 +108,9 @@ public class FriendsHandleSearchQuerySql {
               CROSS JOIN LATERAL (
                 SELECT id, profile_img_number, nickname, handle
                 FROM users
-                WHERE id <> p.me AND handle = p.q
+                WHERE id <> p.me
+                  AND deleted_at IS NULL
+                  AND handle = p.q
                 ORDER BY handle, id
                 LIMIT p.lim + p.off
               ) u
@@ -114,6 +121,7 @@ public class FriendsHandleSearchQuerySql {
                 SELECT id, profile_img_number, nickname, handle
                 FROM users
                 WHERE id <> p.me
+                  AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
                 ORDER BY handle, id

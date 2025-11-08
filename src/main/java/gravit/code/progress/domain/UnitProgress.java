@@ -55,7 +55,9 @@ public class UnitProgress {
     }
 
     public void updateCompletedLessons() {
-        this.completedLessons++;
+        if(this.completedLessons < this.totalLessons) {
+            this.completedLessons++;
+        }
     }
 
     public Boolean isComplete() {

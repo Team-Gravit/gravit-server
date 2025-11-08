@@ -23,38 +23,56 @@ public interface FriendJpaRepository extends JpaRepository<Friend, Long> {
     );
 
     @Query("""
-        select new gravit.code.friend.dto.response.FollowerResponse(
-            u.id,
-            u.nickname,
-            u.profileImgNumber,
-            u.handle
-        )
-        from Friend f
-        join User u on u.id = f.followerId
-        where f.followeeId = :followeeId
-""")
+            select new gravit.code.friend.dto.response.FollowerResponse(
+                u.id,
+                u.nickname,
+                u.profileImgNumber,
+                u.handle
+            )
+            from Friend f
+            join User u on u.id = f.followerId
+            where f.followeeId = :followeeId
+            """)
     Slice<FollowerResponse> findFollowersByFolloweeId(
             @Param("followeeId") long followeeId,
             Pageable pageable
     );
 
     @Query("""
-        select new gravit.code.friend.dto.response.FollowingResponse(
-            u.id,
-            u.nickname,
-            u.profileImgNumber,
-            u.handle
-        )
-        from Friend f
-        join User u on u.id = f.followeeId
-        where f.followerId = :followerId
-""")
+            select new gravit.code.friend.dto.response.FollowingResponse(
+                u.id,
+                u.nickname,
+                u.profileImgNumber,
+                u.handle
+            )
+            from Friend f
+            join User u on u.id = f.followeeId
+            where f.followerId = :followerId
+            """)
     Slice<FollowingResponse> findFollowingsByFollowerId(
             @Param("followerId") long followerId,
             Pageable pageable
     );
 
+    @Query("""
+            select count(f)
+            from Friend f
+            where f.followerId = :userId
+            and exists(
+                select 1 from User u
+                where u.id = f.followeeId
+            )
+            """)
     long countByFollowerId(long userId);
 
+    @Query("""
+            select count(f)
+            from Friend f
+            where f.followeeId = :userId
+            and exists(
+                select 1 from User u
+                where u.id = f.followerId
+            )
+            """)
     long countByFolloweeId(long userId);
 }
