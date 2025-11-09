@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM eclipse-temurin:17
 
 LABEL version=0.1
 
