@@ -2,32 +2,33 @@ package gravit.code.learning.domain;
 
 import gravit.code.admin.dto.request.OptionUpdateRequest;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Option {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "text", nullable = false)
+    @Column(nullable = false)
     private String content;
 
-    @Column(columnDefinition = "text",  nullable = false)
+    @Column(nullable = false)
     private String explanation;
 
     @Column(name = "is_answer", nullable = false)
     private boolean isAnswer;
 
-    @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
+    @Column(name = "problem_id", nullable = false)
     private long problemId;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Option(
             String content,
             String explanation,

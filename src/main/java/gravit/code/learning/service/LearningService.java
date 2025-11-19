@@ -5,8 +5,8 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.domain.LearningRepository;
 import gravit.code.learning.domain.LessonRepository;
-import gravit.code.learning.dto.StreakDto;
-import gravit.code.progress.domain.LessonProgressRepository;
+import gravit.code.learning.dto.common.StreakDto;
+import gravit.code.learning.domain.LessonSubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +22,7 @@ public class LearningService {
 
     private final LearningRepository learningRepository;
     private final LessonRepository lessonRepository;
-    private final LessonProgressRepository lessonProgressRepository;
+    private final LessonSubmissionRepository lessonSubmissionRepository;
 
     @Transactional
     public void updateConsecutiveDays(){
@@ -55,7 +55,7 @@ public class LearningService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
 
         long totalLesson = lessonRepository.count();
-        long solvedLesson = lessonProgressRepository.countByUserId(userId);
+        long solvedLesson = lessonSubmissionRepository.countByUserId(userId);
 
         int planetConquestRate = Math.toIntExact(
                 Math.round(((double) solvedLesson / totalLesson) * 100)

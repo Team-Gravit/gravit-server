@@ -2,11 +2,11 @@ package gravit.code.learning.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.dto.response.LearningResultSaveResponse;
+import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
+import gravit.code.learning.dto.response.ChapterDetailResponse;
+import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
 import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.learning.dto.response.UnitPageResponse;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
+import gravit.code.learning.dto.response.UnitDetailResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,7 +45,7 @@ public interface LearningControllerDocs {
             )
     })
     @GetMapping("/chapters")
-    ResponseEntity<List<ChapterProgressDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<List<ChapterDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser);
 
     @Operation(summary = "유닛 조회", description = "유저의 유닛 진행도를 포함한 유닛 목록을 조회합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -73,8 +73,8 @@ public interface LearningControllerDocs {
             )
     })
     @GetMapping("/{chapterId}/units")
-    ResponseEntity<UnitPageResponse> getAllUnitsInChapter(@AuthenticationPrincipal LoginUser loginUser,
-                                                          @PathVariable("chapterId") Long chapterId);
+    ResponseEntity<UnitDetailResponse> getAllUnitsInChapter(@AuthenticationPrincipal LoginUser loginUser,
+                                                            @PathVariable("chapterId") Long chapterId);
 
     @Operation(summary = "레슨 문제 조회", description = "특정 레슨을 구성하는 문제 목록을 조회합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -160,8 +160,8 @@ public interface LearningControllerDocs {
             )
     })
     @PostMapping("/results")
-    ResponseEntity<LearningResultSaveResponse> saveLearningResult(@AuthenticationPrincipal LoginUser loginUser,
-                                                                  @Valid @RequestBody LearningResultSaveRequest request);
+    ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(@AuthenticationPrincipal LoginUser loginUser,
+                                                                      @Valid @RequestBody LearningSubmissionSaveRequest request);
 
     @Operation(summary = "문제 신고 제출", description = "특정 문제에 대한 오류를 신고합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

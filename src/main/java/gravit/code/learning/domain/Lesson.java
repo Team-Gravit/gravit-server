@@ -15,34 +15,27 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "varchar(50)", nullable = false)
-    private String name;
+    @Column(nullable = false)
+    private String title;
 
-    @Column(name = "total_problems",columnDefinition = "bigint", nullable = false)
-    private long totalProblems;
-
-    @Column(name = "unit_id", columnDefinition = "bigint", nullable = false)
+    @Column(name = "unit_id", nullable = false)
     private long unitId;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Lesson(
-            String name,
-            long totalProblems,
+            String title,
             long unitId
     ) {
-        this.name = name;
-        this.totalProblems = totalProblems;
+        this.title = title;
         this.unitId = unitId;
     }
 
     public static Lesson create(
-            String name,
-            long totalProblems,
+            String title,
             long unitId
     ) {
         return Lesson.builder()
-                .name(name)
-                .totalProblems(totalProblems)
+                .title(title)
                 .unitId(unitId)
                 .build();
     }

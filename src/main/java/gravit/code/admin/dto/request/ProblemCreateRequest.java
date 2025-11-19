@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
-
 @Schema(description = "문제 생성 Request")
 public record ProblemCreateRequest(
 
@@ -27,29 +25,17 @@ public record ProblemCreateRequest(
         String problemType,
 
         @Schema(
-                description = "질문",
+                description = "발문",
                 example = "빈칸에 들어갈 말로 알맞은 것을 고르시오"
         )
         @NotBlank(message = "문제 질문이 비어있습니다.")
-        String question,
+        String instruction,
 
         @Schema(
                 description = "본문",
                 example = "큐에 2, 9, 7, 4를 순차적으로 넣었을 때, 원소 삭제시 반환되는 값은?"
         )
         @NotBlank(message = "본문이 비어있습니다.")
-        String content,
-
-        @Schema(
-                description = "정답(주관식일 떄만. 객관식일때는 -)",
-                example = "2"
-        )
-        @NotBlank(message = "정답이 비어있습니다.")
-        String answer,
-
-        @Schema(
-                description = "선지"
-        )
-        List<OptionCreateRequest> options
+        String content
 ) {
 }

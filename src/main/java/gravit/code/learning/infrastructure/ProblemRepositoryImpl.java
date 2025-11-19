@@ -20,22 +20,22 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     }
 
     @Override
-    public List<Problem> findAllProblemByLessonId(Long lessonId){
+    public List<Problem> findAllProblemByLessonId(long lessonId){
         return problemJpaRepository.findAllByLessonId(lessonId);
     }
 
     @Override
-    public boolean existsProblemById(Long problemId){
+    public boolean existsProblemById(long problemId){
         return problemJpaRepository.existsProblemById(problemId);
     }
 
     @Override
-    public Optional<Problem> findById(Long problemId){
+    public Optional<Problem> findById(long problemId){
         return problemJpaRepository.findById(problemId);
     }
 
     @Override
-    public void deleteById(Long problemId){
+    public void deleteById(long problemId){
         problemJpaRepository.deleteById(problemId);
     }
 

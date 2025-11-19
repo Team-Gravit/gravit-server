@@ -1,7 +1,8 @@
 package gravit.code.learning.domain;
 
-import gravit.code.learning.dto.LearningAdditionalInfo;
-import gravit.code.learning.dto.LearningIds;
+import gravit.code.learning.dto.common.LearningAdditionalInfo;
+import gravit.code.learning.dto.common.LearningIds;
+import gravit.code.learning.dto.response.LessonSummary;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,4 +15,7 @@ public interface LessonRepository {
     Optional<LearningIds> findLearningIdsByLessonId(long lessonId);
     Optional<LearningAdditionalInfo> findLearningAdditionalInfoByLessonId(long lessonId);
     void saveAll(List<Lesson> lessons);
+    int countTotalLessonByChapterId(long chapterId);
+    int countTotalLessonByUnitId(long unitId);
+    List<LessonSummary> findAllLessonSummaryByUnitId(long unitId, long userId);
 }

@@ -3,16 +3,15 @@ package gravit.code.mission.service;
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.learning.service.LessonSubmissionService;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
+import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.mission.dto.MissionSummary;
 import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.event.LessonMissionEvent;
-import gravit.code.mission.domain.RandomMissionGenerator;
-import gravit.code.progress.domain.LessonProgress;
-import gravit.code.progress.domain.LessonProgressRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +31,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MissionService {
 
+    private final LessonSubmissionService lessonSubmissionService;
+
     private final MissionRepository missionRepository;
-    private final LessonProgressRepository lessonProgressRepository;
     private final UserRepository userRepository;
 
     private final ApplicationEventPublisher publisher;
@@ -90,7 +90,7 @@ public class MissionService {
 
         MissionType missionType = mission.getMissionType();
 
-        boolean isFirstAttempt = checkFirstAttemptLesson(lessonMissionDto.userId(), lessonMissionDto.lessonId());
+        boolean isFirstAttempt = lessonSubmissionService.checkUserSubmitted(lessonMissionDto.userId(), lessonMissionDto.lessonId());
 
         // 미션 타입에 맞게 진행도 업데이트
         if (missionType.name().startsWith("COMPLETE_LESSON") && isFirstAttempt) {
@@ -142,16 +142,6 @@ public class MissionService {
 
         user.getLevel().updateXp(awardXp);
         userRepository.save(user);
-    }
-
-    private boolean checkFirstAttemptLesson(
-            long userId,
-            long lessonId
-    ) {
-        LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_PROGRESS_NOT_FOUND));
-
-        return lessonProgress.getAttemptCount() == 1;
     }
 
 }
