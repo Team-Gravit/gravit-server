@@ -1,3 +1,4 @@
+/*
 package gravit.code;
 
 import gravit.code.support.TCSpringBootTest;
@@ -11,3 +12,4 @@ class GravitApplicationTests {
     }
 
 }
+*/

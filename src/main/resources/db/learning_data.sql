@@ -1253,7 +1253,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (549, 'SELECT_DESCRIPTION', '기본키 선정 기준으로 옳지 않은 것은?', '3', '1.변경 가능성이 낮은 속성을 고른다;2.가능한 짧은 길이가 좋다;3.의미 있는 자연키를 반드시 사용한다;4.NULL/중복이 불가능해야 한다', 51),
 
-    (550, 'SELECT_DESCRIPTION', 'Member(employee_no UNIQUE, email UNIQUE, phone UNIQUE, name)에서 \n후보키 집합과 추천 기본키의 조합으로 옳은 것은?', '1', '1.후보키={employee_no},{email},{phone} / 기본키=employee_no;2.후보키={employee_no},{email} / 기본키=email;3.후보키={email},{phone} / 기본키=phone;4.후보키={employee_no},{name} / 기본키=name', 51),
+    (550, 'SELECT_DESCRIPTION', 'Member(employee_no UNIQUE, email UNIQUE, phone UNIQUE, title)에서 \n후보키 집합과 추천 기본키의 조합으로 옳은 것은?', '1', '1.후보키={employee_no},{email},{phone} / 기본키=employee_no;2.후보키={employee_no},{email} / 기본키=email;3.후보키={email},{phone} / 기본키=phone;4.후보키={employee_no},{title} / 기본키=title', 51),
 
     (551, 'SELECT_DESCRIPTION', '다음 DDL에서 기본키는 무엇인가? \nCREATE TABLE Enrollment(\n  student_id BIGINT NOT NULL,\n  course_id BIGINT NOT NULL,\n  enrolled_at TIMESTAMP NOT NULL,\n  PRIMARY KEY (student_id, course_id),\n  FOREIGN KEY (student_id) REFERENCES Student(id),\n  FOREIGN KEY (course_id) REFERENCES Course(id)\n);', '3', '1.student_id;2.course_id;3.(student_id, course_id);4.enrolled_at', 51),
 
@@ -1265,7 +1265,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (555, 'FILL_BLANK', '기본키로 선택되지 않은 후보키를 _____라 하고, 업무 의미와 무관한 인조 식별자를 _____라 한다.', '1', '1.대체키·서로게이트 키;2.슈퍼키·후보키;3.기본키·외래키;4.복합키·부분키', 51),
 
-    (556, 'FILL_BLANK', 'Category(id PK, name, parent_id FK→Category.id)에서 루트 카테고리를 허용하려면 가장 적절한 제약은?', '2', '1.parent_id NOT NULL;2.parent_id NULL 허용;3.parent_id UNIQUE;4.parent_id에 기본키 부여', 51);
+    (556, 'FILL_BLANK', 'Category(id PK, title, parent_id FK→Category.id)에서 루트 카테고리를 허용하려면 가장 적절한 제약은?', '2', '1.parent_id NOT NULL;2.parent_id NULL 허용;3.parent_id UNIQUE;4.parent_id에 기본키 부여', 51);
 
 -- Unit02 - 관계형 모델 2 (Lesson ID: 52)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
@@ -1274,7 +1274,7 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (558, 'FILL_BLANK', '세 가지 무결성은 엔티티 무결성, 참조 무결성, _____ 무결성이다.', '도메인', '-', 52),
 
-    (559, 'SELECT_DESCRIPTION', '다음 중 엔터티 무결성을 위반하는 DDL은?', '3', '1.CREATE TABLE A(id INT PRIMARY KEY, name TEXT NOT NULL);2.CREATE TABLE B(id INT, name TEXT, PRIMARY KEY (id));3.CREATE TABLE C(id INT NULL, PRIMARY KEY (id));4.CREATE TABLE D(a INT, b INT, PRIMARY KEY (a, b))', 52),
+    (559, 'SELECT_DESCRIPTION', '다음 중 엔터티 무결성을 위반하는 DDL은?', '3', '1.CREATE TABLE A(id INT PRIMARY KEY, title TEXT NOT NULL);2.CREATE TABLE B(id INT, title TEXT, PRIMARY KEY (id));3.CREATE TABLE C(id INT NULL, PRIMARY KEY (id));4.CREATE TABLE D(a INT, b INT, PRIMARY KEY (a, b))', 52),
 
     (560, 'SELECT_DESCRIPTION', '잘못된 선지를 골라주세요.', '1', '1.WHERE col = NULL은 참인 행을 찾는다.;2.COUNT(col)은 NULL을 제외한다.;3.WHERE col <> 5는 col이 NULL인 행은 잡아내지 않는다.;4.COUNT(DISTINCT col)은 NULL을 제외한다.', 52),
 
@@ -1324,13 +1324,13 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit03 - 관계대수 2 (Lesson ID: 54)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (581, 'SELECT_DESCRIPTION', 'Student(sid, name, dept) 스키마가 있을 때, \n"CS 학과 학생들의 이름만"에 해당하는 식은?', '1', '1.π name ( σ dept=''CS'' ( Student ) );2.σ dept=''CS'' ( π name ( Student ) );3.π dept ( σ name=''CS'' ( Student ) );4.π name ( Student ▷◁ Course )', 54),
+    (581, 'SELECT_DESCRIPTION', 'Student(sid, title, dept) 스키마가 있을 때, \n"CS 학과 학생들의 이름만"에 해당하는 식은?', '1', '1.π title ( σ dept=''CS'' ( Student ) );2.σ dept=''CS'' ( π title ( Student ) );3.π dept ( σ title=''CS'' ( Student ) );4.π title ( Student ▷◁ Course )', 54),
 
-    (582, 'SELECT_DESCRIPTION', 'Enroll(sid, cid) 스키마가 있을 때, \n"DB101을 수강한 학생 sid 목록"에 해당하는 식은?', '1', '1.π sid ( σ cid=''DB101'' ( Enroll ) );2.σ cid=''DB101'' ( π sid ( Enroll ) );3.π name ( σ cid=''DB101'' ( Enroll ) );4.π cid ( σ sid=''DB101'' ( Enroll ) )', 54),
+    (582, 'SELECT_DESCRIPTION', 'Enroll(sid, cid) 스키마가 있을 때, \n"DB101을 수강한 학생 sid 목록"에 해당하는 식은?', '1', '1.π sid ( σ cid=''DB101'' ( Enroll ) );2.σ cid=''DB101'' ( π sid ( Enroll ) );3.π title ( σ cid=''DB101'' ( Enroll ) );4.π cid ( σ sid=''DB101'' ( Enroll ) )', 54),
 
-    (583, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, \n"수강한 학생 이름과 과목 제목(title)"을 얻는 식의 빈칸을 채우시오. \nπ name, title ( ( Student _____ Enroll ) _____ Course )', '1', '1.▷◁ , ▷◁;2.▷◁ , ÷;3.÷ , ▷◁;4.▷◁ , σ', 54),
+    (583, 'FILL_BLANK', 'Student(sid, title), Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, \n"수강한 학생 이름과 과목 제목(title)"을 얻는 식의 빈칸을 채우시오. \nπ title, title ( ( Student _____ Enroll ) _____ Course )', '1', '1.▷◁ , ▷◁;2.▷◁ , ÷;3.÷ , ▷◁;4.▷◁ , σ', 54),
 
-    (584, 'FILL_BLANK', 'Student(sid, name), Enroll(sid, cid, grade) 스키마가 있을 때, \n"A학점을 받은 학생 이름"을 σ, π, ▷◁로만 표현하시오. \n→ π name ( Student _____ σ grade=''A'' ( Enroll ) )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
+    (584, 'FILL_BLANK', 'Student(sid, title), Enroll(sid, cid, grade) 스키마가 있을 때, \n"A학점을 받은 학생 이름"을 σ, π, ▷◁로만 표현하시오. \n→ π title ( Student _____ σ grade=''A'' ( Enroll ) )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
 
     (585, 'SELECT_DESCRIPTION', 'Teaches(pid, cid, term), Course(cid, title) 스키마가 있을 때, \n"pid=10 교수가 2025S 학기에 가르친 과목 제목(title)"은?', '1', '1.π title ( σ pid=10 ∧ term=''2025S'' ( Teaches ) ▷◁ Course );2.π title ( Teaches ▷◁ σ pid=10 ( Course ) );3.σ pid=10 ( π title ( Teaches ▷◁ Course ) );4.π cid ( σ pid=10 ∧ term=''2025S'' ( Teaches ) )', 54),
 
@@ -1338,26 +1338,26 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (587, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Req(cid) 스키마가 있을 때, \n"Req의 모든 과목을 수강한 학생 sid"에 해당하는 가장 직접적인 식은?', '1', '1.Enroll ÷ Req;2.π sid ( Enroll ▷◁ Req );3.π sid ( σ cid∈Req ( Enroll ) );4.π sid ( Enroll )', 54),
 
-    (588, 'FILL_BLANK', 'Enroll(sid, cid, grade), Student(sid, name) 스키마가 있을 때, \n다음 두 식이 동치가 되도록 빈칸에 들어갈 곳을 고르시오. \nπ name ( σ grade=''A'' ( Enroll ) ▷◁ Student ) = π name ( Student ▷◁ _____ )', '1', '1.σ grade=''A'' ( Enroll );2.π sid ( Enroll );3.σ name=''A'' ( Student );4.Enroll ÷ σ grade=''A'' ( Enroll )', 54),
+    (588, 'FILL_BLANK', 'Enroll(sid, cid, grade), Student(sid, title) 스키마가 있을 때, \n다음 두 식이 동치가 되도록 빈칸에 들어갈 곳을 고르시오. \nπ title ( σ grade=''A'' ( Enroll ) ▷◁ Student ) = π title ( Student ▷◁ _____ )', '1', '1.σ grade=''A'' ( Enroll );2.π sid ( Enroll );3.σ title=''A'' ( Student );4.Enroll ÷ σ grade=''A'' ( Enroll )', 54),
 
-    (589, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, \n"학생 sid와 수강 과목 title 쌍"을 가장 간단히 나타내는 식은?', '1', '1.π sid, title ( Enroll ▷◁ Course );2.π name, title ( Student ▷◁ Course );3.π sid, title ( Student ▷◁ Course );4.π sid, title ( σ dept=''CS'' ( Enroll ) )', 54),
+    (589, 'SELECT_DESCRIPTION', 'Enroll(sid, cid), Course(cid, title) 스키마가 있을 때, \n"학생 sid와 수강 과목 title 쌍"을 가장 간단히 나타내는 식은?', '1', '1.π sid, title ( Enroll ▷◁ Course );2.π title, title ( Student ▷◁ Course );3.π sid, title ( Student ▷◁ Course );4.π sid, title ( σ dept=''CS'' ( Enroll ) )', 54),
 
-    (590, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid), Course(cid, title, dept) 스키마가 있을 때, \n"학생이 자신의 학과(dept)의 과목을 수강한 (sid, name, title)"을 표현하시오. → π sid, name, title ( Student ▷◁ Enroll _____ Course )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
+    (590, 'FILL_BLANK', 'Student(sid, title, dept), Enroll(sid, cid), Course(cid, title, dept) 스키마가 있을 때, \n"학생이 자신의 학과(dept)의 과목을 수강한 (sid, title, title)"을 표현하시오. → π sid, title, title ( Student ▷◁ Enroll _____ Course )', '1', '1.▷◁;2.π;3.σ;4.÷', 54),
 
-    (591, 'FILL_BLANK', 'Student(sid, name, dept), Enroll(sid, cid) 스키마가 있을 때, \n다음 식에서 빈칸에 맞는 연산을 고르시오. \nπ name ( _____ ( Student ) ▷◁ Enroll ) = "CS 학과이면서 수강 경험이 있는 학생 이름"', '1', '1.σ dept=''CS'';2.π dept;3.÷ Req;4.σ name=''CS''', 54),
+    (591, 'FILL_BLANK', 'Student(sid, title, dept), Enroll(sid, cid) 스키마가 있을 때, \n다음 식에서 빈칸에 맞는 연산을 고르시오. \nπ title ( _____ ( Student ) ▷◁ Enroll ) = "CS 학과이면서 수강 경험이 있는 학생 이름"', '1', '1.σ dept=''CS'';2.π dept;3.÷ Req;4.σ title=''CS''', 54),
 
     (592, 'FILL_BLANK', 'Teaches(pid, cid), Req(cid) 스키마가 있을 때, \n다음 식에서 빈칸에 들어갈 가장 알맞은 표현을 고르시오. \nπ pid ( _____ ) = "필수 과목 Req를 모두 가르친 교수 pid"', '1', '1.Teaches ÷ Req;2.π pid ( Teaches ▷◁ Req );3.σ cid IN π cid(Req) ( Teaches );4.π pid,cid ( Teaches ) ▷◁ Req', 54);
 
 -- Unit04 - SQL 1-1 (Lesson ID: 55)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (593, 'FILL_BLANK', 'Users(id, name, status) 스키마가 있을 때, \n활성 사용자 이름만 조회하려 한다. 빈칸에 들어갈 컬럼을 고르시오. \nSELECT _____ FROM Users WHERE status=''ACTIVE'';', '2', '1.id;2.name;3.*;4.id, name', 55),
+    (593, 'FILL_BLANK', 'Users(id, title, status) 스키마가 있을 때, \n활성 사용자 이름만 조회하려 한다. 빈칸에 들어갈 컬럼을 고르시오. \nSELECT _____ FROM Users WHERE status=''ACTIVE'';', '2', '1.id;2.title;3.*;4.id, title', 55),
 
     (594, 'SELECT_DESCRIPTION', 'Users(id, dept, active) 스키마가 있을 때, \n"CS 또는 EE 학과이면서 active=1"을 정확히 표현한 WHERE는?', '2', '1.WHERE dept=''CS'' OR dept=''EE'' AND active=1;2.WHERE (dept=''CS'' OR dept=''EE'') AND active=1;3.WHERE dept IN (''CS'',''EE'' AND active=1);4.WHERE (dept=''CS'' AND dept=''EE'') OR active=1', 55),
 
     (595, 'FILL_BLANK', 'Orders(id, amount) 스키마가 있을 때, \n결제 금액이 100 이상 200 이하인 주문을 조회한다. 빈칸에 올바른 연산자를 고르시오. \nSELECT id FROM Orders WHERE amount _____ 100 AND 200;', '1', '1.BETWEEN;2.IN;3.LIKE;4.EXISTS', 55),
 
-    (596, 'FILL_BLANK', 'Customers(id, name, phone) 스키마가 있을 때, \n연락처가 없는 고객을 찾는 WHERE 조건으로 맞는 것은?', '3', '1.WHERE phone = NULL;2.WHERE phone == NULL;3.WHERE phone IS NULL;4.WHERE ISNULL(phone)', 55),
+    (596, 'FILL_BLANK', 'Customers(id, title, phone) 스키마가 있을 때, \n연락처가 없는 고객을 찾는 WHERE 조건으로 맞는 것은?', '3', '1.WHERE phone = NULL;2.WHERE phone == NULL;3.WHERE phone IS NULL;4.WHERE ISNULL(phone)', 55),
 
     (597, 'FILL_BLANK', 'Articles(id, title) 스키마가 있을 때, \n제목이 ''SQL''로 시작하는 글을 찾는 LIKE 패턴은? \nSELECT id FROM Articles WHERE title LIKE _____ ;', '1', '1.''SQL%'';2.''%SQL'';3.''%SQL%'';4.''SQL_''', 55),
 
@@ -1432,13 +1432,13 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 -- Unit05 - SQL 2-1 (Lesson ID: 58)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES
 
-    (629, 'SELECT_DESCRIPTION', 'Departments(id, name), Employees(id, name, dept_id NULL 허용) 스키마가 있을 때, \n"직원이 없어도 모든 부서를 포함해 조회"하려면 어떤 조인이 적절한가?', '2', '1.INNER JOIN;2.LEFT JOIN (Departments → Employees);3.RIGHT JOIN (Employees → Departments);4.NATURAL JOIN', 58),
+    (629, 'SELECT_DESCRIPTION', 'Departments(id, title), Employees(id, title, dept_id NULL 허용) 스키마가 있을 때, \n"직원이 없어도 모든 부서를 포함해 조회"하려면 어떤 조인이 적절한가?', '2', '1.INNER JOIN;2.LEFT JOIN (Departments → Employees);3.RIGHT JOIN (Employees → Departments);4.NATURAL JOIN', 58),
 
     (630, 'FILL_BLANK', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, \n"부서가 존재하는 직원만" 조회하는 빈칸을 채우시오. \nSELECT e.* \nFROM Employees e _____ JOIN Departments d \nON d.id = e.dept_id;', '1', '1.INNER;2.LEFT;3.RIGHT;4.FULL OUTER', 58),
 
     (631, 'SELECT_DESCRIPTION', 'NATURAL JOIN에 대한 설명으로 가장 정확한 것은?', '1', '1.동일한 이름의 모든 컬럼에 대해 자동으로 동등 조인한다.;2.기본키 컬럼만 자동으로 조인한다.;3.USING(id)와 항상 동일하다.;4.스키마 변경에 강하다.', 58),
 
-    (632, 'FILL_BLANK', 'Employees(id, name, manager_id) 스키마가 있을 때, \n직원과 그 매니저 이름을 함께 조회하되, 매니저가 없는 직원도 포함하라. \nSELECT e.name AS emp, m.name AS manager \nFROM Employees e \nLEFT JOIN Employees m \nON _____ ;', '1', '1.e.manager_id = m.id;2.e.id = m.manager_id;3.e.dept_id = m.dept_id;4.e.manager_id <> m.id', 58),
+    (632, 'FILL_BLANK', 'Employees(id, title, manager_id) 스키마가 있을 때, \n직원과 그 매니저 이름을 함께 조회하되, 매니저가 없는 직원도 포함하라. \nSELECT e.title AS emp, m.title AS manager \nFROM Employees e \nLEFT JOIN Employees m \nON _____ ;', '1', '1.e.manager_id = m.id;2.e.id = m.manager_id;3.e.dept_id = m.dept_id;4.e.manager_id <> m.id', 58),
 
     (633, 'SELECT_DESCRIPTION', 'Departments(id), Employees(id, dept_id) 스키마가 있을 때, \n다음 RIGHT JOIN을 LEFT JOIN으로 동치 변환한 것은? \nSELECT d.id, e.id \nFROM Employees e \nRIGHT JOIN Departments d \nON d.id = e.dept_id;', '1', '1.Departments d LEFT JOIN Employees e ON e.dept_id = d.id;2.Departments d INNER JOIN Employees e ON e.dept_id = d.id;3.Employees e LEFT JOIN Departments d ON d.id = e.dept_id;4.Employees e FULL OUTER JOIN Departments d ON d.id = e.dept_id', 58),
 
@@ -1452,9 +1452,9 @@ INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VAL
 
     (638, 'FILL_BLANK', 'Posts(id), Comments(id, post_id), Likes(id, post_id) 스키마가 있을 때, \n"댓글 ≥1 AND 좋아요 ≥1" 포스트 개수를 중복 없이 구하라. 빈칸을 채우시오. \nSELECT COUNT(*) \nFROM Posts p \nWHERE _____ AND _____ ;', '2', '1.(1) p.id IN (SELECT post_id FROM Comments) (2) p.id IN (SELECT post_id FROM Likes);2.(1) EXISTS (SELECT 1 FROM Comments c WHERE c.post_id = p.id) (2) EXISTS (SELECT 1 FROM Likes l WHERE l.post_id = p.id);3.(1) JOIN Comments (2) JOIN Likes;4.-', 58),
 
-    (639, 'FILL_BLANK', 'Users(id, name), Profiles(user_id, name, photo_url) 스키마가 있을 때, \nNATURAL JOIN 대신 의도 컬럼만 명시하라. 빈칸을 채우시오. \nSELECT * \nFROM Users u JOIN Profiles p ON _____ ;', '1', '1.p.user_id = u.id;2.p.name = u.name;3.USING (id);4.-', 58),
+    (639, 'FILL_BLANK', 'Users(id, title), Profiles(user_id, title, photo_url) 스키마가 있을 때, \nNATURAL JOIN 대신 의도 컬럼만 명시하라. 빈칸을 채우시오. \nSELECT * \nFROM Users u JOIN Profiles p ON _____ ;', '1', '1.p.user_id = u.id;2.p.title = u.title;3.USING (id);4.-', 58),
 
-    (640, 'SELECT_DESCRIPTION', 'Employees(id, name, dept_id) 스키마가 있을 때, \n같은 부서의 "동료 페어(본인은 제외)"를 구하는 조인 조건은?', '2', '1.e1.dept_id = e2.dept_id AND e1.id = e2.id;2.e1.dept_id = e2.dept_id AND e1.id <> e2.id;3.e1.dept_id <> e2.dept_id AND e1.id <> e2.id;4.e1.dept_id = e2.id', 58);
+    (640, 'SELECT_DESCRIPTION', 'Employees(id, title, dept_id) 스키마가 있을 때, \n같은 부서의 "동료 페어(본인은 제외)"를 구하는 조인 조건은?', '2', '1.e1.dept_id = e2.dept_id AND e1.id = e2.id;2.e1.dept_id = e2.dept_id AND e1.id <> e2.id;3.e1.dept_id <> e2.dept_id AND e1.id <> e2.id;4.e1.dept_id = e2.id', 58);
 
 -- Unit05 - SQL 2-2 (Lesson ID: 59)
 INSERT INTO problem (id, problem_type, question, answer, options, lesson_id) VALUES

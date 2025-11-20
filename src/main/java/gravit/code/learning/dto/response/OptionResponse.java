@@ -2,9 +2,10 @@ package gravit.code.learning.dto.response;
 
 import gravit.code.learning.domain.Option;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Schema(description = "선지 정보 Response")
 public record OptionResponse(
 

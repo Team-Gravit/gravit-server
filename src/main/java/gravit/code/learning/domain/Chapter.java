@@ -15,36 +15,28 @@ public class Chapter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "varchar(50)", nullable = false, unique = true)
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String title;
 
-    @Column(columnDefinition = "text", nullable = false, unique = true)
+    @Column(nullable = false)
     private String description;
 
-    @Column(name = "total_units",columnDefinition = "bigint", nullable = false)
-    private long totalUnits;
-
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Chapter(
-            String name,
-            String description,
-            long totalUnits
+            String title,
+            String description
     ) {
-        this.name = name;
+        this.title = title;
         this.description = description;
-        this.totalUnits = totalUnits;
     }
 
     public static Chapter create(
-            String name,
-            String description,
-            long totalUnits
+            String title,
+            String description
     ) {
         return Chapter.builder()
-                .name(name)
+                .title(title)
                 .description(description)
-                .totalUnits(totalUnits)
                 .build();
     }
-
 }

@@ -26,11 +26,6 @@ public class OptionRepositoryImpl implements OptionRepository {
     }
 
     @Override
-    public List<OptionResponse> findAllByProblemIdInIds(List<Long> problemIds){
-        return optionJpaRepository.findAllByProblemIdInIds(problemIds);
-    }
-
-    @Override
     public List<OptionResponse> findByProblemId(Long problemId){
         return optionJpaRepository.findByProblemId(problemId);
     }

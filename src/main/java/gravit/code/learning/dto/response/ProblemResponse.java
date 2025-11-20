@@ -1,13 +1,15 @@
 package gravit.code.learning.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import gravit.code.learning.domain.Problem;
 import gravit.code.learning.domain.ProblemType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
 import java.util.List;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Schema(description = "문제 정보 Response")
 public record ProblemResponse(
 
@@ -24,10 +26,10 @@ public record ProblemResponse(
         ProblemType problemType,
 
         @Schema(
-                description = "제목",
+                description = "발문",
                 example = "빈칸에 들어갈 단어를 고르시오."
         )
-        String question,
+        String instruction,
 
         @Schema(
                 description = "본문",
@@ -36,27 +38,42 @@ public record ProblemResponse(
         String content,
 
         @Schema(
-                description = "정답",
-                example = "객관식일 경우 option의 order, 주관식일 경우 일반 답안"
+                description = "주관식 정답"
         )
-        String answer,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        AnswerResponse answerResponse,
 
         @Schema(
-                description = "선지(주관식일 경우 빈 리스트 반환)"
+                description = "객관식 선지"
         )
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         List<OptionResponse> options
 
 ) {
-        public static ProblemResponse create(
+        public static ProblemResponse createSubjectiveProblem(
+                Problem problem,
+                AnswerResponse answerResponse
+        ) {
+                return ProblemResponse.builder()
+                        .problemId(problem.getId())
+                        .problemType(problem.getProblemType())
+                        .instruction(problem.getInstruction())
+                        .content(problem.getContent())
+                        .answerResponse(answerResponse)
+                        .options(null)
+                        .build();
+        }
+
+        public static ProblemResponse createObjectiveProblem(
                 Problem problem,
                 List<OptionResponse> options
         ) {
                 return ProblemResponse.builder()
                         .problemId(problem.getId())
                         .problemType(problem.getProblemType())
-                        .question(problem.getQuestion())
+                        .instruction(problem.getInstruction())
                         .content(problem.getContent())
-                        .answer(problem.getAnswer())
+                        .answerResponse(null)
                         .options(options)
                         .build();
         }

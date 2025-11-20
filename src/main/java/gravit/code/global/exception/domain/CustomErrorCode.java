@@ -55,13 +55,16 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Lesson
     LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4041", "레슨 조회에 실패하였습니다."),
-    LESSON_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4042", "레슨 진행도 조회에 실패하였습니다."),
+    LESSON_SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4042", "레슨 풀이 제출 이력 조회에 실패하였습니다."),
 
     // Problem
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 조회에 실패하였습니다."),
-
+    PROBLEM_SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 풀이 제출 이력 조회에 실패하였습니다."),
     // Option
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION_4041", "옵션 조회에 실패하였습니다."),
+
+    // Answer
+    ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_4041", "정답 조회에 실패하였습니다."),
 
     // Report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_4041", "신고 조회에 실패하였습니다."),

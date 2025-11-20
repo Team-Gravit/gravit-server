@@ -2,6 +2,7 @@ package gravit.code.learning.infrastructure;
 
 import gravit.code.learning.domain.Chapter;
 import gravit.code.learning.domain.ChapterRepository;
+import gravit.code.learning.dto.response.ChapterSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -29,4 +30,18 @@ public class ChapterRepositoryImpl implements ChapterRepository {
         chapterJpaRepository.saveAll(chapters);
     }
 
+    @Override
+    public List<ChapterSummary> findAllChapterSummary(){
+        return chapterJpaRepository.findAllChapterSummary();
+    }
+
+    @Override
+    public Optional<ChapterSummary> findChapterSummaryByChapterId(long chapterId) {
+        return chapterJpaRepository.findChapterSummaryByChapterId(chapterId);
+    }
+
+    @Override
+    public Optional<ChapterSummary> findChapterSummaryByUnitId(Long unitId) {
+        return chapterJpaRepository.findChapterSummaryByUnitId(unitId);
+    }
 }

@@ -1,7 +1,34 @@
 package gravit.code.learning.infrastructure;
 
 import gravit.code.learning.domain.Chapter;
+import gravit.code.learning.dto.response.ChapterSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface ChapterJpaRepository extends JpaRepository<Chapter, Long> {
+
+    @Query("""
+        SELECT new gravit.code.learning.dto.response.ChapterSummary(c.id, c.title, c.description)
+        FROM Chapter c
+    """)
+    List<ChapterSummary> findAllChapterSummary();
+
+    @Query("""
+        SELECT new gravit.code.learning.dto.response.ChapterSummary(c.id, c.title, c.description)
+        FROM Chapter c
+        WHERE c.id = :chapterId
+    """)
+    Optional<ChapterSummary> findChapterSummaryByChapterId(@Param("chapterId") long chapterId);
+
+    @Query("""
+        SELECT new gravit.code.learning.dto.response.ChapterSummary(c.id, c.title, c.description)
+        FROM Chapter c
+        JOIN Unit u ON u.chapterId = c.id
+        WHERE u.id = :unitId
+    """)
+    Optional<ChapterSummary> findChapterSummaryByUnitId(@Param("unitId") long unitId);
 }

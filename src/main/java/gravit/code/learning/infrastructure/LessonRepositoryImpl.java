@@ -2,8 +2,9 @@ package gravit.code.learning.infrastructure;
 
 import gravit.code.learning.domain.Lesson;
 import gravit.code.learning.domain.LessonRepository;
-import gravit.code.learning.dto.LearningAdditionalInfo;
-import gravit.code.learning.dto.LearningIds;
+import gravit.code.learning.dto.common.LearningAdditionalInfo;
+import gravit.code.learning.dto.common.LearningIds;
+import gravit.code.learning.dto.response.LessonSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -49,5 +50,20 @@ public class LessonRepositoryImpl implements LessonRepository {
     @Override
     public void saveAll(List<Lesson> lessons) {
         lessonJpaRepository.saveAll(lessons);
+    }
+
+    @Override
+    public int countTotalLessonByChapterId(long chapterId) {
+        return lessonJpaRepository.countTotalLessonByChapterId(chapterId);
+    }
+
+    @Override
+    public int countTotalLessonByUnitId(long unitId) {
+        return lessonJpaRepository.countTotalLessonByUnitId(unitId);
+    }
+
+    @Override
+    public List<LessonSummary> findAllLessonSummaryByUnitId(long unitId, long userId) {
+        return lessonJpaRepository.findAllLessonSummaryByUnitId(unitId, userId);
     }
 }

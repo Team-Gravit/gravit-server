@@ -2,12 +2,9 @@ package gravit.code.learning.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.learning.controller.docs.LearningControllerDocs;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.dto.response.LearningResultSaveResponse;
-import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.learning.dto.response.UnitPageResponse;
+import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
+import gravit.code.learning.dto.response.*;
 import gravit.code.learning.facade.LearningFacade;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
 import jakarta.validation.Valid;
@@ -28,16 +25,24 @@ public class LearningController implements LearningControllerDocs {
     private final ReportService reportService;
 
     @GetMapping("/chapters")
-    public ResponseEntity<List<ChapterProgressDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllChapters(loginUser.getId()));
+    public ResponseEntity<List<ChapterDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser) {
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllChapterDetail(loginUser.getId()));
     }
 
     @GetMapping("/{chapterId}/units")
-    public ResponseEntity<UnitPageResponse> getAllUnitsInChapter(
+    public ResponseEntity<UnitDetailResponse> getAllUnitsInChapter(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("chapterId") Long chapterId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllUnitsInChapter(loginUser.getId(), chapterId));
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllUnitDetailInChapter(loginUser.getId(), chapterId));
+    }
+
+    @GetMapping("/{unitId}/lessons")
+    public ResponseEntity<LessonDetailResponse> getAllLessonsInUnit(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("unitId") Long unitId
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllLessonInUnit(loginUser.getId(), unitId));
     }
 
     @GetMapping("/{lessonId}")
@@ -46,11 +51,11 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @PostMapping("/results")
-    public ResponseEntity<LearningResultSaveResponse> saveLearningResult(
+    public ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(
             @AuthenticationPrincipal LoginUser loginUser,
-            @Valid@RequestBody LearningResultSaveRequest request
+            @Valid@RequestBody LearningSubmissionSaveRequest request
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.saveLearningResult(loginUser.getId(), request));
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.saveLearningSubmission(loginUser.getId(), request));
     }
 
     @PostMapping("/reports")

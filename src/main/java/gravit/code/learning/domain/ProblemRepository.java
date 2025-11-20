@@ -5,9 +5,9 @@ import java.util.Optional;
 
 public interface ProblemRepository {
     Problem save(Problem problem);
-    List<Problem> findAllProblemByLessonId(Long lessonId);
-    boolean existsProblemById(Long problemId);
-    Optional<Problem> findById(Long problemId);
-    void deleteById(Long problemId);
+    List<Problem> findAllProblemByLessonId(long lessonId);
+    boolean existsProblemById(long problemId);
+    Optional<Problem> findById(long problemId);
+    void deleteById(long problemId);
     void saveAll(List<Problem> problems);
 }
