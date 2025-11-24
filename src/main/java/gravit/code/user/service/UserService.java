@@ -122,7 +122,7 @@ public class UserService {
         String newHandle = handleGenerator.generateUniqueHandle();
         user.restoreUser(newHandle);
     }
-
+    
     private UserLevelDetail getUserLevelDetail(long userId){
         UserLevel userLevel = userRepository.findUserLevelById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));

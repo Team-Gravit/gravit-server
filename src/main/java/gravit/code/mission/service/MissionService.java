@@ -120,15 +120,17 @@ public class MissionService {
 
         mission.updateFollowProgress();
 
+        mission.checkAndUpdateCompletionStatus();
+
         awardMissionXp(followMissionDto.userId(), mission.getMissionType().getAwardXp());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createMission(CreateMissionEvent createMissionDto) {
-        Mission mission = Mission.builder()
-                .missionType(RandomMissionGenerator.getRandomMissionType())
-                .userId(createMissionDto.userId())
-                .build();
+        Mission mission = Mission.create(
+                RandomMissionGenerator.getRandomMissionType(),
+                createMissionDto.userId()
+        );
 
         missionRepository.save(mission);
     }

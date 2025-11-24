@@ -128,6 +128,9 @@ public class LearningFacade {
         publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
 
         if(isFirstTry){
+            /**
+             * 아래 두 이벤트 발행이 로직적으로 중복되는 것은 아니지만 발행하는 이벤트의 이름을 봤을 때, 어 왜 두번 반복되지? 싶을 것 같아서 적절하게 수정이 필요해보임.
+             */
             publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.lessonSubmissionSaveRequest().accuracy()));
             publisher.publishEvent(new LessonMissionEvent(userId, request.lessonSubmissionSaveRequest().lessonId(), request.lessonSubmissionSaveRequest().learningTime(), request.lessonSubmissionSaveRequest().accuracy()));
             publisher.publishEvent(new QualifiedSolvedEvent(userId, request.lessonSubmissionSaveRequest().learningTime(), request.lessonSubmissionSaveRequest().accuracy()));
