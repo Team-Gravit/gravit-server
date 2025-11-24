@@ -14,6 +14,10 @@ public interface ProblemRepository {
             long unitId,
             long userId
     );
+    List<ProblemDetail> findWrongAnsweredProblemsByUnitIdAndUserId(
+            long unitId,
+            long userId
+    );
     Optional<Problem> findById(long problemId);
     boolean existsProblemById(long problemId);
     Problem save(Problem problem);

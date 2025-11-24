@@ -32,6 +32,14 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     }
 
     @Override
+    public List<ProblemDetail> findWrongAnsweredProblemsByUnitIdAndUserId(
+            long unitId,
+            long userId
+    ) {
+        return problemJpaRepository.findWrongAnsweredProblemsByUnitIdAndUserId(unitId, userId);
+    }
+
+    @Override
     public Optional<Problem> findById(long problemId){
         return problemJpaRepository.findById(problemId);
     }

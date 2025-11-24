@@ -18,6 +18,7 @@ import gravit.code.lesson.service.LessonSubmissionService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.problem.dto.response.BookmarkedProblemResponse;
 import gravit.code.problem.dto.response.ProblemResponse;
+import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
 import gravit.code.problem.service.ProblemService;
 import gravit.code.problem.service.ProblemSubmissionService;
 import gravit.code.unit.dto.response.UnitDetail;
@@ -120,11 +121,11 @@ public class LearningFacade {
     ){
         UnitSummary unitSummary = unitService.getUnitSummaryByLessonId(lessonId);
 
-        List<ProblemResponse> problemResponses = problemService.getAllProblemInLesson(lessonId, userId);
+        List<ProblemResponse> problems = problemService.getAllProblemInLesson(lessonId, userId);
 
         return LessonResponse.of(
                 unitSummary,
-                problemResponses
+                problems
         );
     }
 
@@ -133,14 +134,28 @@ public class LearningFacade {
             long userId,
             long unitId
     ) {
-
         UnitSummary unitSummary = unitService.getUnitSummaryByUnitId(unitId);
 
-        List<ProblemResponse> problemResponses = problemService.getBookmarkedProblemInUnit(unitId, userId);
+        List<ProblemResponse> problems = problemService.getBookmarkedProblemInUnit(unitId, userId);
 
         return BookmarkedProblemResponse.of(
                 unitSummary,
-                problemResponses
+                problems
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public WrongAnsweredProblemsResponse getWrongAnsweredProblemsInUnit(
+            long userId,
+            long unitId
+    ) {
+        UnitSummary unitSummary = unitService.getUnitSummaryByUnitId(unitId);
+
+        List<ProblemResponse> problems = problemService.getWrongAnsweredProblemsInUnit(unitId, userId);
+
+        return WrongAnsweredProblemsResponse.of(
+                unitSummary,
+                problems
         );
     }
 

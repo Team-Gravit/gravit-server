@@ -162,7 +162,7 @@ public interface LearningControllerDocs {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PostMapping("/results")
+    @PostMapping("/lesson/results")
     ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(@AuthenticationPrincipal LoginUser loginUser,
                                                                       @Valid @RequestBody LearningSubmissionSaveRequest request);
 

@@ -42,9 +42,31 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
         JOIN Lesson l ON l.id = p.lessonId
         JOIN Bookmark b ON b.problemId = p.id AND b.userId = :userId
         WHERE p.lessonId = :lessonId
-        ORDER BY p.id
+        ORDER BY b.createdAt ASC
     """)
     List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(
+            @Param("unitId")long unitId,
+            @Param("userId")long userId
+    );
+
+    @Query("""
+        SELECT new gravit.code.problem.dto.response.ProblemDetail(
+            p.id,
+            p.problemType,
+            p.instruction,
+            p.content,
+            CASE WHEN b.id IS NOT NULL THEN true ELSE false END
+        )
+        FROM Problem p
+        JOIN Lesson l ON l.id = p.lessonId
+        JOIN Unit u ON u.id = l.unitId
+        JOIN ProblemSubmission ps ON ps.problemId = p.id AND ps.userId = :userId AND ps.isCorrect = false
+        LEFT JOIN Bookmark b ON b.problemId = p.id AND b.userId = :userId
+        WHERE u.id = :unitId
+        ORDER BY ps.id
+  
+    """)
+    List<ProblemDetail> findWrongAnsweredProblemsByUnitIdAndUserId(
             @Param("unitId")long unitId,
             @Param("userId")long userId
     );

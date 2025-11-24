@@ -12,6 +12,7 @@ import gravit.code.learning.facade.LearningFacade;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResponse;
 import gravit.code.problem.dto.response.BookmarkedProblemResponse;
+import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
 import gravit.code.unit.dto.response.UnitDetailResponse;
@@ -62,7 +63,7 @@ public class LearningController implements LearningControllerDocs {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId, loginUser.getId()));
     }
 
-    @PostMapping("/results")
+    @PostMapping("/lesson/results")
     public ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid@RequestBody LearningSubmissionSaveRequest request
@@ -103,5 +104,13 @@ public class LearningController implements LearningControllerDocs {
     ) {
         bookmarkService.deleteBookmark(loginUser.getId(), request);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{unitId}/wrong-answered-problems")
+    public ResponseEntity<WrongAnsweredProblemsResponse> getWrongAnsweredProblemsInUnit(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("unitId") Long unitId
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getWrongAnsweredProblemsInUnit(loginUser.getId(), unitId));
     }
 }

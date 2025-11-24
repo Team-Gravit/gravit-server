@@ -29,7 +29,6 @@ public class ProblemService {
             long lessonId,
             long userId
     ){
-
         List<ProblemDetail> problemDetails = problemRepository.findAllProblemDetailByLessonIdAndUserId(lessonId, userId);
 
         return getAnswerOrOptionInProblems(problemDetails);
@@ -40,8 +39,17 @@ public class ProblemService {
             long unitId,
             long userId
     ){
-
         List<ProblemDetail> problemDetails = problemRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
+
+        return getAnswerOrOptionInProblems(problemDetails);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProblemResponse> getWrongAnsweredProblemsInUnit(
+            long unitId,
+            long userId
+    ) {
+        List<ProblemDetail> problemDetails = problemRepository.findWrongAnsweredProblemsByUnitIdAndUserId(unitId, userId);
 
         return getAnswerOrOptionInProblems(problemDetails);
     }
@@ -64,4 +72,6 @@ public class ProblemService {
                     }
                 }).toList();
     }
+
+
 }
