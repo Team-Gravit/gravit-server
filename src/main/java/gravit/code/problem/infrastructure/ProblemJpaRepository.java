@@ -45,7 +45,7 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
         ORDER BY p.id
     """)
     List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(
-            @Param("userId")long unitId,
+            @Param("unitId")long unitId,
             @Param("userId")long userId
     );
 }

@@ -6,5 +6,8 @@ public interface BookmarkRepository {
             long problemId,
             long userId
     );
-    boolean existsByProblemIdAndUserId(long userId, long l);
+    boolean existsByProblemIdAndUserId(
+            long problemId,
+            long userId
+    );
 }
