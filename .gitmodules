@@ -1,0 +1,3 @@
+[submodule "src/main/resources/static/notes"]
+	path = src/main/resources/static/notes
+	url = https://github.com/Team-Gravit/gravit-cs-notes.git
