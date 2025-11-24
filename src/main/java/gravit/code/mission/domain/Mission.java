@@ -18,19 +18,19 @@ public class Mission {
     @Column(name = "mission_type",  nullable = false)
     private MissionType missionType;
 
-    @Column(name = "progress_rate", columnDefinition = "double precision", nullable = false)
+    @Column(name = "progress_rate", nullable = false)
     private double progressRate;
 
-    @Column(name = "is_completed", columnDefinition = "boolean", nullable = false)
+    @Column(name = "is_completed", nullable = false)
     private boolean isCompleted;
 
-    @Column(name = "user_id", columnDefinition = "bigint", nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false, unique = true)
     private long userId;
 
     @Version
     private long version;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Mission(
             MissionType missionType,
             long userId
@@ -91,8 +91,8 @@ public class Mission {
 
     // 학습 x분 완료하기 관련
     public void updateLearningMinutesProgress(int learningTime) {
-        // 학습 시간 상한 7분으로 설정
-        learningTime = Math.min(learningTime, 420);
+        // 학습 시간 상한 5분으로 설정
+        learningTime = Math.min(learningTime, 300);
 
         double targetMinutes = getTargetLearningMinutes();
         double studyTimeMinutes = learningTime / 60.0;
@@ -104,16 +104,15 @@ public class Mission {
     private double getTargetLearningMinutes() {
         return switch (this.missionType.name()) {
             case "LEARNING_MINUTES_FIVE" -> 5.0;
-            case "LEARNING_MINUTES_FIFTEEN" -> 15.0;
-            case "LEARNING_MINUTES_TWENTY" -> 20.0;
+            case "LEARNING_MINUTES_TEN" -> 10.0;
+            case "LEARNING_MINUTES_FIFTEEN" -> 14.0;
             default -> 1.0;
         };
     }
 
     // 유저 팔로우하기 관련
     public void updateFollowProgress(){
-        this.progressRate += 100.0;
-        this.isCompleted = true;
+        this.progressRate = 100.0;
     }
 
     public void reassignMission(){

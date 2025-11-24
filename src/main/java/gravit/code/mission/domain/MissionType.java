@@ -18,9 +18,9 @@ public enum MissionType {
     PERFECT_LESSONS_THREE(6, "정답율 100%로 레슨 3개 완료하기", 40, 6),
 
     // 학습 x분 완료하기
-    LEARNING_MINUTES_TEN(7, "학습 10분 완료하기", 25, 15),
-    LEARNING_MINUTES_FIFTEEN(8, "학습 15분 완료하기", 35, 10),
-    LEARNING_MINUTES_TWENTY(9, "학습 20분 완료하기", 40, 5),
+    LEARNING_MINUTES_FIVE(7, "학습 5분 완료하기", 25, 15),
+    LEARNING_MINUTES_TEN(8, "학습 10분 완료하기", 35, 10),
+    LEARNING_MINUTES_FIFTEEN(9, "학습 15분 완료하기", 40, 5),
 
     // 새로운 친구 팔로우하기
     FOLLOW_NEW_FRIEND(10, "새로운 친구 팔로우하기", 40, 5);
