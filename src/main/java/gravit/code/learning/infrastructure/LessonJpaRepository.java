@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface LessonJpaRepository extends JpaRepository<Lesson, Long> {
     @Query("""
-        SELECT new gravit.code.learning.dto.LearningIds(c.id, u.id, l.id)
+        SELECT new gravit.code.learning.dto.common.LearningIds(c.id, u.id, l.id)
         FROM Lesson l
         INNER JOIN Unit u ON u.id = l.unitId
         INNER JOIN Chapter c ON c.id = u.chapterId
@@ -22,14 +22,7 @@ public interface LessonJpaRepository extends JpaRepository<Lesson, Long> {
     Optional<LearningIds> findLearningIdsByLessonId(@Param("lessonId")long lessonId);
 
     @Query("""
-        SELECT l.title
-        FROM Lesson l
-        WHERE l.id = :lessonId
-    """)
-    Optional<String> findLessonNameByLessonId(@Param("lessonId") long lessonId);
-
-    @Query("""
-        SELECT new gravit.code.learning.dto.LearningAdditionalInfo(c.id, l.name)
+        SELECT new gravit.code.learning.dto.common.LearningAdditionalInfo(c.id, l.title )
         FROM Lesson l
         INNER JOIN Unit u ON u.id = l.unitId
         INNER JOIN Chapter c ON c.id = u.chapterId
