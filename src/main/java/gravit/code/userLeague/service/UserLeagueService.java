@@ -26,7 +26,8 @@ public class UserLeagueService {
     private final SeasonService seasonService;
 
     public String getUserLeagueName(Long userId){
-        return userLeagueRepository.findUserLeagueNameByUserId(userId);
+        return userLeagueRepository.findUserLeagueNameByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
     }
 
     @Transactional

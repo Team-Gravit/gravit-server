@@ -7,6 +7,7 @@ import gravit.code.learning.domain.LearningRepository;
 import gravit.code.learning.domain.LessonRepository;
 import gravit.code.learning.dto.common.StreakDto;
 import gravit.code.learning.domain.LessonSubmissionRepository;
+import gravit.code.learning.dto.response.LearningDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LearningService {
+
+    private final LessonService lessonService;
 
     private final LearningRepository learningRepository;
     private final LessonRepository lessonRepository;
@@ -73,5 +76,15 @@ public class LearningService {
         Learning learning = Learning.create(userId);
 
         learningRepository.save(learning);
+    }
+
+    @Transactional(readOnly = true)
+    public LearningDetail getUserLearningDetail(long userId) {
+        LearningDetail learningDetail = learningRepository.findLearningDetailByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
+
+        double progressRate = lessonService.getProgressRateByChapterId(learningDetail.recentSolvedChapterId(), userId);
+
+        return learningDetail.withRecentSolvedChapterProgressRate(progressRate);
     }
 }

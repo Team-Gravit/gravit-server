@@ -1,6 +1,7 @@
 package gravit.code.user.controller;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.user.controller.docs.UserControllerDocs;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
@@ -9,6 +10,7 @@ import gravit.code.user.dto.response.UserResponse;
 import gravit.code.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -54,5 +56,10 @@ public class UserController implements UserControllerDocs {
     public ResponseEntity<Void> restoreUser(@RequestParam("providerId") String providerId) {
         userService.restoreUser(providerId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/main-page")
+    public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getMainPage(loginUser.getId()));
     }
 }

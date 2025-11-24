@@ -16,7 +16,7 @@ public class UserLeagueRepositoryImpl implements UserLeagueRepository {
     private final UserLeagueJpaRepository userLeagueJpaRepository;
 
     @Override
-    public String findUserLeagueNameByUserId(long userId){
+    public Optional<String> findUserLeagueNameByUserId(long userId){
         return userLeagueJpaRepository.findUserLeagueNameByUserId(userId);
     }
 

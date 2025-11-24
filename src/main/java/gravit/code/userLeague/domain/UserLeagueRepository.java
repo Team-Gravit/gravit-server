@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserLeagueRepository {
 
-    String findUserLeagueNameByUserId(long userId);
+    Optional<String> findUserLeagueNameByUserId(long userId);
 
     boolean existsByUserId(long userId);
 
