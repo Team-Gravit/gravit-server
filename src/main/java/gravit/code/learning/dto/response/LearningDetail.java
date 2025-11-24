@@ -36,6 +36,10 @@ public record LearningDetail(
         )
         String recentSolvedChapterDescription,
 
+        @Schema(
+                description = "최근 학습 챕터 진행률 (%)",
+                example = "65.5"
+        )
         double recentSolvedChapterProgressRate
 ) {
     public LearningDetail withRecentSolvedChapterProgressRate(double recentSolvedChapterProgressRate) {

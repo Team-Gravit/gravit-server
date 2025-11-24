@@ -3,9 +3,10 @@ package gravit.code.user.dto.response;
 import gravit.code.learning.dto.response.LearningDetail;
 import gravit.code.mission.dto.response.MissionDetail;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public record MainPageResponse(
         @Schema(
                 description = "닉네임",
@@ -19,10 +20,19 @@ public record MainPageResponse(
         )
         String leagueName,
 
+        @Schema(
+                description = "유저 레벨 관련 정보)"
+        )
         UserLevelDetail userLevelDetail,
 
+        @Schema(
+                description = "유저 학습 관련 정보)"
+        )
         LearningDetail learningDetail,
 
+        @Schema(
+                description = "미션 관련 정보)"
+        )
         MissionDetail missionDetail
 ) {
 
