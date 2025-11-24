@@ -21,17 +21,17 @@ public record MainPageResponse(
         String leagueName,
 
         @Schema(
-                description = "유저 레벨 관련 정보)"
+                description = "유저 레벨 관련 정보"
         )
         UserLevelDetail userLevelDetail,
 
         @Schema(
-                description = "유저 학습 관련 정보)"
+                description = "유저 학습 관련 정보"
         )
         LearningDetail learningDetail,
 
         @Schema(
-                description = "미션 관련 정보)"
+                description = "미션 관련 정보"
         )
         MissionDetail missionDetail
 ) {
