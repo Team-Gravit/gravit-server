@@ -1,6 +1,6 @@
 //package gravit.code.learning.fixture;
 //
-//import gravit.code.learning.domain.LessonSubmission;
+//import gravit.code.lesson.domain.LessonSubmission;
 //import org.springframework.test.util.ReflectionTestUtils;
 //
 //public class LessonProgressFixture {

@@ -1,6 +1,6 @@
 //package gravit.code.learning.fixture;
 //
-//import gravit.code.learning.domain.Lesson;
+//import gravit.code.lesson.domain.Lesson;
 //
 //public class LessonFixture {
 //

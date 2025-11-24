@@ -1,7 +1,7 @@
 //package gravit.code.learning.fixture;
 //
-//import gravit.code.learning.domain.Problem;
-//import gravit.code.learning.domain.ProblemType;
+//import gravit.code.problem.domain.Problem;
+//import gravit.code.problem.domain.ProblemType;
 //import org.springframework.test.util.ReflectionTestUtils;
 //
 //public class ProblemFixture {

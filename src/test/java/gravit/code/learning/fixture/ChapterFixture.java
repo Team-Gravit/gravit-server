@@ -1,6 +1,6 @@
 //package gravit.code.learning.fixture;
 //
-//import gravit.code.learning.domain.Chapter;
+//import gravit.code.chapter.domain.Chapter;
 //import org.springframework.test.util.ReflectionTestUtils;
 //
 //public class ChapterFixture {

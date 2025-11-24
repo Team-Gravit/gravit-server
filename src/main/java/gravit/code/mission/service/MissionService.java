@@ -3,7 +3,7 @@ package gravit.code.mission.service;
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.learning.service.LessonSubmissionService;
+import gravit.code.lesson.service.LessonSubmissionService;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;

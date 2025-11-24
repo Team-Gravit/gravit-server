@@ -3,7 +3,7 @@
 //import gravit.code.global.exception.domain.CustomErrorCode;
 //import gravit.code.global.exception.domain.RestApiException;
 //import gravit.code.learning.domain.*;
-//import gravit.code.learning.dto.common.LearningAdditionalInfo;
+//import gravit.code.learning.dto.common.LearningSummary;
 //import gravit.code.learning.dto.common.LearningIds;
 //import gravit.code.learning.fixture.ChapterFixture;
 //import gravit.code.learning.fixture.LessonFixture;
@@ -91,7 +91,7 @@
 //            long validLessonId = lesson.getId();
 //
 //            //when
-//            LearningAdditionalInfo learningAdditionalInfo = lessonService.getLearningAdditionalInfoByLessonId(validLessonId);
+//            LearningSummary learningAdditionalInfo = lessonService.getLearningAdditionalInfoByLessonId(validLessonId);
 //
 //            //then
 //            assertThat(learningAdditionalInfo).satisfies(l -> {

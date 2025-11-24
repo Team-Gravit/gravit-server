@@ -1,7 +1,7 @@
 package gravit.code.admin.dto.request;
 
 import gravit.code.global.enums.Enum;
-import gravit.code.learning.domain.ProblemType;
+import gravit.code.problem.domain.ProblemType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

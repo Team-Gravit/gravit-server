@@ -1,5 +1,7 @@
 package gravit.code.learning.dto.request;
 
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
+import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 

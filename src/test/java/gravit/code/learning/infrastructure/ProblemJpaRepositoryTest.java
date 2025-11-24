@@ -1,7 +1,7 @@
 //package gravit.code.learning.infrastructure;
 //
-//import gravit.code.learning.domain.Problem;
-//import gravit.code.learning.domain.ProblemType;
+//import gravit.code.problem.domain.Problem;
+//import gravit.code.problem.domain.ProblemType;
 //import gravit.code.learning.fixture.ProblemFixture;
 //import gravit.code.support.TCRepositoryTest;
 //import org.junit.jupiter.api.BeforeEach;

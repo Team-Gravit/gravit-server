@@ -1,12 +1,16 @@
 package gravit.code.learning.controller;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.learning.controller.docs.LearningControllerDocs;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.dto.response.*;
 import gravit.code.learning.facade.LearningFacade;
+import gravit.code.lesson.dto.response.LessonDetailResponse;
+import gravit.code.lesson.dto.response.LessonResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
+import gravit.code.unit.dto.response.UnitDetailResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

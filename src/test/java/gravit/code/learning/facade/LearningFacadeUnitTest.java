@@ -4,31 +4,31 @@
 //import gravit.code.global.event.badge.QualifiedSolvedEvent;
 //import gravit.code.global.exception.domain.CustomErrorCode;
 //import gravit.code.global.exception.domain.RestApiException;
-//import gravit.code.learning.domain.Chapter;
-//import gravit.code.learning.domain.Option;
-//import gravit.code.learning.domain.Problem;
-//import gravit.code.learning.domain.Unit;
-//import gravit.code.learning.dto.common.LearningAdditionalInfo;
+//import gravit.code.chapter.domain.Chapter;
+//import gravit.code.option.domain.Option;
+//import gravit.code.problem.domain.Problem;
+//import gravit.code.unit.domain.Unit;
+//import gravit.code.learning.dto.common.LearningSummary;
 //import gravit.code.learning.dto.common.LearningIds;
 //import gravit.code.learning.dto.event.UpdateLearningEvent;
 //import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-//import gravit.code.learning.dto.request.ProblemSubmissionRequest;
-//import gravit.code.learning.dto.response.OptionResponse;
-//import gravit.code.learning.dto.response.ProblemResponse;
+//import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+//import gravit.code.option.dto.response.OptionResponse;
+//import gravit.code.problem.dto.response.ProblemResponse;
 //import gravit.code.learning.fixture.*;
-//import gravit.code.learning.service.ChapterService;
-//import gravit.code.learning.service.LessonService;
-//import gravit.code.learning.service.ProblemService;
+//import gravit.code.chapter.service.ChapterService;
+//import gravit.code.lesson.service.LessonService;
+//import gravit.code.problem.service.ProblemService;
 //import gravit.code.mission.dto.event.LessonMissionEvent;
 //import gravit.code.progress.domain.ChapterProgress;
-//import gravit.code.learning.domain.LessonSubmission;
+//import gravit.code.lesson.domain.LessonSubmission;
 //import gravit.code.progress.domain.UnitProgress;
-//import gravit.code.learning.dto.response.ChapterDetailResponse;
-//import gravit.code.learning.dto.response.LessonProgressSummaryResponse;
-//import gravit.code.learning.dto.response.UnitProgressDetailResponse;
+//import gravit.code.chapter.dto.response.ChapterDetailResponse;
+//import gravit.code.lesson.dto.response.LessonProgressSummaryResponse;
+//import gravit.code.unit.UnitProgressDetailResponse;
 //import gravit.code.progress.service.ChapterProgressService;
-//import gravit.code.learning.service.LessonSubmissionService;
-//import gravit.code.learning.service.ProblemSubmissionService;
+//import gravit.code.lesson.service.LessonSubmissionService;
+//import gravit.code.problem.service.ProblemSubmissionService;
 //import gravit.code.progress.service.UnitProgressService;
 //import gravit.code.user.dto.response.UserLevelResponse;
 //import gravit.code.user.service.UserService;
@@ -278,7 +278,7 @@
 //        ProblemResponse objectiveProblemResponse1, objectiveProblemResponse2;
 //        ProblemResponse subjectProblemResponse1, subjectProblemResponse2;
 //
-//        LearningAdditionalInfo learningAdditionalInfo;
+//        LearningSummary learningAdditionalInfo;
 //
 //        @BeforeEach
 //        void setUp(){
@@ -317,7 +317,7 @@
 //            subjectProblemResponse1 = ProblemResponse.create(subjectProblem1, List.of());
 //            subjectProblemResponse2 = ProblemResponse.create(subjectProblem2, List.of());
 //
-//            learningAdditionalInfo = LearningAdditionalInfo.of(chapterId, lessonName);
+//            learningAdditionalInfo = LearningSummary.of(chapterId, lessonName);
 //        }
 //
 //        @Test
