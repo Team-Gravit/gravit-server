@@ -2,12 +2,16 @@ package gravit.code.admin.service;
 
 import gravit.code.admin.dto.request.ProblemCreateRequest;
 import gravit.code.admin.dto.request.ProblemUpdateRequest;
+import gravit.code.answer.domain.AnswerRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.learning.domain.*;
-import gravit.code.learning.dto.response.AnswerResponse;
-import gravit.code.learning.dto.response.OptionResponse;
-import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.answer.dto.response.AnswerResponse;
+import gravit.code.option.domain.OptionRepository;
+import gravit.code.option.dto.response.OptionResponse;
+import gravit.code.problem.domain.Problem;
+import gravit.code.problem.domain.ProblemRepository;
+import gravit.code.problem.dto.response.ProblemResponse;
+import gravit.code.problem.domain.ProblemType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,12 +44,12 @@ public class AdminProblemService {
             if(options.isEmpty())
                 throw new RestApiException(CustomErrorCode.OPTION_NOT_FOUND);
 
-            return ProblemResponse.createObjectiveProblem(problem, options);
+            return ProblemResponse.createObjectiveProblemForAdmin(problem, options);
         }else{
             AnswerResponse answerResponse = answerRepository.findByProblemId(problemId)
                     .orElseThrow(() -> new RestApiException(CustomErrorCode.ANSWER_NOT_FOUND));
 
-            return ProblemResponse.createSubjectiveProblem(problem, answerResponse);
+            return ProblemResponse.createSubjectiveProblemForAdmin(problem, answerResponse);
         }
     }
 

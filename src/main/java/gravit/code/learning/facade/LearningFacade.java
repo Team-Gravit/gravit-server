@@ -1,14 +1,31 @@
 package gravit.code.learning.facade;
 
+import gravit.code.chapter.dto.response.ChapterDetailResponse;
+import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.chapter.service.ChapterService;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import gravit.code.learning.dto.common.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-import gravit.code.learning.dto.request.LessonSubmissionSaveRequest;
-import gravit.code.learning.dto.response.*;
-import gravit.code.learning.service.*;
+import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
+import gravit.code.lesson.dto.response.LessonDetailResponse;
+import gravit.code.lesson.dto.response.LessonResponse;
+import gravit.code.lesson.dto.response.LessonSummary;
+import gravit.code.lesson.service.LessonService;
+import gravit.code.lesson.service.LessonSubmissionService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
+import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.dto.response.BookmarkedProblemResponse;
+import gravit.code.problem.dto.response.ProblemResponse;
+import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
+import gravit.code.problem.service.ProblemService;
+import gravit.code.problem.service.ProblemSubmissionService;
+import gravit.code.unit.dto.response.UnitDetail;
+import gravit.code.unit.dto.response.UnitDetailResponse;
+import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.service.UnitService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
@@ -93,19 +110,53 @@ public class LearningFacade {
 
         return LessonDetailResponse.create(
                 chapterSummary,
+                unitId,
                 lessonSummaries
         );
     }
 
     @Transactional(readOnly = true)
-    public LessonResponse getAllProblemsInLesson(long lessonId){
-        UnitSummary unitSummary = unitService.getUnitSummaryLessonId(lessonId);
+    public LessonResponse getAllProblemsInLesson(
+            long lessonId,
+            long userId
+    ){
+        UnitSummary unitSummary = unitService.getUnitSummaryByLessonId(lessonId);
 
-        List<ProblemResponse> problemResponses = problemService.getAllProblemInLesson(lessonId);
+        List<ProblemResponse> problems = problemService.getAllProblemInLesson(lessonId, userId);
 
-        return LessonResponse.create(
+        return LessonResponse.of(
                 unitSummary,
-                problemResponses
+                problems
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public BookmarkedProblemResponse getBookmarkedProblemsInUnit(
+            long userId,
+            long unitId
+    ) {
+        UnitSummary unitSummary = unitService.getUnitSummaryByUnitId(unitId);
+
+        List<ProblemResponse> problems = problemService.getBookmarkedProblemInUnit(unitId, userId);
+
+        return BookmarkedProblemResponse.of(
+                unitSummary,
+                problems
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public WrongAnsweredProblemsResponse getWrongAnsweredProblemsInUnit(
+            long userId,
+            long unitId
+    ) {
+        UnitSummary unitSummary = unitService.getUnitSummaryByUnitId(unitId);
+
+        List<ProblemResponse> problems = problemService.getWrongAnsweredProblemsInUnit(unitId, userId);
+
+        return WrongAnsweredProblemsResponse.of(
+                unitSummary,
+                problems
         );
     }
 
@@ -117,9 +168,9 @@ public class LearningFacade {
         boolean isFirstTry = lessonSubmissionService.checkUserSubmitted(request.lessonSubmissionSaveRequest().lessonId(), userId);
 
         lessonSubmissionService.saveLessonSubmission(request.lessonSubmissionSaveRequest(), userId, isFirstTry);
-        problemSubmissionService.saveProblemSubmission(userId, request.problemSubmissionRequests(), isFirstTry);
+        problemSubmissionService.saveProblemSubmissions(userId, request.problemSubmissionRequests(), isFirstTry);
 
-        UnitSummary unitSummary = unitService.getUnitSummaryLessonId(request.lessonSubmissionSaveRequest().lessonId());
+        UnitSummary unitSummary = unitService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
         String leagueName = userLeagueService.getUserLeagueName(userId);
         UserLevelResponse userLevelResponse = updateUserLevelBySubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
 
@@ -143,7 +194,19 @@ public class LearningFacade {
         );
     }
 
-    private UserLevelResponse updateUserLevelBySubmission(long userId, LessonSubmissionSaveRequest request, boolean isFirstTry){
+    @Transactional
+    public void saveProblemSubmission(
+            long userId,
+            ProblemSubmissionRequest request
+    ) {
+        problemSubmissionService.saveProblemSubmission(userId, request);
+    }
+
+    private UserLevelResponse updateUserLevelBySubmission(
+            long userId,
+            LessonSubmissionSaveRequest request,
+            boolean isFirstTry
+    ){
 
         UserLevelResponse userLevelResponse;
 

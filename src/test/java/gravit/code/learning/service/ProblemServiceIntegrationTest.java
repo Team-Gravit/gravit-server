@@ -1,10 +1,10 @@
 //package gravit.code.learning.service;
 //
-//import gravit.code.learning.domain.Option;
-//import gravit.code.learning.domain.OptionRepository;
-//import gravit.code.learning.domain.Problem;
-//import gravit.code.learning.domain.ProblemRepository;
-//import gravit.code.learning.dto.response.ProblemResponse;
+//import gravit.code.option.domain.Option;
+//import gravit.code.option.domain.OptionRepository;
+//import gravit.code.problem.domain.Problem;
+//import gravit.code.problem.domain.ProblemRepository;
+//import gravit.code.problem.dto.response.ProblemResponse;
 //import gravit.code.learning.fixture.OptionFixture;
 //import gravit.code.learning.fixture.ProblemFixture;
 //import gravit.code.support.TCSpringBootTest;

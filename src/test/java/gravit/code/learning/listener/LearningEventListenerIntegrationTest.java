@@ -8,8 +8,8 @@
 //import gravit.code.learning.fixture.LessonFixture;
 //import gravit.code.learning.fixture.LessonProgressFixture;
 //import gravit.code.learning.service.LearningService;
-//import gravit.code.learning.domain.LessonSubmission;
-//import gravit.code.learning.domain.LessonSubmissionRepository;
+//import gravit.code.lesson.domain.LessonSubmission;
+//import gravit.code.lesson.domain.LessonSubmissionRepository;
 //import gravit.code.support.TCSpringBootTest;
 //import gravit.code.user.domain.User;
 //import gravit.code.user.fixture.UserFixtureBuilder;

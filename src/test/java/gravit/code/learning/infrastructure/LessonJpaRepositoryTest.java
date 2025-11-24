@@ -1,8 +1,8 @@
 //package gravit.code.learning.infrastructure;
 //
-//import gravit.code.learning.domain.Chapter;
-//import gravit.code.learning.domain.Unit;
-//import gravit.code.learning.dto.common.LearningAdditionalInfo;
+//import gravit.code.chapter.domain.Chapter;
+//import gravit.code.unit.domain.Unit;
+//import gravit.code.learning.dto.common.LearningSummary;
 //import gravit.code.learning.dto.common.LearningIds;
 //import gravit.code.learning.fixture.ChapterFixture;
 //import gravit.code.learning.fixture.LessonFixture;
@@ -138,7 +138,7 @@
 //            long validLessonId = 1L;
 //
 //            //when
-//            Optional<LearningAdditionalInfo> learningAdditionalInfo = lessonJpaRepository.findLearningAdditionalInfoByLessonId(validLessonId);
+//            Optional<LearningSummary> learningAdditionalInfo = lessonJpaRepository.findLearningAdditionalInfoByLessonId(validLessonId);
 //
 //            //then
 //            assertThat(learningAdditionalInfo).isPresent();
@@ -153,7 +153,7 @@
 //            long invalidLessonId = 999L;
 //
 //            //when
-//            Optional<LearningAdditionalInfo> learningAdditionalInfo = lessonJpaRepository.findLearningAdditionalInfoByLessonId(invalidLessonId);
+//            Optional<LearningSummary> learningAdditionalInfo = lessonJpaRepository.findLearningAdditionalInfoByLessonId(invalidLessonId);
 //
 //            //then
 //            assertThat(learningAdditionalInfo).isNotPresent();

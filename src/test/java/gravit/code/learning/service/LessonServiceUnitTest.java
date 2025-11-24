@@ -2,8 +2,8 @@
 //
 //import gravit.code.global.exception.domain.CustomErrorCode;
 //import gravit.code.global.exception.domain.RestApiException;
-//import gravit.code.learning.domain.LessonRepository;
-//import gravit.code.learning.dto.common.LearningAdditionalInfo;
+//import gravit.code.lesson.domain.LessonRepository;
+//import gravit.code.learning.dto.common.LearningSummary;
 //import gravit.code.learning.dto.common.LearningIds;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Nested;
@@ -76,7 +76,7 @@
 //            long validLessonId = 1L;
 //            String lessonName = "레슨이름";
 //
-//            LearningAdditionalInfo learningAdditionalInfo = LearningAdditionalInfo.of(chapterId, lessonName);
+//            LearningSummary learningAdditionalInfo = LearningSummary.of(chapterId, lessonName);
 //
 //            when(lessonRepository.findLearningAdditionalInfoByLessonId(validLessonId))
 //                    .thenReturn(Optional.ofNullable(learningAdditionalInfo));

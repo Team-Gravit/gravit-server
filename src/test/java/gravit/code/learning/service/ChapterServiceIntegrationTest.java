@@ -2,8 +2,8 @@
 //
 //import gravit.code.global.exception.domain.CustomErrorCode;
 //import gravit.code.global.exception.domain.RestApiException;
-//import gravit.code.learning.domain.Chapter;
-//import gravit.code.learning.domain.ChapterRepository;
+//import gravit.code.chapter.domain.Chapter;
+//import gravit.code.chapter.domain.ChapterRepository;
 //import gravit.code.learning.fixture.ChapterFixture;
 //import gravit.code.support.TCSpringBootTest;
 //import org.junit.jupiter.api.BeforeEach;

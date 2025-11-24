@@ -1,6 +1,6 @@
 //package gravit.code.learning.fixture;
 //
-//import gravit.code.learning.domain.Unit;
+//import gravit.code.unit.domain.Unit;
 //
 //public class UnitFixture {
 //

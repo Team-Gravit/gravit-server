@@ -1,6 +1,6 @@
 //package gravit.code.learning.fixture;
 //
-//import gravit.code.learning.domain.Option;
+//import gravit.code.option.domain.Option;
 //import org.springframework.test.util.ReflectionTestUtils;
 //
 //public class OptionFixture {

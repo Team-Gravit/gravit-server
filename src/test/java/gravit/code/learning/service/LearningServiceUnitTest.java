@@ -4,9 +4,9 @@
 //import gravit.code.global.exception.domain.RestApiException;
 //import gravit.code.learning.domain.Learning;
 //import gravit.code.learning.domain.LearningRepository;
-//import gravit.code.learning.domain.LessonRepository;
+//import gravit.code.lesson.domain.LessonRepository;
 //import gravit.code.learning.fixture.LearningFixture;
-//import gravit.code.learning.domain.LessonSubmissionRepository;
+//import gravit.code.lesson.domain.LessonSubmissionRepository;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Nested;
 //import org.junit.jupiter.api.Test;

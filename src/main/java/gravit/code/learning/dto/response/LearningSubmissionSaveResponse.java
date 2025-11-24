@@ -1,5 +1,6 @@
 package gravit.code.learning.dto.response;
 
+import gravit.code.unit.dto.response.UnitSummary;
 import gravit.code.user.dto.response.UserLevelResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;

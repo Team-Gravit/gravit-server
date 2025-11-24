@@ -1,6 +1,6 @@
 //package gravit.code.learning.infrastructure;
 //
-//import gravit.code.learning.dto.response.OptionResponse;
+//import gravit.code.option.dto.response.OptionResponse;
 //import gravit.code.learning.fixture.OptionFixture;
 //import gravit.code.support.TCRepositoryTest;
 //import org.junit.jupiter.api.BeforeEach;
