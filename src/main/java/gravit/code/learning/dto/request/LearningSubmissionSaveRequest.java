@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
+@Schema(description = "레슨 풀이 저장 request")
 public record LearningSubmissionSaveRequest(
 
         @Schema(

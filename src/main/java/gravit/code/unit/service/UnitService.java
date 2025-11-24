@@ -22,7 +22,12 @@ public class UnitService {
     }
 
     @Transactional(readOnly = true)
-    public UnitSummary getUnitSummaryLessonId(long lessonId) {
+    public UnitSummary getUnitSummaryByUnitId(long unitId){
+        return unitRepository.findUnitSummaryById(unitId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+    }
+    @Transactional(readOnly = true)
+    public UnitSummary getUnitSummaryByLessonId(long lessonId) {
         return unitRepository.findUnitSummaryByLessonId(lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
     }

@@ -49,13 +49,49 @@ public record ProblemResponse(
                 description = "객관식 선지"
         )
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        List<OptionResponse> options
+        List<OptionResponse> options,
+
+        @Schema(
+                description = "북마크 여부",
+                example = "true"
+        )
+        boolean isBookmarked
 
 ) {
         public static ProblemResponse createSubjectiveProblem(
-                Problem problem,
+                ProblemDetail problemDetail,
                 AnswerResponse answerResponse
         ) {
+                return ProblemResponse.builder()
+                        .problemId(problemDetail.id())
+                        .problemType(problemDetail.problemType())
+                        .instruction(problemDetail.instruction())
+                        .content(problemDetail.content())
+                        .answerResponse(answerResponse)
+                        .options(null)
+                        .isBookmarked(problemDetail.isBookmarked())
+                        .build();
+        }
+
+        public static ProblemResponse createObjectiveProblem(
+                ProblemDetail problemDetail,
+                List<OptionResponse> options
+        ) {
+                return ProblemResponse.builder()
+                        .problemId(problemDetail.id())
+                        .problemType(problemDetail.problemType())
+                        .instruction(problemDetail.instruction())
+                        .content(problemDetail.content())
+                        .answerResponse(null)
+                        .options(options)
+                        .isBookmarked(problemDetail.isBookmarked())
+                        .build();
+        }
+
+        public static ProblemResponse createSubjectiveProblemForAdmin(
+                Problem problem,
+                AnswerResponse answerResponse
+        ){
                 return ProblemResponse.builder()
                         .problemId(problem.getId())
                         .problemType(problem.getProblemType())
@@ -63,13 +99,14 @@ public record ProblemResponse(
                         .content(problem.getContent())
                         .answerResponse(answerResponse)
                         .options(null)
+                        .isBookmarked(false)
                         .build();
         }
 
-        public static ProblemResponse createObjectiveProblem(
+        public static ProblemResponse createObjectiveProblemForAdmin(
                 Problem problem,
                 List<OptionResponse> options
-        ) {
+        ){
                 return ProblemResponse.builder()
                         .problemId(problem.getId())
                         .problemType(problem.getProblemType())
@@ -77,6 +114,7 @@ public record ProblemResponse(
                         .content(problem.getContent())
                         .answerResponse(null)
                         .options(options)
+                        .isBookmarked(false)
                         .build();
         }
 }

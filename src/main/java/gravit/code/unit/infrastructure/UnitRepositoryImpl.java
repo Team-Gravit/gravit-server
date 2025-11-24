@@ -26,6 +26,11 @@ public class UnitRepositoryImpl implements UnitRepository {
     }
 
     @Override
+    public Optional<UnitSummary> findUnitSummaryById(long unitId) {
+        return unitJpaRepository.findUnitSummaryById(unitId);
+    }
+
+    @Override
     public Optional<UnitSummary> findUnitSummaryByLessonId(long lessonId) {
         return unitJpaRepository.findUnitSummaryByLessonId(lessonId);
     }

@@ -70,6 +70,10 @@ public enum CustomErrorCode implements ErrorCode {
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_4041", "신고 조회에 실패하였습니다."),
     REPORT_TYPE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
 
+    // Bookmark
+    BOOKMARK_DUPLICATED(HttpStatus.CONFLICT, "BOOKMARK_4091", "이미 북마크한 문제입니다."),
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_4041", "북마크 조회에 실패하였습니다."),
+
     // Mission
     MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION_4041", "사용자의 미션 조회에 실패하였습니다."),
 

@@ -44,12 +44,12 @@ public class AdminProblemService {
             if(options.isEmpty())
                 throw new RestApiException(CustomErrorCode.OPTION_NOT_FOUND);
 
-            return ProblemResponse.createObjectiveProblem(problem, options);
+            return ProblemResponse.createObjectiveProblemForAdmin(problem, options);
         }else{
             AnswerResponse answerResponse = answerRepository.findByProblemId(problemId)
                     .orElseThrow(() -> new RestApiException(CustomErrorCode.ANSWER_NOT_FOUND));
 
-            return ProblemResponse.createSubjectiveProblem(problem, answerResponse);
+            return ProblemResponse.createSubjectiveProblemForAdmin(problem, answerResponse);
         }
     }
 

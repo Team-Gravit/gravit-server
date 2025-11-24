@@ -2,6 +2,7 @@ package gravit.code.problem.infrastructure;
 
 import gravit.code.problem.domain.Problem;
 import gravit.code.problem.domain.ProblemRepository;
+import gravit.code.problem.dto.response.ProblemDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +16,19 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     private final ProblemJpaRepository problemJpaRepository;
 
     @Override
-    public List<Problem> findAllProblemByLessonId(long lessonId){
-        return problemJpaRepository.findAllByLessonId(lessonId);
+    public List<ProblemDetail> findAllProblemDetailByLessonIdAndUserId(
+            long lessonId,
+            long userId
+    ){
+        return problemJpaRepository.findAllProblemDetailByLessonIdAndUserId(lessonId,userId);
+    }
+
+    @Override
+    public List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(
+            long unitId,
+            long userId
+    ) {
+        return problemJpaRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
     }
 
     @Override

@@ -25,4 +25,11 @@ public interface UnitJpaRepository extends JpaRepository<Unit, Long> {
         WHERE l.id = :lessonId
     """)
     Optional<UnitSummary> findUnitSummaryByLessonId(@Param("lessonId") long lessonId);
+
+    @Query("""
+        SELECT new gravit.code.unit.dto.response.UnitSummary(u.id, u.title, u.description)
+        FROM Unit u
+        WHERE u.id = :unitId
+    """)
+    Optional<UnitSummary> findUnitSummaryById(@Param("unitId")long unitId);
 }

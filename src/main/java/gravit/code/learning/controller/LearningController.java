@@ -1,13 +1,17 @@
 package gravit.code.learning.controller;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
+import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
+import gravit.code.bookmark.service.BookmarkService;
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.learning.controller.docs.LearningControllerDocs;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-import gravit.code.learning.dto.response.*;
+import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResponse;
+import gravit.code.problem.dto.response.BookmarkedProblemResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
 import gravit.code.unit.dto.response.UnitDetailResponse;
@@ -27,6 +31,7 @@ public class LearningController implements LearningControllerDocs {
 
     private final LearningFacade learningFacade;
     private final ReportService reportService;
+    private final BookmarkService bookmarkService;
 
     @GetMapping("/chapters")
     public ResponseEntity<List<ChapterDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser) {
@@ -50,8 +55,11 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @GetMapping("/{lessonId}")
-    public ResponseEntity<LessonResponse> getAllProblemsInLesson(@PathVariable("lessonId") Long lessonsId){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId));
+    public ResponseEntity<LessonResponse> getAllProblemsInLesson(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("lessonId") Long lessonsId
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId, loginUser.getId()));
     }
 
     @PostMapping("/results")
@@ -69,5 +77,31 @@ public class LearningController implements LearningControllerDocs {
     ){
         reportService.submitProblemReport(loginUser.getId(), request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{unitId}/bookmarks")
+    public ResponseEntity<BookmarkedProblemResponse> getBookmarkedProblemsInUnit(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("unitId") Long unitId
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getBookmarkedProblemsInUnit(loginUser.getId(), unitId));
+    }
+
+    @PostMapping("/bookmarks")
+    public ResponseEntity<Void> saveBookmark(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid@RequestBody BookmarkSaveRequest request
+    ){
+        bookmarkService.saveBookmark(loginUser.getId(), request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/bookmarks")
+    public ResponseEntity<Void> deleteBookmark(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid@RequestBody BookmarkDeleteRequest request
+    ) {
+        bookmarkService.deleteBookmark(loginUser.getId(), request);
+        return ResponseEntity.noContent().build();
     }
 }
