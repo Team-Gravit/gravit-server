@@ -40,8 +40,8 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
         )
         FROM Problem p
         JOIN Lesson l ON l.id = p.lessonId
+        JOIN Unit u ON u.id = l.unitId AND u.id = :unitId
         JOIN Bookmark b ON b.problemId = p.id AND b.userId = :userId
-        WHERE p.lessonId = :lessonId
         ORDER BY b.createdAt ASC
     """)
     List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(

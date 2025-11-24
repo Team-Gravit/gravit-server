@@ -28,6 +28,7 @@ public record WrongAnsweredProblemsResponse(
         return WrongAnsweredProblemsResponse.builder()
                 .unitSummary(unitSummary)
                 .problems(problems)
+                .totalProblems(problems.size())
                 .build();
     }
 }

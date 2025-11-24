@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProblemSubmissionJpaRepository extends JpaRepository<ProblemSubmission, Long> {
     @Query("""
@@ -16,5 +17,10 @@ public interface ProblemSubmissionJpaRepository extends JpaRepository<ProblemSub
     List<ProblemSubmission> findByIdInIdsAndUserId(
             @Param("problemIds") List<Long> problemIds,
             @Param("userId") long userId
+    );
+
+    Optional<ProblemSubmission> findByProblemIdAndUserId(
+            @Param("problemId")long problemId,
+            @Param("userId")long userId
     );
 }

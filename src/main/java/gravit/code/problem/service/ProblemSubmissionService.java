@@ -20,22 +20,33 @@ public class ProblemSubmissionService {
     private final ProblemSubmissionRepository problemSubmissionRepository;
 
     @Transactional
-    public void saveProblemSubmission(
+    public void saveProblemSubmissions(
             long userId,
             List<ProblemSubmissionRequest> requests,
             boolean isFirstTry
     ){
         List<ProblemSubmission> problemSubmissions;
         if(isFirstTry){
-            problemSubmissions = createProblemSubmission(userId, requests);
+            problemSubmissions = createProblemSubmissions(userId, requests);
         }else{
-            problemSubmissions = updateProblemSubmission(userId, requests);
+            problemSubmissions = updateProblemSubmissions(userId, requests);
         }
 
         problemSubmissionRepository.saveAll(problemSubmissions);
     }
 
-    private List<ProblemSubmission> updateProblemSubmission(
+    @Transactional
+    public void saveProblemSubmission(
+            long userId,
+            ProblemSubmissionRequest request
+    ){
+        ProblemSubmission problemSubmission = problemSubmissionRepository.findByProblemIdAndUserId(request.problemId(), userId)
+                .orElseGet(() -> ProblemSubmission.create(request.isCorrect(), request.problemId(), userId));
+
+        problemSubmission.updateIsCorrect(request.isCorrect());
+    }
+
+    private List<ProblemSubmission> updateProblemSubmissions(
             long userId,
             List<ProblemSubmissionRequest> requests
     ){
@@ -64,7 +75,7 @@ public class ProblemSubmissionService {
         return problemSubmissions;
     }
 
-    private List<ProblemSubmission> createProblemSubmission(
+    private List<ProblemSubmission> createProblemSubmissions(
             long userId,
             List<ProblemSubmissionRequest> requests
     ){

@@ -21,7 +21,7 @@ public class BookmarkService {
             long userId,
             BookmarkSaveRequest request
     ){
-        if(bookmarkRepository.existsByProblemIdAndUserId(userId, request.problemId()))
+        if(bookmarkRepository.existsByProblemIdAndUserId(request.problemId(), userId))
             throw new RestApiException(CustomErrorCode.BOOKMARK_DUPLICATED);
 
         Bookmark bookmark = Bookmark.create(
@@ -37,7 +37,7 @@ public class BookmarkService {
             long userId,
             BookmarkDeleteRequest request
     ) {
-        if(!bookmarkRepository.existsByProblemIdAndUserId(userId, request.problemId()))
+        if(!bookmarkRepository.existsByProblemIdAndUserId(request.problemId(), userId))
             throw new RestApiException(CustomErrorCode.BOOKMARK_NOT_FOUND);
 
         bookmarkRepository.deleteByProblemIdAndUserId(request.problemId(), userId);

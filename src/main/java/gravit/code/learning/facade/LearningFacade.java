@@ -16,6 +16,7 @@ import gravit.code.lesson.dto.response.LessonSummary;
 import gravit.code.lesson.service.LessonService;
 import gravit.code.lesson.service.LessonSubmissionService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
+import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.problem.dto.response.BookmarkedProblemResponse;
 import gravit.code.problem.dto.response.ProblemResponse;
 import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
@@ -167,7 +168,7 @@ public class LearningFacade {
         boolean isFirstTry = lessonSubmissionService.checkUserSubmitted(request.lessonSubmissionSaveRequest().lessonId(), userId);
 
         lessonSubmissionService.saveLessonSubmission(request.lessonSubmissionSaveRequest(), userId, isFirstTry);
-        problemSubmissionService.saveProblemSubmission(userId, request.problemSubmissionRequests(), isFirstTry);
+        problemSubmissionService.saveProblemSubmissions(userId, request.problemSubmissionRequests(), isFirstTry);
 
         UnitSummary unitSummary = unitService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
         String leagueName = userLeagueService.getUserLeagueName(userId);
@@ -188,6 +189,14 @@ public class LearningFacade {
                 userLevelResponse,
                 unitSummary
         );
+    }
+
+    @Transactional
+    public void saveProblemSubmission(
+            long userId,
+            ProblemSubmissionRequest request
+    ) {
+        problemSubmissionService.saveProblemSubmission(userId, request);
     }
 
     private UserLevelResponse updateUserLevelBySubmission(

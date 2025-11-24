@@ -11,6 +11,7 @@ import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResponse;
+import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.problem.dto.response.BookmarkedProblemResponse;
 import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
@@ -55,6 +56,23 @@ public class LearningController implements LearningControllerDocs {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllLessonInUnit(loginUser.getId(), unitId));
     }
 
+    @PostMapping("/lessons/results")
+    public ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid@RequestBody LearningSubmissionSaveRequest request
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.saveLearningSubmission(loginUser.getId(), request));
+    }
+
+    @PostMapping("/problems/results")
+    public ResponseEntity<Void> saveProblemSubmission(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid@RequestBody ProblemSubmissionRequest request
+    ){
+        learningFacade.saveProblemSubmission(loginUser.getId(), request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{lessonId}")
     public ResponseEntity<LessonResponse> getAllProblemsInLesson(
             @AuthenticationPrincipal LoginUser loginUser,
@@ -63,29 +81,20 @@ public class LearningController implements LearningControllerDocs {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getAllProblemsInLesson(lessonsId, loginUser.getId()));
     }
 
-    @PostMapping("/lesson/results")
-    public ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(
-            @AuthenticationPrincipal LoginUser loginUser,
-            @Valid@RequestBody LearningSubmissionSaveRequest request
-    ){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.saveLearningSubmission(loginUser.getId(), request));
-    }
-
-    @PostMapping("/reports")
-    public ResponseEntity<Void> submitProblemReport(
-            @AuthenticationPrincipal LoginUser loginUser,
-            @Valid@RequestBody ProblemReportSubmitRequest request
-    ){
-        reportService.submitProblemReport(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/{unitId}/bookmarks")
     public ResponseEntity<BookmarkedProblemResponse> getBookmarkedProblemsInUnit(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("unitId") Long unitId
     ){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getBookmarkedProblemsInUnit(loginUser.getId(), unitId));
+    }
+
+    @GetMapping("/{unitId}/wrong-answered-problems")
+    public ResponseEntity<WrongAnsweredProblemsResponse> getWrongAnsweredProblemsInUnit(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("unitId") Long unitId
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getWrongAnsweredProblemsInUnit(loginUser.getId(), unitId));
     }
 
     @PostMapping("/bookmarks")
@@ -106,11 +115,12 @@ public class LearningController implements LearningControllerDocs {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{unitId}/wrong-answered-problems")
-    public ResponseEntity<WrongAnsweredProblemsResponse> getWrongAnsweredProblemsInUnit(
+    @PostMapping("/reports")
+    public ResponseEntity<Void> submitProblemReport(
             @AuthenticationPrincipal LoginUser loginUser,
-            @PathVariable("unitId") Long unitId
+            @Valid@RequestBody ProblemReportSubmitRequest request
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getWrongAnsweredProblemsInUnit(loginUser.getId(), unitId));
+        reportService.submitProblemReport(loginUser.getId(), request);
+        return ResponseEntity.ok().build();
     }
 }

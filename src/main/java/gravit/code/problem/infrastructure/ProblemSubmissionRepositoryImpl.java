@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,6 +20,14 @@ public class ProblemSubmissionRepositoryImpl implements ProblemSubmissionReposit
             long userId
     ) {
         return problemSubmissionJpaRepository.findByIdInIdsAndUserId(problemIds, userId);
+    }
+
+    @Override
+    public Optional<ProblemSubmission> findByProblemIdAndUserId(
+            long problemId,
+            long userId
+    ) {
+        return problemSubmissionJpaRepository.findByProblemIdAndUserId(problemId, userId);
     }
 
     @Override
