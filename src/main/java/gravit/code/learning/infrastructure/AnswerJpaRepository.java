@@ -1,5 +1,6 @@
 package gravit.code.learning.infrastructure;
 
+import gravit.code.learning.domain.Answer;
 import gravit.code.learning.dto.response.AnswerResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -7,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface AnswerJpaRepository extends JpaRepository<AnswerResponse,Long> {
+public interface AnswerJpaRepository extends JpaRepository<Answer,Long> {
     @Query("""
         SELECT new gravit.code.learning.dto.response.AnswerResponse(a.content, a.explanation)
         FROM Answer a

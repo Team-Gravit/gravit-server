@@ -16,18 +16,8 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     private final ChapterJpaRepository chapterJpaRepository;
 
     @Override
-    public Optional<Chapter> findById(Long chapterId){
+    public Optional<Chapter> findById(long chapterId){
         return chapterJpaRepository.findById(chapterId);
-    }
-
-    @Override
-    public Chapter save(Chapter chapter) {
-        return chapterJpaRepository.save(chapter);
-    }
-
-    @Override
-    public void saveAll(List<Chapter> chapters){
-        chapterJpaRepository.saveAll(chapters);
     }
 
     @Override
@@ -41,7 +31,17 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     }
 
     @Override
-    public Optional<ChapterSummary> findChapterSummaryByUnitId(Long unitId) {
+    public Optional<ChapterSummary> findChapterSummaryByUnitId(long unitId) {
         return chapterJpaRepository.findChapterSummaryByUnitId(unitId);
+    }
+
+    @Override
+    public Chapter save(Chapter chapter) {
+        return chapterJpaRepository.save(chapter);
+    }
+
+    @Override
+    public void saveAll(List<Chapter> chapters){
+        chapterJpaRepository.saveAll(chapters);
     }
 }

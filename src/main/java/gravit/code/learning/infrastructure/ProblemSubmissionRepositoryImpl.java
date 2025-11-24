@@ -14,12 +14,15 @@ public class ProblemSubmissionRepositoryImpl implements ProblemSubmissionReposit
     private final ProblemSubmissionJpaRepository problemSubmissionJpaRepository;
 
     @Override
-    public List<ProblemSubmission> saveAll(List<ProblemSubmission> problemSubmissions){
-        return problemSubmissionJpaRepository.saveAll(problemSubmissions);
+    public List<ProblemSubmission> findByIdInIdsAndUserId(
+            List<Long> problemIds,
+            long userId
+    ) {
+        return problemSubmissionJpaRepository.findByIdInIdsAndUserId(problemIds, userId);
     }
 
     @Override
-    public List<ProblemSubmission> findByIdInIdsAndUserId(List<Long> problemIds, long userId) {
-        return problemSubmissionJpaRepository.findByIdInIdsAndUserId(problemIds, userId);
+    public List<ProblemSubmission> saveAll(List<ProblemSubmission> problemSubmissions){
+        return problemSubmissionJpaRepository.saveAll(problemSubmissions);
     }
 }

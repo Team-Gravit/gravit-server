@@ -46,4 +46,43 @@ public class UserLevel {
         else return 10;
     }
 
+    public double calculateLevelRate(int xp){
+        int levelStart;
+        int levelEnd;
+
+        if(xp < 100) {
+            levelStart = 0;
+            levelEnd = 100;
+        } else if(xp < 200) {
+            levelStart = 100;
+            levelEnd = 200;
+        } else if(xp < 400) {
+            levelStart = 200;
+            levelEnd = 400;
+        } else if(xp < 700) {
+            levelStart = 400;
+            levelEnd = 700;
+        } else if(xp < 1100) {
+            levelStart = 700;
+            levelEnd = 1100;
+        } else if(xp < 1600) {
+            levelStart = 1100;
+            levelEnd = 1600;
+        } else if(xp < 2200) {
+            levelStart = 1600;
+            levelEnd = 2200;
+        } else if(xp < 2900) {
+            levelStart = 2200;
+            levelEnd = 2900;
+        } else if(xp < 3700) {
+            levelStart = 2900;
+            levelEnd = 3700;
+        } else {
+            return 100.0;
+        }
+
+        double rate = ((double)(xp - levelStart) / (levelEnd - levelStart)) * 100;
+        return Math.round(rate * 10) / 10.0;
+    }
+
 }

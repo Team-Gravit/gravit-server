@@ -9,5 +9,18 @@ services:
     volumes:
       - redis_data:/data
 
+  postgres:
+    image: postgres:15
+    container_name: postgres-local
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   redis_data:
+  postgres_data:

@@ -20,7 +20,7 @@ public record LessonSummary(
                 description = "전체 문제 수",
                 example = "5"
         )
-        int totalProblem,
+        long totalProblem,
 
         @Schema(
                 description = "해결 여부",

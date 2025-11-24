@@ -18,23 +18,8 @@ public class LessonRepositoryImpl implements LessonRepository {
     private final LessonJpaRepository lessonJpaRepository;
 
     @Override
-    public Lesson save(Lesson lesson) {
-        return lessonJpaRepository.save(lesson);
-    }
-
-    @Override
-    public Optional<Lesson> findById(Long lessonId){
+    public Optional<Lesson> findById(long lessonId){
         return lessonJpaRepository.findById(lessonId);
-    }
-
-    @Override
-    public long count(){
-        return lessonJpaRepository.count();
-    }
-
-    @Override
-    public boolean existsById(Long lessonId){
-        return lessonJpaRepository.existsById(lessonId);
     }
 
     @Override
@@ -48,8 +33,16 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public void saveAll(List<Lesson> lessons) {
-        lessonJpaRepository.saveAll(lessons);
+    public List<LessonSummary> findAllLessonSummaryByUnitId(
+            long unitId,
+            long userId
+    ) {
+        return lessonJpaRepository.findAllLessonSummaryByUnitId(unitId, userId);
+    }
+
+    @Override
+    public long count(){
+        return lessonJpaRepository.count();
     }
 
     @Override
@@ -63,7 +56,17 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public List<LessonSummary> findAllLessonSummaryByUnitId(long unitId, long userId) {
-        return lessonJpaRepository.findAllLessonSummaryByUnitId(unitId, userId);
+    public boolean existsById(long lessonId){
+        return lessonJpaRepository.existsById(lessonId);
+    }
+
+    @Override
+    public Lesson save(Lesson lesson) {
+        return lessonJpaRepository.save(lesson);
+    }
+
+    @Override
+    public void saveAll(List<Lesson> lessons) {
+        lessonJpaRepository.saveAll(lessons);
     }
 }

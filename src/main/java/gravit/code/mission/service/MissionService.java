@@ -8,7 +8,7 @@ import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
-import gravit.code.mission.dto.MissionSummary;
+import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.event.LessonMissionEvent;

@@ -1,14 +1,12 @@
 package gravit.code.learning.infrastructure;
 
 import gravit.code.learning.domain.LessonSubmission;
-import gravit.code.learning.dto.response.LessonProgressSummaryResponse;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface LessonSubmissionJpaRepository extends JpaRepository<LessonSubmission, Long> {
@@ -18,19 +16,6 @@ public interface LessonSubmissionJpaRepository extends JpaRepository<LessonSubmi
             long lessonId,
             long userId
     );
-
-    @Query("""
-        SELECT new gravit.code.progress.dto.response.LessonProgressSummaryResponse(l.id, l.name, COALESCE(lp.isCompleted, false))
-        FROM Lesson l
-        LEFT JOIN LessonSubmission lp ON l.id = lp.lessonId AND lp.userId = :userId
-        WHERE l.unitId = :unitId AND EXISTS (SELECT 1 FROM User u WHERE u.id = :userId)
-        ORDER BY l.id
-    """)
-    List<LessonProgressSummaryResponse> findLessonProgressSummaryByUnitIdAndUserId(
-            @Param("unitId") long unitId,
-            @Param("userId") long userId
-    );
-
     long countByUserId(long userId);
 
     @Query("""
@@ -68,5 +53,8 @@ public interface LessonSubmissionJpaRepository extends JpaRepository<LessonSubmi
             @Param("userId") long userId
     );
 
-    boolean existsByLessonIdAndUserId(long lessonId, long userId);
+    boolean existsByLessonIdAndUserId(
+            long lessonId,
+            long userId
+    );
 }

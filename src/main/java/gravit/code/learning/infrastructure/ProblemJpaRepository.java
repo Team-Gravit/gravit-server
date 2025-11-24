@@ -15,7 +15,7 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
         WHERE p.lessonId = :lessonId
         ORDER BY p.id
     """)
-    List<Problem> findAllByLessonId(@Param("lessonId")Long lessonId);
+    List<Problem> findAllByLessonId(@Param("lessonId")long lessonId);
 
-    boolean existsProblemById(Long id);
+    boolean existsProblemById(long id);
 }

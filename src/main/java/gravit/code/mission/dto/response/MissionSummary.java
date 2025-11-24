@@ -1,4 +1,4 @@
-package gravit.code.mission.dto;
+package gravit.code.mission.dto.response;
 
 import gravit.code.mission.domain.MissionType;
 

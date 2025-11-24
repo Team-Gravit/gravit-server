@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UnitRepository {
-    Unit save(Unit unit);
-    Optional<Unit> findById(Long unitId);
-    void saveAll(List<Unit> units);
+    Optional<Unit> findById(long unitId);
     List<UnitSummary> findAllUnitSummaryByChapterId(long chapterId);
     Optional<UnitSummary> findUnitSummaryByLessonId(long lessonId);
+    Unit save(Unit unit);
+    void saveAll(List<Unit> units);
 }
