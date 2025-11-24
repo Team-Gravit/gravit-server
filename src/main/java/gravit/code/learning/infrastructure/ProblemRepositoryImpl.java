@@ -15,18 +15,8 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     private final ProblemJpaRepository problemJpaRepository;
 
     @Override
-    public Problem save(Problem problem) {
-        return problemJpaRepository.save(problem);
-    }
-
-    @Override
     public List<Problem> findAllProblemByLessonId(long lessonId){
         return problemJpaRepository.findAllByLessonId(lessonId);
-    }
-
-    @Override
-    public boolean existsProblemById(long problemId){
-        return problemJpaRepository.existsProblemById(problemId);
     }
 
     @Override
@@ -35,12 +25,22 @@ public class ProblemRepositoryImpl implements ProblemRepository {
     }
 
     @Override
-    public void deleteById(long problemId){
-        problemJpaRepository.deleteById(problemId);
+    public boolean existsProblemById(long problemId){
+        return problemJpaRepository.existsProblemById(problemId);
+    }
+
+    @Override
+    public Problem save(Problem problem) {
+        return problemJpaRepository.save(problem);
     }
 
     @Override
     public void saveAll(List<Problem> problems) {
         problemJpaRepository.saveAll(problems);
+    }
+
+    @Override
+    public void deleteById(long problemId){
+        problemJpaRepository.deleteById(problemId);
     }
 }

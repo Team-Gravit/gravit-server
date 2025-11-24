@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Lock;
 import java.util.Optional;
 
 public interface LearningJpaRepository extends JpaRepository<Learning,Long> {
-    Optional<Learning> findByUserId(Long userId);
+    Optional<Learning> findByUserId(long userId);
 
     @Lock(LockModeType.OPTIMISTIC)
     Page<Learning> findAll(Pageable pageable);

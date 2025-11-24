@@ -16,6 +16,21 @@ public class OptionRepositoryImpl implements OptionRepository {
     private final OptionJpaRepository optionJpaRepository;
 
     @Override
+    public List<OptionResponse> findByProblemId(long problemId){
+        return optionJpaRepository.findByProblemId(problemId);
+    }
+
+    @Override
+    public Optional<Option> findById(long optionId){
+        return optionJpaRepository.findById(optionId);
+    }
+
+    @Override
+    public boolean existsById(long optionId){
+        return optionJpaRepository.existsById(optionId);
+    }
+
+    @Override
     public Option save(Option option) {
         return optionJpaRepository.save(option);
     }
@@ -26,27 +41,12 @@ public class OptionRepositoryImpl implements OptionRepository {
     }
 
     @Override
-    public List<OptionResponse> findByProblemId(Long problemId){
-        return optionJpaRepository.findByProblemId(problemId);
-    }
-
-    @Override
-    public Optional<Option> findById(Long optionId){
-        return optionJpaRepository.findById(optionId);
-    }
-
-    @Override
-    public void deleteById(Long optionId){
+    public void deleteById(long optionId){
         optionJpaRepository.deleteById(optionId);
     }
 
     @Override
-    public void deleteAllByProblemId(Long problemId){
+    public void deleteAllByProblemId(long problemId){
         optionJpaRepository.deleteAllByProblemId(problemId);
-    }
-
-    @Override
-    public boolean existsById(Long optionId){
-        return optionJpaRepository.existsById(optionId);
     }
 }

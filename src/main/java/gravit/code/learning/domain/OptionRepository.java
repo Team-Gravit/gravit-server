@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OptionRepository {
+    List<OptionResponse> findByProblemId(long problemId);
+    Optional<Option> findById(long optionId);
+    boolean existsById(long optionId);
     Option save(Option option);
     List<Option> saveAll(List<Option> options);
-    List<OptionResponse> findByProblemId(Long problemId);
-    Optional<Option> findById(Long optionId);
-    void deleteById(Long optionId);
-    void deleteAllByProblemId(Long problemId);
-    boolean existsById(Long optionId);
+    void deleteById(long optionId);
+    void deleteAllByProblemId(long problemId);
 }

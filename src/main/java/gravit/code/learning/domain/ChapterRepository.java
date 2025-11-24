@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChapterRepository {
-    Optional<Chapter> findById(Long chapterId);
-    Chapter save(Chapter chapter);
-    void saveAll(List<Chapter> chapters);
+    Optional<Chapter> findById(long chapterId);
     List<ChapterSummary> findAllChapterSummary();
     Optional<ChapterSummary> findChapterSummaryByChapterId(long chapterId);
-    Optional<ChapterSummary> findChapterSummaryByUnitId(Long unitId);
+    Optional<ChapterSummary> findChapterSummaryByUnitId(long unitId);
+    Chapter save(Chapter chapter);
+    void saveAll(List<Chapter> chapters);
 }

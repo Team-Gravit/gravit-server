@@ -16,18 +16,18 @@ public class LearningRepositoryImpl implements LearningRepository {
     private final LearningJpaRepository learningJpaRepository;
 
     @Override
-    public Learning save(Learning learning){
-        return learningJpaRepository.save(learning);
-    }
-
-    @Override
-    public Optional<Learning> findByUserId(Long userId){
+    public Optional<Learning> findByUserId(long userId){
         return learningJpaRepository.findByUserId(userId);
     }
 
     @Override
     public List<Learning> findAll(Pageable pageable){
         return learningJpaRepository.findAll(pageable).getContent();
+    }
+
+    @Override
+    public Learning save(Learning learning){
+        return learningJpaRepository.save(learning);
     }
 
     @Override

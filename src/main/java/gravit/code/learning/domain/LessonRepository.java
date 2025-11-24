@@ -8,14 +8,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonRepository {
-    Lesson save(Lesson lesson);
-    Optional<Lesson> findById(Long lessonId);
-    long count();
-    boolean existsById(Long lessonId);
+    Optional<Lesson> findById(long lessonId);
     Optional<LearningIds> findLearningIdsByLessonId(long lessonId);
     Optional<LearningAdditionalInfo> findLearningAdditionalInfoByLessonId(long lessonId);
-    void saveAll(List<Lesson> lessons);
+    List<LessonSummary> findAllLessonSummaryByUnitId(
+            long unitId,
+            long userId
+    );
+    long count();
     int countTotalLessonByChapterId(long chapterId);
     int countTotalLessonByUnitId(long unitId);
-    List<LessonSummary> findAllLessonSummaryByUnitId(long unitId, long userId);
+    boolean existsById(long lessonId);
+    Lesson save(Lesson lesson);
+    void saveAll(List<Lesson> lessons);
 }
