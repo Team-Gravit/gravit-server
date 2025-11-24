@@ -2,13 +2,12 @@ package gravit.code.userLeague.domain;
 
 import gravit.code.league.domain.League;
 import gravit.code.season.domain.Season;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface UserLeagueRepository {
 
-    String findUserLeagueNameByUserId(@Param("userId") long userId);
+    Optional<String> findUserLeagueNameByUserId(long userId);
 
     boolean existsByUserId(long userId);
 

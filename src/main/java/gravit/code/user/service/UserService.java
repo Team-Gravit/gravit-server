@@ -4,19 +4,24 @@ import gravit.code.global.event.OnboardingUserLeagueEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.event.CreateLearningEvent;
-import gravit.code.mainPage.dto.MainPageSummary;
-import gravit.code.mainPage.dto.response.MainPageResponse;
-import gravit.code.mission.dto.MissionSummary;
+import gravit.code.learning.dto.response.LearningDetail;
+import gravit.code.learning.service.LearningService;
+import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.mission.dto.event.CreateMissionEvent;
+import gravit.code.mission.dto.response.MissionDetail;
+import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.service.MissionService;
 import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserLevel;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
+import gravit.code.user.dto.response.UserLevelDetail;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
+import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -27,9 +32,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+
     private final MissionService missionService;
+    private final UserLeagueService userLeagueService;
+
     private final ApplicationEventPublisher publisher;
     private final HandleGenerator handleGenerator;
+    private final LearningService learningService;
 
     @Transactional(readOnly = true)
     public UserResponse findById(long userId) {
@@ -90,10 +99,20 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public MainPageResponse getMainPage(long userId) {
-        MainPageSummary mainPageSummary =  userRepository.findMainPageByUserId(userId);
+        String nickname = userRepository.findNicknameById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        UserLevelDetail userLevelDetail = getUserLevelDetail(userId);
+
+        String leagueName = userLeagueService.getUserLeagueName(userId);
+
         MissionSummary missionSummary = missionService.getMissionSummary(userId);
 
-        return MainPageResponse.create(mainPageSummary, missionSummary);
+        MissionDetail missionDetail = MissionDetail.from(missionSummary);
+
+        LearningDetail learningDetail = learningService.getUserLearningDetail(userId);
+
+        return MainPageResponse.of(nickname, leagueName, userLevelDetail, missionDetail, learningDetail);
     }
 
     @Transactional
@@ -102,5 +121,12 @@ public class UserService {
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
         String newHandle = handleGenerator.generateUniqueHandle();
         user.restoreUser(newHandle);
+    }
+    
+    private UserLevelDetail getUserLevelDetail(long userId){
+        UserLevel userLevel = userRepository.findUserLevelById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        return UserLevelDetail.of(userLevel, userLevel.calculateLevelRate(userLevel.getXp()));
     }
 }

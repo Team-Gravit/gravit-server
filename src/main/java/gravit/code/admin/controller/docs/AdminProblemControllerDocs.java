@@ -3,7 +3,7 @@ package gravit.code.admin.controller.docs;
 import gravit.code.admin.dto.request.ProblemCreateRequest;
 import gravit.code.admin.dto.request.ProblemUpdateRequest;
 import gravit.code.global.exception.domain.ErrorResponse;
-import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.problem.dto.response.ProblemResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

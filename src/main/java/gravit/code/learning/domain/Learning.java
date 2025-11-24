@@ -1,6 +1,6 @@
 package gravit.code.learning.domain;
 
-import gravit.code.learning.dto.StreakDto;
+import gravit.code.learning.dto.common.StreakDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,30 +16,30 @@ public class Learning {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "recent_chapter_id", columnDefinition = "bigint",  nullable = false)
-    private long recentChapterId;
+    @Column(name = "recent_solved_chapter_id",  nullable = false)
+    private long recentSolvedChapterId;
 
-    @Column(name = "today_solved", columnDefinition = "boolean", nullable = false)
+    @Column(name = "today_solved", nullable = false)
     private boolean todaySolved;
 
-    @Column(name = "consecutive_days", columnDefinition = "integer", nullable = false)
-    private int consecutiveDays;
+    @Column(name = "consecutive_solved_days", nullable = false)
+    private int consecutiveSolvedDays;
 
-    @Column(name = "planet_conquest_rate", columnDefinition = "integer", nullable = false)
+    @Column(name = "planet_conquest_rate", nullable = false)
     private int planetConquestRate;
 
-    @Column(name = "user_id", columnDefinition = "bigint",  nullable = false)
+    @Column(name = "user_id", nullable = false, unique = true)
     private long userId;
 
     @Version
-    @Column(columnDefinition = "bigint", nullable = false)
+    @Column(nullable = false)
     private long version;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Learning(Long userId) {
-        this.recentChapterId = 0L;
+        this.recentSolvedChapterId = 0L;
         this.todaySolved = false;
-        this.consecutiveDays = 0;
+        this.consecutiveSolvedDays = 0;
         this.planetConquestRate = 0;
         this.userId = userId;
         this.version = 0L;
@@ -55,27 +55,28 @@ public class Learning {
             long chapterId,
             Integer planetConquestRate
     ){
-        int before = this.consecutiveDays;
+        int before = this.consecutiveSolvedDays;
 
         if (this.todaySolved){
-            this.recentChapterId = chapterId;
+            this.recentSolvedChapterId = chapterId;
+            this.planetConquestRate = planetConquestRate;
 
-            int after = this.consecutiveDays;
+            int after = this.consecutiveSolvedDays;
             return new StreakDto(before, after);
         }else{
-            this.recentChapterId = chapterId;
+            this.recentSolvedChapterId = chapterId;
             this.todaySolved = true;
-            this.consecutiveDays += 1;
+            this.consecutiveSolvedDays += 1;
             this.planetConquestRate =  planetConquestRate;
 
-            int after = this.consecutiveDays;
+            int after = this.consecutiveSolvedDays;
             return new StreakDto(before, after);
         }
     }
 
     public void updateConsecutiveDays(){
-        if(!this.todaySolved && consecutiveDays > 0){
-            this.consecutiveDays = 0;
+        if(!this.todaySolved) {
+            this.consecutiveSolvedDays = 0;
         }else{
             this.todaySolved = false;
         }

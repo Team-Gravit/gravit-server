@@ -41,6 +41,9 @@ public enum CustomErrorCode implements ErrorCode {
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "JWT_4015", "토큰을 찾을 수 없습니다."),
     REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"JWT_4016", "만료된 리프레시 토큰입니다."),
 
+    // Learning
+    LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "LEARNING_4041", "학습 정보 조회에 실패하였습니다."),
+
     // Chapter
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),
     CHAPTER_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4042", "챕터 진행도 조회에 실패하였습니다."),
@@ -52,17 +55,24 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Lesson
     LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4041", "레슨 조회에 실패하였습니다."),
-    LESSON_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4042", "레슨 진행도 조회에 실패하였습니다."),
+    LESSON_SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4042", "레슨 풀이 제출 이력 조회에 실패하였습니다."),
 
     // Problem
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 조회에 실패하였습니다."),
-
+    PROBLEM_SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 풀이 제출 이력 조회에 실패하였습니다."),
     // Option
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION_4041", "옵션 조회에 실패하였습니다."),
+
+    // Answer
+    ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_4041", "정답 조회에 실패하였습니다."),
 
     // Report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_4041", "신고 조회에 실패하였습니다."),
     REPORT_TYPE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
+
+    // Bookmark
+    BOOKMARK_DUPLICATED(HttpStatus.CONFLICT, "BOOKMARK_4091", "이미 북마크한 문제입니다."),
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_4041", "북마크 조회에 실패하였습니다."),
 
     // Mission
     MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION_4041", "사용자의 미션 조회에 실패하였습니다."),

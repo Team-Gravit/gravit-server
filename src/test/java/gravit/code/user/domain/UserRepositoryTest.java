@@ -2,9 +2,9 @@
 //
 //import gravit.code.league.domain.League;
 //import gravit.code.league.infrastructure.LeagueRepository;
-//import gravit.code.learning.domain.Chapter;
+//import gravit.code.chapter.domain.Chapter;
 //import gravit.code.learning.domain.Learning;
-//import gravit.code.learning.infrastructure.ChapterJpaRepository;
+//import gravit.code.chapter.infrastructure.ChapterJpaRepository;
 //import gravit.code.learning.infrastructure.LearningJpaRepository;
 //import gravit.code.mainPage.dto.MainPageSummary;
 //import gravit.code.mission.domain.Mission;

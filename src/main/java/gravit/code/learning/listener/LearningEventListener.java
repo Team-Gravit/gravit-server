@@ -1,7 +1,7 @@
 package gravit.code.learning.listener;
 
 import gravit.code.global.event.badge.StreakUpdatedEvent;
-import gravit.code.learning.dto.StreakDto;
+import gravit.code.learning.dto.common.StreakDto;
 import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.service.LearningService;

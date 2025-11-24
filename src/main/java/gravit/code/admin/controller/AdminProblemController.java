@@ -4,7 +4,7 @@ import gravit.code.admin.controller.docs.AdminProblemControllerDocs;
 import gravit.code.admin.dto.request.ProblemCreateRequest;
 import gravit.code.admin.dto.request.ProblemUpdateRequest;
 import gravit.code.admin.service.AdminProblemService;
-import gravit.code.learning.dto.response.ProblemResponse;
+import gravit.code.problem.dto.response.ProblemResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

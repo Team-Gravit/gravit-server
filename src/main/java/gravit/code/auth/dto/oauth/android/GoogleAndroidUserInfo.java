@@ -15,7 +15,7 @@ public class GoogleAndroidUserInfo implements OAuthUserInfo {
     private static final String PROVIDER = "google";
     private static final String CLAIM_SUB = "sub";
     private static final String CLAIM_EMAIL = "email";
-    private static final String CLAIM_NAME = "name";
+    private static final String CLAIM_NAME = "title";
 
     private final Map<String, Object> claims;
 

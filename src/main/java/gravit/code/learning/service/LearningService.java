@@ -4,9 +4,11 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.domain.LearningRepository;
-import gravit.code.learning.domain.LessonRepository;
-import gravit.code.learning.dto.StreakDto;
-import gravit.code.progress.domain.LessonProgressRepository;
+import gravit.code.lesson.domain.LessonRepository;
+import gravit.code.learning.dto.common.StreakDto;
+import gravit.code.lesson.service.LessonService;
+import gravit.code.lesson.domain.LessonSubmissionRepository;
+import gravit.code.learning.dto.response.LearningDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +22,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LearningService {
 
+    private final LessonService lessonService;
+
     private final LearningRepository learningRepository;
     private final LessonRepository lessonRepository;
-    private final LessonProgressRepository lessonProgressRepository;
+    private final LessonSubmissionRepository lessonSubmissionRepository;
 
     @Transactional
     public void updateConsecutiveDays(){
@@ -52,18 +56,20 @@ public class LearningService {
             long chapterId
     ){
         Learning learning = learningRepository.findByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
 
         long totalLesson = lessonRepository.count();
-        long solvedLesson = lessonProgressRepository.countByUserId(userId);
+        long solvedLesson = lessonSubmissionRepository.countByUserId(userId);
 
         int planetConquestRate = Math.toIntExact(
                 Math.round(((double) solvedLesson / totalLesson) * 100)
         );
 
+        StreakDto streakDto = learning.updateLearningStatus(chapterId, planetConquestRate);
+
         learningRepository.save(learning);
 
-        return learning.updateLearningStatus(chapterId, planetConquestRate);
+        return streakDto;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -71,5 +77,15 @@ public class LearningService {
         Learning learning = Learning.create(userId);
 
         learningRepository.save(learning);
+    }
+
+    @Transactional(readOnly = true)
+    public LearningDetail getUserLearningDetail(long userId) {
+        LearningDetail learningDetail = learningRepository.findLearningDetailByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
+
+        double progressRate = lessonService.getProgressRateByChapterId(learningDetail.recentSolvedChapterId(), userId);
+
+        return learningDetail.withRecentSolvedChapterProgressRate(progressRate);
     }
 }

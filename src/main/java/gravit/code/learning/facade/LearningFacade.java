@@ -1,150 +1,220 @@
 package gravit.code.learning.facade;
 
+import gravit.code.chapter.dto.response.ChapterDetailResponse;
+import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.chapter.service.ChapterService;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
-import gravit.code.learning.domain.Chapter;
-import gravit.code.learning.dto.LearningAdditionalInfo;
-import gravit.code.learning.dto.LearningIds;
+import gravit.code.learning.dto.common.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
-import gravit.code.learning.dto.request.LearningResultSaveRequest;
-import gravit.code.learning.dto.response.LearningResultSaveResponse;
-import gravit.code.learning.dto.response.LessonResponse;
-import gravit.code.learning.dto.response.UnitPageResponse;
-import gravit.code.learning.service.ChapterService;
-import gravit.code.learning.service.LessonService;
-import gravit.code.learning.service.ProblemService;
+import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
+import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
+import gravit.code.lesson.dto.response.LessonDetailResponse;
+import gravit.code.lesson.dto.response.LessonResponse;
+import gravit.code.lesson.dto.response.LessonSummary;
+import gravit.code.lesson.service.LessonService;
+import gravit.code.lesson.service.LessonSubmissionService;
 import gravit.code.mission.dto.event.LessonMissionEvent;
-import gravit.code.progress.domain.ChapterProgress;
-import gravit.code.progress.domain.LessonProgress;
-import gravit.code.progress.domain.UnitProgress;
-import gravit.code.progress.dto.response.ChapterProgressDetailResponse;
-import gravit.code.progress.dto.response.LessonProgressSummaryResponse;
-import gravit.code.progress.dto.response.UnitDetail;
-import gravit.code.progress.dto.response.UnitProgressDetailResponse;
-import gravit.code.progress.service.ChapterProgressService;
-import gravit.code.progress.service.LessonProgressService;
-import gravit.code.progress.service.ProblemProgressService;
-import gravit.code.progress.service.UnitProgressService;
+import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.dto.response.BookmarkedProblemResponse;
+import gravit.code.problem.dto.response.ProblemResponse;
+import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
+import gravit.code.problem.service.ProblemService;
+import gravit.code.problem.service.ProblemSubmissionService;
+import gravit.code.unit.dto.response.UnitDetail;
+import gravit.code.unit.dto.response.UnitDetailResponse;
+import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.service.UnitService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class LearningFacade {
 
     private final ApplicationEventPublisher publisher;
 
     private final UserService userService;
-    private final ChapterService chapterService;
-    private final LessonService lessonService;
-    private final ProblemService problemService;
     private final UserLeagueService userLeagueService;
 
-    private final ChapterProgressService chapterProgressService;
-    private final UnitProgressService unitProgressService;
-    private final LessonProgressService lessonProgressService;
-    private final ProblemProgressService problemProgressService;
+    private final ChapterService chapterService;
+    private final UnitService unitService;
+    private final LessonService lessonService;
+    private final ProblemService problemService;
+
+    private final LessonSubmissionService lessonSubmissionService;
+    private final ProblemSubmissionService problemSubmissionService;
 
     @Transactional(readOnly = true)
-    public List<ChapterProgressDetailResponse> getAllChapters(long userId){
-        return chapterProgressService.getChapterProgressDetails(userId);
+    public List<ChapterDetailResponse> getAllChapterDetail(long userId){
+        List<ChapterSummary> chapterSummaries = chapterService.getAllChapterSummary();
+
+        return chapterSummaries.stream()
+                .map(chapterSummary -> {
+                    long chapterId = chapterSummary.chapterId();
+
+                    double chapterProgressRate = lessonService.getProgressRateByChapterId(chapterId, userId);
+
+                    return ChapterDetailResponse.create(
+                            chapterSummary,
+                            chapterProgressRate
+                    );
+                }).toList();
     }
 
     @Transactional(readOnly = true)
-    public UnitPageResponse getAllUnitsInChapter(
+    public UnitDetailResponse getAllUnitDetailInChapter(
             long userId,
             long chapterId
     ){
-        // 유닛 페이지에 들어갈 챕터 조회
-        Chapter chapter = chapterService.getChapterById(chapterId);
+        ChapterSummary chapterSummary = chapterService.getChapterSummaryByChapterId(chapterId);
 
-        // 사용자의 유닛 진행도 조회
-        List<UnitProgressDetailResponse> unitProgresses = unitProgressService.findAllUnitProgress(chapterId, userId);
+        List<UnitSummary> unitSummaries = unitService.getAllUnitSummaryByChapterId(chapterId);
 
-        // 유닛 정보 + 유닛 진행도
-        List<UnitDetail> unitPageResponses =  unitProgresses.stream()
-                .map(unitProgress -> {
-                    List<LessonProgressSummaryResponse> lessonProgressSummaries = lessonProgressService.getLessonProgressSummaries(unitProgress.unitId(), userId);
+        List<UnitDetail> unitDetails = unitSummaries.stream()
+                .map(unitSummary -> {
+                    long unitId = unitSummary.unitId();
 
-                    return UnitDetail.create(unitProgress, lessonProgressSummaries);
-                })
-                .toList();
+                    double unitProgressRate = lessonService.getProgressRateByUnitId(unitId, userId);
 
-        return UnitPageResponse.create(chapter, unitPageResponses);
+                    return UnitDetail.create(
+                            unitSummary,
+                            unitProgressRate
+                    );
+                }).toList();
+
+        return UnitDetailResponse.create(
+                chapterSummary,
+                unitDetails
+        );
     }
 
     @Transactional(readOnly = true)
-    public LessonResponse getAllProblemsInLesson(long lessonId){
-        LearningAdditionalInfo learningAdditionalInfo = lessonService.getLearningAdditionalInfoByLessonId(lessonId);
-        return LessonResponse.create(learningAdditionalInfo, problemService.getAllProblemInLesson(lessonId));
+    public LessonDetailResponse getAllLessonInUnit(
+            long userId,
+            long unitId
+    ) {
+        ChapterSummary chapterSummary = chapterService.getChapterSummaryByUnitId(unitId);
+
+        List<LessonSummary> lessonSummaries = lessonService.getAllLessonSummaryByUnitId(unitId, userId);
+
+        return LessonDetailResponse.create(
+                chapterSummary,
+                unitId,
+                lessonSummaries
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public LessonResponse getAllProblemsInLesson(
+            long lessonId,
+            long userId
+    ){
+        UnitSummary unitSummary = unitService.getUnitSummaryByLessonId(lessonId);
+
+        List<ProblemResponse> problems = problemService.getAllProblemInLesson(lessonId, userId);
+
+        return LessonResponse.of(
+                unitSummary,
+                problems
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public BookmarkedProblemResponse getBookmarkedProblemsInUnit(
+            long userId,
+            long unitId
+    ) {
+        UnitSummary unitSummary = unitService.getUnitSummaryByUnitId(unitId);
+
+        List<ProblemResponse> problems = problemService.getBookmarkedProblemInUnit(unitId, userId);
+
+        return BookmarkedProblemResponse.of(
+                unitSummary,
+                problems
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public WrongAnsweredProblemsResponse getWrongAnsweredProblemsInUnit(
+            long userId,
+            long unitId
+    ) {
+        UnitSummary unitSummary = unitService.getUnitSummaryByUnitId(unitId);
+
+        List<ProblemResponse> problems = problemService.getWrongAnsweredProblemsInUnit(unitId, userId);
+
+        return WrongAnsweredProblemsResponse.of(
+                unitSummary,
+                problems
+        );
     }
 
     @Transactional
-    public LearningResultSaveResponse saveLearningResult(
+    public LearningSubmissionSaveResponse saveLearningSubmission(
             long userId,
-            LearningResultSaveRequest request
+            LearningSubmissionSaveRequest request
     ){
-        LessonProgress lessonProgress = lessonProgressService.getLessonProgressAndUpdateStatus(request.lessonId(), userId, request.learningTime());
+        boolean isFirstTry = lessonSubmissionService.checkUserSubmitted(request.lessonSubmissionSaveRequest().lessonId(), userId);
 
-        LearningIds learningIds = lessonService.getLearningIdsByLessonId(request.lessonId());
+        lessonSubmissionService.saveLessonSubmission(request.lessonSubmissionSaveRequest(), userId, isFirstTry);
+        problemSubmissionService.saveProblemSubmissions(userId, request.problemSubmissionRequests(), isFirstTry);
 
-        checkAndUpdateLearningProgress(learningIds.chapterId(), learningIds.unitId(), userId);
+        UnitSummary unitSummary = unitService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
+        String leagueName = userLeagueService.getUserLeagueName(userId);
+        UserLevelResponse userLevelResponse = updateUserLevelBySubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
 
-        String lessonName = lessonService.getLessonNameByLessonId(request.lessonId());
+        LearningIds learningIds = lessonService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
 
-        LearningResultSaveResponse response;
-        if(lessonProgress.getAttemptCount() == 1){ // 레슨 첫번째 풀이라면,
+        publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
 
-            response = saveLearningResultForFirstAttemptUser(userId, request, learningIds.chapterId(), lessonName);
-
-            publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
-            publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.accuracy()));
-            publisher.publishEvent(new LessonMissionEvent(userId, request.lessonId(), request.learningTime(), request.accuracy()));
-            publisher.publishEvent(new QualifiedSolvedEvent(userId, request.learningTime(), request.accuracy()));
-        }else{ // 레슨 첫번째 풀이가 아니라면,
-            response = saveLearningResultForRetryUser(userId, request, learningIds.chapterId(), lessonName);
-
-            publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
+        if(isFirstTry){
+            /**
+             * 아래 두 이벤트 발행이 로직적으로 중복되는 것은 아니지만 발행하는 이벤트의 이름을 봤을 때, 어 왜 두번 반복되지? 싶을 것 같아서 적절하게 수정이 필요해보임.
+             */
+            publisher.publishEvent(new LessonCompletedEvent(userId, 20, request.lessonSubmissionSaveRequest().accuracy()));
+            publisher.publishEvent(new LessonMissionEvent(userId, request.lessonSubmissionSaveRequest().lessonId(), request.lessonSubmissionSaveRequest().learningTime(), request.lessonSubmissionSaveRequest().accuracy()));
+            publisher.publishEvent(new QualifiedSolvedEvent(userId, request.lessonSubmissionSaveRequest().learningTime(), request.lessonSubmissionSaveRequest().accuracy()));
         }
 
-        return response;
+        return LearningSubmissionSaveResponse.create(
+                leagueName,
+                userLevelResponse,
+                unitSummary
+        );
     }
 
-    private void checkAndUpdateLearningProgress(long chapterId, long unitId, long userId){
+    @Transactional
+    public void saveProblemSubmission(
+            long userId,
+            ProblemSubmissionRequest request
+    ) {
+        problemSubmissionService.saveProblemSubmission(userId, request);
+    }
 
-        ChapterProgress chapterProgress = chapterProgressService.ensureChapterProgress(chapterId, userId);
-        UnitProgress unitProgress = unitProgressService.ensureUnitProgress(unitId, userId);
+    private UserLevelResponse updateUserLevelBySubmission(
+            long userId,
+            LessonSubmissionSaveRequest request,
+            boolean isFirstTry
+    ){
 
-        if(unitProgressService.updateUnitProgress(unitProgress)){
-            chapterProgressService.updateChapterProgress(chapterProgress);
-            log.info("=== 행성 클리어 업데이트 로직 실행 ===");
+        UserLevelResponse userLevelResponse;
+
+        if(isFirstTry){
+            userLevelResponse = userService.updateUserLevelAndXp(userId, 20, request.accuracy());
+        }else{
+            userLevelResponse = userService.updateUserLevelAndXp(userId, 0, request.accuracy());
         }
-    }
-
-    private LearningResultSaveResponse saveLearningResultForFirstAttemptUser(long userId, LearningResultSaveRequest request, Long chapterId, String lessonName){
-
-        problemProgressService.saveProblemResults(userId, request.problemResults());
-
-        String leagueName = userLeagueService.getUserLeagueName(userId);
-        UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 20, request.accuracy());
-
-        return LearningResultSaveResponse.create(userLevelResponse, leagueName, chapterId, lessonName);
-    }
-
-    private LearningResultSaveResponse saveLearningResultForRetryUser(long userId, LearningResultSaveRequest request, Long chapterId, String lessonName){
-
-        String leagueName = userLeagueService.getUserLeagueName(userId);
-        UserLevelResponse userLevelResponse = userService.updateUserLevelAndXp(userId, 0, request.accuracy());
-
-        return LearningResultSaveResponse.create(userLevelResponse, leagueName, chapterId, lessonName);
+        return userLevelResponse;
     }
 }

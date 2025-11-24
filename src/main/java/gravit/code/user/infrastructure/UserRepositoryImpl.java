@@ -1,7 +1,7 @@
 package gravit.code.user.infrastructure;
 
-import gravit.code.mainPage.dto.MainPageSummary;
 import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserLevel;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.infrastructure.sql.UserCleanDeletionSql;
@@ -29,6 +29,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<UserLevel> findUserLevelById(long userId) {
+        return jpaRepository.findUserLevelById(userId);
+    }
+
+    @Override
+    public Optional<String> findNicknameById(long userId) {
+        return jpaRepository.findNicknameById(userId);
+    }
+
+    @Override
     public void save(User user) {
         jpaRepository.save(user);
     }
@@ -36,11 +46,6 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean existsById(long id) {
         return jpaRepository.existsById(id);
-    }
-
-    @Override
-    public MainPageSummary findMainPageByUserId(long userId){
-        return jpaRepository.findMainPageByUserId(userId);
     }
 
     @Override
