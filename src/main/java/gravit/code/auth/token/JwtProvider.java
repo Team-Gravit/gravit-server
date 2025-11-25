@@ -8,6 +8,9 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,6 +35,7 @@ import static io.jsonwebtoken.Jwts.SIG.HS256;
 public class JwtProvider {
 
     private final SecretKey secretKey;
+    private static final ZoneId SEOUL_ZONE = ZoneId.of("Asia/Seoul");
 
     public JwtProvider(JwtProperties jwtProperties) {
         this.secretKey = new SecretKeySpec(jwtProperties.secret().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
@@ -42,12 +46,16 @@ public class JwtProvider {
             Map<String, String> claims,
             Duration expireTime
     ) {
-        Date now = new Date();
-        Date expiredDate = new Date(now.getTime() + expireTime.toMillis());
+        ZonedDateTime now = ZonedDateTime.now(SEOUL_ZONE);
+        ZonedDateTime expiredDateTime = now.plus(expireTime);
+
+        Date nowDate = Date.from(now.toInstant());
+        Date expiredDate = Date.from(expiredDateTime.toInstant());
+
         return Jwts.builder()
                 .subject(subject.value())
                 .claims(claims)
-                .issuedAt(now)
+                .issuedAt(nowDate)
                 .expiration(expiredDate)
                 .signWith(secretKey, HS256)
                 .compact();
@@ -57,11 +65,14 @@ public class JwtProvider {
             Subject subject,
             Duration expireTime
     ) {
-        Date date = new Date();
-        Date expiredDate = new Date(date.getTime() + expireTime.toMillis());
+        ZonedDateTime now = ZonedDateTime.now(SEOUL_ZONE);
+        ZonedDateTime expiredDateTime = now.plus(expireTime);
+
+        Date nowDate = Date.from(now.toInstant());
+        Date expiredDate = Date.from(expiredDateTime.toInstant());
         return Jwts.builder()
                 .subject(subject.value())
-                .issuedAt(date)
+                .issuedAt(nowDate)
                 .expiration(expiredDate)
                 .signWith(secretKey, HS256)
                 .compact();
