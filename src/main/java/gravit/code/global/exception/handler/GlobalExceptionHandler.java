@@ -65,6 +65,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse<String>> handleException(Exception e){
 
+        log.error("예외 발생 :", e);
         ErrorCode errorCode = CustomErrorCode.INTERNAL_SERVER_ERROR;
 
         return handleExceptionInternal(errorCode);
