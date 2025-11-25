@@ -20,10 +20,15 @@ public interface LearningJpaRepository extends JpaRepository<Learning,Long> {
 
     @Query("""
         SELECT new gravit.code.learning.dto.response.LearningDetail(
-            l.consecutiveSolvedDays, l.planetConquestRate, l.recentSolvedChapterId, c.title, c.description, 0.0
+            l.consecutiveSolvedDays,
+            l.planetConquestRate,
+            l.recentSolvedChapterId,
+            CASE WHEN c.title IS NOT NULL THEN c.title ELSE '' END,
+            CASE WHEN c.description IS NOT NULL THEN c.description ELSE '' END,
+            0.0
         )
         FROM Learning l
-        JOIN Chapter c ON c.id = l.recentSolvedChapterId
+        LEFT JOIN Chapter c ON c.id = l.recentSolvedChapterId
         WHERE l.userId = :userId
     """)
     Optional<LearningDetail> findLearningDetailByUserId(@Param("userId")long userId);
