@@ -43,5 +43,10 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     """)
     Optional<UserLevel> findUserLevelById(@Param("userId") long userId);
 
-    Optional<String> findNicknameById(Long id);
+    @Query("""
+        SELECT u.nickname
+        FROM User u
+        WHERE u.id = :userId
+    """)
+    Optional<String> findNicknameById(@Param("userId") long userId);
 }
