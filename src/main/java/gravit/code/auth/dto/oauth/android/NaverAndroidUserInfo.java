@@ -16,7 +16,7 @@ public class NaverAndroidUserInfo implements OAuthUserInfo {
     private static final String PROVIDER = "naver";
     private static final String CLAIM_SUB = "sub";
     private static final String CLAIM_EMAIL = "email";
-    private static final String CLAIM_NAME = "nickname";
+    private static final String CLAIM_NAME = "name";
 
     private final Map<String, Object> claims;
 
