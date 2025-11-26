@@ -1,6 +1,6 @@
-package gravit.code.note.controller;
+package gravit.code.csnote.controller;
 
-import gravit.code.note.controller.docs.NoteControllerDocs;
+import gravit.code.csnote.controller.docs.CSNoteControllerDocs;
 import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/notes")
+@RequestMapping("/api/v1/cs-notes")
 @Slf4j
-public class NoteController implements NoteControllerDocs {
+public class CSNoteController implements CSNoteControllerDocs {
 
     private static final String BASE_PATH = "static/notes";
 
