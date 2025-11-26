@@ -6,15 +6,26 @@ import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
 import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.problem.dto.response.ProblemDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
+
+    @Transactional(readOnly = true)
+    public List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(
+            long unitId,
+            long userId
+    ){
+        return bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
+    }
 
     @Transactional
     public void saveBookmark(

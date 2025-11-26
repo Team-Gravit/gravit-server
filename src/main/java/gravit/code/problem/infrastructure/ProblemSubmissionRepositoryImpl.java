@@ -34,4 +34,9 @@ public class ProblemSubmissionRepositoryImpl implements ProblemSubmissionReposit
     public List<ProblemSubmission> saveAll(List<ProblemSubmission> problemSubmissions){
         return problemSubmissionJpaRepository.saveAll(problemSubmissions);
     }
+
+    @Override
+    public void save(ProblemSubmission problemSubmission) {
+        problemSubmissionJpaRepository.save(problemSubmission);
+    }
 }

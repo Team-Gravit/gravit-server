@@ -13,4 +13,5 @@ public interface ProblemSubmissionRepository {
             long userId
     );
     List<ProblemSubmission> saveAll(List<ProblemSubmission> problemSubmissions);
+    void save(ProblemSubmission problemSubmission);
 }

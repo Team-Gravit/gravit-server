@@ -17,6 +17,8 @@ import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
 import gravit.code.unit.dto.response.UnitDetailResponse;
+import gravit.code.wrongAnsweredNote.dto.response.WrongAnsweredNoteDeleteRequest;
+import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,7 @@ public class LearningController implements LearningControllerDocs {
     private final LearningFacade learningFacade;
     private final ReportService reportService;
     private final BookmarkService bookmarkService;
+    private final WrongAnsweredNoteService wrongAnsweredNoteService;
 
     @GetMapping("/chapters")
     public ResponseEntity<List<ChapterDetailResponse>> getAllChapters(@AuthenticationPrincipal LoginUser loginUser) {
@@ -89,12 +92,21 @@ public class LearningController implements LearningControllerDocs {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getBookmarkedProblemsInUnit(loginUser.getId(), unitId));
     }
 
-    @GetMapping("/{unitId}/wrong-answered-problems")
+    @GetMapping("/{unitId}/wrong-answered-notes")
     public ResponseEntity<WrongAnsweredProblemsResponse> getWrongAnsweredProblemsInUnit(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("unitId") Long unitId
     ){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getWrongAnsweredProblemsInUnit(loginUser.getId(), unitId));
+    }
+
+    @DeleteMapping("/wrong-answered-notes")
+    public ResponseEntity<Void> deleteWrongAnsweredNote(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid@RequestBody WrongAnsweredNoteDeleteRequest request
+    ){
+        wrongAnsweredNoteService.deleteWrongAnsweredNote(loginUser.getId(), request.problemId());
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/bookmarks")
