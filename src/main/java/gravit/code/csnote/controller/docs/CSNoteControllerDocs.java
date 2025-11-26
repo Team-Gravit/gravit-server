@@ -1,4 +1,4 @@
-package gravit.code.note.controller.docs;
+package gravit.code.csnote.controller.docs;
 
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,8 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@Tag(name = "Note API", description = "개념 노트 관련 API")
-public interface NoteControllerDocs {
+@Tag(name = "CS-Note API", description = "개념 노트 관련 API")
+public interface CSNoteControllerDocs {
 
     @Operation(
             summary = "개념 노트 조회",
