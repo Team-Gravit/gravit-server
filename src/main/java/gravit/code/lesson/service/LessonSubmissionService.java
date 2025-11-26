@@ -51,6 +51,6 @@ public class LessonSubmissionService {
 
     @Transactional(readOnly = true)
     public boolean checkUserSubmitted(long lessonId, long userId) {
-        return lessonSubmissionRepository.existsByLessonIdAndUserId(lessonId, userId);
+        return !lessonSubmissionRepository.existsByLessonIdAndUserId(lessonId, userId);
     }
 }

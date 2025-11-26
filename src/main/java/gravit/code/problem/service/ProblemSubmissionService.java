@@ -5,6 +5,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.problem.domain.ProblemSubmission;
 import gravit.code.problem.domain.ProblemSubmissionRepository;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProblemSubmissionService {
 
+    private final WrongAnsweredNoteService wrongAnsweredNoteService;
+
     private final ProblemSubmissionRepository problemSubmissionRepository;
 
     @Transactional
@@ -24,11 +27,11 @@ public class ProblemSubmissionService {
             long userId,
             List<ProblemSubmissionRequest> requests,
             boolean isFirstTry
-    ){
+    ) {
         List<ProblemSubmission> problemSubmissions;
-        if(isFirstTry){
+        if (isFirstTry) {
             problemSubmissions = createProblemSubmissions(userId, requests);
-        }else{
+        } else {
             problemSubmissions = updateProblemSubmissions(userId, requests);
         }
 
@@ -39,22 +42,27 @@ public class ProblemSubmissionService {
     public void saveProblemSubmission(
             long userId,
             ProblemSubmissionRequest request
-    ){
+    ) {
         ProblemSubmission problemSubmission = problemSubmissionRepository.findByProblemIdAndUserId(request.problemId(), userId)
                 .orElseGet(() -> ProblemSubmission.create(request.isCorrect(), request.problemId(), userId));
 
         problemSubmission.updateIsCorrect(request.isCorrect());
+
+        if (!request.isCorrect())
+            wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmission.getProblemId(), userId);
+
+        problemSubmissionRepository.save(problemSubmission);
     }
 
     private List<ProblemSubmission> updateProblemSubmissions(
             long userId,
             List<ProblemSubmissionRequest> requests
-    ){
+    ) {
         Map<Long, Boolean> problemSubmissionMap = requests.stream()
-                        .collect(Collectors.toMap(
-                                ProblemSubmissionRequest::problemId,
-                                ProblemSubmissionRequest::isCorrect
-                        ));
+                .collect(Collectors.toMap(
+                        ProblemSubmissionRequest::problemId,
+                        ProblemSubmissionRequest::isCorrect
+                ));
 
         List<Long> problemIds = requests.stream()
                 .map(ProblemSubmissionRequest::problemId)
@@ -62,7 +70,7 @@ public class ProblemSubmissionService {
 
         List<ProblemSubmission> problemSubmissions = problemSubmissionRepository.findByIdInIdsAndUserId(problemIds, userId);
 
-        if(problemSubmissions.size() != requests.size())
+        if (problemSubmissions.size() != requests.size())
             throw new RestApiException(CustomErrorCode.PROBLEM_SUBMISSION_NOT_FOUND);
 
         problemSubmissions.forEach(problemSubmission -> {
@@ -70,6 +78,9 @@ public class ProblemSubmissionService {
             boolean isCorrect = problemSubmissionMap.get(problemId);
 
             problemSubmission.updateIsCorrect(isCorrect);
+
+            if (!isCorrect)
+                wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmission.getProblemId(), userId);
         });
 
         return problemSubmissions;
@@ -78,11 +89,13 @@ public class ProblemSubmissionService {
     private List<ProblemSubmission> createProblemSubmissions(
             long userId,
             List<ProblemSubmissionRequest> requests
-    ){
-
+    ) {
         return requests.stream()
-                .map(problemSubmissionRequest ->
-                        ProblemSubmission.create(problemSubmissionRequest.isCorrect(),problemSubmissionRequest.problemId(), userId)
-                ).toList();
+                .map(problemSubmissionRequest -> {
+                    if (!problemSubmissionRequest.isCorrect())
+                        wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmissionRequest.problemId(), userId);
+
+                    return ProblemSubmission.create(problemSubmissionRequest.isCorrect(), problemSubmissionRequest.problemId(), userId);
+                }).toList();
     }
 }

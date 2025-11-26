@@ -2,6 +2,7 @@ package gravit.code.problem.service;
 
 import gravit.code.answer.domain.AnswerRepository;
 import gravit.code.answer.dto.response.AnswerResponse;
+import gravit.code.bookmark.service.BookmarkService;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.option.domain.OptionRepository;
@@ -10,6 +11,7 @@ import gravit.code.problem.domain.ProblemRepository;
 import gravit.code.problem.domain.ProblemType;
 import gravit.code.problem.dto.response.ProblemDetail;
 import gravit.code.problem.dto.response.ProblemResponse;
+import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
+
+    private final WrongAnsweredNoteService wrongAnsweredNoteService;
+    private final BookmarkService bookmarkService;
 
     private final ProblemRepository problemRepository;
     private final AnswerRepository answerRepository;
@@ -39,7 +44,7 @@ public class ProblemService {
             long unitId,
             long userId
     ){
-        List<ProblemDetail> problemDetails = problemRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
+        List<ProblemDetail> problemDetails = bookmarkService.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
 
         return getAnswerOrOptionInProblems(problemDetails);
     }
@@ -49,7 +54,7 @@ public class ProblemService {
             long unitId,
             long userId
     ) {
-        List<ProblemDetail> problemDetails = problemRepository.findWrongAnsweredProblemsByUnitIdAndUserId(unitId, userId);
+        List<ProblemDetail> problemDetails = wrongAnsweredNoteService.findWrongAnsweredProblemDetailByUnitIdAndUserId(unitId, userId);
 
         return getAnswerOrOptionInProblems(problemDetails);
     }
@@ -72,6 +77,4 @@ public class ProblemService {
                     }
                 }).toList();
     }
-
-
 }
