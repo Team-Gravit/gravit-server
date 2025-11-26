@@ -7,10 +7,14 @@ import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
+import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResponse;
+import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.problem.dto.response.BookmarkedProblemResponse;
+import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
 import gravit.code.unit.dto.response.UnitDetailResponse;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
+import gravit.code.wrongAnsweredNote.dto.response.WrongAnsweredNoteDeleteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -75,6 +79,35 @@ public interface LearningControllerDocs {
     @GetMapping("/{chapterId}/units")
     ResponseEntity<UnitDetailResponse> getAllUnitsInChapter(@AuthenticationPrincipal LoginUser loginUser,
                                                             @PathVariable("chapterId") Long chapterId);
+
+    @Operation(summary = "레슨 목록 조회", description = "특정 유닛의 레슨 목록을 조회합니다.<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 레슨 목록 조회 성공"),
+            @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유닛 조회 실패",
+                                            value = "{\"error\" : \"UNIT_4041\", \"message\" : \"유닛 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 조회 실패",
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @GetMapping("/{unitId}/lessons")
+    ResponseEntity<LessonDetailResponse> getAllLessonsInUnit(@AuthenticationPrincipal LoginUser loginUser,
+                                                              @PathVariable("unitId") Long unitId);
 
     @Operation(summary = "레슨 문제 조회", description = "특정 레슨을 구성하는 문제 목록을 조회합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -162,9 +195,38 @@ public interface LearningControllerDocs {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PostMapping("/lesson/results")
+    @PostMapping("/lessons/results")
     ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(@AuthenticationPrincipal LoginUser loginUser,
                                                                       @Valid @RequestBody LearningSubmissionSaveRequest request);
+
+    @Operation(summary = "문제 결과 저장", description = "문제 풀이 결과를 저장합니다<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 문제 결과 저장 성공"),
+            @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "문제 조회 실패",
+                                            value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 조회 실패",
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @PostMapping("/problems/results")
+    ResponseEntity<Void> saveProblemSubmission(@AuthenticationPrincipal LoginUser loginUser,
+                                               @Valid @RequestBody ProblemSubmissionRequest request);
 
     @Operation(summary = "문제 신고 제출", description = "특정 문제에 대한 오류를 신고합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -223,6 +285,64 @@ public interface LearningControllerDocs {
     @GetMapping("/{unitId}/bookmarks")
     ResponseEntity<BookmarkedProblemResponse> getBookmarkedProblemsInUnit(@AuthenticationPrincipal LoginUser loginUser,
                                                                            @PathVariable("unitId") Long unitId);
+
+    @Operation(summary = "유닛 내 오답 문제 조회", description = "특정 유닛에서 사용자가 틀린 문제 목록을 조회합니다<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 오답 문제 목록 조회 성공"),
+            @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유닛 조회 실패",
+                                            value = "{\"error\" : \"UNIT_4041\", \"message\" : \"유닛 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "ANSWER_4041", description = "🚨 정답 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "정답 조회 실패",
+                                            value = "{\"error\" : \"ANSWER_4041\", \"message\" : \"정답 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "OPTION_4041", description = "🚨 옵션 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "옵션 조회 실패",
+                                            value = "{\"error\" : \"OPTION_4041\", \"message\" : \"옵션 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @GetMapping("/{unitId}/wrong-answered-notes")
+    ResponseEntity<WrongAnsweredProblemsResponse> getWrongAnsweredProblemsInUnit(@AuthenticationPrincipal LoginUser loginUser,
+                                                                                   @PathVariable("unitId") Long unitId);
+
+    @Operation(summary = "오답노트 삭제", description = "특정 문제의 오답노트를 삭제합니다<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "✅ 오답노트 삭제 성공"),
+            @ApiResponse(responseCode = "WRONG_ANSWERED_NOTE_4041", description = "🚨 오답노트 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "오답노트 조회 실패",
+                                            value = "{\"error\" : \"WRONG_ANSWERED_NOTE_4041\", \"message\" : \"오답노트 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @DeleteMapping("/wrong-answered-notes")
+    ResponseEntity<Void> deleteWrongAnsweredNote(@AuthenticationPrincipal LoginUser loginUser,
+                                                  @Valid @RequestBody WrongAnsweredNoteDeleteRequest request);
 
     @Operation(summary = "북마크 저장", description = "특정 문제를 북마크에 추가합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

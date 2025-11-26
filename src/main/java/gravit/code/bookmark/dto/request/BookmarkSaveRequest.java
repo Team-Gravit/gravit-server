@@ -10,6 +10,6 @@ public record BookmarkSaveRequest(
                 example = "1"
         )
         @NotNull(message = "문제 아이디가 비어있습니다.")
-        long problemId
+        Long problemId
 ) {
 }
