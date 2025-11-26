@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/users/restore").permitAll()
                 .requestMatchers("/api/v1/test/**").permitAll() // 테스트 할때만
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/notes/**").permitAll()
+                .requestMatchers("/api/v1/cs-notes/**").permitAll()
                 .anyRequest().authenticated());
 
         // JwtFilter 추가
