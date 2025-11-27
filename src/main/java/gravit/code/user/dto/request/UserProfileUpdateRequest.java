@@ -11,6 +11,6 @@ public record UserProfileUpdateRequest(
         @NotNull(message = "프로필 사진 번호는 필수입니다.")
         @Min(value = 1, message = "프로필 사진 번호는 1 이상이어야 합니다.")
         @Max(value = 10, message = "프로필 사진 번호는 10 이하여야 합니다.")
-        int profilePhotoNumber
+        Integer profilePhotoNumber
 ) {
 }
