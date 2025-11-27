@@ -34,7 +34,7 @@ public interface AdminReportControllerDocs {
             "🔐 <strong>관리자 권한 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 신고 상세 조회 성공"),
-            @ApiResponse(responseCode = "REPORT_4041", description = "🚨 신고 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 신고 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -52,7 +52,7 @@ public interface AdminReportControllerDocs {
             "🔐 <strong>관리자 권한 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 신고 상태 변경 성공"),
-            @ApiResponse(responseCode = "REPORT_4041", description = "🚨 신고 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 신고 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(

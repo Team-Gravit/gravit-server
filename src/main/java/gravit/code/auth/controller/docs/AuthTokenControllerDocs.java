@@ -21,7 +21,7 @@ public interface AuthTokenControllerDocs {
     @Operation(summary = "리프레시 토큰으로 엑세스 토큰 재발급", description = "유효한 리프레시 토큰으로 엑세스 토큰을 재발급합니다. <br> 만약 리프레시 토큰이 유효하지 않다면 재 로그인이 필요합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "엑세스 토큰 재발급 성공"),
-            @ApiResponse(responseCode = "JWT_4016", description = "만료된 리프레시 토큰입니다.",
+            @ApiResponse(responseCode = "401", description = "만료된 리프레시 토큰입니다.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -31,7 +31,7 @@ public interface AuthTokenControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "USER_4001", description = "존재하지 않는 유저입니다.",
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 유저입니다.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(

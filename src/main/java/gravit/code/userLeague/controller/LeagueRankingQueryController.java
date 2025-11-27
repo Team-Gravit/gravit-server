@@ -2,7 +2,7 @@ package gravit.code.userLeague.controller;
 
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.userLeague.controller.docs.UserLeagueRankControllerDocs;
+import gravit.code.userLeague.controller.docs.LeagueRankingQueryControllerDocs;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.userLeague.service.LeagueRankingQueryService;
 import gravit.code.global.dto.response.SliceResponse;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/ranking")
 @RequiredArgsConstructor
-public class LeagueRankingQueryController implements UserLeagueRankControllerDocs {
+public class LeagueRankingQueryController implements LeagueRankingQueryControllerDocs {
     private final LeagueRankingQueryService leagueRankingQueryService;
 
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")

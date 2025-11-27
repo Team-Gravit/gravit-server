@@ -22,7 +22,7 @@ public interface AdminOptionControllerDocs {
             "🔐 <strong>관리자 권한 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "✅ 옵션 생성 성공"),
-            @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -40,7 +40,7 @@ public interface AdminOptionControllerDocs {
             "🔐 <strong>관리자 권한 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "✅ 옵션 수정 성공"),
-            @ApiResponse(responseCode = "OPTION_4041", description = "🚨 옵션 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 옵션 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -58,7 +58,7 @@ public interface AdminOptionControllerDocs {
             "🔐 <strong>관리자 권한 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "✅ 옵션 삭제 성공"),
-            @ApiResponse(responseCode = "OPTION_4041", description = "🚨 옵션 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 옵션 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(

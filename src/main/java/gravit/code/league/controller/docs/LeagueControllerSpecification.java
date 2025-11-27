@@ -28,7 +28,7 @@ public interface LeagueControllerSpecification {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 리그 조회 성공"),
             @ApiResponse(
-                    responseCode = "LEAGUE_4041",
+                    responseCode = "404",
                     description = "🚨 리그 조회 실패(미존재)",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -42,7 +42,7 @@ public interface LeagueControllerSpecification {
                     )
             ),
             @ApiResponse(
-                    responseCode = "GLOBAL_5001",
+                    responseCode = "500",
                     description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -69,7 +69,7 @@ public interface LeagueControllerSpecification {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 리그 home 조회 성공"),
             @ApiResponse(
-                    responseCode = "SEASON_4041",
+                    responseCode = "404",
                     description = "🚨 시즌 조회 실패(미존재)",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -83,7 +83,7 @@ public interface LeagueControllerSpecification {
                     )
             ),
             @ApiResponse(
-                    responseCode = "GLOBAL_5001",
+                    responseCode = "500",
                     description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
