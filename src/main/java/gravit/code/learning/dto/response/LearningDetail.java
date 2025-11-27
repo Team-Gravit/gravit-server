@@ -1,11 +1,13 @@
 package gravit.code.learning.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record LearningDetail(
+
         @Schema(
                 description = "연속 학습일",
                 example = "10"
@@ -28,12 +30,14 @@ public record LearningDetail(
                 description = "챕터 이름",
                 example = "자료구조"
         )
+        @NotNull
         String recentSolvedChapterTitle,
 
         @Schema(
                 description = "챕터 설명",
                 example = "스택, 큐, 힙과 같은 자료구조에 대해 학습합니다."
         )
+        @NotNull
         String recentSolvedChapterDescription,
 
         @Schema(

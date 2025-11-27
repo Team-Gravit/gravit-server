@@ -2,6 +2,7 @@ package gravit.code.option.dto.response;
 
 import gravit.code.option.domain.Option;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -19,12 +20,14 @@ public record OptionResponse(
                 description = "내용",
                 example = "tail 포인터가 더 빠른 접근을 제공"
         )
+        @NotNull
         String content,
 
         @Schema(
                 description = "설명",
                 example = "실제로 tail 포인터를 활용했을 때 속도가 더 빠르다."
         )
+        @NotNull
         String explanation,
 
         @Schema(
