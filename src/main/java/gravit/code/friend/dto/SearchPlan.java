@@ -1,6 +1,7 @@
 package gravit.code.friend.dto;
 
 public record SearchPlan(
+
         String selectSql,
         String cleanText,
         boolean isQueryNeedContains,

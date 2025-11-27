@@ -1,15 +1,18 @@
 package gravit.code.mission.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record MissionDetail(
+
         @Schema(
                 description = "미션 이름",
                 example = "레슨 1개 완료하기"
         )
+        @NotNull
         String missionDescription,
 
         @Schema(

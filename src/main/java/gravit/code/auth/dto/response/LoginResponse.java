@@ -2,9 +2,13 @@ package gravit.code.auth.dto.response;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
+import jakarta.validation.constraints.NotNull;
 
 public record LoginResponse(
+
+        @NotNull
         String accessToken,
+        @NotNull
         String refreshToken,
         boolean isOnboarded
 ) {

@@ -1,6 +1,7 @@
 package gravit.code.unit.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -9,6 +10,7 @@ import lombok.Builder;
 public record UnitDetail(
 
         @Schema(description = "유닛 요약 정보")
+        @NotNull
         UnitSummary unitSummaries,
 
         @Schema(

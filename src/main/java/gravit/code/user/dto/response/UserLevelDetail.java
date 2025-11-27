@@ -7,6 +7,7 @@ import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record UserLevelDetail(
+
         @Schema(
                 description = "레벨",
                 example = "5"
