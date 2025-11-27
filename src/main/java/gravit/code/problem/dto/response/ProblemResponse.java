@@ -6,6 +6,7 @@ import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.problem.domain.Problem;
 import gravit.code.problem.domain.ProblemType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -25,18 +26,21 @@ public record ProblemResponse(
                 description = "문제 타입",
                 example = "SUBJECTIVE / OBJECTIVE"
         )
+        @NotNull
         ProblemType problemType,
 
         @Schema(
                 description = "발문",
                 example = "빈칸에 들어갈 단어를 고르시오."
         )
+        @NotNull
         String instruction,
 
         @Schema(
                 description = "본문",
                 example = "큐에 2, 9, 7, 4를 순차적으로 넣었을 때, 원소 삭제시 반환되는 값은?"
         )
+        @NotNull
         String content,
 
         @Schema(

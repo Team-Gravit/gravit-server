@@ -1,11 +1,13 @@
 package gravit.code.chapter.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record ChapterSummary(
+
         @Schema(
                 description = "챕터 아이디",
                 example = "1"
@@ -16,11 +18,14 @@ public record ChapterSummary(
                 description = "챕터명",
                 example = "자료구조"
         )
+        @NotNull
         String title,
 
         @Schema(
                 description = "챕터 설명",
                 example = "큐, 스택, 힙과 같은 자료구조에 대해 학습합니다."
         )
+        @NotNull
         String description
-) { }
+) {
+}

@@ -1,6 +1,7 @@
 package gravit.code.chapter.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -9,6 +10,7 @@ import lombok.Builder;
 public record ChapterDetailResponse(
 
         @Schema(description = "챕터 요약 정보")
+        @NotNull
         ChapterSummary chapterSummary,
 
         @Schema(

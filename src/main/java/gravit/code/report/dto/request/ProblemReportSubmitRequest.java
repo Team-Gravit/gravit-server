@@ -21,6 +21,7 @@ public record ProblemReportSubmitRequest(
                 description = "신고 사유",
                 example = "문제에 오타가 있어요."
         )
+        @NotNull
         String content,
 
         @Schema(

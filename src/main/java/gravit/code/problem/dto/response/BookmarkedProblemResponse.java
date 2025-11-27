@@ -2,6 +2,7 @@ package gravit.code.problem.dto.response;
 
 import gravit.code.unit.dto.response.UnitSummary;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -9,10 +10,13 @@ import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record BookmarkedProblemResponse(
+
         @Schema(description = "유닛 요약 정보")
+        @NotNull
         UnitSummary unitSummary,
 
         @Schema(description = "문제 목록")
+        @NotNull
         List<ProblemResponse> problems,
 
         @Schema(

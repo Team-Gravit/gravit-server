@@ -1,6 +1,7 @@
 package gravit.code.lesson.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "레슨 요약 정보")
 public record LessonSummary(
@@ -14,6 +15,7 @@ public record LessonSummary(
                 description = "레슨 제목",
                 example = "스택 1/3"
         )
+        @NotNull
         String title,
 
         @Schema(

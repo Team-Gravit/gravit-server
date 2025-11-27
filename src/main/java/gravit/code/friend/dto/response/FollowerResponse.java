@@ -1,8 +1,14 @@
 package gravit.code.friend.dto.response;
 
+import jakarta.validation.constraints.NotNull;
+
 public record FollowerResponse(
-        Long id,
+
+        long id,
+        @NotNull
         String nickname,
         int profileImgNumber,
+        @NotNull
         String handle
-) {}
+) {
+}

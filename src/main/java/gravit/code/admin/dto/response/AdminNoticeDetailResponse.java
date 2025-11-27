@@ -1,21 +1,29 @@
 package gravit.code.admin.dto.response;
 
 import gravit.code.notice.domain.Notice;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 
 @Builder
 public record AdminNoticeDetailResponse(
+
         long noticeId,
+        @NotNull
         String title,
+        @NotNull
         String contents,
+        @NotNull
         String authorName,
+        @NotNull
         LocalDateTime createdAt,
+        @NotNull
         LocalDateTime updatedAt,
-        LocalDateTime publishedAt,
+        @NotNull
         String noticeType,
-        boolean pinned
+        boolean pinned,
+        LocalDateTime publishedAt
 ) {
     public static AdminNoticeDetailResponse from(Notice notice) {
         return AdminNoticeDetailResponse.builder()
