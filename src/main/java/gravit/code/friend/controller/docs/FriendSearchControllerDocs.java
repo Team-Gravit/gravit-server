@@ -64,7 +64,7 @@ public interface FriendSearchControllerDocs {
                     )
             ),
             @ApiResponse(
-                    responseCode = "GLOBAL_5001",
+                    responseCode = "500",
                     description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,

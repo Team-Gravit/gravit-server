@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "My League Profile API", description = "내 리그/랭킹 요약 조회 API")
 public interface MyLeagueProfileQueryControllerDocs {
@@ -32,7 +33,7 @@ public interface MyLeagueProfileQueryControllerDocs {
                                     schema = @Schema(implementation = MyLeagueRankWithProfileResponse.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+                    @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     examples = @ExampleObject(
                                             name = "유저 조회 실패",
@@ -43,6 +44,7 @@ public interface MyLeagueProfileQueryControllerDocs {
                     @ApiResponse(responseCode = "500", description = "서버 내부 에러")
             }
     )
+    @GetMapping
     ResponseEntity<MyLeagueRankWithProfileResponse> getMyLeagueWithProfile(
             @Parameter(hidden = true) @AuthenticationPrincipal LoginUser loginUser
     );

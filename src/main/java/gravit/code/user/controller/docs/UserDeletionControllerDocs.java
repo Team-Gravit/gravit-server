@@ -29,7 +29,7 @@ public interface UserDeletionControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "202", description = "✅ 삭제 요청 접수(메일 발송 시도)"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(
                                     name = "유저 조회 실패",
@@ -37,7 +37,7 @@ public interface UserDeletionControllerDocs {
                             ),
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "MAIL_4002", description = "🚨 메일 발송 실패",
+            @ApiResponse(responseCode = "400", description = "🚨 메일 발송 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(
                                     name = "메일 발송 실패",
@@ -45,7 +45,7 @@ public interface UserDeletionControllerDocs {
                             ),
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(
                                     name = "예기치 못한 예외 발생",
@@ -68,7 +68,7 @@ public interface UserDeletionControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 계정 삭제 확정 성공"),
-            @ApiResponse(responseCode = "MAIL_4001", description = "🚨 인증 코드가 유효하지 않거나 만료됨",
+            @ApiResponse(responseCode = "400", description = "🚨 인증 코드가 유효하지 않거나 만료됨",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(
                                     name = "인증 코드 무효/만료",
@@ -76,7 +76,7 @@ public interface UserDeletionControllerDocs {
                             ),
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패(코드에 해당하는 유저가 존재하지 않는 경우)",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패(코드에 해당하는 유저가 존재하지 않는 경우)",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(
                                     name = "유저 조회 실패",
@@ -84,7 +84,7 @@ public interface UserDeletionControllerDocs {
                             ),
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(
                                     name = "예기치 못한 예외 발생",

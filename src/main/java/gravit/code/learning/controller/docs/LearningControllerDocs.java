@@ -37,7 +37,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 챕터 목록 조회 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -55,7 +55,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 유닛 목록 조회 성공"),
-            @ApiResponse(responseCode = "CHAPTER_4041", description = "🚨 챕터 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 챕터 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -65,7 +65,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -84,7 +84,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 레슨 목록 조회 성공"),
-            @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유닛 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -94,7 +94,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -113,7 +113,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 레슨 문제 목록 조회 성공"),
-            @ApiResponse(responseCode = "CHAPTER_4041", description = "🚨 챕터 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 챕터 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -123,7 +123,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "LESSON_4041", description = "🚨 레슨 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 레슨 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -133,7 +133,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -143,7 +143,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "OPTION_4041", description = "🚨 옵션 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 옵션 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -164,7 +164,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 학습 결과 저장 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -174,7 +174,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유닛 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -184,7 +184,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "LESSON_4041", description = "🚨 레슨 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 레슨 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -203,7 +203,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 문제 결과 저장 성공"),
-            @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -213,7 +213,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -232,7 +232,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 문제 신고 제출 성공"),
-            @ApiResponse(responseCode = "PROBLEM_4041", description = "🚨 문제 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -251,7 +251,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 북마크된 문제 목록 조회 성공"),
-            @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유닛 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -261,7 +261,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "ANSWER_4041", description = "🚨 정답 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 정답 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -271,7 +271,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "OPTION_4041", description = "🚨 옵션 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 옵션 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -290,7 +290,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 오답 문제 목록 조회 성공"),
-            @ApiResponse(responseCode = "UNIT_4041", description = "🚨 유닛 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유닛 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -300,7 +300,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "ANSWER_4041", description = "🚨 정답 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 정답 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -310,7 +310,7 @@ public interface LearningControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "OPTION_4041", description = "🚨 옵션 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 옵션 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -329,7 +329,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "✅ 오답노트 삭제 성공"),
-            @ApiResponse(responseCode = "WRONG_ANSWERED_NOTE_4041", description = "🚨 오답노트 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 오답노트 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -348,7 +348,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 북마크 저장 성공"),
-            @ApiResponse(responseCode = "BOOKMARK_4091", description = "🚨 이미 북마크한 문제",
+            @ApiResponse(responseCode = "409", description = "🚨 이미 북마크한 문제",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -367,7 +367,7 @@ public interface LearningControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "✅ 북마크 삭제 성공"),
-            @ApiResponse(responseCode = "BOOKMARK_4041", description = "🚨 북마크 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 북마크 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(

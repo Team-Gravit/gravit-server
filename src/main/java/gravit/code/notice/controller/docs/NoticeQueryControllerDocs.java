@@ -73,7 +73,7 @@ public interface NoticeQueryControllerDocs {
                             schema = @Schema(implementation = NoticeDetailResponse.class)))
     ,
             @ApiResponse(
-                    responseCode = "NOTICE_4041",
+                    responseCode = "404",
                     description = "🚨 공지 조회 실패(미존재)",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,

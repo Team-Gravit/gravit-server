@@ -23,7 +23,7 @@ public interface OAuthControllerDocs {
     @Operation(summary = "로그인 URL 생성", description = "OAuth 정보를 바탕으로 로그인 URL을 생성합니다")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 로그인 URL 생성 성공"),
-            @ApiResponse(responseCode = "AUTH_4001", description = "🚨 유효하지 않은 OAuth 제공자",
+            @ApiResponse(responseCode = "400", description = "🚨 유효하지 않은 OAuth 제공자",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -33,7 +33,7 @@ public interface OAuthControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -51,7 +51,7 @@ public interface OAuthControllerDocs {
     @Operation(summary = "OAuth 회원가입/로그인 처리", description = "AuthCode를 기반으로 사용자 정보를 조회하고 회원가입 및 로그인 처리를 합니다")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ OAuth 회원가입/로그인 성공"),
-            @ApiResponse(responseCode = "AUTH_4001", description = "🚨 유효하지 않은 OAuth 제공자",
+            @ApiResponse(responseCode = "400", description = "🚨 유효하지 않은 OAuth 제공자",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -61,7 +61,7 @@ public interface OAuthControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "AUTH_4002", description = "🚨 유효하지 않은 AuthCode",
+            @ApiResponse(responseCode = "400", description = "🚨 유효하지 않은 AuthCode",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -71,7 +71,7 @@ public interface OAuthControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(

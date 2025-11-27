@@ -30,7 +30,7 @@ public interface FriendControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로잉 성공"),
-            @ApiResponse(responseCode = "FRIEND_4001", description = "🚨 자기 자신 팔로잉 불가",
+            @ApiResponse(responseCode = "400", description = "🚨 자기 자신 팔로잉 불가",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -40,7 +40,7 @@ public interface FriendControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "FRIEND_4041", description = "🚨 팔로우 대상 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 팔로우 대상 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -50,7 +50,7 @@ public interface FriendControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "FRIEND_4091", description = "🚨 이미 팔로잉 중인 유저",
+            @ApiResponse(responseCode = "409", description = "🚨 이미 팔로잉 중인 유저",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -60,7 +60,7 @@ public interface FriendControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -82,7 +82,7 @@ public interface FriendControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 언팔로잉 성공"),
-            @ApiResponse(responseCode = "FRIEND_4041", description = "🚨 팔로우 내역 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 팔로우 내역 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -92,7 +92,7 @@ public interface FriendControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -113,7 +113,7 @@ public interface FriendControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로잉 거절 성공"),
-            @ApiResponse(responseCode = "FRIEND_4041", description = "🚨 팔로우 내역 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 팔로우 내역 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -123,7 +123,7 @@ public interface FriendControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -148,7 +148,7 @@ public interface FriendControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공"),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -173,7 +173,7 @@ public interface FriendControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로잉 목록 조회 성공"),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -219,7 +219,7 @@ public interface FriendControllerDocs {
                     )
             ),
             @ApiResponse(
-                    responseCode = "USER_4041",
+                    responseCode = "404",
                     description = "🚨 존재하지 않는 유저입니다",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -238,7 +238,7 @@ public interface FriendControllerDocs {
                     )
             ),
             @ApiResponse(
-                    responseCode = "GLOBAL_5001",
+                    responseCode = "500",
                     description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,

@@ -13,9 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "League Rank API", description = "리그/사용자 기준 랭킹 조회 API")
-public interface UserLeagueRankControllerDocs {
+public interface LeagueRankingQueryControllerDocs {
 
     @Operation(
             summary = "티어(리그)별 유저 랭킹 조회 (페이지)",
@@ -54,9 +56,10 @@ public interface UserLeagueRankControllerDocs {
                     @ApiResponse(responseCode = "500", description = "서버 내부 에러")
             }
     )
+    @GetMapping("/leagues/{leagueId}/page/{pageNum}")
     ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRanking(
-            Long leagueId,
-            int pageNum
+            @PathVariable("leagueId") Long leagueId,
+            @PathVariable("pageNum") int pageNum
     );
 
     @Operation(
@@ -90,9 +93,9 @@ public interface UserLeagueRankControllerDocs {
                     @ApiResponse(responseCode = "500", description = "서버 내부 에러")
             }
     )
+    @GetMapping("/user-leagues/page/{pageNum}")
     ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRankingByUser(
-            int pageNum,
+            @PathVariable("pageNum") int pageNum,
             @AuthenticationPrincipal LoginUser loginUser
     );
-
 }

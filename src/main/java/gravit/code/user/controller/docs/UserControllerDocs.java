@@ -26,7 +26,7 @@ public interface UserControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 유저 정보 조회 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -36,7 +36,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -54,7 +54,7 @@ public interface UserControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 온보딩 완료"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -64,7 +64,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "USER_4001", description = "🚨 이미 온보딩 완료된 유저",
+            @ApiResponse(responseCode = "400", description = "🚨 이미 온보딩 완료된 유저",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -74,7 +74,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_4001", description = "🚨 유효성 검사 실패",
+            @ApiResponse(responseCode = "400", description = "🚨 유효성 검사 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -84,7 +84,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -103,7 +103,7 @@ public interface UserControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 프로필 수정 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -113,7 +113,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_4001", description = "🚨 유효성 검사 실패",
+            @ApiResponse(responseCode = "400", description = "🚨 유효성 검사 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -123,7 +123,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -143,7 +143,7 @@ public interface UserControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 마이페이지 조회 성공"),
-            @ApiResponse(responseCode = "USER_PAGE_4041", description = "🚨 유저 페이지 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 페이지 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -153,7 +153,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -178,7 +178,7 @@ public interface UserControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 복구 완료(또는 이미 활성 상태)"),
             @ApiResponse(
-                    responseCode = "USER_4041",
+                    responseCode = "404",
                     description = "🚨 유저 조회 실패",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -192,7 +192,7 @@ public interface UserControllerDocs {
                     )
             ),
             @ApiResponse(
-                    responseCode = "GLOBAL_5001",
+                    responseCode = "500",
                     description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -214,7 +214,7 @@ public interface UserControllerDocs {
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 메인 페이지 조회 성공"),
-            @ApiResponse(responseCode = "USER_4041", description = "🚨 유저 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -224,7 +224,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "U_L_4041", description = "🚨 유저 리그 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 리그 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -234,7 +234,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "MISSION_4041", description = "🚨 미션 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 미션 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -244,7 +244,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "LEARNING_4041", description = "🚨 학습 정보 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 학습 정보 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -254,7 +254,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "GLOBAL_5001", description = "🚨 예기치 못한 예외 발생",
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
