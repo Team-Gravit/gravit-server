@@ -1,7 +1,7 @@
 package gravit.code.friend.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.friend.dto.FollowCountsResponse;
+import gravit.code.friend.dto.response.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;

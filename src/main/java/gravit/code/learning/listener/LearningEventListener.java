@@ -1,7 +1,7 @@
 package gravit.code.learning.listener;
 
-import gravit.code.global.event.badge.StreakUpdatedEvent;
-import gravit.code.learning.dto.common.StreakDto;
+import gravit.code.global.event.badge.ConsecutiveSolvedEvent;
+import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.service.LearningService;
@@ -26,11 +26,10 @@ public class LearningEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void updateLearning(UpdateLearningEvent event){
         try{
-            StreakDto streakDto = learningService.updateLearningStatus(event.userId(), event.chapterId());
+            ConsecutiveSolvedDto consecutiveSolvedDto = learningService.updateLearningStatus(event.userId(), event.chapterId());
 
-            if(streakDto.before() != streakDto.after())
-                publisher.publishEvent(new StreakUpdatedEvent(event.userId(), streakDto.after()));
-
+            if(consecutiveSolvedDto.before() != consecutiveSolvedDto.after())
+                publisher.publishEvent(new ConsecutiveSolvedEvent(event.userId(), consecutiveSolvedDto.after()));
         }catch (Exception e){
             log.error("Exception occurred while updating Learning with {}", e.getMessage());
         }

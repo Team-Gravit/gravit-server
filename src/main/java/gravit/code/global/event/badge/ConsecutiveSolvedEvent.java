@@ -4,12 +4,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
-public record StreakUpdatedEvent(
+public record ConsecutiveSolvedEvent(
         long userId,
         int streakCount
 ) {
-    public static StreakUpdatedEvent of(long userId, int streakCount) {
-        return StreakUpdatedEvent.builder()
+    public static ConsecutiveSolvedEvent of(long userId, int streakCount) {
+        return ConsecutiveSolvedEvent.builder()
                 .userId(userId)
                 .streakCount(streakCount)
                 .build();

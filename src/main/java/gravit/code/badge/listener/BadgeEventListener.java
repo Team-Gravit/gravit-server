@@ -5,10 +5,10 @@ import gravit.code.badge.dto.PlanetCompletionDto;
 import gravit.code.badge.dto.QualifiedSolveCountDto;
 import gravit.code.badge.service.BadgeGrantService;
 import gravit.code.badge.service.ProjectionService;
-import gravit.code.global.event.badge.StreakUpdatedEvent;
-import gravit.code.global.event.badge.QualifiedSolvedEvent;
+import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.badge.ConsecutiveSolvedEvent;
 import gravit.code.global.event.badge.MissionCompletedEvent;
-import gravit.code.global.event.badge.PlanetCompletedEvent;
+import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -26,11 +26,11 @@ public class BadgeEventListener {
 
     @Async("badgeAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handlePlanetCompleted(PlanetCompletedEvent event){
+    public void handlePlanetCompleted(LessonCompletedEvent event){
         try{
             log.info("handlePlanetCompleted 이벤트 리슨");
             PlanetCompletionDto dto = projectionService.recordPlanetCompletion(
-                    event.userId(), event.chapterId(), event.beforeCount(),event.afterCount(), event.totalUnitCount()
+                    event.userId(), event.chapterId()
             );
 
             if(dto != null){
@@ -79,7 +79,7 @@ public class BadgeEventListener {
 
     @Async("badgeAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleStreak(StreakUpdatedEvent event){
+    public void handleConsecutiveSolvedDays(ConsecutiveSolvedEvent event){
         try{
             badgeGrantService.evaluateStreak(
                     event.userId(), event.streakCount()

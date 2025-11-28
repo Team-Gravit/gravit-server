@@ -1,9 +1,10 @@
 package gravit.code.test.badge;
 
+import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.badge.ConsecutiveSolvedEvent;
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.event.badge.PlanetCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
-import gravit.code.global.event.badge.StreakUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class TestEventController {
     private final TransactionTemplate tx;
 
     @PostMapping("/planet-completed")
-    public ResponseEntity<Void> planetCompleted(@RequestBody PlanetCompletedEvent event){
+    public ResponseEntity<Void> planetCompleted(@RequestBody LessonCompletedEvent event){
         tx.executeWithoutResult(s-> publisher.publishEvent(event));
         return ResponseEntity.ok().build();
     }
@@ -39,7 +40,7 @@ public class TestEventController {
     }
 
     @PostMapping("/streak")
-    public ResponseEntity<Void> streak(@RequestBody StreakUpdatedEvent event) {
+    public ResponseEntity<Void> streak(@RequestBody ConsecutiveSolvedEvent event) {
         tx.executeWithoutResult(s -> publisher.publishEvent(event));
         return ResponseEntity.ok().build();
     }
