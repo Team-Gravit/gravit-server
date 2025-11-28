@@ -3,7 +3,7 @@
 //import gravit.code.global.exception.domain.CustomErrorCode;
 //import gravit.code.global.exception.domain.RestApiException;
 //import gravit.code.learning.domain.*;
-//import gravit.code.learning.dto.common.StreakDto;
+//import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
 //import gravit.code.learning.fixture.ChapterFixture;
 //import gravit.code.learning.fixture.LearningFixture;
 //import gravit.code.learning.fixture.LessonFixture;
@@ -129,7 +129,7 @@
 //            //given
 //
 //            //when
-//            StreakDto streakDto =  learningService.updateLearningStatus(user1WithLearning.getId(), chapter.getId());
+//            ConsecutiveSolvedDto streakDto =  learningService.updateLearningStatus(user1WithLearning.getId(), chapter.getId());
 //
 //            //then
 //            assertThat(learningRepository.findByUserId(user1WithLearning.getId())).satisfies( l ->{

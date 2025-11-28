@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 @Schema(description = "연속 학습 일수 정보")
-public record StreakDto(
+public record ConsecutiveSolvedDto(
         @Schema(
                 description = "변경 전 연속 학습 일수",
                 example = "5"
@@ -19,8 +19,8 @@ public record StreakDto(
         )
         int after
 ) {
-    public static StreakDto of(int before, int after) {
-        return StreakDto.builder()
+    public static ConsecutiveSolvedDto of(int before, int after) {
+        return ConsecutiveSolvedDto.builder()
                 .before(before)
                 .after(after)
                 .build();

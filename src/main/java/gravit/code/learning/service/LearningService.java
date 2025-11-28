@@ -4,8 +4,8 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.domain.LearningRepository;
+import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
 import gravit.code.lesson.domain.LessonRepository;
-import gravit.code.learning.dto.common.StreakDto;
 import gravit.code.lesson.service.LessonService;
 import gravit.code.lesson.domain.LessonSubmissionRepository;
 import gravit.code.learning.dto.response.LearningDetail;
@@ -51,7 +51,7 @@ public class LearningService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public StreakDto updateLearningStatus(
+    public ConsecutiveSolvedDto updateLearningStatus(
             long userId,
             long chapterId
     ){
@@ -65,11 +65,11 @@ public class LearningService {
                 Math.round(((double) solvedLesson / totalLesson) * 100)
         );
 
-        StreakDto streakDto = learning.updateLearningStatus(chapterId, planetConquestRate);
+        ConsecutiveSolvedDto consecutiveSolvedDto = learning.updateLearningStatus(chapterId, planetConquestRate);
 
         learningRepository.save(learning);
 
-        return streakDto;
+        return consecutiveSolvedDto;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

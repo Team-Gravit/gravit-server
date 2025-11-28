@@ -10,6 +10,7 @@ import gravit.code.badge.dto.QualifiedSolveCountDto;
 import gravit.code.badge.infrastructure.user.UserMissionStatRepository;
 import gravit.code.badge.infrastructure.user.UserPlanetCompletionRepository;
 import gravit.code.badge.infrastructure.user.UserQualifiedSolveStatRepository;
+import gravit.code.lesson.service.LessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,24 +25,24 @@ public class ProjectionService {
     private final UserPlanetCompletionRepository planetCompletionRepository;
     private final UserMissionStatRepository userMissionStatRepository;
     private final UserQualifiedSolveStatRepository userQualifiedSolveStatRepository;
+    private final LessonService lessonService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PlanetCompletionDto recordPlanetCompletion(
             long userId,
-            long chapterId,
-            long beforeCount,
-            long afterCount,
-            long totalCounts
+            long chapterId
     ) {
         Planet planet = Planet.getPlanetByChapterId(chapterId);
 
         log.info("ProjectionService 호출");
-        log.info("beforeCount = {}, afterCount = {}, totalCounts = {}", beforeCount, afterCount, totalCounts);
-        if(beforeCount == afterCount || afterCount != totalCounts){
+
+        if(planetCompletionRepository.existsByUserIdAndPlanet(userId, planet)) {
             return null;
         }
 
-        if(planetCompletionRepository.existsByUserIdAndPlanet(userId, planet)) {
+        double planetProgressRate = lessonService.getProgressRateByChapterId(chapterId, userId);
+
+        if(planetProgressRate != 1) {
             return null;
         }
 
