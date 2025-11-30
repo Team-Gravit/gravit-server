@@ -55,6 +55,18 @@ public class UserCheatCreateController {
         return ResponseEntity.ok().body(LoginResponse.of(accessToken,refreshToken,true));
     }
 
+    @PostMapping("/users/login")
+    public ResponseEntity<LoginResponse> login(
+            @RequestParam Long userId
+    ){
+        User user = userRepository.findById(userId).get();
+
+        AccessToken accessToken = authTokenProvider.generateAccessToken(user);
+        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
+
+        return ResponseEntity.ok().body(LoginResponse.of(accessToken,refreshToken,true));
+    }
+
     @PostMapping("/tokens/custom")
     public ResponseEntity<LoginResponse> generateCustomToken(
             @RequestParam String accessToken,

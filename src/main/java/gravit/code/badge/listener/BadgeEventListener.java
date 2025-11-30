@@ -11,6 +11,7 @@ import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -78,9 +79,10 @@ public class BadgeEventListener {
     }
 
     @Async("badgeAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @EventListener
     public void handleConsecutiveSolvedDays(ConsecutiveSolvedEvent event){
         try{
+            log.info("handleConsecutiveSolvedDays 실행");
             badgeGrantService.evaluateStreak(
                     event.userId(), event.streakCount()
             );
