@@ -16,7 +16,6 @@ public class OnboardingListener {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void createUserLeague(OnboardingUserLeagueEvent event) {
-        log.info("createUserLeague : 유저 리그를 생성하는 이벤트를 Listen");
         userLeagueService.initUserLeague(event.userId());
     }
 }
