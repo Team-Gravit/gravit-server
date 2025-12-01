@@ -19,4 +19,8 @@ public interface WrongAnsweredProblemRepository {
             long problemId,
             long userId
     );
+    int countByUnitIdAndUserId(
+            long unitId,
+            long userId
+    );
 }

@@ -39,4 +39,17 @@ public interface WrongAnsweredProblemJpaRepository extends JpaRepository<WrongAn
             long problemId,
             long userId
     );
+
+    @Query("""
+        SELECT COUNT(wan)
+        FROM WrongAnsweredNote wan
+        JOIN Problem p ON p.id = wan.problemId
+        JOIN Lesson l ON l.id = p.lessonId
+        JOIN Unit u ON u.id = l.unitId
+        WHERE u.id = :unitId AND wan.userId = :userId
+    """)
+    int countByUnitIdAndUserId(
+            @Param("unitId")long unitId,
+            @Param("userId")long userId
+    );
 }

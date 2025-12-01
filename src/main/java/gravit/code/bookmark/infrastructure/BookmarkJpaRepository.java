@@ -43,4 +43,17 @@ public interface BookmarkJpaRepository extends JpaRepository<Bookmark, Long> {
             @Param("unitId")long unitId,
             @Param("userId")long userId
     );
+
+    @Query("""
+        SELECT COUNT(b)
+        FROM Bookmark b
+        JOIN Problem p ON p.id = b.problemId
+        JOIN Lesson l ON l.id = p.lessonId
+        JOIN Unit u ON u.id = l.unitId
+        WHERE u.id = :unitId AND b.userId = :userId
+    """)
+    int countByUnitIdAndUserId(
+            @Param("unitId")long unitId,
+            @Param("userId")long userId
+    );
 }

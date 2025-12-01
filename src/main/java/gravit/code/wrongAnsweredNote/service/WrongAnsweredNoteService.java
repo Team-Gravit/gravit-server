@@ -41,4 +41,12 @@ public class WrongAnsweredNoteService {
     ) {
         wrongAnsweredProblemRepository.deleteByProblemIdAndUserId(problemId, userId);
     }
+
+    @Transactional(readOnly = true)
+    public boolean checkWrongAnsweredNoteAccessibleInUnit(
+            long unitId,
+            long userId
+    ) {
+        return wrongAnsweredProblemRepository.countByUnitIdAndUserId(unitId, userId) != 0;
+    }
 }

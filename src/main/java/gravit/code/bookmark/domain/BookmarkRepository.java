@@ -18,4 +18,8 @@ public interface BookmarkRepository {
             long problemId,
             long userId
     );
+    int countByUnitIdAndUserId(
+            long unitId,
+            long userId
+    );
 }

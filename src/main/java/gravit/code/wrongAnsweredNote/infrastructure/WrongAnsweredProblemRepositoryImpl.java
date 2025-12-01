@@ -43,4 +43,12 @@ public class WrongAnsweredProblemRepositoryImpl implements WrongAnsweredProblemR
     ) {
         wrongAnsweredProblemJpaRepository.deleteByProblemIdAndUserId(problemId, userId);
     }
+
+    @Override
+    public int countByUnitIdAndUserId(
+            long unitId,
+            long userId
+    ) {
+        return wrongAnsweredProblemJpaRepository.countByUnitIdAndUserId(unitId, userId);
+    }
 }

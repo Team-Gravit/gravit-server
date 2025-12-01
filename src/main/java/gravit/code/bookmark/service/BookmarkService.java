@@ -53,4 +53,9 @@ public class BookmarkService {
 
         bookmarkRepository.deleteByProblemIdAndUserId(request.problemId(), userId);
     }
+
+    @Transactional(readOnly = true)
+    public boolean checkBookmarkAccessibleInUnit(long unitId, long userId) {
+        return bookmarkRepository.countByUnitIdAndUserId(unitId, userId) != 0;
+    }
 }

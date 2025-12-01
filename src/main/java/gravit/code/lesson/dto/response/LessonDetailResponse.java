@@ -17,6 +17,20 @@ public record LessonDetailResponse(
         ChapterSummary chapterSummary,
 
         @Schema(
+                description = "북마크 풀이 가능 여부",
+                example = "true"
+        )
+        @NotNull
+        boolean bookmarkAccessible,
+
+        @Schema(
+                description = "오답노트 풀이 가능 여부",
+                example = "true"
+        )
+        @NotNull
+        boolean wrongAnsweredNoteAccessible,
+
+        @Schema(
                 description = "유닛 아이디",
                 example = "1"
         )
@@ -28,11 +42,15 @@ public record LessonDetailResponse(
 ) {
     public static LessonDetailResponse create(
             ChapterSummary chapterSummary,
+            boolean bookmarkAccessible,
+            boolean wrongAnsweredNoteAccessible,
             long unitId,
             List<LessonSummary> lessonSummaries
     ){
         return LessonDetailResponse.builder()
                 .chapterSummary(chapterSummary)
+                .bookmarkAccessible(bookmarkAccessible)
+                .wrongAnsweredNoteAccessible(wrongAnsweredNoteAccessible)
                 .unitId(unitId)
                 .lessonSummaries(lessonSummaries)
                 .build();

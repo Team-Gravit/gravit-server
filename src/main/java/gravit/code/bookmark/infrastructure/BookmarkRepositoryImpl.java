@@ -36,6 +36,14 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
     }
 
     @Override
+    public int countByUnitIdAndUserId(
+            long unitId,
+            long userId
+    ) {
+        return bookmarkJpaRepository.countByUnitIdAndUserId(unitId, userId);
+    }
+
+    @Override
     public void deleteByProblemIdAndUserId(
             long problemId,
             long userId
