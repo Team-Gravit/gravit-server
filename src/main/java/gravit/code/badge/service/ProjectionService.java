@@ -10,7 +10,7 @@ import gravit.code.badge.dto.QualifiedSolveCountDto;
 import gravit.code.badge.infrastructure.user.UserMissionStatRepository;
 import gravit.code.badge.infrastructure.user.UserPlanetCompletionRepository;
 import gravit.code.badge.infrastructure.user.UserQualifiedSolveStatRepository;
-import gravit.code.lesson.service.LessonService;
+import gravit.code.learning.service.LearningProgressRateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class ProjectionService {
     private final UserPlanetCompletionRepository planetCompletionRepository;
     private final UserMissionStatRepository userMissionStatRepository;
     private final UserQualifiedSolveStatRepository userQualifiedSolveStatRepository;
-    private final LessonService lessonService;
+    private final LearningProgressRateService learningProgressRateService;
 
     @Transactional
     public PlanetCompletionDto recordPlanetCompletion(
@@ -39,7 +39,7 @@ public class ProjectionService {
             return null;
         }
 
-        double planetProgressRate = lessonService.getProgressRateByChapterId(chapterId, userId);
+        double planetProgressRate = learningProgressRateService.getProgressRateByChapterId(chapterId, userId);
         log.info("planetProgressRate: {}", planetProgressRate);
 
         if(planetProgressRate != 1) {

@@ -6,9 +6,6 @@ import gravit.code.learning.domain.Learning;
 import gravit.code.learning.domain.LearningRepository;
 import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.response.LearningDetail;
-import gravit.code.lesson.domain.LessonRepository;
-import gravit.code.lesson.domain.LessonSubmissionRepository;
-import gravit.code.lesson.service.LessonService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LearningService {
 
-    private final LessonService lessonService;
-
     private final LearningRepository learningRepository;
-    private final LessonRepository lessonRepository;
-    private final LessonSubmissionRepository lessonSubmissionRepository;
+    private final LearningProgressRateService learningProgressRateService;
 
     @Transactional
     public void updateConsecutiveDays(){
@@ -56,12 +50,7 @@ public class LearningService {
         Learning learning = learningRepository.findByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
 
-        long totalLesson = lessonRepository.count();
-        long solvedLesson = lessonSubmissionRepository.countByUserId(userId);
-
-        int planetConquestRate = Math.toIntExact(
-                Math.round(((double) solvedLesson / totalLesson) * 100)
-        );
+        int planetConquestRate = learningProgressRateService.getPlanetConquestRate(userId);
 
         ConsecutiveSolvedDto consecutiveSolvedDto = learning.updateLearningStatus(chapterId, planetConquestRate);
 
@@ -81,7 +70,7 @@ public class LearningService {
         LearningDetail learningDetail = learningRepository.findLearningDetailByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
 
-        double progressRate = lessonService.getProgressRateByChapterId(learningDetail.recentSolvedChapterId(), userId);
+        double progressRate = learningProgressRateService.getProgressRateByChapterId(learningDetail.recentSolvedChapterId(), userId);
 
         return learningDetail.withRecentSolvedChapterProgressRate(progressRate);
     }
