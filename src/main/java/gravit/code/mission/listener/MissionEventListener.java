@@ -18,8 +18,7 @@ public class MissionEventListener {
 
     private final MissionService missionService;
 
-    @Async("missionAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleCompleteLessonMission(LessonCompletedEvent event){
         try{
             missionService.handleLessonMission(
@@ -33,8 +32,7 @@ public class MissionEventListener {
         }
     }
 
-    @Async("missionAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleFollowMission(FollowMissionEvent followMissionDto){
         try{
             missionService.handleFollowMission(followMissionDto);

@@ -14,7 +14,6 @@ import gravit.code.lesson.service.LessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -27,7 +26,7 @@ public class ProjectionService {
     private final UserQualifiedSolveStatRepository userQualifiedSolveStatRepository;
     private final LessonService lessonService;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public PlanetCompletionDto recordPlanetCompletion(
             long userId,
             long chapterId
@@ -41,6 +40,7 @@ public class ProjectionService {
         }
 
         double planetProgressRate = lessonService.getProgressRateByChapterId(chapterId, userId);
+        log.info("planetProgressRate: {}", planetProgressRate);
 
         if(planetProgressRate != 1) {
             return null;
@@ -58,7 +58,7 @@ public class ProjectionService {
                 userId, planet.name(), allPlanetsCompleted);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public MissionCompleteDto recordMissionStat(long userId) {
         UserMissionStat userMissionStat = userMissionStatRepository.findByUserId(userId).orElseGet(
                 () -> userMissionStatRepository.save(UserMissionStat.of(userId))
@@ -69,7 +69,7 @@ public class ProjectionService {
     }
     // 메서드명 수정하자
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public  QualifiedSolveCountDto recordQualifiedSolveStat(
             long userId,
             int accurate,

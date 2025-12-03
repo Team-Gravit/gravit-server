@@ -9,42 +9,63 @@ import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Async("badgeAsync")
 public class BadgeEventListener {
 
     private final ProjectionService projectionService;
     private final BadgeGrantService badgeGrantService;
 
-    @Async("badgeAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handlePlanetCompleted(LessonCompletedEvent event){
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleLessonCompleted(LessonCompletedEvent event){
         try{
-            log.info("handlePlanetCompleted 이벤트 리슨");
-            PlanetCompletionDto dto = projectionService.recordPlanetCompletion(
+            log.info("레슨 완료 뱃지 평가 시작");
+
+            // 1. 행성 완료 뱃지
+            PlanetCompletionDto planetDto = projectionService.recordPlanetCompletion(
                     event.userId(), event.chapterId()
             );
-
-            if(dto != null){
+            if(planetDto != null){
                 badgeGrantService.evaluatePlanet(
-                        dto.userId(), dto.planetName(), dto.allPlanetsCompleted()
+                        planetDto.userId(),
+                        planetDto.planetName(),
+                        planetDto.allPlanetsCompleted()
                 );
             }
 
+            // 2. 풀이 속도 뱃지
+            QualifiedSolveCountDto qualifiedDto = projectionService.recordQualifiedSolveStat(
+                    event.userId(), event.accuracy(), event.learningTime()
+            );
+            badgeGrantService.evaluateQualifiedSolvedCount(
+                    qualifiedDto.userId(), qualifiedDto.qualifiedCount()
+            );
+
+            // 3. 연속 학습 뱃지 (조건부)
+            if(event.beforeConsecutiveSolved() != event.afterConsecutiveSolved()){
+                badgeGrantService.evaluateStreak(
+                        event.userId(), event.afterConsecutiveSolved()
+                );
+            }
+
+            log.info("레슨 완료 뱃지 평가 완료");
         }catch(Exception e){
-            log.error("handlePlanetCompleted 에러:  {}", e.getMessage());
+            log.error("레슨 완료 뱃지 평가 에러: {}", e.getMessage());
         }
     }
 
-    @Async("badgeAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleMissionCompleted(MissionCompletedEvent event){
         try{
             MissionCompleteDto dto = projectionService.recordMissionStat(
@@ -57,38 +78,6 @@ public class BadgeEventListener {
 
         }catch(Exception e){
             log.error("handleMissionCompleted 에러 : {}", e.getMessage());
-        }
-    }
-
-    @Async("badgeAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleQualifiedSolved(LessonCompletedEvent event){
-        try{
-            QualifiedSolveCountDto dto = projectionService.recordQualifiedSolveStat(
-                    event.userId(), event.accuracy(), event.learningTime()
-            );
-
-            badgeGrantService.evaluateQualifiedSolvedCount(
-                    dto.userId(), dto.qualifiedCount()
-            );
-        }catch(Exception e){
-            log.error("handleQualifiedSolve 리스너 에러: {}", e.getMessage());
-        }
-    }
-
-    @Async("badgeAsync")
-    @EventListener
-    public void handleConsecutiveSolvedDays(LessonCompletedEvent event){
-        try{
-            log.info("handleConsecutiveSolvedDays 실행");
-            if(event.beforeConsecutiveSolved() == event.afterConsecutiveSolved())
-                return;
-
-            badgeGrantService.evaluateStreak(
-                    event.userId(), event.afterConsecutiveSolved()
-            );
-        }catch(Exception e){
-            log.error("handleStreak 리스너 에러: {}", e.getMessage());
         }
     }
 }
