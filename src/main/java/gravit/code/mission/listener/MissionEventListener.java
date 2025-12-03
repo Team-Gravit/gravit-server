@@ -1,8 +1,8 @@
 package gravit.code.mission.listener;
 
+import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.mission.service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,9 +20,14 @@ public class MissionEventListener {
 
     @Async("missionAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleCompleteLessonMission(LessonMissionEvent lessonMissionDto){
+    public void handleCompleteLessonMission(LessonCompletedEvent event){
         try{
-            missionService.handleLessonMission(lessonMissionDto);
+            missionService.handleLessonMission(
+                    event.userId(),
+                    event.lessonId(),
+                    event.learningTime(),
+                    event.accuracy()
+            );
         }catch(Exception e){
             log.error("Exception occurred while handling complete lesson mission event with {}", e.getMessage());
         }

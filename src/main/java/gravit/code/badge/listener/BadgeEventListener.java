@@ -8,7 +8,6 @@ import gravit.code.badge.service.ProjectionService;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.ConsecutiveSolvedEvent;
 import gravit.code.global.event.badge.MissionCompletedEvent;
-import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -64,10 +63,10 @@ public class BadgeEventListener {
 
     @Async("badgeAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleQualifiedSolved(QualifiedSolvedEvent event){ // 네이밍은 수정하자
+    public void handleQualifiedSolved(LessonCompletedEvent event){
         try{
             QualifiedSolveCountDto dto = projectionService.recordQualifiedSolveStat(
-                    event.userId(), event.accuracy(), event.seconds()
+                    event.userId(), event.accuracy(), event.learningTime()
             );
 
             badgeGrantService.evaluateQualifiedSolvedCount(

@@ -79,8 +79,13 @@ public class MissionService {
             )
     )
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleLessonMission(LessonMissionEvent lessonMissionDto){
-        Mission mission = missionRepository.findByUserId(lessonMissionDto.userId())
+    public void handleLessonMission(
+            long userId,
+            long lessonId,
+            int learningTime,
+            int accuracy
+    ){
+        Mission mission = missionRepository.findByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
 
         // 이미 미션을 완료했다면 처리 종료
@@ -89,15 +94,15 @@ public class MissionService {
 
         MissionType missionType = mission.getMissionType();
 
-        boolean isFirstAttempt = lessonSubmissionService.checkUserSubmitted(lessonMissionDto.userId(), lessonMissionDto.lessonId());
+        boolean isFirstAttempt = lessonSubmissionService.checkUserSubmitted(userId, lessonId);
 
         // 미션 타입에 맞게 진행도 업데이트
         if (missionType.name().startsWith("COMPLETE_LESSON") && isFirstAttempt) {
             mission.updateCompleteLessonProgress();
-        } else if (missionType.name().startsWith("PERFECT_LESSONS") && lessonMissionDto.accuracy() == 100 && isFirstAttempt) {
+        } else if (missionType.name().startsWith("PERFECT_LESSONS") && accuracy == 100 && isFirstAttempt) {
             mission.updatePerfectLessonProgress();
         } else {
-            mission.updateLearningMinutesProgress(lessonMissionDto.learningTime());
+            mission.updateLearningMinutesProgress(learningTime);
         }
 
         // 진행률 체크 후 미션 완료 상태 업데이트
@@ -105,8 +110,8 @@ public class MissionService {
 
         // 미션을 완료했다면, 경험치 지급
         if (mission.isCompleted())
-            awardMissionXp(lessonMissionDto.userId(), mission.getMissionType().getAwardXp());
-        publisher.publishEvent(new MissionCompletedEvent(lessonMissionDto.userId()));
+            awardMissionXp(userId, mission.getMissionType().getAwardXp());
+        publisher.publishEvent(new MissionCompletedEvent(userId));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

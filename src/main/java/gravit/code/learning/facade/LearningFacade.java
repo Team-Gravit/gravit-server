@@ -4,7 +4,6 @@ import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.chapter.dto.response.ChapterSummary;
 import gravit.code.chapter.service.ChapterService;
 import gravit.code.global.event.LessonCompletedEvent;
-import gravit.code.global.event.badge.QualifiedSolvedEvent;
 import gravit.code.learning.dto.common.LearningIds;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
@@ -15,7 +14,6 @@ import gravit.code.lesson.dto.response.LessonResponse;
 import gravit.code.lesson.dto.response.LessonSummary;
 import gravit.code.lesson.service.LessonService;
 import gravit.code.lesson.service.LessonSubmissionService;
-import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.problem.dto.response.BookmarkedProblemResponse;
 import gravit.code.problem.dto.response.ProblemResponse;
@@ -55,7 +53,7 @@ public class LearningFacade {
     private final LessonSubmissionService lessonSubmissionService;
     private final ProblemSubmissionService problemSubmissionService;
 
-    private static int POINT_PER_LESSON = 20;
+    private static final int POINT_PER_LESSON = 20;
 
     @Transactional(readOnly = true)
     public List<ChapterDetailResponse> getAllChapterDetail(long userId){
@@ -178,15 +176,18 @@ public class LearningFacade {
 
         LearningIds learningIds = lessonService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
 
+        // 이건 동기적으로 처리하는게 좋아보임(이벤트 말고)
         publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
 
         if(isFirstTry){
-            /**
-             * 아래 두 이벤트 발행이 로직적으로 중복되는 것은 아니지만 발행하는 이벤트의 이름을 봤을 때, 어 왜 두번 반복되지? 싶을 것 같아서 적절하게 수정이 필요해보임.
-             */
-            publisher.publishEvent(new LessonCompletedEvent(userId, learningIds.chapterId(), POINT_PER_LESSON, request.lessonSubmissionSaveRequest().accuracy()));
-            publisher.publishEvent(new LessonMissionEvent(userId, request.lessonSubmissionSaveRequest().lessonId(), request.lessonSubmissionSaveRequest().learningTime(), request.lessonSubmissionSaveRequest().accuracy()));
-            publisher.publishEvent(new QualifiedSolvedEvent(userId, request.lessonSubmissionSaveRequest().learningTime(), request.lessonSubmissionSaveRequest().accuracy()));
+            publisher.publishEvent(new LessonCompletedEvent(
+                    userId,
+                    request.lessonSubmissionSaveRequest().lessonId(),
+                    learningIds.chapterId(),
+                    POINT_PER_LESSON,
+                    request.lessonSubmissionSaveRequest().accuracy(),
+                    request.lessonSubmissionSaveRequest().learningTime()
+            ));
         }
 
         return LearningSubmissionSaveResponse.create(
