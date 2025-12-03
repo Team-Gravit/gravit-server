@@ -1,6 +1,7 @@
 package gravit.code.global.event;
 
-public record OnboardingUserLeagueEvent(
+public record OnboardingCompletedEvent(
         long userId
 ) {
+
 }

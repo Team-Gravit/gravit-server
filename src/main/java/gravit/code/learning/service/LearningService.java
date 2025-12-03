@@ -72,10 +72,9 @@ public class LearningService {
         return consecutiveSolvedDto;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void createLearning(long userId){
         Learning learning = Learning.create(userId);
-
         learningRepository.save(learning);
     }
 

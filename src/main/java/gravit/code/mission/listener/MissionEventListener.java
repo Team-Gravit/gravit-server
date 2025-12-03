@@ -1,6 +1,6 @@
 package gravit.code.mission.listener;
 
-import gravit.code.mission.dto.event.CreateMissionEvent;
+import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.mission.service.MissionService;
@@ -38,11 +38,10 @@ public class MissionEventListener {
         }
     }
 
-    @Async("missionAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void createMission(CreateMissionEvent createMissionDto){
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void createMission(OnboardingCompletedEvent event){
         try{
-            missionService.createMission(createMissionDto);
+            missionService.createMission(event.userId());
         }catch(Exception e){
             log.error("Exception occurred while creating mission for new User with {}", e.getMessage());
         }

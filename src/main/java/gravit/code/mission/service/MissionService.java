@@ -9,7 +9,6 @@ import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.mission.dto.response.MissionSummary;
-import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.user.domain.User;
@@ -125,11 +124,11 @@ public class MissionService {
         awardMissionXp(followMissionDto.userId(), mission.getMissionType().getAwardXp());
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createMission(CreateMissionEvent createMissionDto) {
+    @Transactional
+    public void createMission(long userId) {
         Mission mission = Mission.create(
                 RandomMissionGenerator.getRandomMissionType(),
-                createMissionDto.userId()
+                userId
         );
 
         missionRepository.save(mission);

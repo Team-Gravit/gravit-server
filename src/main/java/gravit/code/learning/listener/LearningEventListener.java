@@ -1,8 +1,8 @@
 package gravit.code.learning.listener;
 
+import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.badge.ConsecutiveSolvedEvent;
 import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
-import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.service.LearningService;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +35,8 @@ public class LearningEventListener {
         }
     }
 
-    @Async("learningAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void createLearning(CreateLearningEvent event){
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void createLearning(OnboardingCompletedEvent event){
         try{
             learningService.createLearning(event.userId());
         }catch (Exception e){
