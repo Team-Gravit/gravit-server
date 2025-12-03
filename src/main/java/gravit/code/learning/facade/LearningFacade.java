@@ -4,10 +4,11 @@ import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.chapter.dto.response.ChapterSummary;
 import gravit.code.chapter.service.ChapterService;
 import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.common.LearningIds;
-import gravit.code.learning.dto.event.UpdateLearningEvent;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
+import gravit.code.learning.service.LearningService;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResponse;
@@ -52,6 +53,8 @@ public class LearningFacade {
 
     private final LessonSubmissionService lessonSubmissionService;
     private final ProblemSubmissionService problemSubmissionService;
+
+    private final LearningService learningService;
 
     private static final int POINT_PER_LESSON = 20;
 
@@ -176,8 +179,8 @@ public class LearningFacade {
 
         LearningIds learningIds = lessonService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
 
-        // 이건 동기적으로 처리하는게 좋아보임(이벤트 말고)
-        publisher.publishEvent(new UpdateLearningEvent(userId, learningIds.chapterId()));
+        // Learning 업데이트 후 연속학습 처리
+        ConsecutiveSolvedDto consecutiveSolvedDto = learningService.updateLearningStatus(userId, learningIds.chapterId());
 
         if(isFirstTry){
             publisher.publishEvent(new LessonCompletedEvent(
@@ -186,7 +189,9 @@ public class LearningFacade {
                     learningIds.chapterId(),
                     POINT_PER_LESSON,
                     request.lessonSubmissionSaveRequest().accuracy(),
-                    request.lessonSubmissionSaveRequest().learningTime()
+                    request.lessonSubmissionSaveRequest().learningTime(),
+                    consecutiveSolvedDto.before(),
+                    consecutiveSolvedDto.after()
             ));
         }
 

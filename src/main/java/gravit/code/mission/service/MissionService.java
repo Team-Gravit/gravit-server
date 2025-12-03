@@ -8,11 +8,11 @@ import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
-import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.mission.dto.event.LessonMissionEvent;
+import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +23,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -5,18 +5,16 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.domain.LearningRepository;
 import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
-import gravit.code.lesson.domain.LessonRepository;
-import gravit.code.lesson.service.LessonService;
-import gravit.code.lesson.domain.LessonSubmissionRepository;
 import gravit.code.learning.dto.response.LearningDetail;
+import gravit.code.lesson.domain.LessonRepository;
+import gravit.code.lesson.domain.LessonSubmissionRepository;
+import gravit.code.lesson.service.LessonService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +48,7 @@ public class LearningService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public ConsecutiveSolvedDto updateLearningStatus(
             long userId,
             long chapterId

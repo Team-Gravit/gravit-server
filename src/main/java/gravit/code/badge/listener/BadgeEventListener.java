@@ -6,7 +6,6 @@ import gravit.code.badge.dto.QualifiedSolveCountDto;
 import gravit.code.badge.service.BadgeGrantService;
 import gravit.code.badge.service.ProjectionService;
 import gravit.code.global.event.LessonCompletedEvent;
-import gravit.code.global.event.badge.ConsecutiveSolvedEvent;
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,11 +78,14 @@ public class BadgeEventListener {
 
     @Async("badgeAsync")
     @EventListener
-    public void handleConsecutiveSolvedDays(ConsecutiveSolvedEvent event){
+    public void handleConsecutiveSolvedDays(LessonCompletedEvent event){
         try{
             log.info("handleConsecutiveSolvedDays 실행");
+            if(event.beforeConsecutiveSolved() == event.afterConsecutiveSolved())
+                return;
+
             badgeGrantService.evaluateStreak(
-                    event.userId(), event.streakCount()
+                    event.userId(), event.afterConsecutiveSolved()
             );
         }catch(Exception e){
             log.error("handleStreak 리스너 에러: {}", e.getMessage());

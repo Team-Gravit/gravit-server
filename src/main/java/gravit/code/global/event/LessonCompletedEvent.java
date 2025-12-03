@@ -6,6 +6,8 @@ public record LessonCompletedEvent(
         long chapterId,
         int points,
         int accuracy,
-        int learningTime
+        int learningTime,
+        int beforeConsecutiveSolved,
+        int afterConsecutiveSolved
 ) {
 }
