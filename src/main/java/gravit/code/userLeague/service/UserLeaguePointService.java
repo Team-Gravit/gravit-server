@@ -19,7 +19,7 @@ public class UserLeaguePointService {
     private final UserLeagueRepository userLeagueRepository;
     private final LeagueRepository leagueRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void addLeaguePoints(
             Long userId,
             int points,

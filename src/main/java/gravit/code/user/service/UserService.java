@@ -1,13 +1,11 @@
 package gravit.code.user.service;
 
-import gravit.code.global.event.OnboardingUserLeagueEvent;
+import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.learning.dto.event.CreateLearningEvent;
 import gravit.code.learning.dto.response.LearningDetail;
 import gravit.code.learning.service.LearningService;
 import gravit.code.user.dto.response.MainPageResponse;
-import gravit.code.mission.dto.event.CreateMissionEvent;
 import gravit.code.mission.dto.response.MissionDetail;
 import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.service.MissionService;
@@ -56,10 +54,7 @@ public class UserService {
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
-
-        publisher.publishEvent(new CreateLearningEvent(user.getId()));
-        publisher.publishEvent(new OnboardingUserLeagueEvent(user.getId()));
-        publisher.publishEvent(new CreateMissionEvent(user.getId()));
+        publisher.publishEvent(new OnboardingCompletedEvent(user.getId()));
 
         return UserResponse.from(user);
     }

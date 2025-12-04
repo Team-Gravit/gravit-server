@@ -160,7 +160,7 @@ public class User extends BaseEntity {
     }
 
     private void validateProfileImgNum(int profileImgNumber) {
-        if(profileImgNumber < 1 || profileImgNumber > 10){
+        if(profileImgNumber < 1 || profileImgNumber > 20){
             throw new RestApiException(CustomErrorCode.PROFILE_IMG_NUM_INVALID);
         }
     }

@@ -1,8 +1,8 @@
 package gravit.code.mission.listener;
 
-import gravit.code.mission.dto.event.CreateMissionEvent;
+import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.mission.service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,18 +18,21 @@ public class MissionEventListener {
 
     private final MissionService missionService;
 
-    @Async("missionAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleCompleteLessonMission(LessonMissionEvent lessonMissionDto){
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void handleCompleteLessonMission(LessonCompletedEvent event){
         try{
-            missionService.handleLessonMission(lessonMissionDto);
+            missionService.handleLessonMission(
+                    event.userId(),
+                    event.lessonId(),
+                    event.learningTime(),
+                    event.accuracy()
+            );
         }catch(Exception e){
             log.error("Exception occurred while handling complete lesson mission event with {}", e.getMessage());
         }
     }
 
-    @Async("missionAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleFollowMission(FollowMissionEvent followMissionDto){
         try{
             missionService.handleFollowMission(followMissionDto);
@@ -38,11 +41,10 @@ public class MissionEventListener {
         }
     }
 
-    @Async("missionAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void createMission(CreateMissionEvent createMissionDto){
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void createMission(OnboardingCompletedEvent event){
         try{
-            missionService.createMission(createMissionDto);
+            missionService.createMission(event.userId());
         }catch(Exception e){
             log.error("Exception occurred while creating mission for new User with {}", e.getMessage());
         }

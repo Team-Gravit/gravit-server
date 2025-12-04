@@ -63,7 +63,7 @@ public class TestScenarioController {
 
 
         // 4. 마지막 레슨을 제외한 모든 레슨 제출
-        for (int i = 0; i < chapterLessons.size() - 1; i++) {
+        for (int i = 0; i < chapterLessons.size() - 2; i++) {
             Lesson lesson = chapterLessons.get(i);
             submitLesson(userId, lesson.getId());
         }

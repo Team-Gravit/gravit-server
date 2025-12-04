@@ -1,14 +1,9 @@
 package gravit.code.learning.listener;
 
-import gravit.code.global.event.badge.ConsecutiveSolvedEvent;
-import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
-import gravit.code.learning.dto.event.CreateLearningEvent;
-import gravit.code.learning.dto.event.UpdateLearningEvent;
+import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.learning.service.LearningService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -20,24 +15,8 @@ public class LearningEventListener {
 
     private final LearningService learningService;
 
-    private final ApplicationEventPublisher publisher;
-
-    @Async("learningAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void updateLearning(UpdateLearningEvent event){
-        try{
-            ConsecutiveSolvedDto consecutiveSolvedDto = learningService.updateLearningStatus(event.userId(), event.chapterId());
-
-            if(consecutiveSolvedDto.before() != consecutiveSolvedDto.after())
-                publisher.publishEvent(new ConsecutiveSolvedEvent(event.userId(), consecutiveSolvedDto.after()));
-        }catch (Exception e){
-            log.error("Exception occurred while updating Learning with {}", e.getMessage());
-        }
-    }
-
-    @Async("learningAsync")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void createLearning(CreateLearningEvent event){
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void createLearning(OnboardingCompletedEvent event){
         try{
             learningService.createLearning(event.userId());
         }catch (Exception e){

@@ -8,7 +8,6 @@ import gravit.code.badge.infrastructure.user.UserBadgeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -23,7 +22,7 @@ public class BadgeGrantService {
     private static final String CODE_SPEED_ALL   = "SPEED_ALL_STAR";
     private static final String CODE_MISSION_ALL = "MISSION_ALL_STAR";
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void evaluatePlanet(
             long userId,
             String planet,
@@ -40,7 +39,7 @@ public class BadgeGrantService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void evaluateMissionCount(
             long userId,
             int completedCount
@@ -53,7 +52,7 @@ public class BadgeGrantService {
         tryGrantAllStar(userId, CriteriaType.MISSION_COUNT, CODE_MISSION_ALL);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void evaluateQualifiedSolvedCount(
             long userId,
             int qualifiedCount
@@ -68,7 +67,7 @@ public class BadgeGrantService {
         tryGrantAllStar(userId, CriteriaType.SPEED_QUALIFIED_COUNT, CODE_SPEED_ALL);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void evaluateStreak(
             long userId,
             int currentStreak

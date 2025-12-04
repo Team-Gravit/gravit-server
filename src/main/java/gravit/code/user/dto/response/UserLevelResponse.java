@@ -6,7 +6,6 @@ import lombok.Builder;
 @Builder
 @Schema(description = "유저 레벨 정보 Response(학습 종료 후)")
 public record UserLevelResponse(
-
         @Schema(
                 description = "현재 레벨",
                 example = "3"

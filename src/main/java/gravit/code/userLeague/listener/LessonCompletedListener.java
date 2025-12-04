@@ -15,7 +15,7 @@ public class LessonCompletedListener {
 
     private final UserLeaguePointService pointService;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleLessonCompleted(LessonCompletedEvent event) {
         pointService.addLeaguePoints(event.userId(), event.points(), event.accuracy());
     }
