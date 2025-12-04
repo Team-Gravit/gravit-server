@@ -1,8 +1,8 @@
 package gravit.code.lesson.infrastructure;
 
 import gravit.code.learning.dto.common.LearningIds;
-import gravit.code.lesson.dto.response.LessonSummary;
 import gravit.code.lesson.domain.Lesson;
+import gravit.code.lesson.dto.response.LessonSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

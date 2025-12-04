@@ -2,10 +2,10 @@ package gravit.code.lesson.service;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.domain.LessonRepository;
 import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.domain.LessonSubmissionRepository;
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +50,7 @@ public class LessonSubmissionService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkUserSubmitted(long lessonId, long userId) {
+    public boolean checkUserNotSubmitted(long lessonId, long userId) {
         return !lessonSubmissionRepository.existsByLessonIdAndUserId(lessonId, userId);
     }
 }

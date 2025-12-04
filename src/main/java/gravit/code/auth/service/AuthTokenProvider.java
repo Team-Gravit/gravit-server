@@ -4,7 +4,6 @@ import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.token.JwtProvider;
-import gravit.code.auth.infrastructure.redis.RedisTokenStorage;
 import gravit.code.auth.token.TokenStorage;
 import gravit.code.auth.token.config.TokenProperties;
 import gravit.code.global.exception.domain.CustomErrorCode;

@@ -1,10 +1,10 @@
 package gravit.code.global.exception.handler;
 
-import gravit.code.user.exception.AccountSoftDeletedException;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.user.exception.AccountSoftDeletedException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;

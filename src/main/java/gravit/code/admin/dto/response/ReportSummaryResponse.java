@@ -2,8 +2,8 @@ package gravit.code.admin.dto.response;
 
 import gravit.code.report.domain.ReportType;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "신고 조회 Response")

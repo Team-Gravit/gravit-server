@@ -1,11 +1,9 @@
 package gravit.code.user.service;
 
-import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.response.LearningDetail;
 import gravit.code.learning.service.LearningService;
-import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.mission.dto.response.MissionDetail;
 import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.service.MissionService;
@@ -15,10 +13,7 @@ import gravit.code.user.domain.UserLevel;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
-import gravit.code.user.dto.response.MyPageResponse;
-import gravit.code.user.dto.response.UserLevelDetail;
-import gravit.code.user.dto.response.UserLevelResponse;
-import gravit.code.user.dto.response.UserResponse;
+import gravit.code.user.dto.response.*;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -54,7 +49,7 @@ public class UserService {
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
-        publisher.publishEvent(new OnboardingCompletedEvent(user.getId()));
+        missionService.createMission(userId);
 
         return UserResponse.from(user);
     }

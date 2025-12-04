@@ -1,5 +1,7 @@
 package gravit.code.userLeague.service;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.infrastructure.LeagueRepository;
 import gravit.code.season.domain.Season;
@@ -8,8 +10,6 @@ import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.domain.UserLeagueRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

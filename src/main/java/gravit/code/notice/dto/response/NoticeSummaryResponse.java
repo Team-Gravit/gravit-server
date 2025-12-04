@@ -1,6 +1,7 @@
 package gravit.code.notice.dto.response;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 public record NoticeSummaryResponse(

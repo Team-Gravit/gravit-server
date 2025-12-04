@@ -1,9 +1,9 @@
 package gravit.code.user.infrastructure;
 
-import gravit.code.user.domain.HandleGenerator;
-import gravit.code.user.domain.UserRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.user.domain.HandleGenerator;
+import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

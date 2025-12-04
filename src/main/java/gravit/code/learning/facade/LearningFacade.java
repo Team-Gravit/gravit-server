@@ -43,7 +43,7 @@ public class LearningFacade {
             long userId,
             LearningSubmissionSaveRequest request
     ){
-        boolean isFirstTry = lessonSubmissionService.checkUserSubmitted(request.lessonSubmissionSaveRequest().lessonId(), userId);
+        boolean isFirstTry = lessonSubmissionService.checkUserNotSubmitted(request.lessonSubmissionSaveRequest().lessonId(), userId);
 
         lessonSubmissionService.saveLessonSubmission(request.lessonSubmissionSaveRequest(), userId, isFirstTry);
         problemSubmissionService.saveProblemSubmissions(userId, request.problemSubmissionRequests(), isFirstTry);

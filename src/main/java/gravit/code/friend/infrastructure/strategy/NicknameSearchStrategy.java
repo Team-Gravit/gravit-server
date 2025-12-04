@@ -2,7 +2,6 @@ package gravit.code.friend.infrastructure.strategy;
 
 import gravit.code.friend.dto.SearchPlan;
 import gravit.code.friend.infrastructure.sql.select.FriendsNicknameSearchQuerySql;
-import gravit.code.friend.support.HandleNormalize;
 import gravit.code.friend.support.NicknameNormalize;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -4,7 +4,6 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
-import gravit.code.userLeague.infrastructure.JdbMyLeagueProfileQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

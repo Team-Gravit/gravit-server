@@ -12,13 +12,14 @@ import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -72,14 +73,17 @@ public class MissionService {
 
         MissionType missionType = mission.getMissionType();
 
-        boolean isFirstAttempt = lessonSubmissionService.checkUserSubmitted(userId, lessonId);
+        int tryCount = lessonSubmissionService.getLessonSubmissionCount(lessonId, userId);
+
+        if(tryCount > 1)
+            return;
 
         // 미션 타입에 맞게 진행도 업데이트
-        if (missionType.name().startsWith("COMPLETE_LESSON") && isFirstAttempt) {
+        if (missionType.name().startsWith("COMPLETE_LESSON")) {
             mission.updateCompleteLessonProgress();
-        } else if (missionType.name().startsWith("PERFECT_LESSONS") && accuracy == 100 && isFirstAttempt) {
+        } else if (missionType.name().startsWith("PERFECT_LESSONS") && accuracy == 100) {
             mission.updatePerfectLessonProgress();
-        } else {
+        } else if (missionType.name().startsWith("LEARNING_MINUTES")) {
             mission.updateLearningMinutesProgress(learningTime);
         }
 

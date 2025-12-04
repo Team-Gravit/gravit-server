@@ -35,7 +35,7 @@ public class WrongAnsweredNoteService {
     }
 
     @Transactional
-    public void deleteWrongAnsweredNote(
+    public void deleteWrongAnsweredNoteIfExists(
             long userId,
             long problemId
     ) {

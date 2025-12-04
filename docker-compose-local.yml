@@ -10,10 +10,10 @@ services:
       - redis_data:/data
 
   postgres:
-    image: postgres:16
+    image: postgres:15
     container_name: postgres-local
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

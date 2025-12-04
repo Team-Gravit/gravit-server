@@ -1,7 +1,7 @@
 package gravit.code.userLeague.infrastructure;
 
-import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.global.dto.response.SliceResponse;
+import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.userLeague.service.LeagueRankingQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
