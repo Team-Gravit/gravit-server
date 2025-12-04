@@ -1,5 +1,6 @@
 package gravit.code.learning.facade;
 
+import gravit.code.bookmark.service.BookmarkService;
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.chapter.dto.response.ChapterSummary;
 import gravit.code.chapter.service.ChapterService;
@@ -16,6 +17,7 @@ import gravit.code.unit.dto.response.UnitDetail;
 import gravit.code.unit.dto.response.UnitDetailResponse;
 import gravit.code.unit.dto.response.UnitSummary;
 import gravit.code.unit.service.UnitService;
+import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class LearningQueryFacade {
     private final LessonService lessonService;
     private final ProblemService problemService;
     private final LearningProgressRateService learningProgressRateService;
+    private final BookmarkService bookmarkService;
+    private final WrongAnsweredNoteService wrongAnsweredNoteService;
 
     @Transactional(readOnly = true)
     public List<ChapterDetailResponse> getAllChapterDetail(long userId){
@@ -87,8 +91,13 @@ public class LearningQueryFacade {
 
         List<LessonSummary> lessonSummaries = lessonService.getAllLessonSummaryByUnitId(unitId, userId);
 
+        boolean bookmarkAccessible = bookmarkService.checkBookmarkAccessibleInUnit(unitId, userId);
+        boolean wrongAnsweredNoteAccessible = wrongAnsweredNoteService.checkWrongAnsweredNoteAccessibleInUnit(unitId, userId);
+
         return LessonDetailResponse.create(
                 chapterSummary,
+                bookmarkAccessible,
+                wrongAnsweredNoteAccessible,
                 unitId,
                 lessonSummaries
         );

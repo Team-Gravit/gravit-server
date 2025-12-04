@@ -21,7 +21,8 @@ public class LearningProgressRateService {
         int totalLessonCount = lessonRepository.countTotalLessonByChapterId(chapterId);
         int solvedLessonCount = lessonSubmissionRepository.countSolvedLessonByChapterIdAndUserId(chapterId, userId);
 
-        return (double) solvedLessonCount / totalLessonCount;
+        double progressRate = ((double) solvedLessonCount / totalLessonCount) * 100;
+        return Math.floor(progressRate);
     }
 
     @Transactional(readOnly = true)
@@ -32,7 +33,8 @@ public class LearningProgressRateService {
         int totalLessonCount = lessonRepository.countTotalLessonByUnitId(unitId);
         int solvedLessonCount = lessonSubmissionRepository.countSolvedLessonByUnitIdAndUserId(unitId, userId);
 
-        return (double) solvedLessonCount / totalLessonCount;
+        double progressRate = ((double) solvedLessonCount / totalLessonCount) * 100;
+        return Math.floor(progressRate);
     }
 
     @Transactional(readOnly = true)
