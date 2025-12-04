@@ -102,7 +102,8 @@ public class MissionService {
         Mission mission = missionRepository.findByUserId(followMissionDto.userId())
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
 
-        if (mission.isCompleted())
+        if (mission.isCompleted()
+                || !mission.getMissionType().name().equals("FOLLOW_NEW_FRIEND"))
             return;
 
         mission.updateFollowProgress();

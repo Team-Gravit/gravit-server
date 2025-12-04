@@ -1,5 +1,6 @@
 package gravit.code.user.service;
 
+import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.response.LearningDetail;
@@ -49,7 +50,7 @@ public class UserService {
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
-        missionService.createMission(userId);
+        publisher.publishEvent(new OnboardingCompletedEvent(user.getId()));
 
         return UserResponse.from(user);
     }

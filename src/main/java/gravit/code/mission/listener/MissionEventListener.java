@@ -1,6 +1,7 @@
 package gravit.code.mission.listener;
 
 import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.service.MissionService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,15 @@ public class MissionEventListener {
             missionService.handleFollowMission(followMissionDto);
         }catch(Exception e){
             log.error("Exception occurred while handling follow mission event with {}", e.getMessage());
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void createMission(OnboardingCompletedEvent event){
+        try{
+            missionService.createMission(event.userId());
+        }catch(Exception e){
+            log.error("Exception occurred while creating mission for new User with {}", e.getMessage());
         }
     }
 }
