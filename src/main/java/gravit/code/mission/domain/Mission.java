@@ -118,5 +118,6 @@ public class Mission {
     public void reassignMission(){
         this.missionType = RandomMissionGenerator.getRandomMissionType();
         this.progressRate = 0.0;
+        this.isCompleted = false;
     }
 }
