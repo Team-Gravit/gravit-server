@@ -8,22 +8,17 @@ import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
-import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.dto.event.FollowMissionEvent;
+import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,28 +51,12 @@ public class MissionService {
         }
     }
 
-    @Retryable(
-            retryFor = {ObjectOptimisticLockingFailureException.class},
-            maxAttempts = 10,
-            backoff = @Backoff(
-                    delay = 100,
-                    random = true
-            )
-    )
     public MissionSummary getMissionSummary(long userId){
         return missionRepository.findMissionSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
     }
 
-    @Retryable(
-            retryFor = {ObjectOptimisticLockingFailureException.class},
-            maxAttempts = 10,
-            backoff = @Backoff(
-                    delay = 100,
-                    random = true
-            )
-    )
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void handleLessonMission(
             long userId,
             long lessonId,
@@ -114,7 +93,7 @@ public class MissionService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void handleFollowMission(FollowMissionEvent followMissionDto) {
         Mission mission = missionRepository.findByUserId(followMissionDto.userId())
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
