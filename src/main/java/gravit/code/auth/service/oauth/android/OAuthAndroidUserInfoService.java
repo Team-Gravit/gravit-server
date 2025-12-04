@@ -1,7 +1,7 @@
 package gravit.code.auth.service.oauth.android;
 
-import gravit.code.auth.infrastructure.config.Auth0Props;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
+import gravit.code.auth.infrastructure.config.Auth0Props;
 import gravit.code.auth.strategy.android.AndroidUserInfoFactory;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;

@@ -1,8 +1,8 @@
 package gravit.code.userLeague.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.global.dto.response.SliceResponse;
+import gravit.code.userLeague.dto.response.LeagueRankRow;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

@@ -12,10 +12,12 @@ import lombok.NoArgsConstructor;
 public class WrongAnsweredNote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
+    @Column(name = "problem_id", nullable = false)
     private long problemId;
 
+    @Column(name = "user_id", nullable = false)
     private long userId;
 
     @Builder(access = AccessLevel.PRIVATE)

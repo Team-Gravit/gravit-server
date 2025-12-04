@@ -1,9 +1,9 @@
 package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.Provider;
-import gravit.code.global.consts.RedirectHostConst;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.strategy.OAuthResponseFactory;
+import gravit.code.global.consts.RedirectHostConst;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;

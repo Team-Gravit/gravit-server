@@ -1,7 +1,6 @@
 package gravit.code.user.dto.response;
 
 import gravit.code.user.domain.User;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder

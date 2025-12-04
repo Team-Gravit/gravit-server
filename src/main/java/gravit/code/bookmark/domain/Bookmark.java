@@ -25,7 +25,7 @@ public class Bookmark {
     private long userId;
 
     @Column(name = "created_at", nullable = false)
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
     private Bookmark(long problemId, long userId) {

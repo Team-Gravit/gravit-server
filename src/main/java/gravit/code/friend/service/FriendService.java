@@ -59,7 +59,7 @@ public class FriendService {
 
         friendRepository.save(friend);
 
-        publisher.publishEvent(new FollowMissionEvent(followeeId));
+        publisher.publishEvent(new FollowMissionEvent(followerId));
 
         return FriendResponse.from(friend);
     }

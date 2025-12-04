@@ -1,7 +1,6 @@
 package gravit.code.badge.infrastructure;
 
 import gravit.code.badge.domain.Badge;
-import gravit.code.badge.domain.BadgeCategory;
 import gravit.code.badge.domain.CriteriaType;
 import gravit.code.badge.dto.BadgeCatalogRowDto;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,10 +1,10 @@
 package gravit.code.user.controller;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.user.controller.docs.UserControllerDocs;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
+import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserResponse;
 import gravit.code.user.service.UserService;

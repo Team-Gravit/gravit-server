@@ -1,12 +1,12 @@
 package gravit.code.season.service;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.season.calendar.SeasonCalendar;
 import gravit.code.season.calendar.dto.SeasonResponse;
 import gravit.code.season.domain.Season;
 import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.infrastructure.SeasonRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

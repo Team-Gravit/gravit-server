@@ -3,7 +3,6 @@ package gravit.code.wrongAnsweredNote.infrastructure;
 import gravit.code.problem.dto.response.ProblemDetail;
 import gravit.code.wrongAnsweredNote.domain.WrongAnsweredNote;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -36,7 +35,6 @@ public interface WrongAnsweredProblemJpaRepository extends JpaRepository<WrongAn
             @Param("userId")long userId
     );
 
-    @Modifying
     void deleteByProblemIdAndUserId(
             long problemId,
             long userId

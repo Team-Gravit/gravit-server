@@ -1,10 +1,10 @@
 package gravit.code.security.config;
 
 
-import gravit.code.security.filter.JwtAuthFilter;
+import gravit.code.auth.service.AuthTokenProvider;
 import gravit.code.security.exception.CustomAccessDeniedHandler;
 import gravit.code.security.exception.CustomAuthenticationEntryPoint;
-import gravit.code.auth.service.AuthTokenProvider;
+import gravit.code.security.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

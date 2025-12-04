@@ -6,7 +6,6 @@ import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;

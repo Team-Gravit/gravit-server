@@ -1,10 +1,10 @@
 package gravit.code.userLeague.service;
 
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.UserRepository;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
-import gravit.code.global.dto.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,7 @@
 package gravit.code.badge.dto.response;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public record BadgeCategoryResponse(

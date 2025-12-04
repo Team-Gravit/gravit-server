@@ -2,10 +2,10 @@ package gravit.code.userLeague.controller;
 
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.userLeague.controller.docs.LeagueRankingQueryControllerDocs;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.userLeague.service.LeagueRankingQueryService;
-import gravit.code.global.dto.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,5 @@
 package gravit.code.friend.service;
 
-import gravit.code.friend.domain.FriendRepository;
 import gravit.code.friend.dto.SearchUser;
 import gravit.code.friend.infrastructure.FriendSearchRepository;
 import gravit.code.global.dto.response.SliceResponse;

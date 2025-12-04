@@ -1,7 +1,7 @@
 package gravit.code.option.infrastructure;
 
-import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.option.domain.Option;
+import gravit.code.option.dto.response.OptionResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

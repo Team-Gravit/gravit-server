@@ -5,28 +5,24 @@ import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.learning.infrastructure.LearningJpaRepository;
 import gravit.code.lesson.domain.Lesson;
-import gravit.code.lesson.domain.LessonRepository;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.infrastructure.LessonJpaRepository;
-import gravit.code.problem.domain.Problem;
-import gravit.code.problem.domain.ProblemRepository;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.unit.domain.Unit;
 import gravit.code.unit.infrastructure.UnitJpaRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.infrastructure.UserJpaRepository;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.el.util.ReflectionUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/test")
