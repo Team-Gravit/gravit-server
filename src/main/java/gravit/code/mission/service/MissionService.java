@@ -10,7 +10,6 @@ import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.mission.dto.event.LessonMissionEvent;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -109,9 +108,10 @@ public class MissionService {
         mission.checkAndUpdateCompletionStatus();
 
         // 미션을 완료했다면, 경험치 지급
-        if (mission.isCompleted())
+        if (mission.isCompleted()){
             awardMissionXp(userId, mission.getMissionType().getAwardXp());
-        publisher.publishEvent(new MissionCompletedEvent(userId));
+            publisher.publishEvent(new MissionCompletedEvent(userId));
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
