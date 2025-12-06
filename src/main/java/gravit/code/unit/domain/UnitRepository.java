@@ -12,4 +12,5 @@ public interface UnitRepository {
     Optional<UnitSummary> findUnitSummaryByLessonId(long lessonId);
     Unit save(Unit unit);
     void saveAll(List<Unit> units);
+    List<Long> findIdsByChapterIdOrderById(long chapterId);
 }
