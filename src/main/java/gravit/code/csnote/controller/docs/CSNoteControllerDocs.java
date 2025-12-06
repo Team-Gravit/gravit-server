@@ -52,7 +52,7 @@ public interface CSNoteControllerDocs {
                                     ),
                                     @ExampleObject(
                                             name = "노트 파일 없음",
-                                            value = "{\"error\": \"NOT_FOUND\", \"message\": \"요청한 개념 노트 파일을 찾을 수 없습니다.\"}"
+                                            value = "{\"errorCode\": \"NOT_FOUND\", \"message\": \"요청한 개념 노트 파일을 찾을 수 없습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class)

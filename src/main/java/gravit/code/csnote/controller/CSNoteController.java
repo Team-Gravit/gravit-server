@@ -56,6 +56,9 @@ public class CSNoteController implements CSNoteControllerDocs {
         int orderInChapter = calculateOrderInChapter(unitIdsInChapter, unitId);
 
         String chapterName = chapterMap.get(chapter.getTitle());
+        if(chapterName == null){
+            throw new RestApiException(CHAPTER_NOT_FOUND);
+        }
         String unitKey = makeUnitKey(orderInChapter);
 
         try{
