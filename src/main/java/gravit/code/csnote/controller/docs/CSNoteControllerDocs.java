@@ -21,12 +21,7 @@ public interface CSNoteControllerDocs {
             summary = "개념 노트 조회",
             description = "챕터와 유닛 정보로 Markdown 형식의 개념 노트를 조회합니다. <br>" +
                     "응답 본문은 Markdown 텍스트 데이터입니다. <br><br>" +
-                    "**파일 구조**: static/notes/{chapter}/{unit}.md <br>" +
-                    "**예시**: /api/v1/notes/algorithm/unit01 → static/notes/algorithm/unit01.md <br>" +
-                    "**챕터 리스트** : [algorithm, data-structure, network] <br>" +
-                    "**알고리즘 유닛 리스트** : unit01 ~ unit17 <br>" +
-                    "**자료구조 유닛 리스트** : unit01 ~ unit10 <br>" +
-                    "**네트워크 유닛 리스트** : unit01 ~ unit14"
+                    "unitId 를 입력하면 unit에 해당하는 개념노트를 응답합니다."
     )
     @ApiResponses({
             @ApiResponse(
@@ -43,13 +38,23 @@ public interface CSNoteControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "요청한 개념 노트를 찾을 수 없습니다.",
+                    description = "유닛을 찾을 수 없거나 해당 개념 노트 파일이 존재하지 않습니다.",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = @ExampleObject(
-                                    name = "파일 없음",
-                                    value = "{\"error\": \"NOT_FOUND\", \"message\": \"요청한 노트를 찾을 수 없습니다.\"}"
-                            ),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유닛 없음",
+                                            value = "{\"errorCode\": \"UNIT_NOT_FOUND\", \"message\": \"존재하지 않는 유닛입니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "챕터 없음",
+                                            value = "{\"errorCode\": \"CHAPTER_NOT_FOUND\", \"message\": \"존재하지 않는 챕터입니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "노트 파일 없음",
+                                            value = "{\"error\": \"NOT_FOUND\", \"message\": \"요청한 개념 노트 파일을 찾을 수 없습니다.\"}"
+                                    )
+                            },
                             schema = @Schema(implementation = ErrorResponse.class)
                     )
             ),
@@ -66,10 +71,9 @@ public interface CSNoteControllerDocs {
                     )
             )
     })
-    @GetMapping("/{chapter}/{unit}")
+    @GetMapping("/{unitId}")
     ResponseEntity<Resource> getNote(
-            @PathVariable("chapter") String chapter,
-            @PathVariable("unit") String unit
+            @PathVariable("unitId") Long unitId
     );
 
 }
