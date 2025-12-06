@@ -44,4 +44,9 @@ public class UnitRepositoryImpl implements UnitRepository {
     public void saveAll(List<Unit> units){
         unitJpaRepository.saveAll(units);
     }
+
+    @Override
+    public List<Long> findIdsByChapterIdOrderById(long chapterId) {
+        return unitJpaRepository.findIdsByChapterIdOrderById(chapterId);
+    }
 }
