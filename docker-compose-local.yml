@@ -3,15 +3,17 @@ version: "3.8"
 services:
   redis:
     image: redis:7.0
-    container_name: redis-local
+    container_name: gravit-redis-local
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - ./redis_data_local:/data
+    networks:
+      - gravit-local
 
   postgres:
     image: postgres:15
-    container_name: postgres-local
+    container_name: gravit-postgres-local
     ports:
       - "5433:5432"
     environment:
@@ -19,8 +21,23 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: mydb
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data_local:/var/lib/postgresql/data
+    networks:
+      - gravit-local
 
-volumes:
-  redis_data:
-  postgres_data:
+  alloy:
+    image: grafana/alloy:latest
+    container_name: gravit-alloy
+    ports:
+      - "12345:12345"   # Alloy 상태/디버그 UI
+    volumes:
+      - ./logs:/var/log/spring                 # 스프링 로컬 로그 → Alloy가 읽을 경로
+      - ./config-local.alloy:/etc/alloy/config.alloy:ro
+    environment:
+      - ALLOY_ENV=local                        # 라벨로 들어감
+    command: [ "run", "/etc/alloy/config.alloy" ]
+    networks:
+      - gravit-local
+
+networks:
+  gravit-local:
