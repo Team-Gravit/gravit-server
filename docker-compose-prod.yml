@@ -4,11 +4,14 @@ services:
     image: ${DOCKER_HUB_USERNAME}/gravit-server:prod
     ports:
       - "8520:8080"
+      - "8521:8081"
     environment:
       - TZ=Asia/Seoul
       - SPRING_PROFILE=prod
     networks:
       - gravit-prod
+    volumes:
+      - ./logs:/var/log/spring
     depends_on:
       gravit-redis-prod:
         condition: service_started
@@ -28,6 +31,17 @@ services:
         limits:
           cpus: '1'
           memory: 512M
+
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    ports:
+      - "12345:12345"
+    volumes:
+      - ./logs:/var/log/spring
+      - ./infra/config.alloy:/etc/alloy/config.alloy:ro
+    environment:
+      - ALLOY_ENV=production
 
 volumes:
   redis_data:

@@ -52,7 +52,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
         // 2) 로깅 제외 대상이면 그냥 통과 (traceId는 유지: 추후 하위 레이어 로그에도 붙음)
         if (excluded) {
             try {
-                filterChain.doFilter(request, response);
+                filterChain.doFilter(wrappingRequest, wrappingResponse);
             } finally {
                 MDC.clear();
             }
@@ -62,7 +62,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
         printRequestUri(wrappingRequest);
 
         try {
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(wrappingRequest, wrappingResponse);
 
             Boolean alreadyErrorLogging = (Boolean) request.getAttribute("errorLoggedByGlobal");
             if (alreadyErrorLogging == null || !alreadyErrorLogging) {

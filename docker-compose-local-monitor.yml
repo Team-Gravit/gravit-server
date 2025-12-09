@@ -6,8 +6,6 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - gravit-local
 
