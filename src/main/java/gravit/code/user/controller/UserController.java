@@ -62,7 +62,6 @@ public class UserController implements UserControllerDocs {
 
     @GetMapping("/main-page")
     public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser){
-        log.info("test test test test test");
         return ResponseEntity.status(HttpStatus.OK).body(userService.getMainPage(loginUser.getId()));
     }
 }
