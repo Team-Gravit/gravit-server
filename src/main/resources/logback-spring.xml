@@ -1,15 +1,28 @@
-<configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
   <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
   <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+  <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
 
   <property name="FILE_PATTERN"
     value="timestamp=[%d{yyyy-MM-dd'T'HH:mm:ss, Asia/Seoul}] level=[%-5level] thread=[%thread] logger=[%logger{36}] message=[%msg%n]"/>
 
   <!-- ================== -->
+  <!-- 프로파일별 LOG_PATH 설정 -->
+  <!-- ================== -->
+<!--  <springProfile name="local"> -->                           <!-- **** 이 설정 때문에 적용이 안됨 *** -->
+<!--    <property name="LOG_PATH" value="/logs"/>-->
+<!--  </springProfile>-->
+
+<!--  <springProfile name="dev | prod">-->
+<!--    <property name="LOG_PATH" value="/var/log/spring"/>-->
+<!--  </springProfile>-->
+
+  <!-- ================== -->
   <!-- DEV + PROD 공통 -->
   <!-- ================== -->
-  <springProfile name="dev | prod">
-    <property name="LOG_PATH" value="/var/log/spring"/>
+  <springProfile name="dev | prod | local">
+    <property name="LOG_PATH" value="logs"/>
 
     <!-- INFO -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -90,7 +103,7 @@
   <!-- ================== -->
   <!-- 그 외 프로파일-->
   <!-- ================== -->
-  <springProfile name="!dev &amp; !prod">
+  <springProfile name="!dev &amp; !prod &amp; !local">
     <root level="INFO">
       <appender-ref ref="CONSOLE"/>
     </root>

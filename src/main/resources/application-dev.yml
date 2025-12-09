@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: dev
   datasource:
     url: ${POSTGRESQL_DEV_URL}
     username: ${POSTGRESQL_USERNAME}
@@ -120,7 +123,3 @@ management:
     web:
       exposure:
         include: health, prometheus
-
-springdoc:
-  api-docs:
-    resolve-schema-properties: true

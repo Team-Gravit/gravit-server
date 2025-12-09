@@ -26,6 +26,7 @@ services:
     depends_on:
       - prometheus
       - loki
+    user: root
 
   loki:
     image: grafana/loki:2.9.8
