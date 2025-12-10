@@ -1,0 +1,124 @@
+livedebugging {
+  enabled = true
+}
+
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+// <1. 각 로그 레벨별로 파일 매칭
+local.file_match "spring_info" {
+  path_targets = [{
+    __path__ = "/var/log/spring/info/*.log",
+    level = "info",
+  }]
+}
+
+local.file_match "spring_warn" {
+  path_targets = [{
+    __path__ = "/var/log/spring/warn/*.log",
+    level = "warn",
+  }]
+}
+
+local.file_match "spring_error" {
+  path_targets = [{
+    __path__ = "/var/log/spring/error/*.log",
+    level = "error",
+  }]
+}
+
+local.file_match "spring_api_perf" {
+  path_targets = [{
+    __path__ = "/var/log/spring/api-perf/*.log",
+    level = "info",
+    log_type = "performance",
+  }]
+}
+// 1>
+
+// <2. 각 소스 정의
+loki.source.file "spring_info" {
+  targets = local.file_match.spring_info.targets
+  forward_to = [loki.process.spring_info_labels.receiver]
+}
+
+loki.source.file "spring_warn" {
+  targets = local.file_match.spring_warn.targets
+  forward_to = [loki.process.spring_warn_labels.receiver]
+}
+
+loki.source.file "spring_error" {
+  targets = local.file_match.spring_error.targets
+  forward_to = [loki.process.spring_error_labels.receiver]
+}
+
+loki.source.file "spring_api_perf" {
+  targets = local.file_match.spring_api_perf.targets
+  forward_to = [loki.process.spring_api_perf_labels.receiver]
+}
+// 2>
+
+// <3. 각 프로세서 정의 (레벨별 라벨 추가)
+loki.process "spring_info_labels" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.static_labels {
+    values = {
+      service = "backend",
+      env = sys.env("ALLOY_ENV"),
+      level = "info",
+      log_type = "application",
+    }
+  }
+}
+
+loki.process "spring_warn_labels" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.static_labels {
+    values = {
+      service = "backend",
+      env = sys.env("ALLOY_ENV"),
+      level = "warn",
+      log_type = "application",
+    }
+  }
+}
+
+loki.process "spring_error_labels" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.static_labels {
+    values = {
+      service = "backend",
+      env = sys.env("ALLOY_ENV"),
+      level = "error",
+      log_type = "application",
+    }
+  }
+}
+
+loki.process "spring_api_perf_labels" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.static_labels {
+    values = {
+      service = "backend",
+      env = sys.env("ALLOY_ENV"),
+      level = "info",
+      log_type = "performance",
+    }
+  }
+}
+
+// 3>
+
+loki.write "local" {
+  endpoint {
+    url        = "http://loki:3100/loki/api/v1/push"  // ← 로컬 Loki 서비스로 보냄
+    batch_wait = "1s"
+    batch_size = "1MB"
+  }
+}

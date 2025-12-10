@@ -9,6 +9,8 @@ services:
       - SPRING_PROFILE=prod
     networks:
       - gravit-prod
+    volumes:
+      - ./logs:/var/log/spring
     depends_on:
       gravit-redis-prod:
         condition: service_started
@@ -20,7 +22,7 @@ services:
     ports:
       - "6388:6379"
     volumes:
-      - redis_data:/data
+      - ./redis_data:/data
     networks:
       - gravit-prod
     deploy:
@@ -29,9 +31,19 @@ services:
           cpus: '1'
           memory: 512M
 
-volumes:
-  redis_data:
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    ports:
+      - "12345:12345"
+    volumes:
+      - ./logs:/var/log/spring
+      - ./infra/config.alloy:/etc/alloy/config.alloy:ro
+    environment:
+      - ALLOY_ENV=production
+    command: [ "run", "/etc/alloy/config.alloy" ]
+    networks:
+      - gravit-prod
 
 networks:
   gravit-prod:
-    driver: bridge

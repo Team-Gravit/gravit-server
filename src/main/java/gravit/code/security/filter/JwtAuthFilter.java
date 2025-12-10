@@ -68,6 +68,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authTokenProvider.validateToken(jwtToken);
                 Authentication authentication = authTokenProvider.getAuthUser(jwtToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                Long userId = authTokenProvider.parseUser(jwtToken).getId();
+                request.setAttribute("user_id", userId);
+
                 log.info("[doFilterInternal] 토큰 값 검증 완료");
             }
 

@@ -45,3 +45,8 @@ out/
 CLAUDE.md
 TASKS.md
 
+### Volume ###
+postgres_data_local
+redis_data_local
+logs
+grafana_data
