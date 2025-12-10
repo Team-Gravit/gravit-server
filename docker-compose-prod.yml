@@ -23,7 +23,7 @@ services:
     ports:
       - "6388:6379"
     volumes:
-      - redis_data:/data
+      - ./redis_data:/data
     networks:
       - gravit-prod
     deploy:
@@ -42,10 +42,9 @@ services:
       - ./infra/config.alloy:/etc/alloy/config.alloy:ro
     environment:
       - ALLOY_ENV=production
-
-volumes:
-  redis_data:
+    command: [ "run", "/etc/alloy/config.alloy" ]
+    networks:
+      - gravit-prod
 
 networks:
   gravit-prod:
-    driver: bridge
