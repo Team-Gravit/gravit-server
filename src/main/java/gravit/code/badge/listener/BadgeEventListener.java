@@ -76,7 +76,7 @@ public class BadgeEventListener {
                     event.userId()
             );
 
-            log.info("[handleLessonCompleted] 미션 완료 뱃지 grant userId: {}, missionCompleteCount : {}", dto.userId(), dto.missionCompleteCount());
+            log.info("[handleMissionCompleted] 미션 완료 뱃지 grant userId: {}, missionCompleteCount : {}", dto.userId(), dto.missionCompleteCount());
             badgeGrantService.evaluateMissionCount(
                     dto.userId(), dto.missionCompleteCount()
             );
