@@ -36,6 +36,7 @@ public class BadgeEventListener {
                     event.userId(), event.chapterId()
             );
             if(planetDto != null){
+                log.info("[handleLessonCompleted] 행성 완료 뱃지 grant userId: {}, planetName : {}, completed : {}", planetDto.userId(), planetDto.planetName(), planetDto.allPlanetsCompleted());
                 badgeGrantService.evaluatePlanet(
                         planetDto.userId(),
                         planetDto.planetName(),
@@ -47,12 +48,15 @@ public class BadgeEventListener {
             QualifiedSolveCountDto qualifiedDto = projectionService.recordQualifiedSolveStat(
                     event.userId(), event.accuracy(), event.learningTime()
             );
+
+            log.info("[handleLessonCompleted] 풀이 속도 뱃지 grant userId: {}, qualifiedCount : {}", qualifiedDto.userId(), qualifiedDto.qualifiedCount());
             badgeGrantService.evaluateQualifiedSolvedCount(
                     qualifiedDto.userId(), qualifiedDto.qualifiedCount()
             );
 
             // 3. 연속 학습 뱃지 (조건부)
             if(event.beforeConsecutiveSolved() != event.afterConsecutiveSolved()){
+                log.info("[handleLessonCompleted] 연속 학습 뱃지 grant userId: {}, consecutiveSolved : {}", event.userId(), event.afterConsecutiveSolved());
                 badgeGrantService.evaluateStreak(
                         event.userId(), event.afterConsecutiveSolved()
                 );
@@ -72,6 +76,7 @@ public class BadgeEventListener {
                     event.userId()
             );
 
+            log.info("[handleMissionCompleted] 미션 완료 뱃지 grant userId: {}, missionCompleteCount : {}", dto.userId(), dto.missionCompleteCount());
             badgeGrantService.evaluateMissionCount(
                     dto.userId(), dto.missionCompleteCount()
             );
