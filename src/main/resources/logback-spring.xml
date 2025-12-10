@@ -10,7 +10,7 @@
   <!-- DEV + PROD 공통 -->
   <!-- ================== -->
   <springProfile name="dev | prod">
-    <property name="LOG_PATH" value="/var/log/spring"/>
+    <property name="LOG_PATH" value="var/log/spring"/>
 
     <!-- INFO -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">

@@ -6,7 +6,7 @@ services:
       - "8520:8080"
     environment:
       - TZ=Asia/Seoul
-      - SPRING_PROFILE=prod
+      - SPRING_PROFILE_ACTIVE=prod
     networks:
       - gravit-prod
     volumes:
@@ -22,7 +22,7 @@ services:
     ports:
       - "6388:6379"
     volumes:
-      - redis_data:/data
+      - ./redis_data:/data
     networks:
       - gravit-prod
     deploy:
