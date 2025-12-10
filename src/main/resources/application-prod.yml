@@ -123,8 +123,6 @@ admin:
     emails: ${ADMIN_BOOTSTRAP_EMAILS}
 
 management:
-  server:
-    port: 8080
   endpoints:
     web:
       exposure:

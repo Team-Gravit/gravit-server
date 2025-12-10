@@ -4,7 +4,6 @@ services:
     image: ${DOCKER_HUB_USERNAME}/gravit-server:prod
     ports:
       - "8520:8080"
-      - "8521:8081"
     environment:
       - TZ=Asia/Seoul
       - SPRING_PROFILE=prod
