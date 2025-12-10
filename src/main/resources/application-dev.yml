@@ -120,7 +120,3 @@ management:
     web:
       exposure:
         include: health, prometheus
-
-springdoc:
-  api-docs:
-    resolve-schema-properties: true

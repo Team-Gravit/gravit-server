@@ -40,10 +40,10 @@ services:
       - ./logs:/var/log/spring
       - ./infra/config.alloy:/etc/alloy/config.alloy:ro
     environment:
-      - ALLOY_ENV=prod
-
-volumes:
-  redis_data:
+      - ALLOY_ENV=production
+    command: [ "run", "/etc/alloy/config.alloy" ]
+    networks:
+      - gravit-prod
 
 networks:
   gravit-prod:
