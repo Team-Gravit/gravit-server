@@ -54,6 +54,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
             try {
                 filterChain.doFilter(wrappingRequest, wrappingResponse);
             } finally {
+                wrappingResponse.copyBodyToResponse();
                 MDC.clear();
             }
             return;
