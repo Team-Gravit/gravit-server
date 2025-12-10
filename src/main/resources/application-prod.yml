@@ -1,7 +1,4 @@
 spring:
-  config:
-    activate:
-      on-profile: prod
   datasource:
     url: ${POSTGRESQL_URL}
     username: ${POSTGRESQL_USERNAME}
