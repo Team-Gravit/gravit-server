@@ -7,6 +7,7 @@ import gravit.code.learning.domain.LearningRepository;
 import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.response.LearningDetail;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LearningService {
@@ -55,6 +57,7 @@ public class LearningService {
 
         ConsecutiveSolvedDto consecutiveSolvedDto = learning.updateLearningStatus(chapterId, planetConquestRate);
 
+        log.info("[LeaningService] updateLearningStatus - before : {}, after : {}", consecutiveSolvedDto.before(), consecutiveSolvedDto.after());
         learningRepository.save(learning);
 
         return consecutiveSolvedDto;
