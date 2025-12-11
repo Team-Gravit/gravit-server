@@ -57,7 +57,7 @@ public class LearningService {
 
         ConsecutiveSolvedDto consecutiveSolvedDto = learning.updateLearningStatus(chapterId, planetConquestRate);
 
-        log.info("[LeaningService] updateLearningStatus - before : {}, after : {}", consecutiveSolvedDto.before(), consecutiveSolvedDto.after());
+        log.info("[LearningService] updateLearningStatus - before : {}, after : {}", consecutiveSolvedDto.before(), consecutiveSolvedDto.after());
         learningRepository.save(learning);
 
         return consecutiveSolvedDto;
