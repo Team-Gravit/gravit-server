@@ -90,6 +90,15 @@ spring:
             authorization-grant-type: authorization_code
             scope: name,email
 
+oauth:
+  android:
+    google:
+      issuer: https://accounts.google.com
+      client-id: ${GOOGLE_CLIENT_ID}
+    kakao:
+      issuer: https://kauth.kakao.com
+      client-id: ${KAKAO_NATIVE_APP_KEY}
+
 jwt:
   secret: ${JWT_SECRET}
 
@@ -103,11 +112,7 @@ token:
 
 scheduler:
   season:
-    rollover-cron: "0 */2 * * * *"
-
-auth0:
-  issuer: ${AUTH0_ISSUER}
-  android-client-id: ${ANDROID_CLIENT_ID}
+    rollover-cron: "0 0 0 * * MON"
 
 user-delete-mail:
   code-length: 16
