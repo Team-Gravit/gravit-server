@@ -18,12 +18,4 @@ public final class AndroidOAuthClaimsExtractor {
     public static boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
-
-    public static String extractProviderUserIdFromSub(String sub) {
-        if (isBlank(sub))
-            return null;
-        int last = sub.lastIndexOf('|');
-        return last == -1 ? sub : sub.substring(last + 1);
-    }
-
 }

@@ -24,8 +24,8 @@ public class GoogleAndroidUserInfo implements OAuthUserInfo {
 
     @Override
     public String getProviderId() {
-        String sub = getClaimAsString(claims, CLAIM_SUB);
-        return extractProviderUserIdFromSub(sub);
+        String providerId = getClaimAsString(claims, CLAIM_SUB);
+        return isBlank(providerId) ? null : providerId;
     }
 
     @Override

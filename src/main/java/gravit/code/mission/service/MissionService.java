@@ -81,7 +81,7 @@ public class MissionService {
         // 미션 타입에 맞게 진행도 업데이트
         if (missionType.name().startsWith("COMPLETE_LESSON")) {
             mission.updateCompleteLessonProgress();
-        } else if (missionType.name().startsWith("PERFECT_LESSONS") && accuracy == 100) {
+        } else if (missionType.name().startsWith("PERFECT_LESSON") && accuracy == 100) {
             mission.updatePerfectLessonProgress();
         } else if (missionType.name().startsWith("LEARNING_MINUTES")) {
             mission.updateLearningMinutesProgress(learningTime);
