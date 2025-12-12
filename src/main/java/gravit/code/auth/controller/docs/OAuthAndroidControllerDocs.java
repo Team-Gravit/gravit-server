@@ -1,6 +1,7 @@
 package gravit.code.auth.controller.docs;
 
 import gravit.code.auth.dto.oauth.android.IdTokenRequest;
+import gravit.code.auth.dto.oauth.android.NaverAndroidUserInfoRequest;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,11 +15,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "OAuth2.0 Android API", description = "Android OAuth 관련 API")
 public interface OAuthAndroidControllerDocs {
 
-    @Operation(summary = "OAuth 회원가입/로그인 처리", description = "Android 에서 전달한 OAuth IdToken 을 기반으로 사용자 정보를 조회하고 회원가입/로그인 처리를 합니다")
+    @Operation(summary = "OAuth 회원가입/로그인 처리",
+            description = "Android 에서 전달한 OAuth IdToken 및 provider 기반으로 사용자 정보를 조회하고 회원가입/로그인 처리를 합니다. <br>"
+                    + "google, kakao 만 해당 api로 로그인 할 수 있습니다(IdToken 방식)"
+                    + "IdToken 을 body에 담고, provider는 쿼리 파라미터로 담아서 사용합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ OAuth 회원가입/로그인 성공"),
             @ApiResponse(responseCode = "400", description = "🚨 유효하지 않은 OAuth 제공자",
@@ -41,6 +46,46 @@ public interface OAuthAndroidControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
+            @ApiResponse(responseCode = "400", description = "🚨 IdToken 디코딩 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "IdToken 디코딩 실패",
+                                            value = "{\"error\" : \"AUTH_4004\", \"message\" : \"IdToken을 JWT로 디코딩하는데 실패했습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "🚨 Issuer 불일치",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Issuer 불일치",
+                                            value = "{\"error\" : \"AUTH_4005\", \"message\" : \"IdToken의 발급자(issuer)가 일치하지 않습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "🚨 Audience 없음",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Audience 없음",
+                                            value = "{\"error\" : \"AUTH_4006\", \"message\" : \"IdToken에 audience claim이 존재하지 않습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "🚨 Audience 불일치",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Audience 불일치",
+                                            value = "{\"error\" : \"AUTH_4007\", \"message\" : \"IdToken의 수신자(audience)가 일치하지 않습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -53,6 +98,29 @@ public interface OAuthAndroidControllerDocs {
             )
     })
     @PostMapping
-    ResponseEntity<LoginResponse> oauthLogin(@RequestBody IdTokenRequest request);
+    ResponseEntity<LoginResponse> oauthLogin(
+            @RequestParam("provider") String provider,
+            @RequestBody IdTokenRequest request
+    );
 
+    @Operation(summary = "네이버 OAuth 회원가입/로그인 처리",
+            description = "Android에서 전달한 네이버 사용자 정보를 기반으로 회원가입/로그인 처리를 합니다. <br>"
+                    + "네이버는 IdToken 방식을 지원하지 않기 때문에 Android에서 직접 사용자 정보(providerId, email, nickname)를 전달합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 네이버 OAuth 회원가입/로그인 성공"),
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외 발생",
+                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @PostMapping("/naver")
+    ResponseEntity<LoginResponse> oauthNaverLogin(
+            @RequestBody NaverAndroidUserInfoRequest request
+    );
 }
