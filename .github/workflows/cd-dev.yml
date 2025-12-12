@@ -49,8 +49,8 @@ jobs:
           spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_CLIENT_SECRET }}
           spring.security.oauth2.client.registration.naver.redirect-uri: ${{ secrets.NAVER_REDIRECT_URI }}
 
-          auth0.issuer: ${{ secrets.AUTH0_ISSUER }}
-          auth0.android-client-id: ${{ secrets.ANDROID_CLIENT_ID }}
+          oauth.android.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          oauth.android.kakao.client-id: ${{ secrets.KAKAO_NATIVE_APP_KEY }}
 
           admin.bootstrap.emails: ${{ secrets.ADMIN_BOOTSTRAP_EMAILS }}
 
