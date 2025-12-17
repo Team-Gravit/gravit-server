@@ -1,6 +1,6 @@
 package gravit.code.lesson.dto.response;
 
-import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.unit.dto.response.UnitSummary;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -12,9 +12,9 @@ import java.util.List;
 @Schema(description = "레슨 페이지 조회 Response")
 public record LessonDetailResponse(
 
-        @Schema(description = "챕터 요약 정보")
+        @Schema(description = "유닛 요약 정보")
         @NotNull
-        ChapterSummary chapterSummary,
+        UnitSummary unitSummary,
 
         @Schema(
                 description = "북마크 풀이 가능 여부",
@@ -41,14 +41,14 @@ public record LessonDetailResponse(
         List<LessonSummary> lessonSummaries
 ) {
     public static LessonDetailResponse create(
-            ChapterSummary chapterSummary,
+            UnitSummary unitSummary,
             boolean bookmarkAccessible,
             boolean wrongAnsweredNoteAccessible,
             long unitId,
             List<LessonSummary> lessonSummaries
     ){
         return LessonDetailResponse.builder()
-                .chapterSummary(chapterSummary)
+                .unitSummary(unitSummary)
                 .bookmarkAccessible(bookmarkAccessible)
                 .wrongAnsweredNoteAccessible(wrongAnsweredNoteAccessible)
                 .unitId(unitId)

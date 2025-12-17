@@ -87,7 +87,7 @@ public class LearningQueryFacade {
             long userId,
             long unitId
     ) {
-        ChapterSummary chapterSummary = chapterService.getChapterSummaryByUnitId(unitId);
+        UnitSummary unitSummary = unitService.getUnitSummaryByUnitId(unitId);
 
         List<LessonSummary> lessonSummaries = lessonService.getAllLessonSummaryByUnitId(unitId, userId);
 
@@ -95,7 +95,7 @@ public class LearningQueryFacade {
         boolean wrongAnsweredNoteAccessible = wrongAnsweredNoteService.checkWrongAnsweredNoteAccessibleInUnit(unitId, userId);
 
         return LessonDetailResponse.create(
-                chapterSummary,
+                unitSummary,
                 bookmarkAccessible,
                 wrongAnsweredNoteAccessible,
                 unitId,
