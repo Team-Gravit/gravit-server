@@ -1,8 +1,9 @@
-package gravit.code.userLeague.infrastructure;
+package gravit.code.userLeague.repository;
 
 import gravit.code.league.domain.League;
 import gravit.code.season.domain.Season;
 import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.repository.custom.UserLeagueQueryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserLeagueJpaRepository extends JpaRepository<UserLeague,Long> {
+public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, UserLeagueQueryRepository {
     @Query("""
         SELECT l.name
         FROM UserLeague ul
@@ -19,9 +20,9 @@ public interface UserLeagueJpaRepository extends JpaRepository<UserLeague,Long> 
     """)
     Optional<String> findUserLeagueNameByUserId(@Param("userId") Long userId);
 
-    boolean existsByUser_Id(Long userId);
+    boolean existsByUserId(Long userId);
 
-    Optional<UserLeague> findByUser_Id(Long userId);
+    Optional<UserLeague> findByUserId(Long userId);
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
     @Query("""

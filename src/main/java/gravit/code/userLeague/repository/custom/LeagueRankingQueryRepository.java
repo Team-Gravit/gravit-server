@@ -1,4 +1,4 @@
-package gravit.code.userLeague.service;
+package gravit.code.userLeague.repository.custom;
 
 
 import gravit.code.global.dto.response.SliceResponse;
