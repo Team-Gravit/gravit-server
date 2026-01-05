@@ -5,7 +5,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.repository.LeagueRepository;
 import gravit.code.userLeague.domain.UserLeague;
-import gravit.code.userLeague.domain.UserLeagueRepository;
+import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

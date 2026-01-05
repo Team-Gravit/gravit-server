@@ -1,8 +1,7 @@
-package gravit.code.userLeague.infrastructure;
+package gravit.code.userLeague.repository.custom;
 
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
-import gravit.code.userLeague.service.LeagueRankingQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static gravit.code.userLeague.infrastructure.sql.LeagueRankingPagingQuerySql.FIND_RANKING_BY_USER_SQL;
-import static gravit.code.userLeague.infrastructure.sql.LeagueRankingPagingQuerySql.FIND_RANKING_SQL;
+import static gravit.code.userLeague.repository.sql.LeagueRankingPagingQuerySql.FIND_RANKING_BY_USER_SQL;
+import static gravit.code.userLeague.repository.sql.LeagueRankingPagingQuerySql.FIND_RANKING_SQL;
 
 @Repository
 @RequiredArgsConstructor
