@@ -1,4 +1,4 @@
-package gravit.code.user.infrastructure;
+package gravit.code.user.support;
 
 import lombok.experimental.UtilityClass;
 

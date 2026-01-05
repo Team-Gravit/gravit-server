@@ -1,20 +1,18 @@
-package gravit.code.user.infrastructure;
+package gravit.code.user.support;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.user.domain.HandleGenerator;
-import gravit.code.user.domain.UserRepository;
+import gravit.code.user.repository.UserRepository;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.Random;
 
 /**
  * handle 길이는 8 자리로 fix (저장은 @ 미 포함)
  */
 @Component
 @RequiredArgsConstructor
-public class RandomHandleGenerator implements HandleGenerator {
+public class RandomHandleGenerator{
 
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
     private static final Random RANDOM = new Random();
@@ -23,7 +21,6 @@ public class RandomHandleGenerator implements HandleGenerator {
 
     private final UserRepository userRepository;
 
-    @Override
     public String generateUniqueHandle() {
         for (int i = 0; i < MAX_RETRY; i++) {
             String handle = generateHandle();

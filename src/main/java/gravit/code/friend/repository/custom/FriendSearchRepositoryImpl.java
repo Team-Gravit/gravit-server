@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
 @RequiredArgsConstructor
+@Repository
 public class FriendSearchRepositoryImpl implements FriendSearchRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;

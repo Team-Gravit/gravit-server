@@ -1,15 +1,16 @@
-package gravit.code.user.infrastructure;
+package gravit.code.user.repository;
 
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserLevel;
 import gravit.code.user.dto.response.MyPageResponse;
+import gravit.code.user.repository.custom.UserDeletionRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserJpaRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, UserDeletionRepository {
 
     @Query(value = """
         SELECT * FROM users 

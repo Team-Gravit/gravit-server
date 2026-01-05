@@ -1,8 +1,8 @@
-package gravit.code.user.infrastructure.mail;
+package gravit.code.user.infrastructure;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.user.service.MailSender;
+import gravit.code.user.service.port.MailSender;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

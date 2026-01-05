@@ -14,9 +14,9 @@
 //import gravit.code.progress.infrastructure.ChapterProgressJpaRepository;
 //import gravit.code.season.domain.Season;
 //import gravit.code.season.repository.SeasonRepository;
-//import gravit.code.user.infrastructure.UserJpaRepository;
+//import gravit.code.user.repository.UserRepository;
 //import gravit.code.userLeague.domain.UserLeague;
-//import gravit.code.userLeague.infrastructure.UserLeagueJpaRepository;
+//import gravit.code.userLeague.repository.UserLeagueRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Nested;
@@ -41,7 +41,7 @@
 //class UserRepositoryTest {
 //
 //    @Autowired
-//    private UserJpaRepository userRepository;
+//    private UserRepository userRepository;
 //
 //    @Autowired
 //    private ChapterJpaRepository chapterRepository;
@@ -62,7 +62,7 @@
 //    private SeasonRepository seasonRepository;
 //
 //    @Autowired
-//    private UserLeagueJpaRepository userLeagueRepository;
+//    private UserLeagueRepository userLeagueRepository;
 //
 //    @BeforeEach
 //    void setUp() {

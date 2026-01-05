@@ -1,8 +1,8 @@
-package gravit.code.user.infrastructure.mail;
+package gravit.code.user.infrastructure;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.user.service.MailAuthCodeStore;
+import gravit.code.user.service.port.MailAuthCodeStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.time.Duration;
 import java.util.Collections;
 
-import static gravit.code.user.infrastructure.mail.RedisMailAuthCodeConstants.GETDEL_SCRIPT;
-import static gravit.code.user.infrastructure.mail.RedisMailAuthCodeConstants.makeMailAuthCodeKeyW;
+import static gravit.code.user.infrastructure.RedisMailAuthCodeConstants.GETDEL_SCRIPT;
+import static gravit.code.user.infrastructure.RedisMailAuthCodeConstants.makeMailAuthCodeKeyW;
 
 @Repository
 @RequiredArgsConstructor
