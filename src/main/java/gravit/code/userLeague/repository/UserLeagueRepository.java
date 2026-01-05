@@ -3,15 +3,15 @@ package gravit.code.userLeague.repository;
 import gravit.code.league.domain.League;
 import gravit.code.season.domain.Season;
 import gravit.code.userLeague.domain.UserLeague;
-import gravit.code.userLeague.repository.custom.UserLeagueQueryRepository;
+import gravit.code.userLeague.repository.custom.LeagueRankingQueryRepository;
+import gravit.code.userLeague.repository.custom.MyLeagueProfileQueryRepository;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
-public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, UserLeagueQueryRepository {
+public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, LeagueRankingQueryRepository, MyLeagueProfileQueryRepository {
     @Query("""
         SELECT l.name
         FROM UserLeague ul

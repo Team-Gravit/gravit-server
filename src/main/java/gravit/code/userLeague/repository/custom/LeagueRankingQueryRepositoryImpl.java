@@ -14,9 +14,9 @@ import java.util.Map;
 import static gravit.code.userLeague.repository.sql.LeagueRankingPagingQuerySql.FIND_RANKING_BY_USER_SQL;
 import static gravit.code.userLeague.repository.sql.LeagueRankingPagingQuerySql.FIND_RANKING_SQL;
 
-@Repository
 @RequiredArgsConstructor
-public class JdbcLeagueRankingQueryRepository implements LeagueRankingQueryRepository {
+@Repository
+public class LeagueRankingQueryRepositoryImpl implements LeagueRankingQueryRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final int PAGE_SIZE = 10;

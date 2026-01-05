@@ -8,7 +8,7 @@ import gravit.code.season.calendar.SeasonCalendar;
 import gravit.code.season.domain.Season;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
-import gravit.code.userLeague.domain.UserLeagueRepository;
+import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import java.sql.SQLException;
 import java.time.Clock;

@@ -9,9 +9,9 @@ import java.util.Map;
 
 import static gravit.code.userLeague.repository.sql.MyLeagueRankWithProfileQuerySql.FIND_MY_RANK_WITH_PROFILE_SQL;
 
-@Repository
 @RequiredArgsConstructor
-public class JdbMyLeagueProfileQueryRepository implements MyLeagueProfileQueryRepository {
+@Repository
+public class MyLeagueProfileQueryRepositoryImpl implements MyLeagueProfileQueryRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
