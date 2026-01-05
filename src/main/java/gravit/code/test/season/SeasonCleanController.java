@@ -1,6 +1,6 @@
 package gravit.code.test.season;
 
-import gravit.code.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
+import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.Set;
