@@ -1,6 +1,6 @@
 package gravit.code.friend.repository.strategy;
 
-import gravit.code.friend.dto.SearchPlan;
+import gravit.code.friend.dto.SearchPlanDto;
 import gravit.code.friend.repository.sql.FriendsNicknameSearchQuerySql;
 import gravit.code.friend.support.NicknameNormalize;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class NicknameSearchStrategy implements FriendsSearchStrategy {
     }
 
     @Override
-    public SearchPlan buildPlan(
+    public SearchPlanDto buildPlan(
             long requesterId,
             String queryText,
             int page,
@@ -27,7 +27,7 @@ public class NicknameSearchStrategy implements FriendsSearchStrategy {
         String cleanText = NicknameNormalize.nicknameNormalize(queryText);
 
         if(cleanText.isEmpty()){
-            return SearchPlan.empty();
+            return SearchPlanDto.empty();
         }
 
         boolean isQueryNeedContains = cleanText.length() >= MIN_CONTAINS_LEN;
@@ -36,6 +36,6 @@ public class NicknameSearchStrategy implements FriendsSearchStrategy {
                 ? FriendsNicknameSearchQuerySql.SELECT_USER_WITH_CONTAINS_BY_NICKNAME
                 : FriendsNicknameSearchQuerySql.SELECT_USER_NO_CONTAINS_BY_NICKNAME;
 
-        return SearchPlan.of(selectSql, cleanText, isQueryNeedContains);
+        return SearchPlanDto.of(selectSql, cleanText, isQueryNeedContains);
     }
 }

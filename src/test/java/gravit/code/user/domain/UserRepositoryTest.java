@@ -1,7 +1,7 @@
 //package gravit.code.user.domain;
 //
 //import gravit.code.league.domain.League;
-//import gravit.code.league.infrastructure.LeagueRepository;
+//import gravit.code.league.repository.LeagueRepository;
 //import gravit.code.chapter.domain.Chapter;
 //import gravit.code.learning.domain.Learning;
 //import gravit.code.chapter.infrastructure.ChapterJpaRepository;

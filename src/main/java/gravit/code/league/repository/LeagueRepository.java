@@ -1,4 +1,4 @@
-package gravit.code.league.infrastructure;
+package gravit.code.league.repository;
 
 import gravit.code.league.domain.League;
 import org.springframework.data.jpa.repository.JpaRepository;

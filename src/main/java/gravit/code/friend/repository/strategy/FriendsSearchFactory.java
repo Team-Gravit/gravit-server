@@ -1,6 +1,6 @@
 package gravit.code.friend.repository.strategy;
 
-import gravit.code.friend.dto.SearchPlan;
+import gravit.code.friend.dto.SearchPlanDto;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class FriendsSearchFactory {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.FRIEND_QUERY_STRATEGY_TYPE_INVALID));
     }
 
-    public SearchPlan buildPlan(
+    public SearchPlanDto buildPlan(
             long requesterId,
             String raw,
             int page,

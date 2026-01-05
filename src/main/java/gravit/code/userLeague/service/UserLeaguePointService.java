@@ -3,7 +3,7 @@ package gravit.code.userLeague.service;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
-import gravit.code.league.infrastructure.LeagueRepository;
+import gravit.code.league.repository.LeagueRepository;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.domain.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;

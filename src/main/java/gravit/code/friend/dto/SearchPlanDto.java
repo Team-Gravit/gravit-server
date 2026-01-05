@@ -1,22 +1,21 @@
 package gravit.code.friend.dto;
 
-public record SearchPlan(
-
+public record SearchPlanDto(
         String selectSql,
         String cleanText,
         boolean isQueryNeedContains,
         boolean isEmpty
 ) {
 
-    public static SearchPlan of(
+    public static SearchPlanDto of(
             String selectSql,
             String cleanText,
             boolean isQueryNeedContains
     ) {
-        return new SearchPlan(selectSql, cleanText, isQueryNeedContains, false);
+        return new SearchPlanDto(selectSql, cleanText, isQueryNeedContains, false);
     }
 
-    public static SearchPlan empty(){
-        return new SearchPlan(null,"",false,true);
+    public static SearchPlanDto empty(){
+        return new SearchPlanDto(null, "", false, true);
     }
 }

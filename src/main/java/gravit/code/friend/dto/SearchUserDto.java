@@ -1,7 +1,6 @@
 package gravit.code.friend.dto;
 
-public record SearchUser(
-
+public record SearchUserDto(
         long userId,
         int profileImgNumber,
         String nickname,

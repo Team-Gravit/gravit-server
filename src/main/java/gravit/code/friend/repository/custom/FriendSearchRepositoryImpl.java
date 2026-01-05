@@ -1,7 +1,7 @@
 package gravit.code.friend.repository.custom;
 
-import gravit.code.friend.dto.SearchPlan;
-import gravit.code.friend.dto.SearchUser;
+import gravit.code.friend.dto.SearchPlanDto;
+import gravit.code.friend.dto.SearchUserDto;
 import gravit.code.friend.repository.strategy.FriendsSearchFactory;
 import gravit.code.global.dto.response.SliceResponse;
 import java.util.List;
@@ -20,8 +20,8 @@ public class FriendSearchRepositoryImpl implements FriendSearchRepository {
 
     private static final int PAGE_SIZE = 10;
 
-    private static final RowMapper<SearchUser> MAPPER = (rs, i) ->
-            new SearchUser(
+    private static final RowMapper<SearchUserDto> MAPPER = (rs, i) ->
+            new SearchUserDto(
                     rs.getLong("user_id"),
                     rs.getInt("profile_img_number"),
                     rs.getString("nickname"),
@@ -29,14 +29,14 @@ public class FriendSearchRepositoryImpl implements FriendSearchRepository {
                     rs.getBoolean("is_following")
             );
 
-    public SliceResponse<SearchUser> searchUsersByQueryText(
+    public SliceResponse<SearchUserDto> searchUsersByQueryText(
             long requesterId,
             String queryText,
             int page
     ) {
 
         // 1. nickname, handle 에 맞는 쿼리 가져오기
-        SearchPlan plan = searchFactory.buildPlan(requesterId, queryText, page, PAGE_SIZE);
+        SearchPlanDto plan = searchFactory.buildPlan(requesterId, queryText, page, PAGE_SIZE);
         boolean isEmpty = plan.isEmpty();
 
         // 정규화된 queryText 가 유효한 길이가 아닐때
@@ -52,11 +52,11 @@ public class FriendSearchRepositoryImpl implements FriendSearchRepository {
         final MapSqlParameterSource params = buildParams(requesterId, cleanText, page, isQueryNeedContains);
 
         // 3. 10명 페이징 조회(hasNext로 11번째까지 조회)
-        List<SearchUser> rows = jdbcTemplate.query(selectSql, params, MAPPER);
+        List<SearchUserDto> rows = jdbcTemplate.query(selectSql, params, MAPPER);
 
         // 4. hasNext 를 구하고, true 면 11번째 값 버림
         boolean hasNext = rows.size() > PAGE_SIZE;
-        List<SearchUser> contents = hasNext ? rows.subList(0, PAGE_SIZE) : rows;
+        List<SearchUserDto> contents = hasNext ? rows.subList(0, PAGE_SIZE) : rows;
 
         // 5. contents 가 비어있으면 empty 리턴
         if(contents.isEmpty()){
