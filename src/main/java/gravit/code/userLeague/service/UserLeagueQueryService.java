@@ -6,7 +6,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.dto.response.LeagueRankRow;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
-import gravit.code.userLeague.repository.custom.UserLeagueQueryRepository;
+import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserLeagueQueryService {
 
     private final UserRepository userRepository;
-    private final UserLeagueQueryRepository userLeagueQueryRepository;
+    private final UserLeagueRepository userLeagueRepository;
 
     @Transactional(readOnly = true)
     public MyLeagueRankWithProfileResponse getMyLeagueRankWithProfile(long userId) {
@@ -27,7 +27,7 @@ public class UserLeagueQueryService {
             throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
         }
 
-        return userLeagueQueryRepository.findLeagueRankAndProfile(userId);
+        return userLeagueRepository.findLeagueRankAndProfile(userId);
     }
 
     @Transactional(readOnly = true)
@@ -36,7 +36,7 @@ public class UserLeagueQueryService {
             int page
     ){
         int safePage = Math.max(0, page);
-        return userLeagueQueryRepository.findLeagueRanking(leagueId, safePage);
+        return userLeagueRepository.findLeagueRanking(leagueId, safePage);
     }
 
     @Transactional(readOnly = true)
@@ -50,6 +50,6 @@ public class UserLeagueQueryService {
             throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
         }
 
-        return userLeagueQueryRepository.findLeagueRankingByUser(userId, safePage);
+        return userLeagueRepository.findLeagueRankingByUser(userId, safePage);
     }
 }

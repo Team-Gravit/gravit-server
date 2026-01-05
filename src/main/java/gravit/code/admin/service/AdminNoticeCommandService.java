@@ -9,7 +9,7 @@ import gravit.code.notice.domain.Notice;
 import gravit.code.notice.domain.NoticeStatus;
 import gravit.code.notice.infrastructure.NoticeRepository;
 import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
+import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
