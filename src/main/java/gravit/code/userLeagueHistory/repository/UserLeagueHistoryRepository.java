@@ -1,4 +1,4 @@
-package gravit.code.userLeagueHistory.infrastructure;
+package gravit.code.userLeagueHistory.repository;
 
 import gravit.code.season.domain.Season;
 import gravit.code.userLeagueHistory.domain.UserLeagueHistory;

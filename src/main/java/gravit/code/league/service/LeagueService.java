@@ -13,7 +13,7 @@ import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.season.service.port.SeasonPopupSeenStore;
-import gravit.code.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
+import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
