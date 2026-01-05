@@ -1,22 +1,19 @@
-package gravit.code.friend.infrastructure;
+package gravit.code.friend.repository.custom;
 
 import gravit.code.friend.dto.SearchPlan;
 import gravit.code.friend.dto.SearchUser;
-import gravit.code.friend.infrastructure.strategy.FriendsSearchFactory;
+import gravit.code.friend.repository.strategy.FriendsSearchFactory;
 import gravit.code.global.dto.response.SliceResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-@Slf4j
-@Repository
+@Service
 @RequiredArgsConstructor
-public class FriendSearchRepository {
+public class FriendSearchRepositoryImpl implements FriendSearchRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final FriendsSearchFactory searchFactory;
@@ -88,5 +85,4 @@ public class FriendSearchRepository {
         }
         return params;
     }
-
 }
