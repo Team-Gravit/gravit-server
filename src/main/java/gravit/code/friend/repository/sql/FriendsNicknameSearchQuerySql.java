@@ -1,4 +1,4 @@
-package gravit.code.friend.infrastructure.sql.select;
+package gravit.code.friend.repository.sql;
 
 import lombok.experimental.UtilityClass;
 

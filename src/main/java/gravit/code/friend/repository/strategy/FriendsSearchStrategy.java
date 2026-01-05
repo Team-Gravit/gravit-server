@@ -1,4 +1,4 @@
-package gravit.code.friend.infrastructure.strategy;
+package gravit.code.friend.repository.strategy;
 
 import gravit.code.friend.dto.SearchPlan;
 
