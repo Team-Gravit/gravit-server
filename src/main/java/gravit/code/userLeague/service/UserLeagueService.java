@@ -3,7 +3,7 @@ package gravit.code.userLeague.service;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
-import gravit.code.league.infrastructure.LeagueRepository;
+import gravit.code.league.repository.LeagueRepository;
 import gravit.code.season.domain.Season;
 import gravit.code.season.service.SeasonService;
 import gravit.code.user.domain.User;

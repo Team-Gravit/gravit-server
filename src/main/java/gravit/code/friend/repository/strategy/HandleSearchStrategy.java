@@ -1,6 +1,6 @@
 package gravit.code.friend.repository.strategy;
 
-import gravit.code.friend.dto.SearchPlan;
+import gravit.code.friend.dto.SearchPlanDto;
 import gravit.code.friend.repository.sql.FriendsHandleSearchQuerySql;
 import gravit.code.friend.support.HandleNormalize;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class HandleSearchStrategy implements FriendsSearchStrategy {
     }
 
     @Override
-    public SearchPlan buildPlan(
+    public SearchPlanDto buildPlan(
             long requesterId,
             String queryText,
             int page,
@@ -27,7 +27,7 @@ public class HandleSearchStrategy implements FriendsSearchStrategy {
         String cleanText = HandleNormalize.handleNormalize(queryText);
 
         if(cleanText.isEmpty()){
-            return SearchPlan.empty();
+            return SearchPlanDto.empty();
         }
 
         boolean isQueryNeedContains = cleanText.length() >= MIN_CONTAINS_LEN;
@@ -36,6 +36,6 @@ public class HandleSearchStrategy implements FriendsSearchStrategy {
                 ? FriendsHandleSearchQuerySql.SELECT_USER_WITH_CONTAINS_BY_HANDLE
                 : FriendsHandleSearchQuerySql.SELECT_USER_NO_CONTAINS_BY_HANDLE;
 
-        return SearchPlan.of(selectSql, cleanText, isQueryNeedContains);
+        return SearchPlanDto.of(selectSql, cleanText, isQueryNeedContains);
     }
 }

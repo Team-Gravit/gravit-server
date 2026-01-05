@@ -7,7 +7,7 @@ import gravit.code.league.dto.CurrentSeasonDto;
 import gravit.code.league.dto.LastSeasonPopupDto;
 import gravit.code.league.dto.response.LeagueHomeResponse;
 import gravit.code.league.dto.response.LeagueResponse;
-import gravit.code.league.infrastructure.LeagueRepository;
+import gravit.code.league.repository.LeagueRepository;
 import gravit.code.season.domain.Season;
 import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.infrastructure.SeasonRepository;
@@ -34,11 +34,10 @@ public class LeagueService {
     private final UserLeagueHistoryRepository userLeagueHistoryRepository;
     private final Clock clock;
 
-    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
     private static final Duration TTL_BUFFER = Duration.ofHours(2);
     private static final Duration DEFAULT_TTL = Duration.ofDays(10);
 
-
+    @Transactional(readOnly = true)
     public LeagueResponse getLeague(long leagueId) {
         League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RestApiException(CustomErrorCode.LEAGUE_NOT_FOUND));
         return LeagueResponse.from(league);
@@ -81,7 +80,7 @@ public class LeagueService {
     private Duration ttlUntil(LocalDateTime activeSeasonEndedAt) {
         if(activeSeasonEndedAt == null) return Duration.ofDays(10);
         Instant now = Instant.now(clock);
-        Instant expiredAt = activeSeasonEndedAt.atZone(SEOUL).plus(TTL_BUFFER).toInstant();
+        Instant expiredAt = activeSeasonEndedAt.atZone(clock.getZone()).plus(TTL_BUFFER).toInstant();
         Duration ttl = Duration.between(now, expiredAt);
         return ttl.isNegative() ? DEFAULT_TTL : ttl;
     }

@@ -1,7 +1,7 @@
 package gravit.code.friend.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.friend.dto.SearchUser;
+import gravit.code.friend.dto.SearchUserDto;
 import gravit.code.friend.dto.response.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
@@ -317,7 +317,7 @@ public interface FriendControllerDocs {
             )
     })
     @GetMapping
-    ResponseEntity<SliceResponse<SearchUser>> search(
+    ResponseEntity<SliceResponse<SearchUserDto>> search(
             @AuthenticationPrincipal LoginUser loginUser,
             @Parameter(description = "검색할 핸들 문자열 (선두 '@' 허용, 대소문자 무시)") @RequestParam String handleQuery,
             @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0") @RequestParam(defaultValue = "0") int page
