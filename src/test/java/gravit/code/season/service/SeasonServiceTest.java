@@ -3,7 +3,7 @@
 //import gravit.code.season.calendar.SeasonCalendar;
 //import gravit.code.season.domain.Season;
 //import gravit.code.season.domain.SeasonStatus;
-//import gravit.code.season.infrastructure.SeasonRepository;
+//import gravit.code.season.repository.SeasonRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;

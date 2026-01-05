@@ -1,6 +1,6 @@
 package gravit.code.season.calendar;
 
-import gravit.code.season.calendar.dto.SeasonResponse;
+import gravit.code.season.calendar.dto.SeasonDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,18 +17,18 @@ public class SeasonCalendar {
     private final Clock clock;
 
     // kst 기준 이번 주 시즌 리턴
-    public SeasonResponse currentWeek() {
+    public SeasonDto currentWeek() {
         LocalDate monday = weekMonday(LocalDate.now(clock));
         LocalDateTime start = monday.atStartOfDay();
         LocalDateTime end = start.plusWeeks(1);
-        return new SeasonResponse(isoWeekKey(monday), start, end);
+        return new SeasonDto(isoWeekKey(monday), start, end);
     }
 
     // 특정 종료시각(=현재 시즌 endsAt) 기준 다음 주 시즌
-    public SeasonResponse nextFromEndsAt(LocalDateTime currentEndsAt) {
+    public SeasonDto nextFromEndsAt(LocalDateTime currentEndsAt) {
         LocalDateTime start = currentEndsAt;
         LocalDateTime end = start.plusWeeks(1);
-        return new SeasonResponse(isoWeekKey(start.toLocalDate()), start, end);
+        return new SeasonDto(isoWeekKey(start.toLocalDate()), start, end);
     }
 
     public static String isoWeekKey(LocalDate kstDate) {
