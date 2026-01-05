@@ -1,4 +1,4 @@
-package gravit.code.user.service;
+package gravit.code.user.service.port;
 
 public interface MailSender {
     void sendEmailWithDeleteLink(

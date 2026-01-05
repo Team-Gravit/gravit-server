@@ -1,6 +1,6 @@
 //package gravit.code.user.util;
 //
-//import gravit.code.user.infrastructure.MailAuthCodeGenerator;
+//import gravit.code.user.support.MailAuthCodeGenerator;
 //import org.junit.jupiter.api.Test;
 //
 //class MailAuthCodeGeneratorTest {

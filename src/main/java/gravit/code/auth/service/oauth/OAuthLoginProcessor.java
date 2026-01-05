@@ -6,11 +6,11 @@ import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.policy.AdminPromotionPolicy;
 import gravit.code.auth.service.AuthTokenProvider;
-import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
 import gravit.code.user.exception.AccountSoftDeletedException;
+import gravit.code.user.repository.UserRepository;
+import gravit.code.user.support.RandomHandleGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class OAuthLoginProcessor {
 
     private final UserRepository userRepository;
     private final AuthTokenProvider authTokenProvider;
-    private final HandleGenerator handleGenerator;
+    private final RandomHandleGenerator handleGenerator;
     private final AdminPromotionPolicy adminPromotionPolicy;
 
     @Transactional

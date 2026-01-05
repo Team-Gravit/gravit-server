@@ -1,4 +1,4 @@
-package gravit.code.user.infrastructure.sql;
+package gravit.code.user.repository.sql;
 
 import lombok.experimental.UtilityClass;
 

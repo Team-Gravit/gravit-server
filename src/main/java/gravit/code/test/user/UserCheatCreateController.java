@@ -6,12 +6,12 @@ import gravit.code.auth.domain.Subject;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.service.AuthTokenProvider;
 import gravit.code.auth.token.JwtProvider;
-import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
+import gravit.code.user.repository.UserRepository;
 import gravit.code.user.service.UserService;
+import gravit.code.user.support.RandomHandleGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +32,7 @@ public class UserCheatCreateController {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final HandleGenerator handleGenerator;
+    private final RandomHandleGenerator handleGenerator;
 
     private final String PROVIDER = "gravit";
 

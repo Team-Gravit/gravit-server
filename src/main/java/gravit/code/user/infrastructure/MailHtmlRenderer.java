@@ -1,4 +1,4 @@
-package gravit.code.user.infrastructure.mail;
+package gravit.code.user.infrastructure;
 
 import lombok.experimental.UtilityClass;
 
