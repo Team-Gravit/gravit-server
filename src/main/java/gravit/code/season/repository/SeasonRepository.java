@@ -1,4 +1,4 @@
-package gravit.code.season.infrastructure;
+package gravit.code.season.repository;
 
 import gravit.code.season.domain.Season;
 import gravit.code.season.domain.SeasonStatus;

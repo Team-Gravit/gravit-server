@@ -6,11 +6,13 @@ import gravit.code.league.domain.League;
 import gravit.code.league.repository.LeagueRepository;
 import gravit.code.season.calendar.SeasonCalendar;
 import gravit.code.season.domain.Season;
-import gravit.code.season.infrastructure.SeasonRepository;
+import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.userLeague.domain.UserLeagueRepository;
 import gravit.code.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
+import java.sql.SQLException;
 import java.time.Clock;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.RecoverableDataAccessException;
@@ -19,10 +21,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 
 @Service

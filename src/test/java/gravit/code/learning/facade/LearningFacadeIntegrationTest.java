@@ -20,7 +20,7 @@
 //import gravit.code.problem.service.ProblemSubmissionService;
 //import gravit.code.progress.service.UnitProgressService;
 //import gravit.code.season.domain.Season;
-//import gravit.code.season.infrastructure.SeasonRepository;
+//import gravit.code.season.repository.SeasonRepository;
 //import gravit.code.support.TCSpringBootTest;
 //import gravit.code.user.domain.User;
 //import gravit.code.user.domain.UserRepository;

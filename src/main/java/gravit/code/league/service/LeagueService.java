@@ -10,7 +10,7 @@ import gravit.code.league.dto.response.LeagueResponse;
 import gravit.code.league.repository.LeagueRepository;
 import gravit.code.season.domain.Season;
 import gravit.code.season.domain.SeasonStatus;
-import gravit.code.season.infrastructure.SeasonRepository;
+import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.season.service.port.SeasonPopupSeenStore;
 import gravit.code.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
