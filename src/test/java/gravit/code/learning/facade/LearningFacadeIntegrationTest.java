@@ -10,14 +10,14 @@
 //import gravit.code.lesson.dto.response.LessonResponse;
 //import gravit.code.unit.dto.response.UnitDetailResponse;
 //import gravit.code.learning.fixture.*;
-//import gravit.code.chapter.service.ChapterService;
-//import gravit.code.lesson.service.LessonService;
+//import gravit.code.chapter.service.ChapterQueryService;
+//import gravit.code.lesson.service.LessonQueryService;
 //import gravit.code.problem.service.ProblemQueryService;
 //import gravit.code.progress.domain.*;
 //import gravit.code.chapter.dto.response.ChapterDetailResponse;
 //import gravit.code.progress.service.ChapterProgressService;
-//import gravit.code.lesson.service.LessonSubmissionService;
-//import gravit.code.problem.service.ProblemSubmissionService;
+//import gravit.code.lesson.service.LessonSubmissionCommandService;
+//import gravit.code.problem.service.ProblemSubmissionCommandService;
 //import gravit.code.progress.service.UnitProgressService;
 //import gravit.code.season.domain.Season;
 //import gravit.code.season.infrastructure.SeasonRepository;
@@ -55,10 +55,10 @@
 //    private UserService userService;
 //
 //    @Autowired
-//    private ChapterService chapterService;
+//    private ChapterQueryService chapterService;
 //
 //    @Autowired
-//    private LessonService lessonService;
+//    private LessonQueryService lessonService;
 //
 //    @Autowired
 //    private ProblemQueryService problemService;
@@ -73,10 +73,10 @@
 //    private UnitProgressService unitProgressService;
 //
 //    @Autowired
-//    private LessonSubmissionService lessonProgressService;
+//    private LessonSubmissionCommandService lessonProgressService;
 //
 //    @Autowired
-//    private ProblemSubmissionService problemProgressService;
+//    private ProblemSubmissionCommandService problemProgressService;
 //
 //    @Autowired
 //    private ChapterRepository chapterRepository;

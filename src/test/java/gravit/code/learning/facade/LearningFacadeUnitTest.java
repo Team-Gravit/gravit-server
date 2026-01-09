@@ -16,8 +16,8 @@
 //import gravit.code.option.dto.response.OptionResponse;
 //import gravit.code.problem.dto.response.ProblemResponse;
 //import gravit.code.learning.fixture.*;
-//import gravit.code.chapter.service.ChapterService;
-//import gravit.code.lesson.service.LessonService;
+//import gravit.code.chapter.service.ChapterQueryService;
+//import gravit.code.lesson.service.LessonQueryService;
 //import gravit.code.problem.service.ProblemQueryService;
 //import gravit.code.mission.dto.event.LessonMissionEvent;
 //import gravit.code.progress.domain.ChapterProgress;
@@ -27,8 +27,8 @@
 //import gravit.code.lesson.dto.response.LessonProgressSummaryResponse;
 //import gravit.code.unit.UnitProgressDetailResponse;
 //import gravit.code.progress.service.ChapterProgressService;
-//import gravit.code.lesson.service.LessonSubmissionService;
-//import gravit.code.problem.service.ProblemSubmissionService;
+//import gravit.code.lesson.service.LessonSubmissionCommandService;
+//import gravit.code.problem.service.ProblemSubmissionCommandService;
 //import gravit.code.progress.service.UnitProgressService;
 //import gravit.code.user.dto.response.UserLevelResponse;
 //import gravit.code.user.service.UserService;
@@ -62,10 +62,10 @@
 //    private UserService userService;
 //
 //    @Mock
-//    private ChapterService chapterService;
+//    private ChapterQueryService chapterService;
 //
 //    @Mock
-//    private LessonService lessonService;
+//    private LessonQueryService lessonService;
 //
 //    @Mock
 //    private ProblemQueryService problemService;
@@ -80,10 +80,10 @@
 //    private UnitProgressService unitProgressService;
 //
 //    @Mock
-//    private LessonSubmissionService lessonProgressService;
+//    private LessonSubmissionCommandService lessonProgressService;
 //
 //    @Mock
-//    private ProblemSubmissionService problemProgressService;
+//    private ProblemSubmissionCommandService problemProgressService;
 //
 //    @Nested
 //    @DisplayName("유저 아이디로 전체 챕터와 진행도를 조회할 때")

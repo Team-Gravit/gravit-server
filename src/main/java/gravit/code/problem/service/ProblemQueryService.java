@@ -18,13 +18,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ProblemQueryService {
 
     private final ProblemRepository problemRepository;
     private final AnswerRepository answerRepository;
     private final OptionRepository optionRepository;
 
+    @Transactional(readOnly = true)
     public List<ProblemDetail> getAllProblemInLesson(
         long userId,
         long lessonId
@@ -32,6 +32,7 @@ public class ProblemQueryService {
         return problemRepository.findAllProblemDetailByLessonIdAndUserId(lessonId, userId);
     }
 
+    @Transactional(readOnly = true)
     public List<ProblemResponse> getAnswerOrOptionInProblems(List<ProblemDetail> problemDetails){
         return problemDetails.stream()
                 .map(problem -> {

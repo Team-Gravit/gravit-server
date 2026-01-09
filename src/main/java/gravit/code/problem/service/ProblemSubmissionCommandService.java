@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProblemSubmissionService {
+public class ProblemSubmissionCommandService {
 
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
 
@@ -38,7 +38,21 @@ public class ProblemSubmissionService {
         problemSubmissionRepository.saveAll(problemSubmissions);
     }
 
+    @Transactional
+    public void saveProblemSubmission(
+            long userId,
+            ProblemSubmissionRequest request
+    ) {
+        ProblemSubmission problemSubmission = problemSubmissionRepository.findByProblemIdAndUserId(request.problemId(), userId)
+                .orElseGet(() -> ProblemSubmission.create(request.isCorrect(), request.problemId(), userId));
 
+        problemSubmission.updateIsCorrect(request.isCorrect());
+
+        if (!request.isCorrect())
+            wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmission.getProblemId(), userId);
+
+        problemSubmissionRepository.save(problemSubmission);
+    }
 
     private List<ProblemSubmission> updateProblemSubmissions(
             long userId,

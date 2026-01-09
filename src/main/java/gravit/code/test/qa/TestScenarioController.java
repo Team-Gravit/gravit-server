@@ -2,10 +2,10 @@ package gravit.code.test.qa;
 
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-import gravit.code.learning.facade.LearningFacade;
 import gravit.code.learning.infrastructure.LearningJpaRepository;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
+import gravit.code.lesson.facade.LessonFacade;
 import gravit.code.lesson.infrastructure.LessonJpaRepository;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.unit.domain.Unit;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TestScenarioController {
 
-    private final LearningFacade learningFacade;
+    private final LessonFacade lessonFacade;
     private final LessonJpaRepository lessonJpaRepository;
     private final UnitJpaRepository unitJpaRepository;
     private final UserJpaRepository userJpaRepository;
@@ -82,7 +82,7 @@ public class TestScenarioController {
                 problemRequests
         );
 
-        learningFacade.saveLearningSubmission(userId, request);
+        lessonFacade.saveLessonSubmission(userId, request);
     }
 
     @PostMapping("/consecutive_solved")

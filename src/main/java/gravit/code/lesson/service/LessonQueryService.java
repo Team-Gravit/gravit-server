@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LessonService {
+public class LessonQueryService {
 
     private final LessonRepository lessonRepository;
 

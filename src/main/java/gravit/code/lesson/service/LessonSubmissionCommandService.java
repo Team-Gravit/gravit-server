@@ -12,15 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class LessonSubmissionService {
+public class LessonSubmissionCommandService {
 
     private final LessonSubmissionRepository lessonSubmissionRepository;
     private final LessonRepository lessonRepository;
 
     @Transactional
     public void saveLessonSubmission(
-        LessonSubmissionSaveRequest request,
         long userId,
+        LessonSubmissionSaveRequest request,
         boolean isFirstTry
     ) {
         if(!lessonRepository.existsById(request.lessonId()))
@@ -42,15 +42,5 @@ public class LessonSubmissionService {
         }
 
         lessonSubmissionRepository.save(lessonSubmission);
-    }
-
-    @Transactional(readOnly = true)
-    public int getLessonSubmissionCount(long lessonId, long userId) {
-        return lessonSubmissionRepository.countLessonSubmissionByLessonIdAndUserId(lessonId, userId);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean checkUserNotSubmitted(long lessonId, long userId) {
-        return !lessonSubmissionRepository.existsByLessonIdAndUserId(lessonId, userId);
     }
 }

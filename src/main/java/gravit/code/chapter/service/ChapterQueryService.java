@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ChapterService {
+public class ChapterQueryService {
 
     private final ChapterRepository chapterRepository;
 
@@ -24,12 +24,6 @@ public class ChapterService {
     @Transactional(readOnly = true)
     public ChapterSummary getChapterSummaryByChapterId(long chapterId) {
         return chapterRepository.findChapterSummaryByChapterId(chapterId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
-    }
-
-    @Transactional(readOnly = true)
-    public ChapterSummary getChapterSummaryByUnitId(long unitId) {
-        return chapterRepository.findChapterSummaryByUnitId(unitId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
     }
 }
