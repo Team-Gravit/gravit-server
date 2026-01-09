@@ -9,7 +9,7 @@ import gravit.code.notice.domain.Notice;
 import gravit.code.notice.infrastructure.NoticeRepository;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
+import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

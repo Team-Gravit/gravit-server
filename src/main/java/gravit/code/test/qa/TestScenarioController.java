@@ -11,7 +11,7 @@ import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.unit.domain.Unit;
 import gravit.code.unit.infrastructure.UnitJpaRepository;
 import gravit.code.user.domain.User;
-import gravit.code.user.infrastructure.UserJpaRepository;
+import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +32,7 @@ public class TestScenarioController {
     private final LearningFacade learningFacade;
     private final LessonJpaRepository lessonJpaRepository;
     private final UnitJpaRepository unitJpaRepository;
-    private final UserJpaRepository userJpaRepository;
+    private final UserRepository userRepository;
     private final LearningJpaRepository learningJpaRepository;
 
     @PostMapping("/chapter-almost-clear")
@@ -90,7 +90,7 @@ public class TestScenarioController {
             @RequestParam Long userId,
             @RequestParam int consecutiveSolvedCount
     ) throws Exception {
-        User user = userJpaRepository.findById(userId).get();
+        User user = userRepository.findById(userId).get();
 
         Learning learning = learningJpaRepository.findByUserId(user.getId()).get();
 

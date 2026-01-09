@@ -3,7 +3,7 @@
 //import gravit.code.global.exception.domain.CustomErrorCode;
 //import gravit.code.global.exception.domain.RestApiException;
 //import gravit.code.league.domain.League;
-//import gravit.code.league.infrastructure.LeagueRepository;
+//import gravit.code.league.repository.LeagueRepository;
 //import gravit.code.learning.domain.*;
 //import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 //import gravit.code.problem.dto.request.ProblemSubmissionRequest;
@@ -20,7 +20,7 @@
 //import gravit.code.problem.service.ProblemSubmissionService;
 //import gravit.code.progress.service.UnitProgressService;
 //import gravit.code.season.domain.Season;
-//import gravit.code.season.infrastructure.SeasonRepository;
+//import gravit.code.season.repository.SeasonRepository;
 //import gravit.code.support.TCSpringBootTest;
 //import gravit.code.user.domain.User;
 //import gravit.code.user.domain.UserRepository;
