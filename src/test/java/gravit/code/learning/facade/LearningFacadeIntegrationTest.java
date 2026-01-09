@@ -12,7 +12,7 @@
 //import gravit.code.learning.fixture.*;
 //import gravit.code.chapter.service.ChapterService;
 //import gravit.code.lesson.service.LessonService;
-//import gravit.code.problem.service.ProblemService;
+//import gravit.code.problem.service.ProblemQueryService;
 //import gravit.code.progress.domain.*;
 //import gravit.code.chapter.dto.response.ChapterDetailResponse;
 //import gravit.code.progress.service.ChapterProgressService;
@@ -61,7 +61,7 @@
 //    private LessonService lessonService;
 //
 //    @Autowired
-//    private ProblemService problemService;
+//    private ProblemQueryService problemService;
 //
 //    @Autowired
 //    private UserLeagueService userLeagueService;
@@ -505,7 +505,7 @@
 ////            case1SetUp();
 ////
 ////            // when
-////            LearningSubmissionSaveResponse response = learningFacade.saveLearningResult(user.getId(), request);
+////            LessonSubmissionSaveResponse response = learningFacade.saveLearningResult(user.getId(), request);
 ////
 ////            // then
 ////            assertThat(unitProgressRepository.findByUnitIdAndUserId(unit1.getId(), user.getId()).get().getCompletedLessons()).isEqualTo(2L);

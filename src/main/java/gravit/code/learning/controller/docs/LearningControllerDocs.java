@@ -6,7 +6,7 @@ import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
+import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResponse;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
@@ -196,8 +196,8 @@ public interface LearningControllerDocs {
             )
     })
     @PostMapping("/lessons/results")
-    ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(@AuthenticationPrincipal LoginUser loginUser,
-                                                                      @Valid @RequestBody LearningSubmissionSaveRequest request);
+    ResponseEntity<LessonSubmissionSaveResponse> saveLearningSubmission(@AuthenticationPrincipal LoginUser loginUser,
+                                                                        @Valid @RequestBody LearningSubmissionSaveRequest request);
 
     @Operation(summary = "문제 결과 저장", description = "문제 풀이 결과를 저장합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

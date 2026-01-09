@@ -7,7 +7,7 @@ import gravit.code.bookmark.service.BookmarkService;
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.learning.controller.docs.LearningControllerDocs;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-import gravit.code.learning.dto.response.LearningSubmissionSaveResponse;
+import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.learning.facade.LearningQueryFacade;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
@@ -34,8 +34,6 @@ import java.util.List;
 @RequestMapping("/api/v1/learning")
 public class LearningController implements LearningControllerDocs {
 
-    private final LearningFacade learningFacade;
-    private final LearningQueryFacade learningQueryFacade;
     private final ReportService reportService;
     private final BookmarkService bookmarkService;
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
@@ -70,7 +68,7 @@ public class LearningController implements LearningControllerDocs {
     }
 
     @PostMapping("/lessons/results")
-    public ResponseEntity<LearningSubmissionSaveResponse> saveLearningSubmission(
+    public ResponseEntity<LessonSubmissionSaveResponse> saveLearningSubmission(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid@RequestBody LearningSubmissionSaveRequest request
     ){
@@ -84,14 +82,6 @@ public class LearningController implements LearningControllerDocs {
     ){
         learningFacade.saveProblemSubmission(loginUser.getId(), request);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{unitId}/bookmarks")
-    public ResponseEntity<BookmarkedProblemResponse> getBookmarkedProblemsInUnit(
-            @AuthenticationPrincipal LoginUser loginUser,
-            @PathVariable("unitId") Long unitId
-    ){
-        return ResponseEntity.status(HttpStatus.OK).body(learningQueryFacade.getBookmarkedProblemsInUnit(loginUser.getId(), unitId));
     }
 
     @GetMapping("/{unitId}/wrong-answered-notes")
@@ -111,23 +101,7 @@ public class LearningController implements LearningControllerDocs {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/bookmarks")
-    public ResponseEntity<Void> saveBookmark(
-            @AuthenticationPrincipal LoginUser loginUser,
-            @Valid@RequestBody BookmarkSaveRequest request
-    ){
-        bookmarkService.saveBookmark(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
-    }
 
-    @DeleteMapping("/bookmarks")
-    public ResponseEntity<Void> deleteBookmark(
-            @AuthenticationPrincipal LoginUser loginUser,
-            @Valid@RequestBody BookmarkDeleteRequest request
-    ) {
-        bookmarkService.deleteBookmark(loginUser.getId(), request);
-        return ResponseEntity.noContent().build();
-    }
 
     @PostMapping("/reports")
     public ResponseEntity<Void> submitProblemReport(

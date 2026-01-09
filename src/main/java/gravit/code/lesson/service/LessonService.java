@@ -24,7 +24,10 @@ public class LessonService {
     }
 
     @Transactional(readOnly = true)
-    public List<LessonSummary> getAllLessonSummaryByUnitId(long unitId, long userId) {
+    public List<LessonSummary> getAllLessonByUnitId(
+            long userId,
+            long unitId
+    ) {
         return lessonRepository.findAllLessonSummaryByUnitId(unitId, userId);
     }
 }

@@ -38,21 +38,7 @@ public class ProblemSubmissionService {
         problemSubmissionRepository.saveAll(problemSubmissions);
     }
 
-    @Transactional
-    public void saveProblemSubmission(
-            long userId,
-            ProblemSubmissionRequest request
-    ) {
-        ProblemSubmission problemSubmission = problemSubmissionRepository.findByProblemIdAndUserId(request.problemId(), userId)
-                .orElseGet(() -> ProblemSubmission.create(request.isCorrect(), request.problemId(), userId));
 
-        problemSubmission.updateIsCorrect(request.isCorrect());
-
-        if (!request.isCorrect())
-            wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmission.getProblemId(), userId);
-
-        problemSubmissionRepository.save(problemSubmission);
-    }
 
     private List<ProblemSubmission> updateProblemSubmissions(
             long userId,
@@ -80,7 +66,7 @@ public class ProblemSubmissionService {
             problemSubmission.updateIsCorrect(isCorrect);
 
             if (!isCorrect)
-                wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmission.getProblemId(), userId);
+                wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(userId, problemSubmission.getProblemId());
         });
 
         return problemSubmissions;
@@ -93,7 +79,7 @@ public class ProblemSubmissionService {
         return requests.stream()
                 .map(problemSubmissionRequest -> {
                     if (!problemSubmissionRequest.isCorrect())
-                        wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmissionRequest.problemId(), userId);
+                        wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(userId, problemSubmissionRequest.problemId());
 
                     return ProblemSubmission.create(problemSubmissionRequest.isCorrect(), problemSubmissionRequest.problemId(), userId);
                 }).toList();

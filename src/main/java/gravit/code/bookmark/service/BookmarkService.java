@@ -21,8 +21,8 @@ public class BookmarkService {
 
     @Transactional(readOnly = true)
     public List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(
-            long unitId,
-            long userId
+            long userId,
+            long unitId
     ){
         return bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
     }
@@ -55,7 +55,10 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkBookmarkAccessibleInUnit(long unitId, long userId) {
+    public boolean checkBookmarkAccessibleInUnit(
+            long userId,
+            long unitId
+    ) {
         return bookmarkRepository.countByUnitIdAndUserId(unitId, userId) != 0;
     }
 }

@@ -1,4 +1,4 @@
-package gravit.code.learning.dto.response;
+package gravit.code.lesson.dto.response;
 
 import gravit.code.unit.dto.response.UnitSummary;
 import gravit.code.user.dto.response.UserLevelResponse;
@@ -9,7 +9,7 @@ import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 @Schema(description = "풀이 결과 저장 Response")
-public record LearningSubmissionSaveResponse(
+public record LessonSubmissionSaveResponse(
 
         @Schema(
                 description = "리그 이름",
@@ -26,12 +26,12 @@ public record LearningSubmissionSaveResponse(
         @NotNull
         UnitSummary unitSummary
 ) {
-    public static LearningSubmissionSaveResponse create(
+    public static LessonSubmissionSaveResponse create(
             String leagueName,
             UserLevelResponse userLevelResponse,
             UnitSummary unitSummary
     ){
-        return LearningSubmissionSaveResponse.builder()
+        return LessonSubmissionSaveResponse.builder()
                 .leagueName(leagueName)
                 .userLevelResponse(userLevelResponse)
                 .unitSummary(unitSummary)

@@ -17,8 +17,8 @@ public class WrongAnsweredNoteService {
 
     @Transactional
     public void saveWrongAnsweredNoteIfNotExists(
-            long problemId,
-            long userId
+            long userId,
+            long problemId
     ) {
         WrongAnsweredNote wrongAnsweredNote = wrongAnsweredProblemRepository.findByProblemIdAndUserId(problemId, userId)
                 .orElseGet(() -> WrongAnsweredNote.create(problemId, userId));
@@ -28,8 +28,8 @@ public class WrongAnsweredNoteService {
 
     @Transactional(readOnly = true)
     public List<ProblemDetail> findWrongAnsweredProblemDetailByUnitIdAndUserId(
-            long unitId,
-            long userId
+            long userId,
+            long unitId
     ){
         return wrongAnsweredProblemRepository.findWrongAnsweredProblemDetailByUnitIdAndUserId(unitId, userId);
     }
@@ -44,8 +44,8 @@ public class WrongAnsweredNoteService {
 
     @Transactional(readOnly = true)
     public boolean checkWrongAnsweredNoteAccessibleInUnit(
-            long unitId,
-            long userId
+            long userId,
+            long unitId
     ) {
         return wrongAnsweredProblemRepository.countByUnitIdAndUserId(unitId, userId) != 0;
     }

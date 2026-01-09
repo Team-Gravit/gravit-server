@@ -18,7 +18,7 @@
 //import gravit.code.learning.fixture.*;
 //import gravit.code.chapter.service.ChapterService;
 //import gravit.code.lesson.service.LessonService;
-//import gravit.code.problem.service.ProblemService;
+//import gravit.code.problem.service.ProblemQueryService;
 //import gravit.code.mission.dto.event.LessonMissionEvent;
 //import gravit.code.progress.domain.ChapterProgress;
 //import gravit.code.lesson.domain.LessonSubmission;
@@ -68,7 +68,7 @@
 //    private LessonService lessonService;
 //
 //    @Mock
-//    private ProblemService problemService;
+//    private ProblemQueryService problemService;
 //
 //    @Mock
 //    private UserLeagueService userLeagueService;

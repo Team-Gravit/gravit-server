@@ -26,7 +26,7 @@
 //    private OptionRepository optionRepository;
 //
 //    @Autowired
-//    private ProblemService problemService;
+//    private ProblemQueryService problemService;
 //
 //    Problem objectiveProblem1;
 //    Problem objectiveProblem2;
