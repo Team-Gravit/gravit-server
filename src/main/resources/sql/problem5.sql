@@ -148,6 +148,7 @@ VALUES
 INSERT INTO answer (id, problem_id, content, explanation)
 VALUES (289, 1007, 'AS', 'FROM 절의 서브쿼리(인라인 뷰)에는 반드시 별칭(alias)을 지정해야 한다. AS 키워드를 사용하여 별칭을 지정한다. AS는 생략 가능하다.'),
        (290, 1010, 'EXISTS', 'EXISTS는 서브쿼리 결과가 존재하는지 확인한다. 상관 서브쿼리와 함께 사용하여 관련 데이터가 있는 행만 조회할 수 있다. 학생이 존재하는 학과만 조회된다.');
+
 -- Chapter: 데이터베이스 (id: 4), Unit: 조인 (id: 50)
 
 -- Lesson 1: 조인 기초 (ID: 146)
