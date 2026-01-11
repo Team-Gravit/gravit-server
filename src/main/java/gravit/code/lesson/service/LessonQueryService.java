@@ -17,17 +17,18 @@ public class LessonQueryService {
 
     private final LessonRepository lessonRepository;
 
-    @Transactional(readOnly = true)
-    public LearningIds getLearningIdsByLessonId(long lessonId){
-        return lessonRepository.findLearningIdsByLessonId(lessonId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
-    }
 
     @Transactional(readOnly = true)
-    public List<LessonSummary> getAllLessonByUnitId(
+    public List<LessonSummary> getAllLessonInUnit(
             long userId,
             long unitId
     ) {
         return lessonRepository.findAllLessonSummaryByUnitId(unitId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public LearningIds getLearningIdsByLessonId(long lessonId){
+        return lessonRepository.findLearningIdsByLessonId(lessonId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
     }
 }

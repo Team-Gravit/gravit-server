@@ -18,7 +18,6 @@ import java.util.List;
 public class BookmarkFacade {
 
     private final BookmarkService bookmarkService;
-
     private final UnitQueryService unitQueryService;
     private final ProblemQueryService problemQueryService;
 
@@ -29,7 +28,7 @@ public class BookmarkFacade {
     ){
         UnitSummary unitSummary = unitQueryService.getUnitSummaryByUnitId(unitId);
 
-        List<ProblemDetail> problemDetails = bookmarkService.findBookmarkedProblemDetailByUnitIdAndUserId(userId, unitId);
+        List<ProblemDetail> problemDetails = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
         List<ProblemResponse> problemResponses = problemQueryService.getAnswerOrOptionInProblems(problemDetails);
 
         return BookmarkedProblemResponse.of(

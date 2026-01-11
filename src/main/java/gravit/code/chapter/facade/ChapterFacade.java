@@ -19,16 +19,16 @@ public class ChapterFacade {
 
     @Transactional(readOnly = true)
     public List<ChapterDetailResponse> getAllChapter(long userId){
-        List<ChapterSummary> chapterSummaries = chapterQueryService.getAllChapterSummary();
+        List<ChapterSummary> chapters = chapterQueryService.getAllChapter();
 
-        return chapterSummaries.stream()
-                .map(chapterSummary -> {
-                    long chapterId = chapterSummary.chapterId();
+        return chapters.stream()
+                .map(chapter -> {
+                    long chapterId = chapter.chapterId();
 
-                    double chapterProgressRate = learningProgressRateService.getProgressRateByChapterId(chapterId, userId);
+                    double chapterProgressRate = learningProgressRateService.getChapterProgress(chapterId, userId);
 
                     return ChapterDetailResponse.create(
-                            chapterSummary,
+                            chapter,
                             chapterProgressRate
                     );
                 }).toList();

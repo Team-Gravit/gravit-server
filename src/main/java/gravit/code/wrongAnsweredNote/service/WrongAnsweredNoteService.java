@@ -16,7 +16,7 @@ public class WrongAnsweredNoteService {
     private final WrongAnsweredProblemRepository wrongAnsweredProblemRepository;
 
     @Transactional
-    public void saveWrongAnsweredNoteIfNotExists(
+    public void saveWrongAnsweredNote(
             long userId,
             long problemId
     ) {
@@ -27,15 +27,15 @@ public class WrongAnsweredNoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProblemDetail> findWrongAnsweredProblemDetailByUnitIdAndUserId(
+    public List<ProblemDetail> getAllWrongAnsweredProblemInUnit(
             long userId,
             long unitId
-    ){
+    ) {
         return wrongAnsweredProblemRepository.findWrongAnsweredProblemDetailByUnitIdAndUserId(unitId, userId);
     }
 
     @Transactional
-    public void deleteWrongAnsweredNoteIfExists(
+    public void deleteWrongAnsweredProblem(
             long userId,
             long problemId
     ) {
@@ -43,7 +43,7 @@ public class WrongAnsweredNoteService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkWrongAnsweredNoteAccessibleInUnit(
+    public boolean checkWrongAnsweredProblemExists(
             long userId,
             long unitId
     ) {

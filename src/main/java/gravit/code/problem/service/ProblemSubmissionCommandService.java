@@ -49,7 +49,7 @@ public class ProblemSubmissionCommandService {
         problemSubmission.updateIsCorrect(request.isCorrect());
 
         if (!request.isCorrect())
-            wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(problemSubmission.getProblemId(), userId);
+            wrongAnsweredNoteService.saveWrongAnsweredNote(problemSubmission.getProblemId(), userId);
 
         problemSubmissionRepository.save(problemSubmission);
     }
@@ -80,7 +80,7 @@ public class ProblemSubmissionCommandService {
             problemSubmission.updateIsCorrect(isCorrect);
 
             if (!isCorrect)
-                wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(userId, problemSubmission.getProblemId());
+                wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemSubmission.getProblemId());
         });
 
         return problemSubmissions;
@@ -93,7 +93,7 @@ public class ProblemSubmissionCommandService {
         return requests.stream()
                 .map(problemSubmissionRequest -> {
                     if (!problemSubmissionRequest.isCorrect())
-                        wrongAnsweredNoteService.saveWrongAnsweredNoteIfNotExists(userId, problemSubmissionRequest.problemId());
+                        wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemSubmissionRequest.problemId());
 
                     return ProblemSubmission.create(problemSubmissionRequest.isCorrect(), problemSubmissionRequest.problemId(), userId);
                 }).toList();

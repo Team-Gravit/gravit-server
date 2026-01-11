@@ -7,7 +7,6 @@ import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.common.LearningIds;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningService;
-import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.lesson.dto.response.LessonSummary;
@@ -49,13 +48,35 @@ public class LessonFacade {
 
     private final ApplicationEventPublisher publisher;
 
+
+    @Transactional(readOnly = true)
+    public LessonDetailResponse getAllLessonInUnit(
+            long userId,
+            long unitId
+    ) {
+        UnitSummary unitSummary = unitQueryService.getUnitSummaryByUnitId(unitId);
+
+        List<LessonSummary> lessonSummaries = lessonQueryService.getAllLessonInUnit(userId, unitId);
+
+        boolean bookmarkAccessible = bookmarkService.checkBookmarkedProblemExists(userId, unitId);
+        boolean wrongAnsweredNoteAccessible = wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unitId);
+
+        return LessonDetailResponse.create(
+                unitSummary,
+                bookmarkAccessible,
+                wrongAnsweredNoteAccessible,
+                unitId,
+                lessonSummaries
+        );
+    }
+
     @Transactional
     public LessonSubmissionSaveResponse saveLessonSubmission(
             long userId,
             LearningSubmissionSaveRequest request
     ){
         // 첫번째 풀이인지 체크
-        boolean isFirstTry = lessonSubmissionQueryService.checkUserNotSubmitted(userId, request.lessonSubmissionSaveRequest().lessonId());
+        boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, request.lessonSubmissionSaveRequest().lessonId());
 
         // 레슨 풀이 결과, 문제 풀이 결과 저장
         lessonSubmissionCommandService.saveLessonSubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
@@ -64,7 +85,7 @@ public class LessonFacade {
         // 응답 데이터 조회
         UnitSummary unitSummary = unitQueryService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
         String leagueName = userLeagueService.getUserLeagueName(userId);
-        UserLevelResponse userLevelResponse = updateUserLevelBySubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
+        UserLevelResponse userLevelResponse = userService.updateUserLevelByLessonSubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
 
         LearningIds learningIds = lessonQueryService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
 
@@ -72,7 +93,7 @@ public class LessonFacade {
         if(isFirstTry){
             publisher.publishEvent(new LessonCompletedEvent(
                     userId,
-                    request.lessonSubmissionSaveRequest().lessonId(),
+                    learningIds.lessonId(),
                     learningIds.chapterId(),
                     POINT_PER_LESSON,
                     request.lessonSubmissionSaveRequest().accuracy(),
@@ -87,41 +108,5 @@ public class LessonFacade {
                 userLevelResponse,
                 unitSummary
         );
-    }
-
-    @Transactional(readOnly = true)
-    public LessonDetailResponse getAllLessonInUnit(
-            long userId,
-            long unitId
-    ) {
-        UnitSummary unitSummary = unitQueryService.getUnitSummaryByUnitId(unitId);
-
-        List<LessonSummary> lessonSummaries = lessonQueryService.getAllLessonByUnitId(userId, unitId);
-
-        boolean bookmarkAccessible = bookmarkService.checkBookmarkAccessibleInUnit(userId, unitId);
-        boolean wrongAnsweredNoteAccessible = wrongAnsweredNoteService.checkWrongAnsweredNoteAccessibleInUnit(userId, unitId);
-
-        return LessonDetailResponse.create(
-                unitSummary,
-                bookmarkAccessible,
-                wrongAnsweredNoteAccessible,
-                unitId,
-                lessonSummaries
-        );
-    }
-
-    private UserLevelResponse updateUserLevelBySubmission(
-            long userId,
-            LessonSubmissionSaveRequest request,
-            boolean isFirstTry
-    ){
-        UserLevelResponse userLevelResponse;
-
-        if(isFirstTry){
-            userLevelResponse = userService.updateUserLevelAndXp(userId, POINT_PER_LESSON, request.accuracy());
-        }else{
-            userLevelResponse = userService.updateUserLevelAndXp(userId, 0, request.accuracy());
-        }
-        return userLevelResponse;
     }
 }

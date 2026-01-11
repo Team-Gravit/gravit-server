@@ -14,7 +14,7 @@ public class LearningProgressRateService {
     private final LessonSubmissionRepository lessonSubmissionRepository;
 
     @Transactional(readOnly = true)
-    public double getProgressRateByChapterId(
+    public double getChapterProgress(
             long chapterId,
             long userId
     ) {
@@ -26,7 +26,7 @@ public class LearningProgressRateService {
     }
 
     @Transactional(readOnly = true)
-    public double getProgressRateByUnitId(
+    public double getUnitProgress(
             long unitId,
             long userId
     ) {

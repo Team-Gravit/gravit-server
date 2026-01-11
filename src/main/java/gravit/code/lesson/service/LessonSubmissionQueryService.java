@@ -20,7 +20,7 @@ public class LessonSubmissionQueryService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkUserNotSubmitted(
+    public boolean checkFirstLessonSubmission(
             long userId,
             long lessonId
     ) {

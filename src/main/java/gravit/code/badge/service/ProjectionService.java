@@ -39,7 +39,7 @@ public class ProjectionService {
             return null;
         }
 
-        double planetProgressRate = learningProgressRateService.getProgressRateByChapterId(chapterId, userId);
+        double planetProgressRate = learningProgressRateService.getChapterProgress(chapterId, userId);
         log.info("planetProgressRate: {}", planetProgressRate);
 
         if(planetProgressRate != 100) {

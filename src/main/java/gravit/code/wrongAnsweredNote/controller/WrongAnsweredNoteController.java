@@ -21,7 +21,7 @@ public class WrongAnsweredNoteController {
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
 
     @GetMapping("/{unitId}")
-    public ResponseEntity<WrongAnsweredProblemsResponse> getWrongAnsweredProblemsInUnit(
+    public ResponseEntity<WrongAnsweredProblemsResponse> getAllWrongAnsweredProblemInUnit(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("unitId") Long unitId
     ){
@@ -29,11 +29,11 @@ public class WrongAnsweredNoteController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteWrongAnsweredNote(
+    public ResponseEntity<Void> deleteWrongAnsweredProblem(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid @RequestBody WrongAnsweredNoteDeleteRequest request
     ){
-        wrongAnsweredNoteService.deleteWrongAnsweredNoteIfExists(loginUser.getId(), request.problemId());
+        wrongAnsweredNoteService.deleteWrongAnsweredProblem(loginUser.getId(), request.problemId());
         return ResponseEntity.noContent().build();
     }
 }

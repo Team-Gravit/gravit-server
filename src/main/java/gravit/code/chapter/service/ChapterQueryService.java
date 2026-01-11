@@ -17,12 +17,12 @@ public class ChapterQueryService {
     private final ChapterRepository chapterRepository;
 
     @Transactional(readOnly = true)
-    public List<ChapterSummary> getAllChapterSummary(){
+    public List<ChapterSummary> getAllChapter(){
         return chapterRepository.findAllChapterSummary();
     }
 
     @Transactional(readOnly = true)
-    public ChapterSummary getChapterSummaryByChapterId(long chapterId) {
+    public ChapterSummary getChapterById(long chapterId) {
         return chapterRepository.findChapterSummaryByChapterId(chapterId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
     }

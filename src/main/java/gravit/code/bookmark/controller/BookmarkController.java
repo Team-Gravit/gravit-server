@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/bookmarks")
 public class BookmarkController {
+
     private final BookmarkFacade bookmarkFacade;
     private final BookmarkService bookmarkService;
 
     @GetMapping("/{unitId}")
-    public ResponseEntity<BookmarkedProblemResponse> getBookmarkedProblemsInUnit(
+    public ResponseEntity<BookmarkedProblemResponse> getAllBookmarkedProblemInUnit(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("unitId") Long unitId
     ){
@@ -29,11 +30,11 @@ public class BookmarkController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveBookmark(
+    public ResponseEntity<Void> addBookmark(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid @RequestBody BookmarkSaveRequest request
     ){
-        bookmarkService.saveBookmark(loginUser.getId(), request);
+        bookmarkService.addBookmark(loginUser.getId(), request);
         return ResponseEntity.ok().build();
     }
 

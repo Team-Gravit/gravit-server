@@ -29,7 +29,7 @@ public class WrongAnsweredNoteFacade {
     ) {
         UnitSummary unitSummary = unitQueryService.getUnitSummaryByUnitId(unitId);
 
-        List<ProblemDetail> problemDetails = wrongAnsweredNoteService.findWrongAnsweredProblemDetailByUnitIdAndUserId(userId, unitId);
+        List<ProblemDetail> problemDetails = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId);
         List<ProblemResponse> problemResponses = problemQueryService.getAnswerOrOptionInProblems(problemDetails);
 
         return WrongAnsweredProblemsResponse.of(

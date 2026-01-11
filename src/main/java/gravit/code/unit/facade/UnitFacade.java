@@ -27,7 +27,7 @@ public class UnitFacade {
             long userId,
             long chapterId
     ){
-        ChapterSummary chapterSummary = chapterQueryService.getChapterSummaryByChapterId(chapterId);
+        ChapterSummary chapterSummary = chapterQueryService.getChapterById(chapterId);
 
         List<UnitSummary> unitSummaries = unitQueryService.getAllUnitSummaryByChapterId(chapterId);
 
@@ -35,7 +35,7 @@ public class UnitFacade {
                 .map(unitSummary -> {
                     long unitId = unitSummary.unitId();
 
-                    double unitProgressRate = learningProgressRateService.getProgressRateByUnitId(unitId, userId);
+                    double unitProgressRate = learningProgressRateService.getUnitProgress(unitId, userId);
 
                     return UnitDetail.create(
                             unitSummary,
