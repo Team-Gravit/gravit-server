@@ -11,7 +11,7 @@ INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
 VALUES (950, 137, '다음 중 DDL(Data Definition Language)에 대한 설명으로 올바른 것은?', 'DDL은 SQL의 한 종류이다.', 'OBJECTIVE'),
        (951, 137, '빈칸에 들어갈 DDL 명령어를 작성하시오.', '데이터베이스, 테이블 등 객체를 생성하는 명령어는 ___이다.', 'SUBJECTIVE'),
        (952, 137, '다음 중 DDL 명령어가 아닌 것은?', 'DDL은 데이터베이스 구조를 정의하는 언어이다.', 'OBJECTIVE'),
-       (953, 137, '다음 SQL 명령어의 역할은?', 'CREATE DATABASE school; ', 'OBJECTIVE'),
+       (953, 137, '다음 SQL 명령어의 역할은?', 'CREATE DATABASE school;', 'OBJECTIVE'),
        (954, 137, '빈칸에 들어갈 DDL 명령어를 작성하시오.', '테이블의 구조를 수정하는 명령어는 ___이다.', 'SUBJECTIVE'),
        (955, 137, '다음 중 DROP 명령어에 대한 설명으로 올바른 것은?', 'DROP은 DDL 명령어 중 하나이다.', 'OBJECTIVE'),
        (956, 137, '다음 중 TRUNCATE와 DROP의 차이점으로 올바른 것은?', 'TRUNCATE와 DROP은 모두 DDL 명령어이다.', 'OBJECTIVE');
@@ -57,11 +57,9 @@ INSERT INTO lesson (id, title, unit_id)
 VALUES (138, 'DDL 2', 47);
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
-VALUES (957, 138, '다음 SQL 명령어의 역할은?', 'ALTER TABLE students ADD phone VARCHAR(20);
-', 'OBJECTIVE'),
+VALUES (957, 138, '다음 SQL 명령어의 역할은?', 'ALTER TABLE students ADD phone VARCHAR(20);', 'OBJECTIVE'),
        (958, 138, '빈칸에 들어갈 키워드를 작성하시오.', 'ALTER TABLE students ___ COLUMN phone; -- phone 컬럼 삭제', 'SUBJECTIVE'),
-       (959, 138, '다음 중 ALTER TABLE 명령어로 수행할 수 없는 것은?', 'ALTER TABLE은 테이블 구조를 수정하는 명령어이다.', 'OBJECTIVE')
-        ,
+       (959, 138, '다음 중 ALTER TABLE 명령어로 수행할 수 없는 것은?', 'ALTER TABLE은 테이블 구조를 수정하는 명령어이다.', 'OBJECTIVE'),
        (960, 138, '다음 SQL 명령어의 역할은?', 'ALTER TABLE students MODIFY name VARCHAR(100);', 'OBJECTIVE'),
        (961, 138, '빈칸에 들어갈 키워드를 작성하시오.', 'ALTER TABLE students ___ COLUMN name TO full_name; -- 컬럼명 변경', 'SUBJECTIVE'),
        (962, 138, '다음 중 제약 조건을 추가하는 올바른 SQL은?', 'ALTER TABLE을 사용하여 제약 조건을 관리할 수 있다.', 'OBJECTIVE'),
@@ -83,8 +81,7 @@ VALUES
 
 -- 문제 960
 (2731, 960, 'name 컬럼을 삭제한다', 'DROP COLUMN이 컬럼을 삭제한다.', false),
-(2732, 960, 'name 컬럼의 데이터 타입을 VARCHAR(100)으로 변경한다', 'ALTER TABLE ... MODIFY는 기존 컬럼의 속성(데이터 타입, 크기 등)을 수정하는 명령이다.',
- true),
+(2732, 960, 'name 컬럼의 데이터 타입을 VARCHAR(100)으로 변경한다', 'ALTER TABLE ... MODIFY는 기존 컬럼의 속성(데이터 타입, 크기 등)을 수정하는 명령이다.', true),
 (2733, 960, 'name이라는 새 컬럼을 추가한다', 'ADD가 새 컬럼을 추가한다.', false),
 (2734, 960, 'name 컬럼의 이름을 변경한다', 'RENAME COLUMN이 컬럼명을 변경한다.', false),
 
