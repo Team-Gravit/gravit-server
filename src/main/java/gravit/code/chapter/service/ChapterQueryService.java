@@ -1,6 +1,6 @@
 package gravit.code.chapter.service;
 
-import gravit.code.chapter.domain.ChapterRepository;
+import gravit.code.chapter.repository.ChapterRepository;
 import gravit.code.chapter.dto.response.ChapterSummary;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;

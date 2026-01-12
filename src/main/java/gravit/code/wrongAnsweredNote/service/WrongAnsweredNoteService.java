@@ -2,7 +2,7 @@ package gravit.code.wrongAnsweredNote.service;
 
 import gravit.code.problem.dto.response.ProblemDetail;
 import gravit.code.wrongAnsweredNote.domain.WrongAnsweredNote;
-import gravit.code.wrongAnsweredNote.domain.WrongAnsweredProblemRepository;
+import gravit.code.wrongAnsweredNote.repository.WrongAnsweredNoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,17 +13,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WrongAnsweredNoteService {
 
-    private final WrongAnsweredProblemRepository wrongAnsweredProblemRepository;
+    private final WrongAnsweredNoteRepository wrongAnsweredNoteRepository;
 
     @Transactional
     public void saveWrongAnsweredNote(
             long userId,
             long problemId
     ) {
-        WrongAnsweredNote wrongAnsweredNote = wrongAnsweredProblemRepository.findByProblemIdAndUserId(problemId, userId)
+        WrongAnsweredNote wrongAnsweredNote = wrongAnsweredNoteRepository.findByProblemIdAndUserId(problemId, userId)
                 .orElseGet(() -> WrongAnsweredNote.create(problemId, userId));
 
-        wrongAnsweredProblemRepository.save(wrongAnsweredNote);
+        wrongAnsweredNoteRepository.save(wrongAnsweredNote);
     }
 
     @Transactional(readOnly = true)
@@ -31,7 +31,7 @@ public class WrongAnsweredNoteService {
             long userId,
             long unitId
     ) {
-        return wrongAnsweredProblemRepository.findWrongAnsweredProblemDetailByUnitIdAndUserId(unitId, userId);
+        return wrongAnsweredNoteRepository.findWrongAnsweredProblemDetailByUnitIdAndUserId(unitId, userId);
     }
 
     @Transactional
@@ -39,7 +39,7 @@ public class WrongAnsweredNoteService {
             long userId,
             long problemId
     ) {
-        wrongAnsweredProblemRepository.deleteByProblemIdAndUserId(problemId, userId);
+        wrongAnsweredNoteRepository.deleteByProblemIdAndUserId(problemId, userId);
     }
 
     @Transactional(readOnly = true)
@@ -47,6 +47,6 @@ public class WrongAnsweredNoteService {
             long userId,
             long unitId
     ) {
-        return wrongAnsweredProblemRepository.countByUnitIdAndUserId(unitId, userId) != 0;
+        return wrongAnsweredNoteRepository.countByUnitIdAndUserId(unitId, userId) != 0;
     }
 }

@@ -3,7 +3,7 @@ package gravit.code.problem.service;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.problem.domain.ProblemSubmission;
-import gravit.code.problem.domain.ProblemSubmissionRepository;
+import gravit.code.problem.repository.ProblemSubmissionRepository;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;

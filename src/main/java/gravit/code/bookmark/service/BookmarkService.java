@@ -1,7 +1,7 @@
 package gravit.code.bookmark.service;
 
 import gravit.code.bookmark.domain.Bookmark;
-import gravit.code.bookmark.domain.BookmarkRepository;
+import gravit.code.bookmark.repository.BookmarkRepository;
 import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
 import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
 import gravit.code.global.exception.domain.CustomErrorCode;

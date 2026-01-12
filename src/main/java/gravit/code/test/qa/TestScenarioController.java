@@ -2,14 +2,14 @@ package gravit.code.test.qa;
 
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-import gravit.code.learning.infrastructure.LearningJpaRepository;
+import gravit.code.learning.repository.LearningRepository;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.facade.LessonFacade;
-import gravit.code.lesson.infrastructure.LessonJpaRepository;
+import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.unit.domain.Unit;
-import gravit.code.unit.infrastructure.UnitJpaRepository;
+import gravit.code.unit.repository.UnitRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 public class TestScenarioController {
 
     private final LessonFacade lessonFacade;
-    private final LessonJpaRepository lessonJpaRepository;
-    private final UnitJpaRepository unitJpaRepository;
+    private final LessonRepository lessonRepository;
+    private final UnitRepository unitRepository;
     private final UserJpaRepository userJpaRepository;
-    private final LearningJpaRepository learningJpaRepository;
+    private final LearningRepository learningRepository;
 
     @PostMapping("/chapter-almost-clear")
     public ResponseEntity<Long> createChapterAlmostClearUser(
@@ -41,7 +41,7 @@ public class TestScenarioController {
             @RequestParam Long chapterId
     ){
         // 1. 해당 챕터의 유닛들 조회
-        List<Unit> units = unitJpaRepository.findAll();
+        List<Unit> units = unitRepository.findAll();
         List<Unit> chapterUnits = units.stream()
                 .filter(u -> u.getChapterId() == chapterId)
                 .toList();
@@ -52,7 +52,7 @@ public class TestScenarioController {
                 .collect(Collectors.toSet());
 
         // 3. 해당 유닛들에 속한 레슨들 필터링
-        List<Lesson> lessons = lessonJpaRepository.findAll();
+        List<Lesson> lessons = lessonRepository.findAll();
         List<Lesson> chapterLessons = lessons.stream()
                 .filter(l -> chapterUnitIds.contains(l.getUnitId()))
                 .toList();
@@ -92,7 +92,7 @@ public class TestScenarioController {
     ) throws Exception {
         User user = userJpaRepository.findById(userId).get();
 
-        Learning learning = learningJpaRepository.findByUserId(user.getId()).get();
+        Learning learning = learningRepository.findByUserId(user.getId()).get();
 
         Field todaySolvedField = Learning.class.getDeclaredField("todaySolved");
         todaySolvedField.setAccessible(true);
@@ -102,7 +102,7 @@ public class TestScenarioController {
         consecutiveSolvedDaysField.setAccessible(true);
         consecutiveSolvedDaysField.setInt(learning, consecutiveSolvedCount);
 
-        learningJpaRepository.save(learning);
+        learningRepository.save(learning);
 
         return ResponseEntity.ok(user.getId());
     }

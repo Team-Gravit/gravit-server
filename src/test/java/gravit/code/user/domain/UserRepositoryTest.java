@@ -4,12 +4,12 @@
 //import gravit.code.league.infrastructure.LeagueRepository;
 //import gravit.code.chapter.domain.Chapter;
 //import gravit.code.learning.domain.Learning;
-//import gravit.code.chapter.infrastructure.ChapterJpaRepository;
-//import gravit.code.learning.infrastructure.LearningJpaRepository;
+//import gravit.code.chapter.infrastructure.ChapterRepository;
+//import gravit.code.learning.infrastructure.LearningRepository;
 //import gravit.code.mainPage.dto.MainPageSummary;
 //import gravit.code.mission.domain.Mission;
 //import gravit.code.mission.domain.MissionType;
-//import gravit.code.mission.infrastructure.MissionJpaRepository;
+//import gravit.code.mission.infrastructure.MissionRepository;
 //import gravit.code.progress.domain.ChapterProgress;
 //import gravit.code.progress.infrastructure.ChapterProgressJpaRepository;
 //import gravit.code.season.domain.Season;
@@ -44,16 +44,16 @@
 //    private UserJpaRepository userRepository;
 //
 //    @Autowired
-//    private ChapterJpaRepository chapterRepository;
+//    private ChapterRepository chapterRepository;
 //
 //    @Autowired
-//    private LearningJpaRepository learningRepository;
+//    private LearningRepository learningRepository;
 //
 //    @Autowired
 //    private ChapterProgressJpaRepository chapterProgressRepository;
 //
 //    @Autowired
-//    private MissionJpaRepository missionRepository;
+//    private MissionRepository missionRepository;
 //
 //    @Autowired
 //    private LeagueRepository leagueRepository;

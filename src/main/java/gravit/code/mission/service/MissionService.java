@@ -5,7 +5,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.mission.domain.Mission;
-import gravit.code.mission.domain.MissionRepository;
+import gravit.code.mission.repository.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.mission.dto.event.FollowMissionEvent;
@@ -42,7 +42,7 @@ public class MissionService {
 
         while(true){
             Pageable pageable = PageRequest.of(page, size);
-            List<Mission> missions = missionRepository.findAll(pageable);
+            List<Mission> missions = missionRepository.findAll(pageable).getContent();
 
             if(missions.isEmpty())
                 break;
