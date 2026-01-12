@@ -1,5 +1,5 @@
 -- Unit: 메모리관리기초 (Unit ID: 65)
--- Chapter: 운영체제 (Chapter ID: 7)
+-- Chapter: 운영체제 (Chapter ID: 5)
 
 -- Lesson 생성
 INSERT INTO lesson (id, unit_id, title)

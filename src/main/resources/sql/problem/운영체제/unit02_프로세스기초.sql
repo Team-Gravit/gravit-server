@@ -1,5 +1,5 @@
 -- Unit: 프로세스 기초 (Unit ID: 57)
--- Chapter: 운영체제 (Chapter ID: 7)
+-- Chapter: 운영체제 (Chapter ID: 5)
 
 -- Lesson 생성
 INSERT INTO lesson (id, unit_id, title)

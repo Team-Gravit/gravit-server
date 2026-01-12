@@ -1,5 +1,5 @@
 -- Unit: 동기화와병행성 (Unit ID: 63)
--- Chapter: 운영체제 (Chapter ID: 7)
+-- Chapter: 운영체제 (Chapter ID: 5)
 
 -- Lesson 생성
 INSERT INTO lesson (id, unit_id, title)
@@ -144,7 +144,7 @@ VALUES
 (3722, 1306, '한 번에 한 독자만 읽을 수 있다', '여러 독자가 동시에 읽을 수 있다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (373, 1301, 'deadlock,교착 상태,데드락, dead lock', '프로세스들이 서로 상대방이 가진 자원을 기다리며 무한정 대기하는 상태를 교착 상태(Deadlock)라고 한다. 4가지 조건이 모두 만족될 때 발생한다.'),
+VALUES (373, 1301, 'deadlock,교착 상태,데드락,dead lock', '프로세스들이 서로 상대방이 가진 자원을 기다리며 무한정 대기하는 상태를 교착 상태(Deadlock)라고 한다. 4가지 조건이 모두 만족될 때 발생한다.'),
        (374, 1304, 'priority inversion,우선순위 역전', '낮은 우선순위 프로세스가 높은 우선순위 프로세스를 지연시키는 현상을 우선순위 역전(Priority Inversion)이라고 한다. 우선순위 상속으로 해결한다.');
 
 

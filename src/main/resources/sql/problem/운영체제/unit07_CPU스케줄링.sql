@@ -1,5 +1,5 @@
 -- Unit: CPU스케줄링 (Unit ID: 62)
--- Chapter: 운영체제 (Chapter ID: 7)
+-- Chapter: 운영체제 (Chapter ID: 5)
 
 -- Lesson 생성
 INSERT INTO lesson (id, unit_id, title)

@@ -1,5 +1,5 @@
 -- Unit: 스레드와멀티스레딩 (Unit ID: 61)
--- Chapter: 운영체제 (Chapter ID: 7)
+-- Chapter: 운영체제 (Chapter ID: 5)
 
 -- Lesson 생성
 INSERT INTO lesson (id, unit_id, title)

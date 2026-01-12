@@ -1,5 +1,5 @@
 -- Unit: 페이지관리 (Unit ID: 67)
--- Chapter: 운영체제 (Chapter ID: 7)
+-- Chapter: 운영체제 (Chapter ID: 5)
 
 -- Lesson 생성
 INSERT INTO lesson (id, unit_id, title)
@@ -31,7 +31,7 @@ VALUES
 (3854, 1365, '참조 비트를 활용하여 순환 리스트로 교체한다', '참조 비트와 순환 리스트를 활용하는 것은 Clock 알고리즘이다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (399, 1361, 'belady''s anomaly,벨라디의 모순,벨라디의 역설, 벨라디의 이상현상', 'Belady''s Anomaly는 FIFO 알고리즘에서 프레임 수 증가 시 페이지 폴트가 증가할 수 있는 현상이다.'),
+VALUES (399, 1361, 'belady''s anomaly,벨라디의 모순,벨라디의 역설,벨라디의 이상현상', 'Belady''s Anomaly는 FIFO 알고리즘에서 프레임 수 증가 시 페이지 폴트가 증가할 수 있는 현상이다.'),
        (400, 1362, 'opt,optimal', 'OPT(Optimal) 알고리즘은 미래에 가장 오랫동안 사용되지 않을 페이지를 교체하여 이론적으로 최적이지만 실제 구현은 불가능하다.'),
        (401, 1364, 'clock,second chance', 'Clock(Second Chance) 알고리즘은 FIFO에 참조 비트를 활용하여 LRU를 근사하는 효율적인 알고리즘이다.'),
        (402, 1366, '타임스탬프,time stamp', 'LRU 알고리즘은 타임스탬프, 스택, 카운터 등의 방법으로 구현할 수 있다.');

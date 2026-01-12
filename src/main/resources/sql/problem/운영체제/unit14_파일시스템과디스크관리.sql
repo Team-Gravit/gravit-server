@@ -1,5 +1,5 @@
 -- Unit: 파일시스템과디스크관리 (Unit ID: 69)
--- Chapter: 운영체제 (Chapter ID: 7)
+-- Chapter: 운영체제 (Chapter ID: 5)
 
 -- Lesson 생성
 INSERT INTO lesson (id, unit_id, title)
