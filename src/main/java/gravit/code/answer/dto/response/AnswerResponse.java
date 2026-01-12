@@ -22,7 +22,9 @@ public record AnswerResponse(
 ) {
         public static AnswerResponse from(Answer answer) {
                 return new AnswerResponse(
-                        Arrays.asList(answer.getContent().split(",")),
+                        Arrays.stream(answer.getContent().split(","))
+                                .map(String::strip)
+                                .toList(),
                         answer.getExplanation()
                 );
         }

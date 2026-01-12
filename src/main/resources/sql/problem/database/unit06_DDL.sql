@@ -49,8 +49,8 @@ VALUES
 (2722, 956, '두 명령어는 동일하게 동작한다', 'TRUNCATE는 데이터만, DROP은 구조와 데이터 모두를 삭제한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (273, 951, 'CREATE', 'CREATE는 데이터베이스, 테이블, 인덱스 등 데이터베이스 객체를 생성하는 DDL 명령어이다. CREATE DATABASE, CREATE TABLE 등의 형태로 사용한다.'),
-       (274, 954, 'ALTER', 'ALTER는 테이블의 구조를 수정하는 DDL 명령어이다. 컬럼 추가, 수정, 삭제 및 제약 조건 관리 등에 사용한다.');
+VALUES (273, 951, 'create', 'CREATE는 데이터베이스, 테이블, 인덱스 등 데이터베이스 객체를 생성하는 DDL 명령어이다. CREATE DATABASE, CREATE TABLE 등의 형태로 사용한다.'),
+       (274, 954, 'alter', 'ALTER는 테이블의 구조를 수정하는 DDL 명령어이다. 컬럼 추가, 수정, 삭제 및 제약 조건 관리 등에 사용한다.');
 
 -- Lesson 2: DDL 2 (ID: 138)
 INSERT INTO lesson (id, title, unit_id)
@@ -98,8 +98,8 @@ VALUES
 (2742, 963, 'students 테이블을 삭제한다', 'DROP TABLE이 테이블을 삭제한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (275, 958, 'DROP', 'ALTER TABLE ... DROP COLUMN은 테이블에서 기존 컬럼을 삭제하는 명령이다. 삭제된 컬럼의 데이터도 함께 사라진다.'),
-       (276, 961, 'RENAME', 'ALTER TABLE ... RENAME COLUMN ... TO ...는 기존 컬럼의 이름을 변경하는 명령이다. 컬럼의 데이터와 속성은 유지된다.');
+VALUES (275, 958, 'drop', 'ALTER TABLE ... DROP COLUMN은 테이블에서 기존 컬럼을 삭제하는 명령이다. 삭제된 컬럼의 데이터도 함께 사라진다.'),
+       (276, 961, 'rename', 'ALTER TABLE ... RENAME COLUMN ... TO ...는 기존 컬럼의 이름을 변경하는 명령이다. 컬럼의 데이터와 속성은 유지된다.');
 
 -- Lesson 3: DDL 3 (ID: 139)
 INSERT INTO lesson (id, title, unit_id)
@@ -147,5 +147,5 @@ VALUES
 (2762, 970, 'ALTER TABLE', 'ALTER TABLE은 테이블 구조를 수정하는 명령이다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (277, 965, 'IF', 'IF EXISTS는 테이블이 존재할 때만 삭제를 수행한다. 테이블이 없어도 오류가 발생하지 않아 스크립트 실행 시 안전하다.'),
-       (278, 968, 'TRUNCATE', 'TRUNCATE는 테이블의 모든 데이터를 삭제하고 초기 상태로 되돌리는 DDL 명령어이다. DELETE보다 빠르지만 WHERE 절을 사용할 수 없고 ROLLBACK이 불가능하다.');
+VALUES (277, 965, 'if', 'IF EXISTS는 테이블이 존재할 때만 삭제를 수행한다. 테이블이 없어도 오류가 발생하지 않아 스크립트 실행 시 안전하다.'),
+       (278, 968, 'truncate', 'TRUNCATE는 테이블의 모든 데이터를 삭제하고 초기 상태로 되돌리는 DDL 명령어이다. DELETE보다 빠르지만 WHERE 절을 사용할 수 없고 ROLLBACK이 불가능하다.');
