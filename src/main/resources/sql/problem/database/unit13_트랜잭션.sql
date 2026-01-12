@@ -147,4 +147,4 @@ VALUES
 
 INSERT INTO answer (id, problem_id, content, explanation)
 VALUES (319, 1112, 'dirty read,더티 리드', '커밋되지 않은 데이터를 다른 트랜잭션이 읽는 현상을 Dirty Read라고 한다. 해당 트랜잭션이 롤백되면 잘못된 데이터를 읽게 된다.'),
-       (320, 1115, 'non-repeatable read,반복 불가능한 읽기,nonrepatable read', '같은 쿼리를 두 번 실행했을 때 다른 트랜잭션의 수정으로 인해 결과가 달라지는 현상을 Non-Repeatable Read라고 한다.');
+       (320, 1115, 'non-repeatable read,반복 불가능한 읽기,nonrepeatable read', '같은 쿼리를 두 번 실행했을 때 다른 트랜잭션의 수정으로 인해 결과가 달라지는 현상을 Non-Repeatable Read라고 한다.');

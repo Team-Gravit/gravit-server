@@ -99,7 +99,7 @@ VALUES
 (2682, 942, '아무런 제약 없이 삭제 / 수정을 허용한다', 'NO ACTION도 참조 무결성을 검사하며, 위반 시 작업을 차단한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (269, 937, 'set null,nULL', 'SET NULL 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 NULL로 설정한다. 외래키 컬럼이 NULL을 허용해야 사용할 수 있다.'),
+VALUES (269, 937, 'set null,null', 'SET NULL 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 NULL로 설정한다. 외래키 컬럼이 NULL을 허용해야 사용할 수 있다.'),
        (270, 940, 'set default,default', 'SET DEFAULT 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 기본값(DEFAULT)으로 설정한다.');
 
 -- Lesson 3: 외래키와 제약 조건 3 (ID: 136)
