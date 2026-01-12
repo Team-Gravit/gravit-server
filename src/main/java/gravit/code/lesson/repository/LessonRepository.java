@@ -12,12 +12,6 @@ import java.util.Optional;
 
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
-    Optional<Lesson> findById(long lessonId);
-
-    long count();
-
-    boolean existsById(long lessonId);
-
     @Query("""
         SELECT new gravit.code.learning.dto.common.LearningIds(c.id, u.id, l.id)
         FROM Lesson l

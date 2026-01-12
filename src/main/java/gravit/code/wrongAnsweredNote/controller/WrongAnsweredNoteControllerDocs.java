@@ -3,7 +3,7 @@ package gravit.code.wrongAnsweredNote.controller;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
-import gravit.code.wrongAnsweredNote.dto.response.WrongAnsweredNoteDeleteRequest;
+import gravit.code.wrongAnsweredNote.dto.request.WrongAnsweredNoteDeleteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

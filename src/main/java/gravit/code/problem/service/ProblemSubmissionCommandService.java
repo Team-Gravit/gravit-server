@@ -49,7 +49,7 @@ public class ProblemSubmissionCommandService {
         problemSubmission.updateIsCorrect(request.isCorrect());
 
         if (!request.isCorrect())
-            wrongAnsweredNoteService.saveWrongAnsweredNote(problemSubmission.getProblemId(), userId);
+            wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemSubmission.getProblemId());
 
         problemSubmissionRepository.save(problemSubmission);
     }

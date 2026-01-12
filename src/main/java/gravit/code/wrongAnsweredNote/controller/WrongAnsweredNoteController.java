@@ -2,7 +2,7 @@ package gravit.code.wrongAnsweredNote.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
-import gravit.code.wrongAnsweredNote.dto.response.WrongAnsweredNoteDeleteRequest;
+import gravit.code.wrongAnsweredNote.dto.request.WrongAnsweredNoteDeleteRequest;
 import gravit.code.wrongAnsweredNote.facade.WrongAnsweredNoteFacade;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import jakarta.validation.Valid;

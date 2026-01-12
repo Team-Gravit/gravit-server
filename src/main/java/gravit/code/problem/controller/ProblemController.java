@@ -25,7 +25,7 @@ public class ProblemController implements ProblemControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("lessonId") Long lessonsId
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(problemFacade.getAllProblemInLesson(lessonsId, loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(problemFacade.getAllProblemInLesson(loginUser.getId(), lessonsId));
     }
 
     @PostMapping("/results")
