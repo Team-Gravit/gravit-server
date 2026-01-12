@@ -1,15 +1,15 @@
 package gravit.code.problem.service;
 
+import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;
-import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.option.repository.OptionRepository;
 import gravit.code.option.dto.response.OptionResponse;
-import gravit.code.problem.repository.ProblemRepository;
+import gravit.code.option.repository.OptionRepository;
 import gravit.code.problem.domain.ProblemType;
 import gravit.code.problem.dto.response.ProblemDetail;
 import gravit.code.problem.dto.response.ProblemResponse;
+import gravit.code.problem.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +37,10 @@ public class ProblemQueryService {
         return problemDetails.stream()
                 .map(problem -> {
                     if (problem.problemType() == ProblemType.SUBJECTIVE){
-                        AnswerResponse answerResponse = answerRepository.findByProblemId(problem.id())
+                        Answer answer = answerRepository.findByProblemId(problem.id())
                                 .orElseThrow(() -> new RestApiException(CustomErrorCode.ANSWER_NOT_FOUND));
 
-                        return ProblemResponse.createSubjectiveProblem(problem, answerResponse);
+                        return ProblemResponse.createSubjectiveProblem(problem, answer);
                     }else{
                         List<OptionResponse> optionResponses = optionRepository.findByProblemId(problem.id());
 
