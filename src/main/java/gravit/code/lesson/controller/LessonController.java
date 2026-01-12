@@ -34,4 +34,5 @@ public class LessonController implements LessonControllerDocs {
     ){
         return ResponseEntity.status(HttpStatus.OK).body(lessonFacade.saveLessonSubmission(loginUser.getId(), request));
     }
+
 }

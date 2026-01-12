@@ -48,4 +48,5 @@ public class MissionEventListener {
             log.error("Exception occurred while creating mission for new User with {}", e.getMessage());
         }
     }
+
 }

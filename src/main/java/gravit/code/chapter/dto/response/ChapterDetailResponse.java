@@ -18,7 +18,9 @@ public record ChapterDetailResponse(
                 example = "12.3"
         )
         double chapterProgressRate
+
 ) {
+
     public static ChapterDetailResponse create(
             ChapterSummary chapterSummary,
             double chapterProgressRate
@@ -28,4 +30,5 @@ public record ChapterDetailResponse(
                 .chapterProgressRate(chapterProgressRate)
                 .build();
     }
+
 }

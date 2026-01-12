@@ -45,6 +45,7 @@ public record LearningDetail(
                 example = "65.5"
         )
         double recentSolvedChapterProgressRate
+
 ) {
     public LearningDetail withRecentSolvedChapterProgressRate(double recentSolvedChapterProgressRate) {
         return LearningDetail.builder()
@@ -56,4 +57,5 @@ public record LearningDetail(
                 .recentSolvedChapterProgressRate(recentSolvedChapterProgressRate)
                 .build();
     }
+
 }

@@ -26,4 +26,5 @@ public class LessonSubmissionQueryService {
     ) {
         return !lessonSubmissionRepository.existsByLessonIdAndUserId(lessonId, userId);
     }
+
 }

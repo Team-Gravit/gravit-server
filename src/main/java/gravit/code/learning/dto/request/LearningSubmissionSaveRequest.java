@@ -20,4 +20,5 @@ public record LearningSubmissionSaveRequest(
         )
         @Valid
         List<ProblemSubmissionRequest> problemSubmissionRequests
+
 ) {}

@@ -71,8 +71,9 @@ public class LearningService {
         LearningDetail learningDetail = learningRepository.findLearningDetailByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
 
-        double progressRate = learningProgressRateService.getChapterProgress(learningDetail.recentSolvedChapterId(), userId);
+        double progressRate = learningProgressRateService.getChapterProgress(userId, learningDetail.recentSolvedChapterId());
 
         return learningDetail.withRecentSolvedChapterProgressRate(progressRate);
     }
+
 }

@@ -40,14 +40,11 @@ public class LessonFacade {
     private final ProblemSubmissionCommandService problemSubmissionCommandService;
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
     private final BookmarkService bookmarkService;
-
     private final LearningService learningService;
-
     private final UserService userService;
     private final UserLeagueService userLeagueService;
 
     private final ApplicationEventPublisher publisher;
-
 
     @Transactional(readOnly = true)
     public LessonDetailResponse getAllLessonInUnit(

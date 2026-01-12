@@ -98,4 +98,5 @@ public class ProblemSubmissionCommandService {
                     return ProblemSubmission.create(problemSubmissionRequest.isCorrect(), problemSubmissionRequest.problemId(), userId);
                 }).toList();
     }
+
 }

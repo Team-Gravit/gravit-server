@@ -24,5 +24,6 @@ public record UnitSummary(
         )
         @NotNull
         String description
+
 ) {
 }

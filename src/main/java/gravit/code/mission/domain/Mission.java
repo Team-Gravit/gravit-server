@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Mission {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -120,4 +121,5 @@ public class Mission {
         this.progressRate = 0.0;
         this.isCompleted = false;
     }
+
 }

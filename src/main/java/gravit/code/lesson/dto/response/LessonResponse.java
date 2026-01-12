@@ -26,6 +26,7 @@ public record LessonResponse(
                 example = "5"
         )
         int totalProblems
+
 ) {
 
     public static LessonResponse of(
@@ -38,4 +39,5 @@ public record LessonResponse(
                 .totalProblems(problems.size())
                 .build();
     }
+
 }

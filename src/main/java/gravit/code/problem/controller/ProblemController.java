@@ -36,4 +36,5 @@ public class ProblemController implements ProblemControllerDocs {
         problemSubmissionCommandService.saveProblemSubmission(loginUser.getId(), request);
         return ResponseEntity.ok().build();
     }
+
 }

@@ -17,11 +17,6 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
 
     Optional<Report> findById(long reportId);
 
-    boolean existsReportByProblemIdAndUserId(
-            long problemId,
-            long userId
-    );
-
     @Query("""
         SELECT new gravit.code.admin.dto.response.ReportSummaryResponse(r.id, r.reportType, r.problemId, r.isResolved, r.submittedAt)
         FROM Report r

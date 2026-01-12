@@ -40,4 +40,5 @@ public class Bookmark {
                 .userId(userId)
                 .build();
     }
+
 }

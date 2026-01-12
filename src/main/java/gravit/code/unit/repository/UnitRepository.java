@@ -37,4 +37,5 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
 
     @Query("SELECT u.id FROM Unit u WHERE u.chapterId = :chapterId ORDER BY u.id ASC")
     List<Long> findIdsByChapterIdOrderById(@Param("chapterId") long chapterId);
+
 }

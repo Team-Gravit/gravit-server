@@ -7,6 +7,8 @@ public record MissionSummary(
 
         @NotNull
         MissionType missionType,
+
         boolean isCompleted
+
 ) {
 }

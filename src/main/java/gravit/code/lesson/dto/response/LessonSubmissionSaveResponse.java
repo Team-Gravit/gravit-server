@@ -26,6 +26,7 @@ public record LessonSubmissionSaveResponse(
         @NotNull
         UnitSummary unitSummary
 ) {
+
     public static LessonSubmissionSaveResponse create(
             String leagueName,
             UserLevelResponse userLevelResponse,
@@ -37,4 +38,5 @@ public record LessonSubmissionSaveResponse(
                 .unitSummary(unitSummary)
                 .build();
     }
+
 }

@@ -36,4 +36,5 @@ public class WrongAnsweredNoteController implements WrongAnsweredNoteControllerD
         wrongAnsweredNoteService.deleteWrongAnsweredProblem(loginUser.getId(), request.problemId());
         return ResponseEntity.noContent().build();
     }
+
 }

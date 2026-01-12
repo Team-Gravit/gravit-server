@@ -18,7 +18,9 @@ public record UnitDetail(
                 example = "45.6"
         )
         double progressRate
+
 ) {
+
     public static UnitDetail create(
             UnitSummary unitSummaries,
             double progressRate
@@ -28,4 +30,5 @@ public record UnitDetail(
                 .progressRate(progressRate)
                 .build();
     }
+
 }

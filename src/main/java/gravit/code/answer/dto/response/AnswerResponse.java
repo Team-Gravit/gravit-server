@@ -8,10 +8,7 @@ import java.util.List;
 
 @Schema(description = "주관식 정답 Response")
 public record AnswerResponse(
-        @Schema(
-                description = "정답 내용",
-                example = "2"
-        )
+
         List<String> contents,
 
         @Schema(

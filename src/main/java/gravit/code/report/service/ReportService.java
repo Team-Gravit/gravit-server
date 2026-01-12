@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReportService {
 
     private final ReportRepository reportRepository;
+
     private final ProblemRepository problemRepository;
 
     @Transactional

@@ -6,12 +6,16 @@ import jakarta.validation.constraints.NotNull;
 public record ProblemDetail(
 
         long id,
+
         @NotNull
         ProblemType problemType,
+
         @NotNull
         String instruction,
+
         @NotNull
         String content,
+
         boolean isBookmarked
 ) {
 }

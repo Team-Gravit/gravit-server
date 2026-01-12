@@ -15,4 +15,5 @@ public class LearningScheduler {
     public void updateConsecutiveDays(){
         learningService.updateConsecutiveDays();
     }
+
 }

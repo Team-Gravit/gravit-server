@@ -51,4 +51,5 @@ public class ProblemSubmission {
     public void updateIsCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
     }
+
 }

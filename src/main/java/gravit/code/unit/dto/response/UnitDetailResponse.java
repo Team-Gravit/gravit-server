@@ -19,6 +19,7 @@ public record UnitDetailResponse(
         @Schema(description = "유닛 상세 정보 목록")
         @NotNull
         List<UnitDetail> unitDetails
+
 ) {
 
     public static UnitDetailResponse create(
@@ -30,4 +31,5 @@ public record UnitDetailResponse(
                 .unitDetails(unitDetails)
                 .build();
     }
+
 }

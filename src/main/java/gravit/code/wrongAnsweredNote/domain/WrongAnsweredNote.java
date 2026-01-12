@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WrongAnsweredNote {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,4 +39,5 @@ public class WrongAnsweredNote {
                 .userId(userId)
                 .build();
     }
+
 }

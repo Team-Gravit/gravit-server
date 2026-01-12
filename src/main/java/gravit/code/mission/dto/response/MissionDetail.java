@@ -26,7 +26,9 @@ public record MissionDetail(
                 example = "false"
         )
         boolean isCompleted
+
 ) {
+
     public static MissionDetail from(MissionSummary missionSummary){
         return MissionDetail.builder()
                 .missionDescription(missionSummary.missionType().getDescription())
@@ -34,4 +36,5 @@ public record MissionDetail(
                 .isCompleted(missionSummary.isCompleted())
                 .build();
     }
+
 }

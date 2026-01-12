@@ -10,4 +10,5 @@ public interface AnswerRepository extends JpaRepository<Answer,Long> {
     void deleteByProblemId(long problemId);
 
     Optional<Answer> findByProblemId(long problemId);
+
 }

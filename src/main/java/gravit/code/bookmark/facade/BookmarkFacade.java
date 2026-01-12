@@ -18,6 +18,7 @@ import java.util.List;
 public class BookmarkFacade {
 
     private final BookmarkService bookmarkService;
+
     private final UnitQueryService unitQueryService;
     private final ProblemQueryService problemQueryService;
 
@@ -36,4 +37,5 @@ public class BookmarkFacade {
                 problemResponses
         );
     }
+
 }

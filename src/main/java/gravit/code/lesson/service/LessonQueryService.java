@@ -17,7 +17,6 @@ public class LessonQueryService {
 
     private final LessonRepository lessonRepository;
 
-
     @Transactional(readOnly = true)
     public List<LessonSummary> getAllLessonInUnit(
             long userId,
@@ -31,4 +30,5 @@ public class LessonQueryService {
         return lessonRepository.findLearningIdsByLessonId(lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
     }
+
 }

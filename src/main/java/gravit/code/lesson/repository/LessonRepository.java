@@ -48,9 +48,10 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
         FROM Lesson l
         LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id AND ls.userId = :userId
         WHERE l.unitId = :unitId
-  """)
+    """)
     List<LessonSummary> findAllLessonSummaryByUnitId(
             @Param("unitId") long unitId,
             @Param("userId") long userId
     );
+
 }

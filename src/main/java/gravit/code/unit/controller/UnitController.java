@@ -26,4 +26,5 @@ public class UnitController implements UnitControllerDocs {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(unitFacade.getAllUnitInChapter(loginUser.getId(), chapterId));
     }
+
 }

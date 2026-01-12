@@ -15,8 +15,8 @@ public class LearningProgressRateService {
 
     @Transactional(readOnly = true)
     public double getChapterProgress(
-            long chapterId,
-            long userId
+            long userId,
+            long chapterId
     ) {
         int totalLessonCount = lessonRepository.countTotalLessonByChapterId(chapterId);
         int solvedLessonCount = lessonSubmissionRepository.countSolvedLessonByChapterIdAndUserId(chapterId, userId);
@@ -27,8 +27,8 @@ public class LearningProgressRateService {
 
     @Transactional(readOnly = true)
     public double getUnitProgress(
-            long unitId,
-            long userId
+            long userId,
+            long unitId
     ) {
         int totalLessonCount = lessonRepository.countTotalLessonByUnitId(unitId);
         int solvedLessonCount = lessonSubmissionRepository.countSolvedLessonByUnitIdAndUserId(unitId, userId);

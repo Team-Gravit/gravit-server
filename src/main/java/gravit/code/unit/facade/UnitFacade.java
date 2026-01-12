@@ -35,7 +35,7 @@ public class UnitFacade {
                 .map(unitSummary -> {
                     long unitId = unitSummary.unitId();
 
-                    double unitProgressRate = learningProgressRateService.getUnitProgress(unitId, userId);
+                    double unitProgressRate = learningProgressRateService.getUnitProgress(userId, unitId);
 
                     return UnitDetail.create(
                             unitSummary,
@@ -48,4 +48,5 @@ public class UnitFacade {
                 unitDetails
         );
     }
+
 }

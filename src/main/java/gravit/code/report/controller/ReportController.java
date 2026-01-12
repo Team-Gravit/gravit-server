@@ -27,4 +27,5 @@ public class ReportController implements ReportControllerDocs {
         reportService.submitProblemReport(loginUser.getId(), request);
         return ResponseEntity.ok().build();
     }
+
 }

@@ -23,4 +23,5 @@ public class LearningEventListener {
             log.error("Exception occurred while creating Learning with {}", e.getMessage());
         }
     }
+
 }

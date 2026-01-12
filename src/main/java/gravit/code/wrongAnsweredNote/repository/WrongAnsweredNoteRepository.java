@@ -53,4 +53,5 @@ public interface WrongAnsweredNoteRepository extends JpaRepository<WrongAnswered
             @Param("unitId")long unitId,
             @Param("userId")long userId
     );
+
 }

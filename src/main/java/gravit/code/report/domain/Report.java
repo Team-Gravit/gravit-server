@@ -68,4 +68,5 @@ public class Report {
     public void updateResolvedStatus(){
         this.isResolved = !this.isResolved;
     }
+
 }

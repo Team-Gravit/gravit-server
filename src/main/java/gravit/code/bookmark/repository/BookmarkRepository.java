@@ -11,7 +11,10 @@ import java.util.List;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
-    boolean existsByProblemIdAndUserId(long problemId, long userId);
+    boolean existsByProblemIdAndUserId(
+            long problemId,
+            long userId
+    );
 
     @Modifying
     @Query("""
@@ -56,4 +59,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
             @Param("unitId")long unitId,
             @Param("userId")long userId
     );
+
 }

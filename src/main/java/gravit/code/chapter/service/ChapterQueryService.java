@@ -26,4 +26,5 @@ public class ChapterQueryService {
         return chapterRepository.findChapterSummaryByChapterId(chapterId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
     }
+
 }

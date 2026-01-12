@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record LessonSubmissionSaveRequest(
+
         @Schema(
                 description = "레슨 아이디",
                 example = "2"
@@ -29,5 +30,6 @@ public record LessonSubmissionSaveRequest(
         @Max(value = 100, message = "정확도는 100 이상이 될 수 없습니다.")
         @NotNull(message = "정확도가 비어있습니다.")
         Integer accuracy
+
 ) {
 }

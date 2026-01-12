@@ -10,5 +10,6 @@ public record WrongAnsweredNoteDeleteRequest(
                 example = "1"
         )
         long problemId
+
 ) {
 }

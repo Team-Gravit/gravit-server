@@ -24,7 +24,9 @@ public record BookmarkedProblemResponse(
                 example = "5"
         )
         int totalProblems
+
 ) {
+
     public static BookmarkedProblemResponse of(
             UnitSummary unitSummary,
             List<ProblemResponse> problems
@@ -35,4 +37,5 @@ public record BookmarkedProblemResponse(
                 .totalProblems(problems.size())
                 .build();
     }
+
 }

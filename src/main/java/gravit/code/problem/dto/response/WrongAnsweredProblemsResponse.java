@@ -24,7 +24,9 @@ public record WrongAnsweredProblemsResponse(
                 example = "5"
         )
         int totalProblems
+
 ) {
+
     public static WrongAnsweredProblemsResponse of(
             UnitSummary unitSummary,
             List<ProblemResponse> problems
@@ -35,4 +37,5 @@ public record WrongAnsweredProblemsResponse(
                 .totalProblems(problems.size())
                 .build();
     }
+
 }

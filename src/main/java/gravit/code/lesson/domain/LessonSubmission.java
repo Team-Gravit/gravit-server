@@ -59,4 +59,5 @@ public class LessonSubmission {
     public void updateTryCount() {
         this.tryCount++;
     }
+
 }

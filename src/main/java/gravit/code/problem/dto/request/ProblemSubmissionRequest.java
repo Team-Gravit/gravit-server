@@ -18,5 +18,6 @@ public record ProblemSubmissionRequest(
         )
         @NotNull(message = "최초 정/오답 여부가 비어있습니다.")
         Boolean isCorrect
+
 ) {
 }

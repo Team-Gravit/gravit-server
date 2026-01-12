@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "레슨 요약 정보")
 public record LessonSummary(
+
         @Schema(
                 description = "레슨 아이디",
                 example = "1"
@@ -29,5 +30,6 @@ public record LessonSummary(
                 example = "true"
         )
         boolean isSolved
+
 ) {
 }

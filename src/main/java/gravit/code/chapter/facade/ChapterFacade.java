@@ -15,6 +15,7 @@ import java.util.List;
 public class ChapterFacade {
 
     private final ChapterQueryService chapterQueryService;
+
     private final LearningProgressRateService learningProgressRateService;
 
     @Transactional(readOnly = true)
@@ -25,7 +26,7 @@ public class ChapterFacade {
                 .map(chapter -> {
                     long chapterId = chapter.chapterId();
 
-                    double chapterProgressRate = learningProgressRateService.getChapterProgress(chapterId, userId);
+                    double chapterProgressRate = learningProgressRateService.getChapterProgress(userId, chapterId);
 
                     return ChapterDetailResponse.create(
                             chapter,
@@ -33,4 +34,5 @@ public class ChapterFacade {
                     );
                 }).toList();
     }
+
 }

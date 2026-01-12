@@ -27,5 +27,6 @@ public record ChapterSummary(
         )
         @NotNull
         String description
+
 ) {
 }

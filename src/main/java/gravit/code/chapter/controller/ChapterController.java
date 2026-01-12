@@ -24,4 +24,5 @@ public class ChapterController implements ChapterControllerDocs {
     public ResponseEntity<List<ChapterDetailResponse>> getAllChapter(@AuthenticationPrincipal LoginUser loginUser) {
         return ResponseEntity.status(HttpStatus.OK).body(chapterFacade.getAllChapter(loginUser.getId()));
     }
+
 }

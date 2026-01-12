@@ -39,7 +39,9 @@ public record LessonDetailResponse(
         @Schema(description = "레슨 요약 정보 목록")
         @NotNull
         List<LessonSummary> lessonSummaries
+
 ) {
+
     public static LessonDetailResponse create(
             UnitSummary unitSummary,
             boolean bookmarkAccessible,
@@ -55,4 +57,5 @@ public record LessonDetailResponse(
                 .lessonSummaries(lessonSummaries)
                 .build();
     }
+
 }

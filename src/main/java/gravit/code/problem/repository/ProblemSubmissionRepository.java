@@ -24,4 +24,5 @@ public interface ProblemSubmissionRepository extends JpaRepository<ProblemSubmis
             @Param("problemId")long problemId,
             @Param("userId")long userId
     );
+
 }

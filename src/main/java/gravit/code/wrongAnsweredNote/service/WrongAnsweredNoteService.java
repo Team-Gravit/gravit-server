@@ -49,4 +49,5 @@ public class WrongAnsweredNoteService {
     ) {
         return wrongAnsweredNoteRepository.countByUnitIdAndUserId(unitId, userId) != 0;
     }
+
 }

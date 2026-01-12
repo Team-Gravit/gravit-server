@@ -81,4 +81,5 @@ public class Learning {
             this.todaySolved = false;
         }
     }
+
 }
