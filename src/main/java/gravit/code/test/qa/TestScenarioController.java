@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TestScenarioController {
 
-    private final LearningFacade learningFacade;
-    private final LessonJpaRepository lessonJpaRepository;
-    private final UnitJpaRepository unitJpaRepository;
+    private final LessonFacade lessonFacade;
+    private final LessonRepository lessonRepository;
+    private final UnitRepository unitRepository;
     private final UserRepository userRepository;
-    private final LearningJpaRepository learningJpaRepository;
+    private final LearningRepository learningRepository;
 
     @PostMapping("/chapter-almost-clear")
     public ResponseEntity<Long> createChapterAlmostClearUser(
