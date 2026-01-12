@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/problems")
-public class ProblemController {
+public class ProblemController implements ProblemControllerDocs {
 
     private final ProblemFacade problemFacade;
     private final ProblemSubmissionCommandService problemSubmissionCommandService;

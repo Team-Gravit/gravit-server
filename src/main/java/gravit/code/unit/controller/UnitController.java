@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/units")
-public class UnitController {
+public class UnitController implements UnitControllerDocs {
 
     private final UnitFacade unitFacade;
 

@@ -22,7 +22,6 @@ public class ReportService {
             long userId,
             ProblemReportSubmitRequest request
     ){
-
         if(!problemRepository.existsProblemById(request.problemId()))
             throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
 

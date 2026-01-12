@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/wrong-answered-notes")
-public class WrongAnsweredNoteController {
+public class WrongAnsweredNoteController implements WrongAnsweredNoteControllerDocs {
 
     private final WrongAnsweredNoteFacade wrongAnsweredNoteFacade;
     private final WrongAnsweredNoteService wrongAnsweredNoteService;

@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chapters")
-public class ChapterController {
+public class ChapterController implements ChapterControllerDocs {
 
     private final ChapterFacade chapterFacade;
 
