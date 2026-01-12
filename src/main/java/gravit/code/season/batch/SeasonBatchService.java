@@ -3,13 +3,16 @@ package gravit.code.season.batch;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
-import gravit.code.league.infrastructure.LeagueRepository;
+import gravit.code.league.repository.LeagueRepository;
 import gravit.code.season.calendar.SeasonCalendar;
 import gravit.code.season.domain.Season;
-import gravit.code.season.infrastructure.SeasonRepository;
+import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
-import gravit.code.userLeague.domain.UserLeagueRepository;
-import gravit.code.userLeagueHistory.infrastructure.UserLeagueHistoryRepository;
+import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
+import java.sql.SQLException;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.RecoverableDataAccessException;
@@ -18,10 +21,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 
 @Service
@@ -33,7 +32,7 @@ public class SeasonBatchService {
     private final UserLeagueRepository userLeagueRepository;
     private final LeagueRepository leagueRepository;
     private final SeasonClosedCache seasonClosedCache;
-
+    private final Clock clock;
 
     @Retryable(
             retryFor = {TransientDataAccessException.class, RecoverableDataAccessException.class, SQLException.class},
@@ -42,7 +41,7 @@ public class SeasonBatchService {
     @Transactional
     public void finalizeAndRolloverWeekly(){
         // 닫을 시즌 확정 , 락
-        LocalDateTime nowKst = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        LocalDateTime nowKst = LocalDateTime.now(clock);
         Season currentSeason = seasonRepository.findCloseableActiveByNowForUpdate(nowKst).orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
         currentSeason.finalizing();
 

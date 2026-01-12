@@ -1,7 +1,7 @@
 //package gravit.code.user.domain;
 //
 //import gravit.code.league.domain.League;
-//import gravit.code.league.infrastructure.LeagueRepository;
+//import gravit.code.league.repository.LeagueRepository;
 //import gravit.code.chapter.domain.Chapter;
 //import gravit.code.learning.domain.Learning;
 //import gravit.code.chapter.infrastructure.ChapterRepository;
@@ -13,10 +13,10 @@
 //import gravit.code.progress.domain.ChapterProgress;
 //import gravit.code.progress.infrastructure.ChapterProgressJpaRepository;
 //import gravit.code.season.domain.Season;
-//import gravit.code.season.infrastructure.SeasonRepository;
-//import gravit.code.user.infrastructure.UserJpaRepository;
+//import gravit.code.season.repository.SeasonRepository;
+//import gravit.code.user.repository.UserRepository;
 //import gravit.code.userLeague.domain.UserLeague;
-//import gravit.code.userLeague.infrastructure.UserLeagueJpaRepository;
+//import gravit.code.userLeague.repository.UserLeagueRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Nested;
@@ -41,7 +41,7 @@
 //class UserRepositoryTest {
 //
 //    @Autowired
-//    private UserJpaRepository userRepository;
+//    private UserRepository userRepository;
 //
 //    @Autowired
 //    private ChapterRepository chapterRepository;
@@ -62,7 +62,7 @@
 //    private SeasonRepository seasonRepository;
 //
 //    @Autowired
-//    private UserLeagueJpaRepository userLeagueRepository;
+//    private UserLeagueRepository userLeagueRepository;
 //
 //    @BeforeEach
 //    void setUp() {

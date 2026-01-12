@@ -9,13 +9,13 @@ import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.mission.dto.response.MissionDetail;
 import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.service.MissionService;
-import gravit.code.user.domain.HandleGenerator;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserLevel;
-import gravit.code.user.domain.UserRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.*;
+import gravit.code.user.repository.UserRepository;
+import gravit.code.user.support.RandomHandleGenerator;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,7 +34,7 @@ public class UserService {
     private final UserLeagueService userLeagueService;
 
     private final ApplicationEventPublisher publisher;
-    private final HandleGenerator handleGenerator;
+    private final RandomHandleGenerator handleGenerator;
     private final LearningService learningService;
 
     @Transactional(readOnly = true)

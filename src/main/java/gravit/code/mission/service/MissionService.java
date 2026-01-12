@@ -11,7 +11,7 @@ import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserRepository;
+import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;

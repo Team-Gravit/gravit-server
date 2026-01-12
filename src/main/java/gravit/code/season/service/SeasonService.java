@@ -3,10 +3,10 @@ package gravit.code.season.service;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.season.calendar.SeasonCalendar;
-import gravit.code.season.calendar.dto.SeasonResponse;
+import gravit.code.season.calendar.dto.SeasonDto;
 import gravit.code.season.domain.Season;
 import gravit.code.season.domain.SeasonStatus;
-import gravit.code.season.infrastructure.SeasonRepository;
+import gravit.code.season.repository.SeasonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class SeasonService {
+
     private final SeasonRepository seasonRepository;
     private final SeasonCalendar calendar;
 
@@ -36,7 +37,7 @@ public class SeasonService {
         // FINALIZING 이 존재 -> 배치(해당 시즌 마무리-> history 저장 및 UserLeague 초기화) 진행중이라는 뜻
         // 새 시즌은 PREP 으로 만들기
         if(seasonRepository.existsByStatus(SeasonStatus.FINALIZING)){
-            SeasonResponse next = calendar.nextFromEndsAt(calendar.currentWeek().endsAt());
+            SeasonDto next = calendar.nextFromEndsAt(calendar.currentWeek().endsAt());
             log.info("next season start time = {}", next.startsAt());
             log.info("next season end time = {}", next.endsAt());
 
@@ -51,7 +52,7 @@ public class SeasonService {
         }
 
         // 정말 아무것도 없는 초기 부트스트랩 시 에만 ACTIVE 생성
-        SeasonResponse current = calendar.currentWeek();
+        SeasonDto current = calendar.currentWeek();
 
         return seasonRepository.findBySeasonKey(current.seasonKey()).orElseGet(()->{
             try{
