@@ -49,8 +49,8 @@ VALUES
 (2602, 914, '최소성을 만족하기 때문이다', '슈퍼키는 최소성을 요구하지 않는다. {학번, 이름}은 최소성을 만족하지 않지만 유일성을 만족하므로 슈퍼키이다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (261, 909, '유일성, Uniqueness', '유일성(Uniqueness)은 하나의 키 값으로 하나의 튜플만 식별할 수 있는 성질이다. 동일한 키 값을 가진 튜플이 두 개 이상 존재하면 유일성을 만족하지 않는다.'),
-       (262, 912, '최소성, Minimality', '최소성(Minimality)은 키를 구성하는 속성 중 하나라도 제거하면 유일하게 식별할 수 없는, 꼭 필요한 최소한의 속성만으로 구성된 성질이다.');
+VALUES (261, 909, '유일성,uniqueness', '유일성(Uniqueness)은 하나의 키 값으로 하나의 튜플만 식별할 수 있는 성질이다. 동일한 키 값을 가진 튜플이 두 개 이상 존재하면 유일성을 만족하지 않는다.'),
+       (262, 912, '최소성,minimality', '최소성(Minimality)은 키를 구성하는 속성 중 하나라도 제거하면 유일하게 식별할 수 없는, 꼭 필요한 최소한의 속성만으로 구성된 성질이다.');
 
 -- Lesson 2: 키 2 (ID: 132)
 INSERT INTO lesson (id, title, unit_id)
@@ -98,8 +98,8 @@ VALUES
 (2622, 921, '복합키를 사용하지 않기 위해', '복합키 대신 대리키를 사용할 수 있지만, 이것이 대리키의 주된 사용 이유는 아니다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (263, 916, '대체키, Alternate Key', '대체키(Alternate Key)는 후보키 중에서 기본키로 선택되지 않은 나머지 키이다. 기본키와 동일하게 유일성과 최소성을 만족하며, 필요시 기본키를 대체할 수 있다.'),
-       (264, 919, '대리키, Surrogate Key', '대리키(Surrogate Key)는 현실 세계의 의미와 무관하게 시스템에서 인위적으로 생성한 키이다. 일반적으로 AUTO_INCREMENT 정수나 UUID 등을 사용한다.');
+VALUES (263, 916, '대체키,alternate key', '대체키(Alternate Key)는 후보키 중에서 기본키로 선택되지 않은 나머지 키이다. 기본키와 동일하게 유일성과 최소성을 만족하며, 필요시 기본키를 대체할 수 있다.'),
+       (264, 919, '대리키,surrogate key', '대리키(Surrogate Key)는 현실 세계의 의미와 무관하게 시스템에서 인위적으로 생성한 키이다. 일반적으로 AUTO_INCREMENT 정수나 UUID 등을 사용한다.');
 
 -- Lesson 3: 키 3 (ID: 133)
 INSERT INTO lesson (id, title, unit_id)

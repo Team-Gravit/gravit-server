@@ -89,7 +89,7 @@
 //            long validProblemId = problem1Id;
 //
 //            //when
-//            List<OptionResponse> optionResponses = optionJpaRepository.findByProblemId(validProblemId);
+//            List<OptionResponse> optionResponses = optionJpaRepository.findAnswerResponseByProblemId(validProblemId);
 //
 //            //then
 //            assertThat(optionResponses).hasSize(4);
@@ -107,7 +107,7 @@
 //            long invalidProblemId = 999L;
 //
 //            //when
-//            List<OptionResponse> optionResponses = optionJpaRepository.findByProblemId(invalidProblemId);
+//            List<OptionResponse> optionResponses = optionJpaRepository.findAnswerResponseByProblemId(invalidProblemId);
 //
 //            //then
 //            assertThat(optionResponses).isEmpty();

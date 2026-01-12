@@ -50,8 +50,8 @@ VALUES
 (2662, 935, 'UNIQUE 제약 때문에', 'UNIQUE 제약은 중복에 관한 것으로 삭제와 직접적인 관련이 없다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (267, 930, '참조 무결성, Referential Integrity', '외래키는 다른 테이블의 기본키 또는 고유키를 참조하여 참조 무결성(Referential Integrity)을 보장한다. 참조 무결성은 외래키 값이 참조하는 테이블의 기본키 값이거나 NULL이어야 함을 의미한다.'),
-       (268, 933, '외래키, FK, Foreign Key', '외래키 제약은 자식 테이블의 외래키 값이 부모 테이블에 존재하지 않으면 삽입이나 수정을 제한한다.이를 통해 참조 무결성이 보장된다.');
+VALUES (267, 930, '참조 무결성,referential integrity', '외래키는 다른 테이블의 기본키 또는 고유키를 참조하여 참조 무결성(Referential Integrity)을 보장한다. 참조 무결성은 외래키 값이 참조하는 테이블의 기본키 값이거나 NULL이어야 함을 의미한다.'),
+       (268, 933, '외래키,fk,foreign key', '외래키 제약은 자식 테이블의 외래키 값이 부모 테이블에 존재하지 않으면 삽입이나 수정을 제한한다.이를 통해 참조 무결성이 보장된다.');
 
 -- Lesson 2: 외래키와 제약 조건 2 (ID: 135)
 INSERT INTO lesson (id, title, unit_id)
@@ -99,8 +99,8 @@ VALUES
 (2682, 942, '아무런 제약 없이 삭제 / 수정을 허용한다', 'NO ACTION도 참조 무결성을 검사하며, 위반 시 작업을 차단한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (269, 937, 'SET NULL, NULL', 'SET NULL 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 NULL로 설정한다. 외래키 컬럼이 NULL을 허용해야 사용할 수 있다.'),
-       (270, 940, 'SET DEFAULT, DEFAULT', 'SET DEFAULT 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 기본값(DEFAULT)으로 설정한다.');
+VALUES (269, 937, 'set null,nULL', 'SET NULL 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 NULL로 설정한다. 외래키 컬럼이 NULL을 허용해야 사용할 수 있다.'),
+       (270, 940, 'set default,default', 'SET DEFAULT 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 기본값(DEFAULT)으로 설정한다.');
 
 -- Lesson 3: 외래키와 제약 조건 3 (ID: 136)
 INSERT INTO lesson (id, title, unit_id)
@@ -151,5 +151,5 @@ VALUES
 (2702, 949, 'UNIQUE와 기본키는 동일하다', 'UNIQUE는 NULL을 허용하고 여러 개 지정 가능하지만, 기본키는 NULL 불가하고 테이블당 하나만 지정 가능하다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (271, 944, 'UNIQUE, 유니크', 'UNIQUE 제약은 해당 속성의 값이 고유(중복 불가능)해야 함을 보장하는 제약 조건이다. 기본키와 달리 NULL 값은 허용된다.'),
-       (272, 947, 'NULL, 널', 'UNIQUE 제약이 적용된 컬럼은 중복된 값을 가질 수 없지만, NULL 값은 가질 수 있다. 이것이 기본키와의 주요 차이점이다. 기본키는 NOT NULL과 UNIQUE가 모두 적용된다.');
+VALUES (271, 944, 'unique,유니크', 'UNIQUE 제약은 해당 속성의 값이 고유(중복 불가능)해야 함을 보장하는 제약 조건이다. 기본키와 달리 NULL 값은 허용된다.'),
+       (272, 947, 'null,널', 'UNIQUE 제약이 적용된 컬럼은 중복된 값을 가질 수 없지만, NULL 값은 가질 수 있다. 이것이 기본키와의 주요 차이점이다. 기본키는 NOT NULL과 UNIQUE가 모두 적용된다.');

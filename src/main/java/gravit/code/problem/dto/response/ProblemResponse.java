@@ -1,6 +1,7 @@
 package gravit.code.problem.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import gravit.code.answer.domain.Answer;
 import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.problem.domain.Problem;
@@ -64,14 +65,14 @@ public record ProblemResponse(
 ) {
         public static ProblemResponse createSubjectiveProblem(
                 ProblemDetail problemDetail,
-                AnswerResponse answerResponse
+                Answer answer
         ) {
                 return ProblemResponse.builder()
                         .problemId(problemDetail.id())
                         .problemType(problemDetail.problemType())
                         .instruction(problemDetail.instruction())
                         .content(problemDetail.content())
-                        .answerResponse(answerResponse)
+                        .answerResponse(AnswerResponse.from(answer))
                         .options(null)
                         .isBookmarked(problemDetail.isBookmarked())
                         .build();
@@ -94,14 +95,14 @@ public record ProblemResponse(
 
         public static ProblemResponse createSubjectiveProblemForAdmin(
                 Problem problem,
-                AnswerResponse answerResponse
+                Answer answer
         ){
                 return ProblemResponse.builder()
                         .problemId(problem.getId())
                         .problemType(problem.getProblemType())
                         .instruction(problem.getInstruction())
                         .content(problem.getContent())
-                        .answerResponse(answerResponse)
+                        .answerResponse(AnswerResponse.from(answer))
                         .options(null)
                         .isBookmarked(false)
                         .build();

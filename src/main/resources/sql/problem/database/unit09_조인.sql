@@ -46,8 +46,8 @@ VALUES
 (2902, 1019, '별칭을 사용하면 테이블 구조가 변경된다', '별칭은 쿼리 내에서만 사용되는 임시 이름이다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (291, 1014, '조인 키, 조인키, join key, 공통 열', '두 테이블을 연결할 때 사용하는 공통 컬럼을 조인 키라고 한다. 일반적으로 한 테이블의 외래키와 다른 테이블의 기본키를 조인 키로 사용한다.'),
-       (292, 1017, 'JOIN, INNER JOIN', '명시적 조인은 JOIN 키워드를 사용하여 테이블을 연결한다. INNER JOIN이 기본이며, INNER는 생략 가능하다.');
+VALUES (291, 1014, '조인 키,조인키,join key,공통 열,공통열', '두 테이블을 연결할 때 사용하는 공통 컬럼을 조인 키라고 한다. 일반적으로 한 테이블의 외래키와 다른 테이블의 기본키를 조인 키로 사용한다.'),
+       (292, 1017, 'join,inner join', '명시적 조인은 JOIN 키워드를 사용하여 테이블을 연결한다. INNER JOIN이 기본이며, INNER는 생략 가능하다.');
 
 
 -- Lesson 2: 조인 유형 (ID: 147)
@@ -96,8 +96,8 @@ VALUES
 (2922, 1026, '별칭을 사용할 수 없다', 'SELF JOIN은 별칭이 필수적이다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (293, 1021, 'LEFT, LEFT OUTER', 'LEFT JOIN은 왼쪽 테이블의 모든 행을 포함하고, 오른쪽 테이블에 매칭되는 데이터가 없으면 NULL로 표시한다. OUTER는 생략 가능하다.'),
-       (294, 1024, 'FULL, FULL OUTER', 'FULL OUTER JOIN은 양쪽 테이블의 모든 행을 포함한다. 매칭되지 않는 부분은 NULL로 표시된다. OUTER는 생략 가능하다.');
+VALUES (293, 1021, 'left,left outer', 'LEFT JOIN은 왼쪽 테이블의 모든 행을 포함하고, 오른쪽 테이블에 매칭되는 데이터가 없으면 NULL로 표시한다. OUTER는 생략 가능하다.'),
+       (294, 1024, 'full,full outer', 'FULL OUTER JOIN은 양쪽 테이블의 모든 행을 포함한다. 매칭되지 않는 부분은 NULL로 표시된다. OUTER는 생략 가능하다.');
 
 
 -- Lesson 3: 조인 활용 (ID: 148)
@@ -146,5 +146,5 @@ VALUES
 (2942, 1033, '명시적 조인은 최신 문법이 아니다', '명시적 조인이 표준 SQL 문법이며 권장된다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (295, 1028, 'ON', 'SELF JOIN에서도 ON 키워드로 조인 조건을 지정한다. 같은 테이블을 두 번 참조하므로 반드시 서로 다른 별칭을 사용해야 한다.'),
-       (296, 1031, 'd.id IS NULL, d.department_id IS NULL', 'LEFT JOIN에서 오른쪽 테이블의 컬럼이 NULL이면 매칭되지 않은 것이다. 학과 테이블의 기본키가 NULL이면 학과가 없는 학생을 의미한다.');
+VALUES (295, 1028, 'on', 'SELF JOIN에서도 ON 키워드로 조인 조건을 지정한다. 같은 테이블을 두 번 참조하므로 반드시 서로 다른 별칭을 사용해야 한다.'),
+       (296, 1031, 'd.id is null,d.department_id is null', 'LEFT JOIN에서 오른쪽 테이블의 컬럼이 NULL이면 매칭되지 않은 것이다. 학과 테이블의 기본키가 NULL이면 학과가 없는 학생을 의미한다.');
