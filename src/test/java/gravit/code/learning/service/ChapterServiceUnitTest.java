@@ -25,7 +25,7 @@
 //class ChapterServiceUnitTest {
 //
 //    @InjectMocks
-//    private ChapterService chapterService;
+//    private ChapterQueryService chapterService;
 //
 //    @Mock
 //    private ChapterRepository chapterRepository;

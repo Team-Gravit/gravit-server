@@ -3,9 +3,9 @@ package gravit.code.mission.service;
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.lesson.service.LessonSubmissionService;
+import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.mission.domain.Mission;
-import gravit.code.mission.domain.MissionRepository;
+import gravit.code.mission.repository.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.mission.dto.event.FollowMissionEvent;
@@ -21,11 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * TODO 리팩토링 필요
+ */
 @Service
 @RequiredArgsConstructor
 public class MissionService {
 
-    private final LessonSubmissionService lessonSubmissionService;
+    private final LessonSubmissionQueryService lessonSubmissionQueryService;
 
     private final MissionRepository missionRepository;
     private final UserRepository userRepository;
@@ -39,7 +42,7 @@ public class MissionService {
 
         while(true){
             Pageable pageable = PageRequest.of(page, size);
-            List<Mission> missions = missionRepository.findAll(pageable);
+            List<Mission> missions = missionRepository.findAll(pageable).getContent();
 
             if(missions.isEmpty())
                 break;
@@ -73,7 +76,7 @@ public class MissionService {
 
         MissionType missionType = mission.getMissionType();
 
-        int tryCount = lessonSubmissionService.getLessonSubmissionCount(lessonId, userId);
+        int tryCount = lessonSubmissionQueryService.getLessonSubmissionCount(userId,lessonId);
 
         if(tryCount > 1)
             return;

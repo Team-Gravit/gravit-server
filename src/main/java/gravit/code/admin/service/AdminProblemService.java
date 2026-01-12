@@ -2,14 +2,14 @@ package gravit.code.admin.service;
 
 import gravit.code.admin.dto.request.ProblemCreateRequest;
 import gravit.code.admin.dto.request.ProblemUpdateRequest;
-import gravit.code.answer.domain.AnswerRepository;
+import gravit.code.answer.repository.AnswerRepository;
 import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.option.domain.OptionRepository;
+import gravit.code.option.repository.OptionRepository;
 import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.problem.domain.Problem;
-import gravit.code.problem.domain.ProblemRepository;
+import gravit.code.problem.repository.ProblemRepository;
 import gravit.code.problem.domain.ProblemType;
 import gravit.code.problem.dto.response.ProblemResponse;
 import lombok.RequiredArgsConstructor;

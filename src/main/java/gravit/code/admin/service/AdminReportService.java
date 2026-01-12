@@ -5,7 +5,7 @@ import gravit.code.admin.dto.response.ReportSummaryResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.report.domain.Report;
-import gravit.code.report.domain.ReportRepository;
+import gravit.code.report.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

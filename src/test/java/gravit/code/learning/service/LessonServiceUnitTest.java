@@ -26,7 +26,7 @@
 //    private LessonRepository lessonRepository;
 //
 //    @InjectMocks
-//    private LessonService lessonService;
+//    private LessonQueryService lessonService;
 //
 //    @Nested
 //    @DisplayName("레슨이 속한 유닛, 챕터의 아이디를 조회할 때")
