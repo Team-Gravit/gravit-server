@@ -1,7 +1,7 @@
 package gravit.code.learning.service;
 
-import gravit.code.lesson.domain.LessonRepository;
-import gravit.code.lesson.domain.LessonSubmissionRepository;
+import gravit.code.lesson.repository.LessonRepository;
+import gravit.code.lesson.repository.LessonSubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ public class LearningProgressRateService {
     private final LessonSubmissionRepository lessonSubmissionRepository;
 
     @Transactional(readOnly = true)
-    public double getProgressRateByChapterId(
+    public double getChapterProgress(
             long chapterId,
             long userId
     ) {
@@ -26,7 +26,7 @@ public class LearningProgressRateService {
     }
 
     @Transactional(readOnly = true)
-    public double getProgressRateByUnitId(
+    public double getUnitProgress(
             long unitId,
             long userId
     ) {

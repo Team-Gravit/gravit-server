@@ -19,7 +19,7 @@
 //class ChapterServiceIntegrationTest {
 //
 //    @Autowired
-//    private ChapterService chapterService;
+//    private ChapterQueryService chapterService;
 //
 //    @Autowired
 //    private ChapterRepository chapterRepository;

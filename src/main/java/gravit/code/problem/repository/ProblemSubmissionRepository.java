@@ -1,0 +1,27 @@
+package gravit.code.problem.repository;
+
+import gravit.code.problem.domain.ProblemSubmission;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ProblemSubmissionRepository extends JpaRepository<ProblemSubmission, Long> {
+
+    @Query("""
+        SELECT ps
+        FROM ProblemSubmission ps
+        WHERE ps.problemId IN (:problemIds) AND ps.userId = :userId
+    """)
+    List<ProblemSubmission> findByIdInIdsAndUserId(
+            @Param("problemIds") List<Long> problemIds,
+            @Param("userId") long userId
+    );
+
+    Optional<ProblemSubmission> findByProblemIdAndUserId(
+            @Param("problemId")long problemId,
+            @Param("userId")long userId
+    );
+}

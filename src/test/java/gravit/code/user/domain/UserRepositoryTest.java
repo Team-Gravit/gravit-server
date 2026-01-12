@@ -1,22 +1,22 @@
 //package gravit.code.user.domain;
 //
 //import gravit.code.league.domain.League;
-//import gravit.code.league.infrastructure.LeagueRepository;
+//import gravit.code.league.repository.LeagueRepository;
 //import gravit.code.chapter.domain.Chapter;
 //import gravit.code.learning.domain.Learning;
-//import gravit.code.chapter.infrastructure.ChapterJpaRepository;
-//import gravit.code.learning.infrastructure.LearningJpaRepository;
+//import gravit.code.chapter.infrastructure.ChapterRepository;
+//import gravit.code.learning.infrastructure.LearningRepository;
 //import gravit.code.mainPage.dto.MainPageSummary;
 //import gravit.code.mission.domain.Mission;
 //import gravit.code.mission.domain.MissionType;
-//import gravit.code.mission.infrastructure.MissionJpaRepository;
+//import gravit.code.mission.infrastructure.MissionRepository;
 //import gravit.code.progress.domain.ChapterProgress;
 //import gravit.code.progress.infrastructure.ChapterProgressJpaRepository;
 //import gravit.code.season.domain.Season;
-//import gravit.code.season.infrastructure.SeasonRepository;
-//import gravit.code.user.infrastructure.UserJpaRepository;
+//import gravit.code.season.repository.SeasonRepository;
+//import gravit.code.user.repository.UserRepository;
 //import gravit.code.userLeague.domain.UserLeague;
-//import gravit.code.userLeague.infrastructure.UserLeagueJpaRepository;
+//import gravit.code.userLeague.repository.UserLeagueRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Nested;
@@ -41,19 +41,19 @@
 //class UserRepositoryTest {
 //
 //    @Autowired
-//    private UserJpaRepository userRepository;
+//    private UserRepository userRepository;
 //
 //    @Autowired
-//    private ChapterJpaRepository chapterRepository;
+//    private ChapterRepository chapterRepository;
 //
 //    @Autowired
-//    private LearningJpaRepository learningRepository;
+//    private LearningRepository learningRepository;
 //
 //    @Autowired
 //    private ChapterProgressJpaRepository chapterProgressRepository;
 //
 //    @Autowired
-//    private MissionJpaRepository missionRepository;
+//    private MissionRepository missionRepository;
 //
 //    @Autowired
 //    private LeagueRepository leagueRepository;
@@ -62,7 +62,7 @@
 //    private SeasonRepository seasonRepository;
 //
 //    @Autowired
-//    private UserLeagueJpaRepository userLeagueRepository;
+//    private UserLeagueRepository userLeagueRepository;
 //
 //    @BeforeEach
 //    void setUp() {

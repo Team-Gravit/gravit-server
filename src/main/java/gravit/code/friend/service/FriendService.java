@@ -2,16 +2,18 @@ package gravit.code.friend.service;
 
 
 import gravit.code.friend.domain.Friend;
-import gravit.code.friend.domain.FriendRepository;
+import gravit.code.friend.dto.SearchUserDto;
 import gravit.code.friend.dto.response.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.friend.repository.FriendRepository;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.user.domain.UserRepository;
+import gravit.code.user.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,19 +24,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendService {
 
-    private static final int PAGE_SIZE = 10;
-    private static final Sort FOLLOW_SORT = Sort.by(Sort.Order.desc("createdAt"));
-
     private final ApplicationEventPublisher publisher;
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
+
+    private static final int PAGE_SIZE = 10;
+    private static final Sort FOLLOW_SORT = Sort.by(Sort.Order.desc("createdAt"));
 
     @Transactional
     public FriendResponse following(
@@ -128,5 +128,15 @@ public class FriendService {
         long followeeCount = friendRepository.countByFollowerId(userId);
 
         return new FollowCountsResponse(followerCount, followeeCount);
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<SearchUserDto> searchUsersForFollowing(
+            Long requesterId,
+            String queryText,
+            int page
+    ){
+        int safePage = Math.max(0, page);
+        return friendRepository.searchUsersByQueryText(requesterId, queryText, safePage);
     }
 }

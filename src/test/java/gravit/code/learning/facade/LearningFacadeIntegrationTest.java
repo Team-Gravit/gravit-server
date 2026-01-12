@@ -3,24 +3,24 @@
 //import gravit.code.global.exception.domain.CustomErrorCode;
 //import gravit.code.global.exception.domain.RestApiException;
 //import gravit.code.league.domain.League;
-//import gravit.code.league.infrastructure.LeagueRepository;
+//import gravit.code.league.repository.LeagueRepository;
 //import gravit.code.learning.domain.*;
 //import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 //import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 //import gravit.code.lesson.dto.response.LessonResponse;
 //import gravit.code.unit.dto.response.UnitDetailResponse;
 //import gravit.code.learning.fixture.*;
-//import gravit.code.chapter.service.ChapterService;
-//import gravit.code.lesson.service.LessonService;
-//import gravit.code.problem.service.ProblemService;
+//import gravit.code.chapter.service.ChapterQueryService;
+//import gravit.code.lesson.service.LessonQueryService;
+//import gravit.code.problem.service.ProblemQueryService;
 //import gravit.code.progress.domain.*;
 //import gravit.code.chapter.dto.response.ChapterDetailResponse;
 //import gravit.code.progress.service.ChapterProgressService;
-//import gravit.code.lesson.service.LessonSubmissionService;
-//import gravit.code.problem.service.ProblemSubmissionService;
+//import gravit.code.lesson.service.LessonSubmissionCommandService;
+//import gravit.code.problem.service.ProblemSubmissionCommandService;
 //import gravit.code.progress.service.UnitProgressService;
 //import gravit.code.season.domain.Season;
-//import gravit.code.season.infrastructure.SeasonRepository;
+//import gravit.code.season.repository.SeasonRepository;
 //import gravit.code.support.TCSpringBootTest;
 //import gravit.code.user.domain.User;
 //import gravit.code.user.domain.UserRepository;
@@ -55,13 +55,13 @@
 //    private UserService userService;
 //
 //    @Autowired
-//    private ChapterService chapterService;
+//    private ChapterQueryService chapterService;
 //
 //    @Autowired
-//    private LessonService lessonService;
+//    private LessonQueryService lessonService;
 //
 //    @Autowired
-//    private ProblemService problemService;
+//    private ProblemQueryService problemService;
 //
 //    @Autowired
 //    private UserLeagueService userLeagueService;
@@ -73,10 +73,10 @@
 //    private UnitProgressService unitProgressService;
 //
 //    @Autowired
-//    private LessonSubmissionService lessonProgressService;
+//    private LessonSubmissionCommandService lessonProgressService;
 //
 //    @Autowired
-//    private ProblemSubmissionService problemProgressService;
+//    private ProblemSubmissionCommandService problemProgressService;
 //
 //    @Autowired
 //    private ChapterRepository chapterRepository;
@@ -505,7 +505,7 @@
 ////            case1SetUp();
 ////
 ////            // when
-////            LearningSubmissionSaveResponse response = learningFacade.saveLearningResult(user.getId(), request);
+////            LessonSubmissionSaveResponse response = learningFacade.saveLearningResult(user.getId(), request);
 ////
 ////            // then
 ////            assertThat(unitProgressRepository.findByUnitIdAndUserId(unit1.getId(), user.getId()).get().getCompletedLessons()).isEqualTo(2L);
