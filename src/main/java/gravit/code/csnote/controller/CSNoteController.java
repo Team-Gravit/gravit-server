@@ -1,17 +1,11 @@
 package gravit.code.csnote.controller;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.CHAPTER_NOT_FOUND;
-import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
-
 import gravit.code.chapter.domain.Chapter;
-import gravit.code.chapter.domain.ChapterRepository;
+import gravit.code.chapter.repository.ChapterRepository;
 import gravit.code.csnote.controller.docs.CSNoteControllerDocs;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.unit.domain.Unit;
-import gravit.code.unit.domain.UnitRepository;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import gravit.code.unit.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -24,6 +18,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.CHAPTER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
 
 @RestController
 @Slf4j

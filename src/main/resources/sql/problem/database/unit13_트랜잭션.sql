@@ -46,8 +46,8 @@ VALUES
 (3142, 1103, '트랜잭션을 취소한다', 'COMMIT으로 트랜잭션을 확정한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (315, 1098, 'ACID', '트랜잭션의 네 가지 특성인 Atomicity(원자성), Consistency(일관성), Isolation(격리성), Durability(지속성)의 앞글자를 따서 ACID라고 한다.'),
-       (316, 1101, 'COMMIT, 커밋', 'COMMIT은 트랜잭션의 모든 작업을 확정하여 데이터베이스에 영구적으로 반영하는 명령어이다.');
+VALUES (315, 1098, 'acid', '트랜잭션의 네 가지 특성인 Atomicity(원자성), Consistency(일관성), Isolation(격리성), Durability(지속성)의 앞글자를 따서 ACID라고 한다.'),
+       (316, 1101, 'commit,커밋', 'COMMIT은 트랜잭션의 모든 작업을 확정하여 데이터베이스에 영구적으로 반영하는 명령어이다.');
 
 
 -- Lesson 2: 트랜잭션 제어 (ID: 159)
@@ -96,8 +96,8 @@ VALUES
 (3162, 1110, 'COMMIT DELAY', 'COMMIT DELAY는 격리 수준이 아니다. 격리 수준은 READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ, SERIALIZABLE이다.', true);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (317, 1105, 'ROLLBACK, 롤백', 'ROLLBACK은 트랜잭션의 모든 변경 사항을 취소하고 트랜잭션 시작 이전 상태로 되돌린다.'),
-       (318, 1108, 'SAVEPOINT, 세이브포인트', 'SAVEPOINT는 트랜잭션 내에서 특정 지점을 표시한다. SAVEPOINT 이름 형식으로 사용한다.');
+VALUES (317, 1105, 'rollback,롤백', 'ROLLBACK은 트랜잭션의 모든 변경 사항을 취소하고 트랜잭션 시작 이전 상태로 되돌린다.'),
+       (318, 1108, 'savepoint,세이브포인트,save point', 'SAVEPOINT는 트랜잭션 내에서 특정 지점을 표시한다. SAVEPOINT 이름 형식으로 사용한다.');
 
 
 -- Lesson 3: 격리 수준과 동시성 (ID: 160)
@@ -146,5 +146,5 @@ VALUES
 (3182, 1117, '데드락이 발생하는 현상', 'Phantom Read와 데드락은 다른 개념이다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (319, 1112, 'Dirty Read, 더티 리드', '커밋되지 않은 데이터를 다른 트랜잭션이 읽는 현상을 Dirty Read라고 한다. 해당 트랜잭션이 롤백되면 잘못된 데이터를 읽게 된다.'),
-       (320, 1115, 'Non-Repeatable Read, 반복 불가능한 읽기, nonrepatable read', '같은 쿼리를 두 번 실행했을 때 다른 트랜잭션의 수정으로 인해 결과가 달라지는 현상을 Non-Repeatable Read라고 한다.');
+VALUES (319, 1112, 'dirty read,더티 리드', '커밋되지 않은 데이터를 다른 트랜잭션이 읽는 현상을 Dirty Read라고 한다. 해당 트랜잭션이 롤백되면 잘못된 데이터를 읽게 된다.'),
+       (320, 1115, 'non-repeatable read,반복 불가능한 읽기,nonrepeatable read', '같은 쿼리를 두 번 실행했을 때 다른 트랜잭션의 수정으로 인해 결과가 달라지는 현상을 Non-Repeatable Read라고 한다.');

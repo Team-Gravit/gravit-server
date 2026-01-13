@@ -11,7 +11,7 @@ INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
 VALUES (950, 137, '다음 중 DDL(Data Definition Language)에 대한 설명으로 올바른 것은?', 'DDL은 SQL의 한 종류이다.', 'OBJECTIVE'),
        (951, 137, '빈칸에 들어갈 DDL 명령어를 작성하시오.', '데이터베이스, 테이블 등 객체를 생성하는 명령어는 ___이다.', 'SUBJECTIVE'),
        (952, 137, '다음 중 DDL 명령어가 아닌 것은?', 'DDL은 데이터베이스 구조를 정의하는 언어이다.', 'OBJECTIVE'),
-       (953, 137, '다음 SQL 명령어의 역할은?', 'CREATE DATABASE school; ', 'OBJECTIVE'),
+       (953, 137, '다음 SQL 명령어의 역할은?', 'CREATE DATABASE school;', 'OBJECTIVE'),
        (954, 137, '빈칸에 들어갈 DDL 명령어를 작성하시오.', '테이블의 구조를 수정하는 명령어는 ___이다.', 'SUBJECTIVE'),
        (955, 137, '다음 중 DROP 명령어에 대한 설명으로 올바른 것은?', 'DROP은 DDL 명령어 중 하나이다.', 'OBJECTIVE'),
        (956, 137, '다음 중 TRUNCATE와 DROP의 차이점으로 올바른 것은?', 'TRUNCATE와 DROP은 모두 DDL 명령어이다.', 'OBJECTIVE');
@@ -49,19 +49,17 @@ VALUES
 (2722, 956, '두 명령어는 동일하게 동작한다', 'TRUNCATE는 데이터만, DROP은 구조와 데이터 모두를 삭제한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (273, 951, 'CREATE', 'CREATE는 데이터베이스, 테이블, 인덱스 등 데이터베이스 객체를 생성하는 DDL 명령어이다. CREATE DATABASE, CREATE TABLE 등의 형태로 사용한다.'),
-       (274, 954, 'ALTER', 'ALTER는 테이블의 구조를 수정하는 DDL 명령어이다. 컬럼 추가, 수정, 삭제 및 제약 조건 관리 등에 사용한다.');
+VALUES (273, 951, 'create', 'CREATE는 데이터베이스, 테이블, 인덱스 등 데이터베이스 객체를 생성하는 DDL 명령어이다. CREATE DATABASE, CREATE TABLE 등의 형태로 사용한다.'),
+       (274, 954, 'alter', 'ALTER는 테이블의 구조를 수정하는 DDL 명령어이다. 컬럼 추가, 수정, 삭제 및 제약 조건 관리 등에 사용한다.');
 
 -- Lesson 2: DDL 2 (ID: 138)
 INSERT INTO lesson (id, title, unit_id)
 VALUES (138, 'DDL 2', 47);
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
-VALUES (957, 138, '다음 SQL 명령어의 역할은?', 'ALTER TABLE students ADD phone VARCHAR(20);
-', 'OBJECTIVE'),
+VALUES (957, 138, '다음 SQL 명령어의 역할은?', 'ALTER TABLE students ADD phone VARCHAR(20);', 'OBJECTIVE'),
        (958, 138, '빈칸에 들어갈 키워드를 작성하시오.', 'ALTER TABLE students ___ COLUMN phone; -- phone 컬럼 삭제', 'SUBJECTIVE'),
-       (959, 138, '다음 중 ALTER TABLE 명령어로 수행할 수 없는 것은?', 'ALTER TABLE은 테이블 구조를 수정하는 명령어이다.', 'OBJECTIVE')
-        ,
+       (959, 138, '다음 중 ALTER TABLE 명령어로 수행할 수 없는 것은?', 'ALTER TABLE은 테이블 구조를 수정하는 명령어이다.', 'OBJECTIVE'),
        (960, 138, '다음 SQL 명령어의 역할은?', 'ALTER TABLE students MODIFY name VARCHAR(100);', 'OBJECTIVE'),
        (961, 138, '빈칸에 들어갈 키워드를 작성하시오.', 'ALTER TABLE students ___ COLUMN name TO full_name; -- 컬럼명 변경', 'SUBJECTIVE'),
        (962, 138, '다음 중 제약 조건을 추가하는 올바른 SQL은?', 'ALTER TABLE을 사용하여 제약 조건을 관리할 수 있다.', 'OBJECTIVE'),
@@ -83,8 +81,7 @@ VALUES
 
 -- 문제 960
 (2731, 960, 'name 컬럼을 삭제한다', 'DROP COLUMN이 컬럼을 삭제한다.', false),
-(2732, 960, 'name 컬럼의 데이터 타입을 VARCHAR(100)으로 변경한다', 'ALTER TABLE ... MODIFY는 기존 컬럼의 속성(데이터 타입, 크기 등)을 수정하는 명령이다.',
- true),
+(2732, 960, 'name 컬럼의 데이터 타입을 VARCHAR(100)으로 변경한다', 'ALTER TABLE ... MODIFY는 기존 컬럼의 속성(데이터 타입, 크기 등)을 수정하는 명령이다.', true),
 (2733, 960, 'name이라는 새 컬럼을 추가한다', 'ADD가 새 컬럼을 추가한다.', false),
 (2734, 960, 'name 컬럼의 이름을 변경한다', 'RENAME COLUMN이 컬럼명을 변경한다.', false),
 
@@ -101,8 +98,8 @@ VALUES
 (2742, 963, 'students 테이블을 삭제한다', 'DROP TABLE이 테이블을 삭제한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (275, 958, 'DROP', 'ALTER TABLE ... DROP COLUMN은 테이블에서 기존 컬럼을 삭제하는 명령이다. 삭제된 컬럼의 데이터도 함께 사라진다.'),
-       (276, 961, 'RENAME', 'ALTER TABLE ... RENAME COLUMN ... TO ...는 기존 컬럼의 이름을 변경하는 명령이다. 컬럼의 데이터와 속성은 유지된다.');
+VALUES (275, 958, 'drop', 'ALTER TABLE ... DROP COLUMN은 테이블에서 기존 컬럼을 삭제하는 명령이다. 삭제된 컬럼의 데이터도 함께 사라진다.'),
+       (276, 961, 'rename', 'ALTER TABLE ... RENAME COLUMN ... TO ...는 기존 컬럼의 이름을 변경하는 명령이다. 컬럼의 데이터와 속성은 유지된다.');
 
 -- Lesson 3: DDL 3 (ID: 139)
 INSERT INTO lesson (id, title, unit_id)
@@ -150,5 +147,5 @@ VALUES
 (2762, 970, 'ALTER TABLE', 'ALTER TABLE은 테이블 구조를 수정하는 명령이다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (277, 965, 'IF', 'IF EXISTS는 테이블이 존재할 때만 삭제를 수행한다. 테이블이 없어도 오류가 발생하지 않아 스크립트 실행 시 안전하다.'),
-       (278, 968, 'TRUNCATE', 'TRUNCATE는 테이블의 모든 데이터를 삭제하고 초기 상태로 되돌리는 DDL 명령어이다. DELETE보다 빠르지만 WHERE 절을 사용할 수 없고 ROLLBACK이 불가능하다.');
+VALUES (277, 965, 'if', 'IF EXISTS는 테이블이 존재할 때만 삭제를 수행한다. 테이블이 없어도 오류가 발생하지 않아 스크립트 실행 시 안전하다.'),
+       (278, 968, 'truncate', 'TRUNCATE는 테이블의 모든 데이터를 삭제하고 초기 상태로 되돌리는 DDL 명령어이다. DELETE보다 빠르지만 WHERE 절을 사용할 수 없고 ROLLBACK이 불가능하다.');

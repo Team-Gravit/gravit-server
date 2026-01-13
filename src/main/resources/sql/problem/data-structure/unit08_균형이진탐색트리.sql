@@ -8,7 +8,7 @@ VALUES (21, 8, 'AVL 트리 기초 문제집'),
        (23, 8, '균형 트리 비교 문제집');
 
 -- =====================================================
--- Lesson 1: AVL 트리 기초 문제집
+-- Lesson 21: AVL 트리 기초 문제집
 -- =====================================================
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
@@ -67,7 +67,7 @@ VALUES (41, 122, '1',
         'AVL 트리는 균형을 유지하므로 트리의 높이가 O(log n)이다. 따라서 탐색, 삽입, 삭제 모든 연산의 시간 복잡도가 O(log n)이다.');
 
 -- =====================================================
--- Lesson 2: Red-Black 트리 기초 문제집
+-- Lesson 22: Red-Black 트리 기초 문제집
 -- =====================================================
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
@@ -126,7 +126,7 @@ VALUES (43, 128, 'black, 블랙',
         'Red-Black 트리에서 Red 노드의 자식 노드는 모두 Black색이어야 한다. 이를 통해 연속된 Red 노드가 존재하지 않도록 하여 균형을 유지한다.');
 
 -- =====================================================
--- Lesson 3: 균형 트리 비교 문제집
+-- Lesson 23: 균형 트리 비교 문제집
 -- =====================================================
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)

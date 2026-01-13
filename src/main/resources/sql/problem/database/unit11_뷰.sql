@@ -45,8 +45,8 @@ VALUES
 (3022, 1061, 'student_view 테이블을 수정한다', 'ALTER TABLE이 테이블을 수정한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (303, 1056, 'CREATE', 'CREATE VIEW 문으로 뷰를 생성한다. CREATE VIEW 뷰이름 AS SELECT 문 형식으로 작성한다.'),
-       (304, 1059, '가상 테이블, virtual table, 논리 테이블', '뷰는 실제 데이터를 저장하지 않고 SELECT 문의 실행 결과를 보여주는 가상 테이블이다. 뷰를 조회하면 정의된 SELECT 문이 실행된다.');
+VALUES (303, 1056, 'create', 'CREATE VIEW 문으로 뷰를 생성한다. CREATE VIEW 뷰이름 AS SELECT 문 형식으로 작성한다.'),
+       (304, 1059, '가상 테이블,virtual table,논리 테이블', '뷰는 실제 데이터를 저장하지 않고 SELECT 문의 실행 결과를 보여주는 가상 테이블이다. 뷰를 조회하면 정의된 SELECT 문이 실행된다.');
 
 
 -- Lesson 2: 뷰 활용 (ID: 153)
@@ -95,8 +95,8 @@ VALUES
 (3042, 1068, '민감한 정보를 제외한 공개 정보만 포함하는 뷰를 생성한다', 'id, name, email만 선택하여 주민번호, 급여 등 민감한 정보는 제외한다. 보안을 위한 뷰 활용 사례이다.', true);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (305, 1063, 'DROP', 'DROP VIEW 문으로 뷰를 삭제한다. DROP VIEW 뷰이름 형식으로 작성한다.'),
-       (306, 1066, 'OR REPLACE', 'CREATE OR REPLACE VIEW는 뷰가 이미 존재하면 대체하고, 없으면 새로 생성한다. 뷰를 수정할 때 사용한다.');
+VALUES (305, 1063, 'drop', 'DROP VIEW 문으로 뷰를 삭제한다. DROP VIEW 뷰이름 형식으로 작성한다.'),
+       (306, 1066, 'or replace', 'CREATE OR REPLACE VIEW는 뷰가 이미 존재하면 대체하고, 없으면 새로 생성한다. 뷰를 수정할 때 사용한다.');
 
 
 -- Lesson 3: 뷰 제약사항 (ID: 154)
@@ -145,5 +145,5 @@ VALUES
 (3062, 1075, '뷰는 캐싱되어 성능이 향상된다', '일반 뷰는 캐싱되지 않는다. 실체화된 뷰는 가능하다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (307, 1070, '갱신 가능한 뷰, updatable view', '데이터 수정(INSERT, UPDATE, DELETE)이 가능한 뷰를 갱신 가능한 뷰라고 한다. 단일 테이블 기반이고 집계 함수가 없어야 한다.'),
-       (308, 1073, 'WITH', 'WITH CHECK OPTION은 뷰를 통한 데이터 수정 시 뷰의 WHERE 조건을 만족하는지 검사한다. 조건을 위반하는 수정을 방지한다.');
+VALUES (307, 1070, '갱신 가능한 뷰,updatable view', '데이터 수정(INSERT, UPDATE, DELETE)이 가능한 뷰를 갱신 가능한 뷰라고 한다. 단일 테이블 기반이고 집계 함수가 없어야 한다.'),
+       (308, 1073, 'with', 'WITH CHECK OPTION은 뷰를 통한 데이터 수정 시 뷰의 WHERE 조건을 만족하는지 검사한다. 조건을 위반하는 수정을 방지한다.');

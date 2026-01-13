@@ -5,6 +5,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.dto.response.LearningDetail;
 import gravit.code.learning.service.LearningService;
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.mission.dto.response.MissionDetail;
 import gravit.code.mission.dto.response.MissionSummary;
 import gravit.code.mission.service.MissionService;
@@ -24,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private static final int POINT_PER_LESSON = 20;
 
     private final UserRepository userRepository;
 
@@ -73,20 +76,6 @@ public class UserService {
         return userRepository.findMyPageByUserId(userId)
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
     }
-    
-    @Transactional
-    public UserLevelResponse updateUserLevelAndXp(
-            long userId,
-            int xp,
-            int accuracy
-    ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
-
-        user.getLevel().updateXp((int) Math.round(xp * accuracy * 0.01));
-
-        return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
-    }
 
     @Transactional(readOnly = true)
     public MainPageResponse getMainPage(long userId) {
@@ -112,6 +101,35 @@ public class UserService {
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
         String newHandle = handleGenerator.generateUniqueHandle();
         user.restoreUser(newHandle);
+    }
+
+    @Transactional
+    public UserLevelResponse updateUserLevelByLessonSubmission(
+            long userId,
+            LessonSubmissionSaveRequest request,
+            boolean isFirstTry
+    ){
+        UserLevelResponse userLevelResponse;
+
+        if(isFirstTry){
+            userLevelResponse = updateUserLevelAndXp(userId, POINT_PER_LESSON, request.accuracy());
+        }else{
+            userLevelResponse = updateUserLevelAndXp(userId, 0, request.accuracy());
+        }
+        return userLevelResponse;
+    }
+
+    private UserLevelResponse updateUserLevelAndXp(
+            long userId,
+            int xp,
+            int accuracy
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        user.getLevel().updateXp((int) Math.round(xp * accuracy * 0.01));
+
+        return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
     }
     
     private UserLevelDetail getUserLevelDetail(long userId){

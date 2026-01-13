@@ -1,6 +1,10 @@
 package gravit.code.answer.dto.response;
 
+import gravit.code.answer.domain.Answer;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Schema(description = "주관식 정답 Response")
 public record AnswerResponse(
@@ -8,7 +12,7 @@ public record AnswerResponse(
                 description = "정답 내용",
                 example = "2"
         )
-        String content,
+        List<String> contents,
 
         @Schema(
                 description = "정답 해설",
@@ -16,4 +20,12 @@ public record AnswerResponse(
         )
         String explanation
 ) {
+        public static AnswerResponse from(Answer answer) {
+                return new AnswerResponse(
+                        Arrays.stream(answer.getContent().split(","))
+                                .map(String::strip)
+                                .toList(),
+                        answer.getExplanation()
+                );
+        }
 }

@@ -8,7 +8,7 @@ VALUES (7, 3, '스택 기초 문제집'),
        (9, 3, '스택 & 큐 응용 문제집');
 
 -- =====================================================
--- Lesson 1: 스택 기초 문제집
+-- Lesson 7: 스택 기초 문제집
 -- =====================================================
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
@@ -67,7 +67,7 @@ VALUES (13, 38, 'lifo,last in first out,후입선출,리포',
         '스택의 push와 pop 연산은 모두 Top에서만 발생하므로 O(1)의 시간 복잡도를 가진다. 스택 포인터만 조작하면 되기 때문에 매우 빠르게 수행된다.');
 
 -- =====================================================
--- Lesson 2: 큐 기초 문제집
+-- Lesson 8: 큐 기초 문제집
 -- =====================================================
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
@@ -123,7 +123,7 @@ VALUES (15, 44, 'fifo,first in first out,선입선출,피포',
         '큐의 enqueue와 dequeue 연산은 모두 포인터 조작만으로 이루어지므로 O(1)의 시간 복잡도를 가진다. Rear에서 삽입, Front에서 삭제가 발생하며 매우 빠르게 수행된다.');
 
 -- =====================================================
--- Lesson 3: 스택 & 큐 응용 문제집
+-- Lesson 9: 스택 & 큐 응용 문제집
 -- =====================================================
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)

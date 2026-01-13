@@ -49,8 +49,8 @@ VALUES
 (2782, 977, 'students 테이블의 구조를 초기화한다', 'TRUNCATE가 테이블을 초기화한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (279, 972, 'INSERT', 'INSERT는 테이블에 새로운 행을 삽입하는 DML 명령어이다. INSERT INTO 테이블명 (컬럼1, 컬럼2) VALUES (값1, 값2); 형태로 사용한다.'),
-       (280, 975, 'UPDATE', 'UPDATE는 테이블의 기존 데이터를 수정하는 DML 명령어이다. UPDATE 테이블명 SET 컬럼=값 WHERE 조건; 형태로 사용한다.');
+VALUES (279, 972, 'insert', 'INSERT는 테이블에 새로운 행을 삽입하는 DML 명령어이다. INSERT INTO 테이블명 (컬럼1, 컬럼2) VALUES (값1, 값2); 형태로 사용한다.'),
+       (280, 975, 'update', 'UPDATE는 테이블의 기존 데이터를 수정하는 DML 명령어이다. UPDATE 테이블명 SET 컬럼=값 WHERE 조건; 형태로 사용한다.');
 
 -- Lesson 2: DML 2 (ID: 141)
 INSERT INTO lesson (id, title, unit_id)
@@ -98,8 +98,8 @@ VALUES
 (2802, 984, '테이블 구조도 함께 삭제한다', '두 명령어 모두 테이블 구조는 유지한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (281, 979, 'SET', 'UPDATE 문에서 SET 키워드는 수정할 컬럼과 값을 지정한다. UPDATE 테이블명 SET 컬럼=값 형태로 사용한다.'),
-       (282, 982, 'DELETE', 'DELETE는 테이블의 행을 삭제하는 DML 명령어이다. DELETE FROM 테이블명 WHERE 조건; 형태로 사용하며, WHERE 절이 없으면 모든 행이 삭제된다.');
+VALUES (281, 979, 'set', 'UPDATE 문에서 SET 키워드는 수정할 컬럼과 값을 지정한다. UPDATE 테이블명 SET 컬럼=값 형태로 사용한다.'),
+       (282, 982, 'delete', 'DELETE는 테이블의 행을 삭제하는 DML 명령어이다. DELETE FROM 테이블명 WHERE 조건; 형태로 사용하며, WHERE 절이 없으면 모든 행이 삭제된다.');
 
 -- Lesson 3: DML 3 (ID: 142)
 INSERT INTO lesson (id, title, unit_id)
@@ -147,5 +147,5 @@ VALUES
 (2822, 991, 'student_id가 1부터 10 사이인 학생을 조회한다', 'BETWEEN A AND B는 A 이상 B 이하의 범위를 지정한다. 1부터 10까지 포함된다.', true);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (283, 986, 'WHERE', 'WHERE 절은 조건을 지정하여 특정 행만 조회, 수정, 삭제하는 데 사용한다. SELECT, UPDATE, DELETE 문에서 사용할 수 있다.'),
-       (284, 989, 'IS', 'NULL 값을 비교할 때는 = 연산자가 아닌 IS NULL 또는 IS NOT NULL을 사용한다. NULL은 값이 없음을 의미하므로 일반 비교 연산자로 비교할 수 없다.');
+VALUES (283, 986, 'where', 'WHERE 절은 조건을 지정하여 특정 행만 조회, 수정, 삭제하는 데 사용한다. SELECT, UPDATE, DELETE 문에서 사용할 수 있다.'),
+       (284, 989, 'is', 'NULL 값을 비교할 때는 = 연산자가 아닌 IS NULL 또는 IS NOT NULL을 사용한다. NULL은 값이 없음을 의미하므로 일반 비교 연산자로 비교할 수 없다.');

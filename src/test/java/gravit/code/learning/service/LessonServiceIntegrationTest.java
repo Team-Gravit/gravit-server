@@ -22,7 +22,7 @@
 //class LessonServiceIntegrationTest {
 //
 //    @Autowired
-//    private LessonService lessonService;
+//    private LessonQueryService lessonService;
 //
 //    @Autowired
 //    private LessonRepository lessonRepository;

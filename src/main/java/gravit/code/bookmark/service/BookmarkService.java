@@ -1,7 +1,7 @@
 package gravit.code.bookmark.service;
 
 import gravit.code.bookmark.domain.Bookmark;
-import gravit.code.bookmark.domain.BookmarkRepository;
+import gravit.code.bookmark.repository.BookmarkRepository;
 import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
 import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
 import gravit.code.global.exception.domain.CustomErrorCode;
@@ -19,16 +19,8 @@ public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
 
-    @Transactional(readOnly = true)
-    public List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(
-            long unitId,
-            long userId
-    ){
-        return bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
-    }
-
     @Transactional
-    public void saveBookmark(
+    public void addBookmark(
             long userId,
             BookmarkSaveRequest request
     ){
@@ -55,7 +47,18 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkBookmarkAccessibleInUnit(long unitId, long userId) {
+    public boolean checkBookmarkedProblemExists(
+            long userId,
+            long unitId
+    ) {
         return bookmarkRepository.countByUnitIdAndUserId(unitId, userId) != 0;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProblemDetail> getAllBookmarkedProblemInUnit(
+            long userId,
+            long unitId
+    ){
+        return bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
     }
 }

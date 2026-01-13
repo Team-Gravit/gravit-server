@@ -50,58 +50,57 @@ VALUES
 (2662, 935, 'UNIQUE 제약 때문에', 'UNIQUE 제약은 중복에 관한 것으로 삭제와 직접적인 관련이 없다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (267, 930, '참조 무결성, Referential Integrity', '외래키는 다른 테이블의 기본키 또는 고유키를 참조하여 참조 무결성(Referential Integrity)을 보장한다. 참조 무결성은 외래키 값이 참조하는 테이블의 기본키 값이거나 NULL이어야 함을 의미한다.'),
-       (268, 933, '외래키, FK, Foreign Key', ' 외래키 제약은 자식 테이블의 외래키 값이 부모 테이블에 존재하지 않으면 삽입이나 수정을 제한한다.이를 통해 참조 무결성이 보장된다.');
+VALUES (267, 930, '참조 무결성,referential integrity', '외래키는 다른 테이블의 기본키 또는 고유키를 참조하여 참조 무결성(Referential Integrity)을 보장한다. 참조 무결성은 외래키 값이 참조하는 테이블의 기본키 값이거나 NULL이어야 함을 의미한다.'),
+       (268, 933, '외래키,fk,foreign key', '외래키 제약은 자식 테이블의 외래키 값이 부모 테이블에 존재하지 않으면 삽입이나 수정을 제한한다.이를 통해 참조 무결성이 보장된다.');
 
 -- Lesson 2: 외래키와 제약 조건 2 (ID: 135)
 INSERT INTO lesson (id, title, unit_id)
 VALUES (135, '외래키와 제약 조건 2', 46);
 
 INSERT INTO problem (id, lesson_id, instruction, content, problem_type)
-VALUES (936, 135, ' 다음 중 참조 동작 옵션 CASCADE에 대한 설명으로 올바른 것은 ? ', ' 참조 동작 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 처리 방식을 지정한다
-        .', 'OBJECTIVE'),
-       (937, 135, ' 빈칸에 들어갈 참조 동작 옵션을 작성하시오.', ' 부모 삭제 시 자식의 외래키를 NULL로 설정하는 옵션은 ___이다.', 'SUBJECTIVE'),
-       (938, 135, ' 다음 중 RESTRICT 옵션에 대한 설명으로 올바른 것은 ? ', ' RESTRICT는 참조 동작 옵션 중 하나이다.', 'OBJECTIVE'),
-       (939, 135, ' 다음 SQL에서 ON DELETE CASCADE의 의미는 ? ', ' FOREIGN KEY (department_id) REFERENCES departments(department_id) ON DELETE CASCADE ', 'OBJECTIVE'),
-       (940, 135, ' 빈칸에 들어갈 참조 동작 옵션을 작성하시오.', ' 부모 삭제 시 자식의 외래키를 기본값으로 설정하는 옵션은 ___이다.', 'SUBJECTIVE'),
-       (941, 135, ' 다음 상황에서 적절한 참조 동작 옵션은 ? ', ' 회원이 탈퇴하면 해당 회원의 모든 주문 기록도 함께 삭제되어야 한다.', 'OBJECTIVE'),
-       (942, 135, ' 다음 중 NO ACTION 옵션에 대한 설명으로 올바른 것은 ? ', ' NO ACTION은 참조 동작 옵션 중 하나이다.', 'OBJECTIVE');
+VALUES (936, 135, '다음 중 참조 동작 옵션 CASCADE에 대한 설명으로 올바른 것은?', '참조 동작 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 처리 방식을 지정한다.', 'OBJECTIVE'),
+       (937, 135, '빈칸에 들어갈 참조 동작 옵션을 작성하시오.', '부모 삭제 시 자식의 외래키를 NULL로 설정하는 옵션은 ___이다.', 'SUBJECTIVE'),
+       (938, 135, '다음 중 RESTRICT 옵션에 대한 설명으로 올바른 것은?', 'RESTRICT는 참조 동작 옵션 중 하나이다.', 'OBJECTIVE'),
+       (939, 135, '다음 SQL에서 ON DELETE CASCADE의 의미는?', 'FOREIGN KEY (department_id) REFERENCES departments(department_id) ON DELETE CASCADE', 'OBJECTIVE'),
+       (940, 135, '빈칸에 들어갈 참조 동작 옵션을 작성하시오.', '부모 삭제 시 자식의 외래키를 기본값으로 설정하는 옵션은 ___이다.', 'SUBJECTIVE'),
+       (941, 135, '다음 상황에서 적절한 참조 동작 옵션은?', '회원이 탈퇴하면 해당 회원의 모든 주문 기록도 함께 삭제되어야 한다.', 'OBJECTIVE'),
+       (942, 135, '다음 중 NO ACTION 옵션에 대한 설명으로 올바른 것은?', 'NO ACTION은 참조 동작 옵션 중 하나이다.', 'OBJECTIVE');
 
 INSERT INTO option (id, problem_id, content, explanation, is_answer)
 VALUES
 -- 문제 936
-(2663, 936, ' 자식이 참조 중이면 부모 삭제 / 수정이 불가하다 ', ' 이것은 RESTRICT 옵션의 설명이다.', false),
-(2664, 936, ' 부모 삭제 / 수정 시 자식의 외래키를 NULL로 설정한다 ', ' 이것은 SET NULL 옵션의 설명이다.', false),
-(2665, 936, ' 부모 삭제 / 수정 시 자식도 함께 삭제 / 수정된다 ', ' CASCADE 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 해당 데이터도 함께 삭제되거나 수정된다.', true),
-(2666, 936, ' 부모 삭제 / 수정 시 자식의 외래키를 기본값으로 설정한다 ', ' 이것은 SET DEFAULT 옵션의 설명이다.', false),
+(2663, 936, '자식이 참조 중이면 부모 삭제 / 수정이 불가하다', '이것은 RESTRICT 옵션의 설명이다.', false),
+(2664, 936, '부모 삭제 / 수정 시 자식의 외래키를 NULL로 설정한다', '이것은 SET NULL 옵션의 설명이다.', false),
+(2665, 936, '부모 삭제 / 수정 시 자식도 함께 삭제 / 수정된다', 'CASCADE 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 해당 데이터도 함께 삭제되거나 수정된다.', true),
+(2666, 936, '부모 삭제 / 수정 시 자식의 외래키를 기본값으로 설정한다', '이것은 SET DEFAULT 옵션의 설명이다.', false),
 
 -- 문제 938
-(2667, 938, ' 부모 삭제 시 자식도 함께 삭제된다 ', ' 이것은 CASCADE 옵션의 설명이다.', false),
-(2668, 938, ' 부모 삭제 시 자식의 외래키를 NULL로 설정한다 ', ' 이것은 SET NULL 옵션의 설명이다.', false),
-(2669, 938, ' 자식이 참조 중이면 부모 삭제 / 수정이 불가하다 ', ' RESTRICT 옵션은 자식 테이블이 부모 테이블의 데이터를 참조하고 있으면 부모의 삭제나 수정을 허용하지 않는다.', true),
-(2670, 938, ' 부모 삭제 시 아무 동작도 하지 않는다 ', ' RESTRICT는 삭제 / 수정을 차단한다.아무 동작도 하지 않는 것이 아니다.', false),
+(2667, 938, '부모 삭제 시 자식도 함께 삭제된다', '이것은 CASCADE 옵션의 설명이다.', false),
+(2668, 938, '부모 삭제 시 자식의 외래키를 NULL로 설정한다', '이것은 SET NULL 옵션의 설명이다.', false),
+(2669, 938, '자식이 참조 중이면 부모 삭제 / 수정이 불가하다', 'RESTRICT 옵션은 자식 테이블이 부모 테이블의 데이터를 참조하고 있으면 부모의 삭제나 수정을 허용하지 않는다.', true),
+(2670, 938, '부모 삭제 시 아무 동작도 하지 않는다', 'RESTRICT는 삭제 / 수정을 차단한다.아무 동작도 하지 않는 것이 아니다.', false),
 
 -- 문제 939
-(2671, 939, ' departments 테이블의 행이 삭제되면 해당 행을 참조하는 자식 행의 외래키가 NULL이 된다 ', ' 이것은 ON DELETE SET NULL의 동작이다.', false),
-(2672, 939, ' departments 테이블의 행이 삭제되면 해당 행을 참조하는 자식 행도 함께 삭제된다 ', ' ON DELETE CASCADE는 부모 테이블의 행이 삭제될 때 해당 행을 참조하는 자식 테이블의 행도 자동으로 삭제된다.', true),
-(2673, 939, ' departments 테이블의 행이 삭제되면 삭제가 차단된다 ', ' 이것은 ON DELETE RESTRICT의 동작이다.', false),
-(2674, 939, ' departments 테이블의 행 삭제와 관계없이 동작한다 ', ' ON DELETE는 부모 테이블의 삭제 시 동작을 정의한다.', false),
+(2671, 939, 'departments 테이블의 행이 삭제되면 해당 행을 참조하는 자식 행의 외래키가 NULL이 된다', '이것은 ON DELETE SET NULL의 동작이다.', false),
+(2672, 939, 'departments 테이블의 행이 삭제되면 해당 행을 참조하는 자식 행도 함께 삭제된다', 'ON DELETE CASCADE는 부모 테이블의 행이 삭제될 때 해당 행을 참조하는 자식 테이블의 행도 자동으로 삭제된다.', true),
+(2673, 939, 'departments 테이블의 행이 삭제되면 삭제가 차단된다', '이것은 ON DELETE RESTRICT의 동작이다.', false),
+(2674, 939, 'departments 테이블의 행 삭제와 관계없이 동작한다', 'ON DELETE는 부모 테이블의 삭제 시 동작을 정의한다.', false),
 
 -- 문제 941
-(2675, 941, ' SET NULL ', ' SET NULL은 외래키를 NULL로 설정하므로 주문 기록이 남아있게 된다.', false),
-(2676, 941, ' RESTRICT ', ' RESTRICT는 삭제를 차단하므로 회원 탈퇴가 불가능해진다.', false),
-(2677, 941, ' CASCADE ', ' 회원 탈퇴 시 모든 주문 기록도 함께 삭제되어야 하므로 CASCADE가 적절하다.부모(회원) 삭제 시 자식(주문) 도 함께 삭제된다.', true),
-(2678, 941, ' SET DEFAULT ', ' SET DEFAULT는 외래키를 기본값으로 설정하므로 주문 기록이 남아있게 된다.', false),
+(2675, 941, 'SET NULL', 'SET NULL은 외래키를 NULL로 설정하므로 주문 기록이 남아있게 된다.', false),
+(2676, 941, 'RESTRICT', 'RESTRICT는 삭제를 차단하므로 회원 탈퇴가 불가능해진다.', false),
+(2677, 941, 'CASCADE', '회원 탈퇴 시 모든 주문 기록도 함께 삭제되어야 하므로 CASCADE가 적절하다.부모(회원) 삭제 시 자식(주문) 도 함께 삭제된다.', true),
+(2678, 941, 'SET DEFAULT', 'SET DEFAULT는 외래키를 기본값으로 설정하므로 주문 기록이 남아있게 된다.', false),
 
 -- 문제 942
-(2679, 942, ' RESTRICT와 동일하게 동작한다 ', ' NO ACTION은 RESTRICT와 동일하게 자식이 참조 중이면 부모의 삭제 / 수정을 허용하지 않는다.', true),
-(2680, 942, ' CASCADE와 동일하게 동작한다 ', ' NO ACTION은 자동 삭제 / 수정을 수행하지 않는다.', false),
-(2681, 942, ' SET NULL과 동일하게 동작한다 ', ' NO ACTION은 외래키를 NULL로 설정하지 않는다.', false),
-(2682, 942, ' 아무런 제약 없이 삭제 / 수정을 허용한다 ', ' NO ACTION도 참조 무결성을 검사하며, 위반 시 작업을 차단한다.', false);
+(2679, 942, 'RESTRICT와 동일하게 동작한다', 'NO ACTION은 RESTRICT와 동일하게 자식이 참조 중이면 부모의 삭제 / 수정을 허용하지 않는다.', true),
+(2680, 942, 'CASCADE와 동일하게 동작한다', 'NO ACTION은 자동 삭제 / 수정을 수행하지 않는다.', false),
+(2681, 942, 'SET NULL과 동일하게 동작한다', 'NO ACTION은 외래키를 NULL로 설정하지 않는다.', false),
+(2682, 942, '아무런 제약 없이 삭제 / 수정을 허용한다', 'NO ACTION도 참조 무결성을 검사하며, 위반 시 작업을 차단한다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (269, 937, 'SET NULL, NULL', 'SET NULL 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 NULL로 설정한다. 외래키 컬럼이 NULL을 허용해야 사용할 수 있다.'),
-       (270, 940, 'SET DEFAULT, DEFAULT', 'SET DEFAULT 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 기본값(DEFAULT)으로 설정한다.');
+VALUES (269, 937, 'set null,null', 'SET NULL 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 NULL로 설정한다. 외래키 컬럼이 NULL을 허용해야 사용할 수 있다.'),
+       (270, 940, 'set default,default', 'SET DEFAULT 옵션은 부모 테이블의 데이터가 삭제되거나 수정될 때 자식 테이블의 외래키 값을 기본값(DEFAULT)으로 설정한다.');
 
 -- Lesson 3: 외래키와 제약 조건 3 (ID: 136)
 INSERT INTO lesson (id, title, unit_id)
@@ -152,5 +151,5 @@ VALUES
 (2702, 949, 'UNIQUE와 기본키는 동일하다', 'UNIQUE는 NULL을 허용하고 여러 개 지정 가능하지만, 기본키는 NULL 불가하고 테이블당 하나만 지정 가능하다.', false);
 
 INSERT INTO answer (id, problem_id, content, explanation)
-VALUES (271, 944, 'UNIQUE, 유니크', 'UNIQUE 제약은 해당 속성의 값이 고유(중복 불가능)해야 함을 보장하는 제약 조건이다. 기본키와 달리 NULL 값은 허용된다.'),
-       (272, 947, 'NULL, 널', 'UNIQUE 제약이 적용된 컬럼은 중복된 값을 가질 수 없지만, NULL 값은 가질 수 있다. 이것이 기본키와의 주요 차이점이다. 기본키는 NOT NULL과 UNIQUE가 모두 적용된다.');
+VALUES (271, 944, 'unique,유니크', 'UNIQUE 제약은 해당 속성의 값이 고유(중복 불가능)해야 함을 보장하는 제약 조건이다. 기본키와 달리 NULL 값은 허용된다.'),
+       (272, 947, 'null,널', 'UNIQUE 제약이 적용된 컬럼은 중복된 값을 가질 수 없지만, NULL 값은 가질 수 있다. 이것이 기본키와의 주요 차이점이다. 기본키는 NOT NULL과 UNIQUE가 모두 적용된다.');
