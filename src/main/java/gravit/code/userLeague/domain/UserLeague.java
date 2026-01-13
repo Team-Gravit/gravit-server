@@ -64,7 +64,7 @@ public class UserLeague extends BaseEntity {
     }
 
     public int addLeaguePoints(int points) {
-        if(points <= 0){
+        if(points < 0){
             throw new RestApiException(CustomErrorCode.LEAGUE_POINT_MUST_BE_POSITIVE);
         }
         this.lp += points;
