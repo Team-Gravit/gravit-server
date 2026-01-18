@@ -40,7 +40,9 @@ public class CSNoteController implements CSNoteControllerDocs {
     private static final Map<String, String> chapterMap = Map.of(
             "자료구조", "data-structure",
             "알고리즘", "algorithm",
-            "네트워크", "network"
+            "네트워크", "network",
+            "데이터베이스","database",
+            "운영체제","operating-system"
     );
 
     @GetMapping("/{unitId}")
