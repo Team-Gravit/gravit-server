@@ -7,7 +7,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notice.domain.Notice;
 import gravit.code.notice.domain.NoticeStatus;
-import gravit.code.notice.infrastructure.NoticeRepository;
+import gravit.code.notice.repository.NoticeRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

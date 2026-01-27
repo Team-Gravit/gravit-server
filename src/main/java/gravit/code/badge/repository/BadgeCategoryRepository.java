@@ -1,4 +1,4 @@
-package gravit.code.badge.infrastructure;
+package gravit.code.badge.repository;
 
 import gravit.code.badge.domain.BadgeCategory;
 import org.springframework.data.jpa.repository.JpaRepository;

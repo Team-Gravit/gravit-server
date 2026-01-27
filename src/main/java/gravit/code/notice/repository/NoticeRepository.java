@@ -1,4 +1,4 @@
-package gravit.code.notice.infrastructure;
+package gravit.code.notice.repository;
 
 import gravit.code.admin.dto.response.AdminNoticeSummaryResponse;
 import gravit.code.notice.domain.Notice;
