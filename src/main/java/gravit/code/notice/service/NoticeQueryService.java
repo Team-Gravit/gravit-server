@@ -7,7 +7,7 @@ import gravit.code.notice.domain.Notice;
 import gravit.code.notice.domain.NoticeStatus;
 import gravit.code.notice.dto.response.NoticeDetailResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
-import gravit.code.notice.infrastructure.NoticeRepository;
+import gravit.code.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

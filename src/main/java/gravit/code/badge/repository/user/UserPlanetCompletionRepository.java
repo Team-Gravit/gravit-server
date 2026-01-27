@@ -1,4 +1,4 @@
-package gravit.code.badge.infrastructure.user;
+package gravit.code.badge.repository.user;
 
 import gravit.code.badge.domain.Planet;
 import gravit.code.badge.domain.user.UserPlanetCompletion;

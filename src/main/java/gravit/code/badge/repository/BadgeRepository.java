@@ -1,4 +1,4 @@
-package gravit.code.badge.infrastructure;
+package gravit.code.badge.repository;
 
 import gravit.code.badge.domain.Badge;
 import gravit.code.badge.domain.CriteriaType;
