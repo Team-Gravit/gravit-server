@@ -7,6 +7,7 @@ import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserResponse;
+import gravit.code.user.service.UserDeletionService;
 import gravit.code.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController implements UserControllerDocs {
 
     private final UserService userService;
+    private final UserDeletionService userDeleteWithMailService;
+
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal LoginUser loginUser) {
@@ -61,7 +64,23 @@ public class UserController implements UserControllerDocs {
     }
 
     @GetMapping("/main-page")
-    public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser){
+    public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getMainPage(loginUser.getId()));
+    }
+
+    @PostMapping("/deletion/request")
+    public ResponseEntity<Void> deletionRequest(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @RequestParam String dest
+    ) {
+        Long userId = loginUser.getId();
+        userDeleteWithMailService.requestDeleteMailWithMailAuthCode(userId, dest);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping("/deletion/confirm")
+    public ResponseEntity<Void> deletionConfirm(@RequestParam String mailAuthCode) {
+        userDeleteWithMailService.confirmDeleteByMailAuthCode(mailAuthCode);
+        return ResponseEntity.ok().build();
     }
 }
