@@ -13,6 +13,9 @@ public class UserDeletionRepositoryImpl implements UserDeletionRepository {
 
     @Override
     public void cleanUserDeletion(long userId) {
-        jdbcTemplate.update(UserCleanDeletionSql.CLEAN_USER_DELETION_SQL, Map.of("id", userId));
+        jdbcTemplate.update(
+                UserCleanDeletionSql.CLEAN_USER_DELETION_SQL,
+                Map.of("id", userId)
+        );
     }
 }

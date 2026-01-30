@@ -43,8 +43,11 @@ public class OAuthLoginProcessor {
         return userRepository.findByProviderId(providerId)
                 .map(u -> {  // 유저가 존재하면 삭제 여부 확인 후, admin 승격 가능성 확인
                     if(u.isDeleted()){
+                        log.warn("[OAuthLoginProcessor] 삭제된 계정 로그인 시도. providerId: {}", providerId);
                         throw new AccountSoftDeletedException(u.getProviderId());
                     }
+
+                    log.info("[OAuthLoginProcessor] 기존 유저 로그인. userId: {}, role: {}", u.getId(), u.getRole());
                     return promoteToAdminByWhitelist(u, oAuthUserInfo);
                 })
                 .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId)); // 유저가 존재하지 않으면 생성
@@ -54,7 +57,7 @@ public class OAuthLoginProcessor {
             OAuthUserInfo oAuthUserInfo,
             String providerId
     ) {
-        log.info("첫 로그인, 회원가입 시작");
+        log.info("[OAuthLoginProcessor] 신규 유저 회원가입 시작. email: {}, providerId: {}", oAuthUserInfo.getEmail(), providerId);
         String handle = handleGenerator.generateUniqueHandle();
         Role initialRole = adminPromotionPolicy.initRole(oAuthUserInfo.getEmail());
 
@@ -68,7 +71,8 @@ public class OAuthLoginProcessor {
         );
 
         userRepository.save(user);
-        log.info("회원 가입 완료(초기 롤: {})", initialRole);
+        log.info("[OAuthLoginProcessor] 신규 유저 회원가입 완료. userId: {}, handle: {}, role: {}", user.getId(), user.getHandle(), user.getRole());
+
         return user;
     }
 

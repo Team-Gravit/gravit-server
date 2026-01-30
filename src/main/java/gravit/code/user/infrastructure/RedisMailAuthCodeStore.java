@@ -11,7 +11,7 @@ import java.time.Duration;
 import java.util.Collections;
 
 import static gravit.code.user.infrastructure.RedisMailAuthCodeConstants.GETDEL_SCRIPT;
-import static gravit.code.user.infrastructure.RedisMailAuthCodeConstants.makeMailAuthCodeKeyW;
+import static gravit.code.user.infrastructure.RedisMailAuthCodeConstants.makeMailAuthCodeKey;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class RedisMailAuthCodeStore implements MailAuthCodeStore {
         // 만약 중복되는 키가 없으면 true, 중복 된다면 true
         Boolean result = redisTemplate.opsForValue()
                 .setIfAbsent(
-                        makeMailAuthCodeKeyW(mailAuthCode),
+                        makeMailAuthCodeKey(mailAuthCode),
                         Long.toString(userId),
                         Duration.ofSeconds(expireTimeSeconds)
                 );
@@ -48,7 +48,7 @@ public class RedisMailAuthCodeStore implements MailAuthCodeStore {
         // 한번 조회하고 나면 해당 키 삭제
         String userId = redisTemplate.execute(
                 GETDEL_SCRIPT,
-                Collections.singletonList(makeMailAuthCodeKeyW(mailAuthCode))
+                Collections.singletonList(makeMailAuthCodeKey(mailAuthCode))
         );
         return Long.parseLong(userId);
     }

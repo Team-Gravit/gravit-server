@@ -24,7 +24,7 @@ public class RedisMailAuthCodeConstants {
             );
 
     // 실제 key(key : prefix + MailAuthCode) 생성
-    public static String makeMailAuthCodeKeyW(String mailAuthCode) {
+    public static String makeMailAuthCodeKey(String mailAuthCode) {
         return KEY_PREFIX + mailAuthCode;
     }
     
