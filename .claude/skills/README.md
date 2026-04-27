@@ -7,6 +7,7 @@ Claude Code가 자동 또는 슬래시 커맨드로 호출하는 작업 스킬�
 | `write-test` | 테스트 코드 작성 | SKILL.md + references/ (test-code-template.md, test-classification.md) |
 | `run-test` | 테스트 실행 및 결과 분석 | SKILL.md |
 | `write-api-docs` | Swagger ControllerDocs 인터페이스 작성 | SKILL.md + references/ (api-docs-template.md) |
+| `read-branch-issue` | 현재 브랜치와 연결된 GitHub 이슈 조회 및 숙지 | SKILL.md |
 
 ## 구조
 
