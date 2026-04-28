@@ -7,12 +7,12 @@ CREATE TABLE IF NOT EXISTS staging_label
     label        varchar(32)  NOT NULL,
     unit_id      bigint       NOT NULL,
     description  varchar(255) NOT NULL,
-    label_status varchar(20)  NOT NULL DEFAULT 'pending',
+    label_status varchar(20)  NOT NULL DEFAULT 'PENDING',
     created_at   timestamp    NOT NULL DEFAULT NOW(),
     CONSTRAINT staging_label_pkey PRIMARY KEY (id),
     CONSTRAINT staging_label_label_key UNIQUE (label),
     CONSTRAINT staging_label_status_check
-    CHECK (label_status IN ('pending', 'completed'))
+    CHECK (label_status IN ('PENDING', 'COMPLETED'))
     );
 
 CREATE INDEX IF NOT EXISTS ix_staging_label_status
