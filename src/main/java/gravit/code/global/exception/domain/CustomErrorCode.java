@@ -63,6 +63,7 @@ public enum CustomErrorCode implements ErrorCode {
     // Problem
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 조회에 실패하였습니다."),
     PROBLEM_SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "PROBLEM_4041", "문제 풀이 제출 이력 조회에 실패하였습니다."),
+
     // Option
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION_4041", "옵션 조회에 실패하였습니다."),
 
@@ -132,6 +133,7 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Admin
     ADMIN_ONLY_FEATURE(HttpStatus.UNAUTHORIZED, "ADMIN_4011", "admin 전용 기능입니다."),
+    USER_STATUS_TRANSITION_INVALID(HttpStatus.BAD_REQUEST, "ADMIN_4001", "해당 유저 상태로 변경할 수 없습니다."),
 
     // CS-NOTE
     CHAPTER_NAME_NOT_MATCHING(HttpStatus.BAD_REQUEST, "CS_NOTE_4001", "CS 노트 경로와 챕터 이름이 매칭되지 않습니다."),

@@ -49,6 +49,17 @@ public class AdminUserService {
         return AdminUserDetailResponse.of(user);
     }
 
+    @Transactional
+    public void updateUserStatus(
+            long userId,
+            UserStatus userStatus
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        user.updateStatus(userStatus);
+    }
+
     private int getSafePage(int page){
         return Math.max(0, page - 1);
     }

@@ -178,4 +178,12 @@ public class User extends BaseEntity {
             throw new RestApiException(CustomErrorCode.NICKNAME_PATTERN_INVALID);
         }
     }
+
+    public void updateStatus(UserStatus userStatus) {
+        if (userStatus.equals(UserStatus.DELETED)){
+            throw new RestApiException(CustomErrorCode.USER_STATUS_TRANSITION_INVALID);
+        }
+
+        this.status = userStatus;
+    }
 }
