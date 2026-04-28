@@ -1,6 +1,5 @@
 package gravit.code.notice.repository;
 
-import gravit.code.admin.dto.response.AdminNoticeSummaryResponse;
 import gravit.code.notice.domain.Notice;
 import gravit.code.notice.domain.NoticeStatus;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
@@ -37,22 +36,4 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
             long id,
             NoticeStatus status
     );
-
-    @Query("""
-        select new gravit.code.admin.dto.response.AdminNoticeSummaryResponse(
-            n.id,
-            n.title,
-            case when length(n.content) > :limit
-                 then concat(substring(n.content, 1, :limit - 1), '…')
-                 else n.content end,
-            n.pinned,
-            n.publishedAt
-        )
-        from Notice n
-        """)
-    Page<AdminNoticeSummaryResponse> findSummariesForAdmin(
-            @Param("limit") int limit,
-            Pageable pageable
-    );
-
 }
