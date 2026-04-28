@@ -1,6 +1,6 @@
 package gravit.code.user.repository;
 
-import gravit.code.admin.dto.response.UserDetailResponse;
+import gravit.code.admin.dto.response.AdminUserSummaryResponse;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserLevel;
@@ -57,13 +57,13 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDeletionR
     Optional<String> findNicknameById(@Param("userId") long userId);
 
     @Query("""
-        SELECT new gravit.code.admin.dto.response.UserDetailResponse(u.id, u.email, u.nickname, u.handle, u.role, u.status, u.createdAt)
+        SELECT new gravit.code.admin.dto.response.AdminUserSummaryResponse(u.id, u.email, u.nickname, u.handle, u.role, u.status, u.createdAt)
         FROM User u
         WHERE(:search IS NULL OR u.email LIKE %:search% OR u.nickname LIKE %:search% OR u.handle LIKE %:search%)
             AND(:status IS NULL OR u.status = :status)
             AND(:role IS NULL OR u.role = :role)
     """)
-    Page<UserDetailResponse> findByKeywordAndStatusAndRole(
+    Page<AdminUserSummaryResponse> findByKeywordAndStatusAndRole(
             Pageable pageable,
             @Param("search") String search,
             @Param("status") UserStatus status,

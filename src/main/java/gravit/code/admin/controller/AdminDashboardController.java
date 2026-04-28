@@ -1,7 +1,7 @@
 package gravit.code.admin.controller;
 
 import gravit.code.admin.controller.docs.AdminDashboardControllerDocs;
-import gravit.code.admin.dto.response.DashboardSummaryResponse;
+import gravit.code.admin.dto.response.AdminDashboardSummaryResponse;
 import gravit.code.admin.service.AdminDashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class AdminDashboardController implements AdminDashboardControllerDocs {
     private final AdminDashboardService adminDashboardService;
 
     @GetMapping("/summary")
-    public ResponseEntity<DashboardSummaryResponse> getDashboardSummary() {
+    public ResponseEntity<AdminDashboardSummaryResponse> getDashboardSummary() {
         return ResponseEntity.status(OK).body(adminDashboardService.getDashboardSummary());
     }
 }

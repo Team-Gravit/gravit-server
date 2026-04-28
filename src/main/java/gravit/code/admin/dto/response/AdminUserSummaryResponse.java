@@ -6,7 +6,7 @@ import gravit.code.user.domain.UserStatus;
 
 import java.time.LocalDateTime;
 
-public record UserDetailResponse(
+public record AdminUserSummaryResponse(
         long userId,
         String email,
         String nickname,

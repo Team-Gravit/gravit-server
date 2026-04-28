@@ -38,7 +38,7 @@
 //        assertThat(res.pages()).isEqualTo(0);
 //        assertThat(res.total()).isEqualTo(0);
 //        assertThat(res.hasNext()).isFalse();
-//        assertThat(res.searchUsers().size()).isEqualTo(0);
+//        assertThat(res.findByKeywordAndStatusAndRole().size()).isEqualTo(0);
 //    }
 //
 //    @Test
@@ -51,9 +51,9 @@
 //        assertThat(res.pages()).isEqualTo(1);
 //        assertThat(res.total()).isEqualTo(1);
 //        assertThat(res.hasNext()).isFalse();
-//        assertThat(res.searchUsers().size()).isEqualTo(1);
-//        assertThat(res.searchUsers().get(0).handle()).isEqualTo("@zb000005");
-//        assertThat(res.searchUsers().get(0).isFollowing()).isTrue();
+//        assertThat(res.findByKeywordAndStatusAndRole().size()).isEqualTo(1);
+//        assertThat(res.findByKeywordAndStatusAndRole().get(0).handle()).isEqualTo("@zb000005");
+//        assertThat(res.findByKeywordAndStatusAndRole().get(0).isFollowing()).isTrue();
 //    }
 //
 //    @Test
@@ -66,7 +66,7 @@
 //        assertThat(res.pages()).isEqualTo(2);
 //        assertThat(res.total()).isEqualTo(17);
 //        assertThat(res.hasNext()).isTrue();
-//        assertThat(res.searchUsers().size()).isEqualTo(10);
+//        assertThat(res.findByKeywordAndStatusAndRole().size()).isEqualTo(10);
 //    }
 //
 //    @Test
@@ -79,8 +79,8 @@
 //        assertThat(res.pages()).isEqualTo(2);
 //        assertThat(res.total()).isEqualTo(17);
 //        assertThat(res.hasNext()).isTrue();
-//        assertThat(res.searchUsers().size()).isEqualTo(10);
-//        assertThat(res.searchUsers().get(0).handle()).isEqualTo("@zb000001");
+//        assertThat(res.findByKeywordAndStatusAndRole().size()).isEqualTo(10);
+//        assertThat(res.findByKeywordAndStatusAndRole().get(0).handle()).isEqualTo("@zb000001");
 //    }
 //
 //    @Test
@@ -93,8 +93,8 @@
 //        assertThat(res.pages()).isEqualTo(2);
 //        assertThat(res.total()).isEqualTo(17);
 //        assertThat(res.hasNext()).isTrue();
-//        assertThat(res.searchUsers().size()).isEqualTo(10);
-//        assertThat(res.searchUsers().get(0).handle()).isEqualTo("@zb000001");
+//        assertThat(res.findByKeywordAndStatusAndRole().size()).isEqualTo(10);
+//        assertThat(res.findByKeywordAndStatusAndRole().get(0).handle()).isEqualTo("@zb000001");
 //    }
 //
 //    @Test
@@ -107,7 +107,7 @@
 //        assertThat(res.pages()).isEqualTo(0);
 //        assertThat(res.total()).isEqualTo(0);
 //        assertThat(res.hasNext()).isFalse();
-//        assertThat(res.searchUsers().size()).isEqualTo(0);
+//        assertThat(res.findByKeywordAndStatusAndRole().size()).isEqualTo(0);
 //    }
 //
 //

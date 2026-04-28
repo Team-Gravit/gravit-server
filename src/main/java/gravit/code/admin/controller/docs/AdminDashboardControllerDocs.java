@@ -1,6 +1,6 @@
 package gravit.code.admin.controller.docs;
 
-import gravit.code.admin.dto.response.DashboardSummaryResponse;
+import gravit.code.admin.dto.response.AdminDashboardSummaryResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,7 +32,7 @@ public interface AdminDashboardControllerDocs {
                     description = "✅ 대시보드 요약 조회 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = DashboardSummaryResponse.class),
+                            schema = @Schema(implementation = AdminDashboardSummaryResponse.class),
                             examples = @ExampleObject(
                                     name = "성공 예시",
                                     value = """
@@ -59,5 +59,5 @@ public interface AdminDashboardControllerDocs {
             )
     })
     @GetMapping("/summary")
-    ResponseEntity<DashboardSummaryResponse> getDashboardSummary();
+    ResponseEntity<AdminDashboardSummaryResponse> getDashboardSummary();
 }

@@ -1,6 +1,7 @@
 package gravit.code.admin.controller.docs;
 
-import gravit.code.admin.dto.response.UserDetailResponse;
+import gravit.code.admin.dto.response.AdminUserDetailResponse;
+import gravit.code.admin.dto.response.AdminUserSummaryResponse;
 import gravit.code.global.dto.response.PageResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.user.domain.Role;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Admin User API", description = "백오피스 유저 관리 관련 API")
@@ -76,10 +78,72 @@ public interface AdminUserControllerDocs {
             )
     })
     @GetMapping
-    ResponseEntity<PageResponse<UserDetailResponse>> getUsers(
+    ResponseEntity<PageResponse<AdminUserSummaryResponse>> getUsersSummary(
             @Parameter(description = "페이지 번호 (1-based, 기본값 1)") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "email/nickname/handle 검색 키워드") @RequestParam(required = false) String search,
             @Parameter(description = "유저 상태 (ACTIVE | DELETED)") @RequestParam(required = false) UserStatus status,
             @Parameter(description = "유저 권한 (ADMIN | USER)") @RequestParam(required = false) Role role
+    );
+
+    @Operation(
+            summary = "유저 상세 조회",
+            description = """
+                    백오피스 유저 관리 화면에서 특정 유저의 상세 정보를 조회합니다.<br>
+                    🔐 <strong>Jwt 필요 (role=ADMIN)</strong><br>
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "✅ 유저 상세 조회 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = AdminUserDetailResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "userId": 1001,
+                                              "email": "user@example.com",
+                                              "nickname": "홍길동",
+                                              "handle": "gildong",
+                                              "profileImgNumber": 3,
+                                              "role": "USER",
+                                              "status": "ACTIVE",
+                                              "level": 12,
+                                              "createdAt": "2026-01-15"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "🚨 유저를 찾을 수 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "유저 없음",
+                                    value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                            )
+                    )
+            )
+    })
+    @GetMapping("/{userId}")
+    ResponseEntity<AdminUserDetailResponse> getUserDetail(
+            @Parameter(description = "유저 ID") @PathVariable("userId") long userId
     );
 }

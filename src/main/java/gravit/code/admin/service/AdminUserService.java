@@ -1,8 +1,12 @@
 package gravit.code.admin.service;
 
-import gravit.code.admin.dto.response.UserDetailResponse;
+import gravit.code.admin.dto.response.AdminUserDetailResponse;
+import gravit.code.admin.dto.response.AdminUserSummaryResponse;
 import gravit.code.global.dto.response.PageResponse;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
+import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserStatus;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +27,7 @@ public class AdminUserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public PageResponse<UserDetailResponse> getUsers(
+    public PageResponse<AdminUserSummaryResponse> getUsersSummary(
             int page,
             String search,
             UserStatus status,
@@ -33,8 +37,16 @@ public class AdminUserService {
         String safeSearch = StringUtils.hasText(search) ? search : null; // 빈문자열 방지
 
         PageRequest pageRequest = PageRequest.of(safePage, USER_PAGE_SIZE, USER_SORT);
-        Page<UserDetailResponse> response = userRepository.findByKeywordAndStatusAndRole(pageRequest, safeSearch, status, role);
+        Page<AdminUserSummaryResponse> response = userRepository.findByKeywordAndStatusAndRole(pageRequest, safeSearch, status, role);
         return PageResponse.from(response);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminUserDetailResponse getUserDetail(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        return AdminUserDetailResponse.of(user);
     }
 
     private int getSafePage(int page){

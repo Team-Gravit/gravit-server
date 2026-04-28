@@ -1,6 +1,6 @@
 package gravit.code.admin.service;
 
-import gravit.code.admin.dto.response.DashboardSummaryResponse;
+import gravit.code.admin.dto.response.AdminDashboardSummaryResponse;
 import gravit.code.report.repository.ReportRepository;
 import gravit.code.stagingLabel.repository.StagingLabelRepository;
 import gravit.code.user.repository.UserRepository;
@@ -17,11 +17,11 @@ public class AdminDashboardService {
     private final ReportRepository reportRepository;
 
     @Transactional(readOnly = true)
-    public DashboardSummaryResponse getDashboardSummary() {
+    public AdminDashboardSummaryResponse getDashboardSummary() {
         long totalUsers = userRepository.count();
         long pendingLabelsCount = stagingLabelRepository.countPendingLabel();
         long unresolvedReportsCount = reportRepository.countUnresolvedReport();
 
-        return DashboardSummaryResponse.create(totalUsers, pendingLabelsCount, unresolvedReportsCount);
+        return AdminDashboardSummaryResponse.create(totalUsers, pendingLabelsCount, unresolvedReportsCount);
     }
 }
