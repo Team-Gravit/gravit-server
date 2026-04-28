@@ -16,7 +16,8 @@ public record AdminUserDetailResponse(
         Role role,
         UserStatus status,
         int level,
-        @JsonFormat(pattern = "yyyy-MM-dd") LocalDateTime createdAt
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDateTime createdAt
 ) {
     public static AdminUserDetailResponse of(User user) {
         return new AdminUserDetailResponse(

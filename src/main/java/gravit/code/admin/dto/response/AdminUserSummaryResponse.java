@@ -8,11 +8,13 @@ import java.time.LocalDateTime;
 
 public record AdminUserSummaryResponse(
         long userId,
+
         String email,
         String nickname,
         String handle,
         Role role,
         UserStatus status,
-        @JsonFormat(pattern = "yyyy-MM-dd") LocalDateTime createdAt
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDateTime createdAt
 ) {
 }
