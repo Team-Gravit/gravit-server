@@ -1,6 +1,7 @@
 package gravit.code.admin.controller;
 
 import gravit.code.admin.controller.docs.AdminUserControllerDocs;
+import gravit.code.admin.dto.request.AdminUserRoleUpdateRequest;
 import gravit.code.admin.dto.request.AdminUserStatusUpdateRequest;
 import gravit.code.admin.dto.response.AdminUserDetailResponse;
 import gravit.code.admin.dto.response.AdminUserSummaryResponse;
@@ -49,6 +50,15 @@ public class AdminUserController implements AdminUserControllerDocs {
             @Valid@RequestBody AdminUserStatusUpdateRequest request
     ) {
         adminUserService.updateUserStatus(userId, request.status());
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{userId}/role")
+    public ResponseEntity<Void> updateUserRole(
+            @PathVariable("userId") long userId,
+            @Valid@RequestBody AdminUserRoleUpdateRequest request
+    ){
+        adminUserService.updateUserRole(userId, request.role());
         return ResponseEntity.ok().build();
     }
 }

@@ -60,6 +60,17 @@ public class AdminUserService {
         user.updateStatus(userStatus);
     }
 
+    @Transactional
+    public void updateUserRole(
+            long userId,
+            Role role
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        user.updateRole(role);
+    }
+
     private int getSafePage(int page){
         return Math.max(0, page - 1);
     }
