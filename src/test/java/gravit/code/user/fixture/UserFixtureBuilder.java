@@ -1,15 +1,16 @@
-//package gravit.code.user.fixture;
-//
-//import gravit.code.user.domain.Role;
-//import gravit.code.user.domain.User;
+package gravit.code.user.fixture;
+
+import gravit.code.user.domain.Role;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+
 //import gravit.code.user.domain.UserLevel;
-//import gravit.code.user.domain.UserStatus;
 //import org.springframework.boot.test.context.TestComponent;
-//import org.springframework.test.util.ReflectionTestUtils;
-//
+
 //@TestComponent
-//public class UserFixtureBuilder {
-//
+public class UserFixtureBuilder {
+
 //    private String email;
 //    private String providerId;
 //    private String nickname;
@@ -116,5 +117,27 @@
 //
 //        return user;
 //    }
-//
-//}
+
+    public static User 유저(
+            String email,
+            String providerId,
+            String nickname,
+            String handle,
+            Role role
+    ) {
+        return User.create(email, providerId, nickname, handle, 1, role);
+    }
+
+    public static User 상태_지정_유저(
+            String email,
+            String providerId,
+            String nickname,
+            String handle,
+            Role role,
+            UserStatus status
+    ) {
+        User user = User.create(email, providerId, nickname, handle, 1, role);
+        ReflectionTestUtils.setField(user, "status", status);
+        return user;
+    }
+}

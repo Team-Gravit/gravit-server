@@ -35,7 +35,7 @@ public class StagingLabel {
     @Column(name = "label_status", nullable = false, length = 20)
     private LabelStatus labelStatus;
 
-    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
