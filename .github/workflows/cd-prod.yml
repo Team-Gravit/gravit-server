@@ -66,7 +66,7 @@ jobs:
 
       - name: 도커 이미지 빌드
         run: |
-          docker build --build-arg SPRING_PROFILE=prod \
+          docker build \
             -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:${{ github.event.release.tag_name }} \
             -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:latest \
             .
