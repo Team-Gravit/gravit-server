@@ -1,9 +1,8 @@
 name: 프로덕션 서버 CD
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -66,10 +65,16 @@ jobs:
           password: ${{secrets.DOCKER_HUB_PASSWORD}}
 
       - name: 도커 이미지 빌드
-        run: docker build --build-arg SPRING_PROFILE=prod -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod .
+        run: |
+          docker build --build-arg SPRING_PROFILE=prod \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:${{ github.event.release.tag_name }} \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod \
+            .
 
       - name: 도커 이미지 푸쉬
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:${{ github.event.release.tag_name }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod
 
   deploy:
     name: 앱센터 서버에 배포
@@ -101,8 +106,8 @@ jobs:
             cd /home/serverking/gravit/prod
 
             echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
+            echo "IMAGE_TAG=${{ github.event.release.tag_name }}" >> .env
 
             docker-compose -f docker-compose-prod.yml down
             docker-compose -f docker-compose-prod.yml pull
             docker-compose -f docker-compose-prod.yml up -d
-            docker image prune -f
