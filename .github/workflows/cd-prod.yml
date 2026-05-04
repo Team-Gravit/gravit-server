@@ -111,3 +111,9 @@ jobs:
             docker-compose -f docker-compose-prod.yml down
             docker-compose -f docker-compose-prod.yml pull
             docker-compose -f docker-compose-prod.yml up -d
+
+            docker images "${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server" \
+              --format "{{.Repository}}:{{.Tag}}" | \
+              grep -v ":prod" | \
+              grep -v ":${{ github.event.release.tag_name }}" | \
+              xargs docker rmi 2>/dev/null || true
