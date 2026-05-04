@@ -1,0 +1,32 @@
+name: 프로덕션 서버 롤백
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '롤백할 버전 (예: v1.1.0)'
+        required: true
+        type: string
+
+jobs:
+  rollback:
+    name: 지정한 버전으로 롤백
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 앱센터 서버에 롤백 배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.APPCENTER_SERVER_IP}}
+          username: ${{secrets.APPCENTER_SERVER_USERNAME}}
+          password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
+          port: ${{secrets.APPCENTER_SERVER_PORT}}
+          script: |
+            cd /home/serverking/gravit/prod
+
+            echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
+            echo "IMAGE_TAG=${{ github.event.inputs.version }}" >> .env
+
+            docker-compose -f docker-compose-prod.yml down
+            docker-compose -f docker-compose-prod.yml pull
+            docker-compose -f docker-compose-prod.yml up -d
