@@ -68,13 +68,13 @@ jobs:
         run: |
           docker build --build-arg SPRING_PROFILE=prod \
             -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:${{ github.event.release.tag_name }} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:latest \
             .
 
       - name: 도커 이미지 푸쉬
         run: |
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:${{ github.event.release.tag_name }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:prod
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:latest
 
   deploy:
     name: 앱센터 서버에 배포
@@ -114,6 +114,6 @@ jobs:
 
             docker images "${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server" \
               --format "{{.Repository}}:{{.Tag}}" | \
-              grep -v ":prod" | \
+              grep -v ":latest" | \
               grep -v ":${{ github.event.release.tag_name }}" | \
               xargs docker rmi 2>/dev/null || true
