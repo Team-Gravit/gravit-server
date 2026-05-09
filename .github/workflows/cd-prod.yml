@@ -65,16 +65,22 @@ jobs:
           password: ${{secrets.DOCKER_HUB_PASSWORD}}
 
       - name: 도커 이미지 빌드
+        env:
+          IMAGE_TAG: ${{ github.event.release.tag_name }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
           docker build \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:${{ github.event.release.tag_name }} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:latest \
+            -t "$DOCKER_USERNAME/gravit-server:$IMAGE_TAG" \
+            -t "$DOCKER_USERNAME/gravit-server:latest" \
             .
 
       - name: 도커 이미지 푸쉬
+        env:
+          IMAGE_TAG: ${{ github.event.release.tag_name }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:${{ github.event.release.tag_name }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server:latest
+          docker push "$DOCKER_USERNAME/gravit-server:$IMAGE_TAG"
+          docker push "$DOCKER_USERNAME/gravit-server:latest"
 
   deploy:
     name: 앱센터 서버에 배포
@@ -97,23 +103,27 @@ jobs:
 
       - name: 앱센터 서버에 배포
         uses: appleboy/ssh-action@master
+        env:
+          IMAGE_TAG: ${{ github.event.release.tag_name }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         with:
           host: ${{secrets.APPCENTER_SERVER_IP}}
           username: ${{secrets.APPCENTER_SERVER_USERNAME}}
           password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
           port: ${{secrets.APPCENTER_SERVER_PORT}}
+          envs: IMAGE_TAG,DOCKER_HUB_USERNAME
           script: |
             cd /home/serverking/gravit/prod
 
-            echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
-            echo "IMAGE_TAG=${{ github.event.release.tag_name }}" >> .env
+            echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME" > .env
+            echo "IMAGE_TAG=$IMAGE_TAG" >> .env
 
-            docker-compose -f docker-compose-prod.yml down
             docker-compose -f docker-compose-prod.yml pull
-            docker-compose -f docker-compose-prod.yml up -d
+            docker-compose -f docker-compose-prod.yml down
+            docker-compose -f docker-compose-prod.yml up -d --force-recreate
 
-            docker images "${{ secrets.DOCKER_HUB_USERNAME }}/gravit-server" \
+            docker images "$DOCKER_HUB_USERNAME/gravit-server" \
               --format "{{.Repository}}:{{.Tag}}" | \
               grep -v ":latest" | \
-              grep -v ":${{ github.event.release.tag_name }}" | \
+              grep -v ":$IMAGE_TAG" | \
               xargs docker rmi 2>/dev/null || true
