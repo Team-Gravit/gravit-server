@@ -1,7 +1,7 @@
 services:
   gravit-server-prod:
     container_name: gravit-server-prod
-    image: ${DOCKER_HUB_USERNAME}/gravit-server:${IMAGE_TAG:?IMAGE_TAG must be set}
+    image: ${DOCKER_HUB_USERNAME}/gravit-server:${IMAGE_TAG}
     ports:
       - "8520:8080"
     environment:
