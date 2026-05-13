@@ -4,7 +4,7 @@ import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.repository.UserRepository;
-import gravit.code.userLeague.dto.response.LeagueRankRow;
+import gravit.code.userLeague.dto.internal.LeagueRankRowDto;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class UserLeagueQueryService {
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<LeagueRankRow> findLeagueRanking(
+    public SliceResponse<LeagueRankRowDto> findLeagueRanking(
             long leagueId,
             int page
     ){
@@ -40,7 +40,7 @@ public class UserLeagueQueryService {
     }
 
     @Transactional(readOnly = true)
-    public SliceResponse<LeagueRankRow> findLeagueRankingByUser(
+    public SliceResponse<LeagueRankRowDto> findLeagueRankingByUser(
             long userId,
             int page
     ){

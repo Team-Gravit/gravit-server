@@ -3,9 +3,10 @@ package gravit.code.user.support;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.repository.UserRepository;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Random;
 
 /**
  * handle 길이는 8 자리로 fix (저장은 @ 미 포함)

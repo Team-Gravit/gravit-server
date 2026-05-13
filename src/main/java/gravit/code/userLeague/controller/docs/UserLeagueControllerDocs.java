@@ -3,7 +3,7 @@ package gravit.code.userLeague.controller.docs;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
-import gravit.code.userLeague.dto.response.LeagueRankRow;
+import gravit.code.userLeague.dto.internal.LeagueRankRowDto;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,7 +52,7 @@ public interface UserLeagueControllerDocs {
                             description = "조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = LeagueRankRow.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = LeagueRankRowDto.class))
                             )
                     ),
                     @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
@@ -61,7 +61,7 @@ public interface UserLeagueControllerDocs {
             }
     )
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")
-    ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRanking(
+    ResponseEntity<SliceResponse<LeagueRankRowDto>> getLeagueRanking(
             @PathVariable("leagueId") Long leagueId,
             @PathVariable("pageNum") int pageNum
     );
@@ -89,7 +89,7 @@ public interface UserLeagueControllerDocs {
                             description = "조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = LeagueRankRow.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = LeagueRankRowDto.class))
                             )
                     ),
                     @ApiResponse(responseCode = "401", description = "인증 실패"),
@@ -98,7 +98,7 @@ public interface UserLeagueControllerDocs {
             }
     )
     @GetMapping("/user-leagues/page/{pageNum}")
-    ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRankingByUser(
+    ResponseEntity<SliceResponse<LeagueRankRowDto>> getLeagueRankingByUser(
             @PathVariable("pageNum") int pageNum,
             @AuthenticationPrincipal LoginUser loginUser
     );

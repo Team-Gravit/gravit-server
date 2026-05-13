@@ -5,7 +5,7 @@ import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.answer.fixture.AnswerFixture;
 import gravit.code.answer.repository.AnswerRepository;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class AnswerQueryServiceUnitTest {
         @Test
         void 주관식_문제의_정답_Map을_반환한다() {
             // given
-            ProblemDetail subjective = new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
+            ProblemDetailResponse subjective = new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
             Answer answer = AnswerFixture.기본_정답(1L);
 
             when(answerRepository.findByProblemIdIn(List.of(1L))).thenReturn(List.of(answer));
@@ -55,7 +55,7 @@ class AnswerQueryServiceUnitTest {
         @Test
         void 객관식_문제만_있으면_빈_Map을_반환한다() {
             // given
-            ProblemDetail objective = new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
+            ProblemDetailResponse objective = new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
 
             // when
             Map<Long, AnswerResponse> result = answerQueryService.getAnswersInProblem(List.of(objective));
@@ -68,8 +68,8 @@ class AnswerQueryServiceUnitTest {
         @Test
         void 혼합_문제_목록에서_주관식만_필터링하여_정답을_반환한다() {
             // given
-            ProblemDetail subjective = new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
-            ProblemDetail objective = new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
+            ProblemDetailResponse subjective = new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
+            ProblemDetailResponse objective = new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
             Answer answer = AnswerFixture.기본_정답(1L);
 
             when(answerRepository.findByProblemIdIn(List.of(1L))).thenReturn(List.of(answer));

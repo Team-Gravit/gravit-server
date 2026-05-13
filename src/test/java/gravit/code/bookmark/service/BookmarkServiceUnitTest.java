@@ -4,10 +4,9 @@ import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
 import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
 import gravit.code.bookmark.fixture.BookmarkFixture;
 import gravit.code.bookmark.repository.BookmarkRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_DUPLICATED;
+import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -65,7 +66,7 @@ class BookmarkServiceUnitTest {
             assertThatThrownBy(() -> bookmarkService.addBookmark(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.BOOKMARK_DUPLICATED);
+                    .isEqualTo(BOOKMARK_DUPLICATED);
         }
     }
 
@@ -100,7 +101,7 @@ class BookmarkServiceUnitTest {
             assertThatThrownBy(() -> bookmarkService.deleteBookmark(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.BOOKMARK_NOT_FOUND);
+                    .isEqualTo(BOOKMARK_NOT_FOUND);
         }
     }
 
@@ -148,14 +149,14 @@ class BookmarkServiceUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            List<ProblemDetail> expected = List.of(
-                    new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", true)
+            List<ProblemDetailResponse> expected = List.of(
+                    new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", true)
             );
 
             when(bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId)).thenReturn(expected);
 
             // when
-            List<ProblemDetail> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
+            List<ProblemDetailResponse> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
 
             // then
             assertSoftly(softly -> {
@@ -173,7 +174,7 @@ class BookmarkServiceUnitTest {
             when(bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId)).thenReturn(List.of());
 
             // when
-            List<ProblemDetail> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
+            List<ProblemDetailResponse> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
 
             // then
             assertThat(result).isEmpty();

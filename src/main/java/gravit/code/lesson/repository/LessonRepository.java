@@ -1,8 +1,8 @@
 package gravit.code.lesson.repository;
 
-import gravit.code.learning.dto.common.LearningIds;
+import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.lesson.domain.Lesson;
-import gravit.code.lesson.dto.response.LessonSummary;
+import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,13 +13,13 @@ import java.util.Optional;
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     @Query("""
-        SELECT new gravit.code.learning.dto.common.LearningIds(c.id, u.id, l.id)
+        SELECT new gravit.code.learning.dto.internal.LearningIdsDto(c.id, u.id, l.id)
         FROM Lesson l
         INNER JOIN Unit u ON u.id = l.unitId
         INNER JOIN Chapter c ON c.id = u.chapterId
         WHERE l.id = :lessonId
     """)
-    Optional<LearningIds> findLearningIdsByLessonId(@Param("lessonId")long lessonId);
+    Optional<LearningIdsDto> findLearningIdsByLessonId(@Param("lessonId")long lessonId);
 
     @Query("""
         SELECT COUNT(l.id)
@@ -39,7 +39,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     int countTotalLessonByUnitId(@Param("unitId") long unitId);
 
     @Query("""
-        SELECT new gravit.code.lesson.dto.response.LessonSummary(
+        SELECT new gravit.code.lesson.dto.response.LessonSummaryResponse(
           l.id,
           l.title,
           (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id),
@@ -49,7 +49,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
         LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id AND ls.userId = :userId
         WHERE l.unitId = :unitId
   """)
-    List<LessonSummary> findAllLessonSummaryByUnitId(
+    List<LessonSummaryResponse> findAllLessonSummaryByUnitId(
             @Param("unitId") long unitId,
             @Param("userId") long userId
     );

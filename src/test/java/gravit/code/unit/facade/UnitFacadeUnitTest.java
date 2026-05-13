@@ -1,10 +1,10 @@
 package gravit.code.unit.facade;
 
-import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.learning.service.LearningProgressRateService;
-import gravit.code.unit.dto.response.UnitDetailResponse;
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitPageResponse;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -44,27 +44,27 @@ class UnitFacadeUnitTest {
             // given
             long userId = 1L;
             long chapterId = 1L;
-            ChapterSummary chapterSummary = new ChapterSummary(chapterId, "운영체제", "운영체제 기초 개념");
-            List<UnitSummary> unitSummaries = List.of(
-                    new UnitSummary(1L, "프로세스", "프로세스 개념"),
-                    new UnitSummary(2L, "스레드", "스레드 개념")
+            ChapterSummaryResponse chapterSummaryResponse = new ChapterSummaryResponse(chapterId, "운영체제", "운영체제 기초 개념");
+            List<UnitSummaryResponse> unitSummaries = List.of(
+                    new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"),
+                    new UnitSummaryResponse(2L, "스레드", "스레드 개념")
             );
 
-            when(chapterQueryService.getChapterById(chapterId)).thenReturn(chapterSummary);
+            when(chapterQueryService.getChapterSummary(chapterId)).thenReturn(chapterSummaryResponse);
             when(unitQueryService.getAllUnitSummaryByChapterId(chapterId)).thenReturn(unitSummaries);
             when(learningProgressRateService.getUnitProgress(1L, userId)).thenReturn(80.0);
             when(learningProgressRateService.getUnitProgress(2L, userId)).thenReturn(0.0);
 
             // when
-            UnitDetailResponse result = unitFacade.getAllUnitInChapter(userId, chapterId);
+            UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapterId);
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.chapterSummary().title()).isEqualTo("운영체제");
-                softly.assertThat(result.unitDetails()).hasSize(2);
-                softly.assertThat(result.unitDetails().get(0).unitSummaries().title()).isEqualTo("프로세스");
-                softly.assertThat(result.unitDetails().get(0).progressRate()).isEqualTo(80.0);
-                softly.assertThat(result.unitDetails().get(1).progressRate()).isEqualTo(0.0);
+                softly.assertThat(result.chapterSummaryResponse().title()).isEqualTo("운영체제");
+                softly.assertThat(result.unitDetailResponses()).hasSize(2);
+                softly.assertThat(result.unitDetailResponses().get(0).unitSummaryResponse().title()).isEqualTo("프로세스");
+                softly.assertThat(result.unitDetailResponses().get(0).progressRate()).isEqualTo(80.0);
+                softly.assertThat(result.unitDetailResponses().get(1).progressRate()).isEqualTo(0.0);
             });
         }
 
@@ -73,18 +73,18 @@ class UnitFacadeUnitTest {
             // given
             long userId = 1L;
             long chapterId = 1L;
-            ChapterSummary chapterSummary = new ChapterSummary(chapterId, "운영체제", "운영체제 기초 개념");
+            ChapterSummaryResponse chapterSummaryResponse = new ChapterSummaryResponse(chapterId, "운영체제", "운영체제 기초 개념");
 
-            when(chapterQueryService.getChapterById(chapterId)).thenReturn(chapterSummary);
+            when(chapterQueryService.getChapterSummary(chapterId)).thenReturn(chapterSummaryResponse);
             when(unitQueryService.getAllUnitSummaryByChapterId(chapterId)).thenReturn(List.of());
 
             // when
-            UnitDetailResponse result = unitFacade.getAllUnitInChapter(userId, chapterId);
+            UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapterId);
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.chapterSummary().title()).isEqualTo("운영체제");
-                softly.assertThat(result.unitDetails()).isEmpty();
+                softly.assertThat(result.chapterSummaryResponse().title()).isEqualTo("운영체제");
+                softly.assertThat(result.unitDetailResponses()).isEmpty();
             });
         }
     }

@@ -1,13 +1,12 @@
 package gravit.code.mission.service;
 
 import gravit.code.global.event.badge.MissionCompletedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.mission.dto.response.MissionSummary;
+import gravit.code.mission.dto.response.MissionSummaryResponse;
 import gravit.code.mission.fixture.MissionFixture;
 import gravit.code.mission.repository.MissionRepository;
 import gravit.code.user.domain.Role;
@@ -28,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.MISSION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,18 +59,18 @@ class MissionServiceUnitTest {
 
     @Nested
     @DisplayName("미션 요약을 조회할 때")
-    class GetMissionSummary {
+    class GetMissionSummaryResponse {
 
         @Test
         void 미션이_존재하면_요약을_반환한다() {
             // given
             long userId = 1L;
-            MissionSummary summary = new MissionSummary(MissionType.COMPLETE_LESSON_ONE, false);
+            MissionSummaryResponse summary = new MissionSummaryResponse(MissionType.COMPLETE_LESSON_ONE, false);
 
             when(missionRepository.findMissionSummaryByUserId(userId)).thenReturn(Optional.of(summary));
 
             // when
-            MissionSummary result = missionService.getMissionSummary(userId);
+            MissionSummaryResponse result = missionService.getMissionSummary(userId);
 
             // then
             assertThat(result.missionType()).isEqualTo(MissionType.COMPLETE_LESSON_ONE);
@@ -87,7 +87,7 @@ class MissionServiceUnitTest {
             assertThatThrownBy(() -> missionService.getMissionSummary(userId))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.MISSION_NOT_FOUND);
+                    .isEqualTo(MISSION_NOT_FOUND);
         }
     }
 
@@ -165,7 +165,7 @@ class MissionServiceUnitTest {
             assertThatThrownBy(() -> missionService.handleLessonMission(userId, 1L, 120, 80))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.MISSION_NOT_FOUND);
+                    .isEqualTo(MISSION_NOT_FOUND);
         }
 
         @Test
@@ -293,7 +293,7 @@ class MissionServiceUnitTest {
             assertThatThrownBy(() -> missionService.handleFollowMission(event))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.MISSION_NOT_FOUND);
+                    .isEqualTo(MISSION_NOT_FOUND);
         }
 
         @Test

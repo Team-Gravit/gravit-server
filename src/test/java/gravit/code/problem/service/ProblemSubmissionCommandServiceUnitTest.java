@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_SUBMISSION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -139,7 +140,9 @@ class ProblemSubmissionCommandServiceUnitTest {
 
             // when & then
             assertThatThrownBy(() -> problemSubmissionCommandService.saveProblemSubmissions(userId, requests, false))
-                    .isInstanceOf(RestApiException.class);
+                    .isInstanceOf(RestApiException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(PROBLEM_SUBMISSION_NOT_FOUND);
         }
     }
 

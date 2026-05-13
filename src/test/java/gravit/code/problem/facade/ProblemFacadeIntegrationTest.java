@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -69,7 +70,7 @@ class ProblemFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.unitSummary().title()).isEqualTo("스택/큐");
+                softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("스택/큐");
                 softly.assertThat(result.problems()).hasSize(1);
                 softly.assertThat(result.totalProblems()).isEqualTo(1);
                 softly.assertThat(result.problems().get(0).problemType()).isEqualTo(ProblemType.SUBJECTIVE);
@@ -93,7 +94,7 @@ class ProblemFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.unitSummary().title()).isEqualTo("연결리스트");
+                softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("연결리스트");
                 softly.assertThat(result.problems()).hasSize(1);
                 softly.assertThat(result.totalProblems()).isEqualTo(1);
                 softly.assertThat(result.problems().get(0).problemType()).isEqualTo(ProblemType.OBJECTIVE);
@@ -114,7 +115,7 @@ class ProblemFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.unitSummary().title()).isEqualTo("연결리스트");
+                softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("연결리스트");
                 softly.assertThat(result.problems()).isEmpty();
                 softly.assertThat(result.totalProblems()).isEqualTo(0);
             });
@@ -128,7 +129,9 @@ class ProblemFacadeIntegrationTest {
 
             // when & then
             assertThatThrownBy(() -> problemFacade.getAllProblemInLesson(userId, nonExistentLessonId))
-                    .isInstanceOf(RestApiException.class);
+                    .isInstanceOf(RestApiException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(UNIT_NOT_FOUND);
         }
     }
 }

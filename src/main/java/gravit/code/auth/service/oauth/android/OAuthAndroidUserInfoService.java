@@ -1,7 +1,5 @@
 package gravit.code.auth.service.oauth.android;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.*;
-
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.infrastructure.config.OAuthAndroidProps;
 import gravit.code.auth.strategy.android.AndroidUserInfoFactory;
@@ -14,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.*;
 
 @Service
 @RequiredArgsConstructor

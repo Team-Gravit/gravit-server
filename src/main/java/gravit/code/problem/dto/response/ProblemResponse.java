@@ -64,32 +64,32 @@ public record ProblemResponse(
 
 ) {
         public static ProblemResponse createSubjectiveProblem(
-                ProblemDetail problemDetail,
+                ProblemDetailResponse problemDetailResponse,
                 AnswerResponse answerResponse
         ) {
                 return ProblemResponse.builder()
-                        .problemId(problemDetail.id())
-                        .problemType(problemDetail.problemType())
-                        .instruction(problemDetail.instruction())
-                        .content(problemDetail.content())
+                        .problemId(problemDetailResponse.id())
+                        .problemType(problemDetailResponse.problemType())
+                        .instruction(problemDetailResponse.instruction())
+                        .content(problemDetailResponse.content())
                         .answerResponse(answerResponse)
                         .options(null)
-                        .isBookmarked(problemDetail.isBookmarked())
+                        .isBookmarked(problemDetailResponse.isBookmarked())
                         .build();
         }
 
         public static ProblemResponse createObjectiveProblem(
-                ProblemDetail problemDetail,
+                ProblemDetailResponse problemDetailResponse,
                 List<OptionResponse> options
         ) {
                 return ProblemResponse.builder()
-                        .problemId(problemDetail.id())
-                        .problemType(problemDetail.problemType())
-                        .instruction(problemDetail.instruction())
-                        .content(problemDetail.content())
+                        .problemId(problemDetailResponse.id())
+                        .problemType(problemDetailResponse.problemType())
+                        .instruction(problemDetailResponse.instruction())
+                        .content(problemDetailResponse.content())
                         .answerResponse(null)
                         .options(options)
-                        .isBookmarked(problemDetail.isBookmarked())
+                        .isBookmarked(problemDetailResponse.isBookmarked())
                         .build();
         }
 

@@ -1,6 +1,6 @@
 package gravit.code.lesson.dto.response;
 
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.user.dto.response.UserLevelResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -24,17 +24,17 @@ public record LessonSubmissionSaveResponse(
 
         @Schema(description = "유닛 요약 정보")
         @NotNull
-        UnitSummary unitSummary
+        UnitSummaryResponse unitSummaryResponse
 ) {
     public static LessonSubmissionSaveResponse create(
             String leagueName,
             UserLevelResponse userLevelResponse,
-            UnitSummary unitSummary
+            UnitSummaryResponse unitSummaryResponse
     ){
         return LessonSubmissionSaveResponse.builder()
                 .leagueName(leagueName)
                 .userLevelResponse(userLevelResponse)
-                .unitSummary(unitSummary)
+                .unitSummaryResponse(unitSummaryResponse)
                 .build();
     }
 }

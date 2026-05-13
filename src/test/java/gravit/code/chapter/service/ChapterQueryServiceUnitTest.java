@@ -1,8 +1,7 @@
 package gravit.code.chapter.service;
 
-import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.repository.ChapterRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.CHAPTER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -35,14 +35,14 @@ class ChapterQueryServiceTest {
         @Test
         void 성공한다() {
             // given
-            List<ChapterSummary> expected = List.of(
-                    new ChapterSummary(1L, "운영체제", "운영체제 기초 개념"),
-                    new ChapterSummary(2L, "네트워크", "네트워크 기초 개념")
+            List<ChapterSummaryResponse> expected = List.of(
+                    new ChapterSummaryResponse(1L, "운영체제", "운영체제 기초 개념"),
+                    new ChapterSummaryResponse(2L, "네트워크", "네트워크 기초 개념")
             );
             when(chapterRepository.findAllChapterSummary()).thenReturn(expected);
 
             // when
-            List<ChapterSummary> result = chapterQueryService.getAllChapter();
+            List<ChapterSummaryResponse> result = chapterQueryService.getAllChapter();
 
             // then
             assertThat(result).hasSize(2);
@@ -55,7 +55,7 @@ class ChapterQueryServiceTest {
             when(chapterRepository.findAllChapterSummary()).thenReturn(List.of());
 
             // when
-            List<ChapterSummary> result = chapterQueryService.getAllChapter();
+            List<ChapterSummaryResponse> result = chapterQueryService.getAllChapter();
 
             // then
             assertThat(result).isEmpty();
@@ -70,12 +70,12 @@ class ChapterQueryServiceTest {
         void 성공한다() {
             // given
             long chapterId = 1L;
-            ChapterSummary expected = new ChapterSummary(chapterId, "운영체제", "운영체제 기초 개념");
+            ChapterSummaryResponse expected = new ChapterSummaryResponse(chapterId, "운영체제", "운영체제 기초 개념");
             when(chapterRepository.findChapterSummaryByChapterId(chapterId))
                     .thenReturn(Optional.of(expected));
 
             // when
-            ChapterSummary result = chapterQueryService.getChapterById(chapterId);
+            ChapterSummaryResponse result = chapterQueryService.getChapterSummary(chapterId);
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -89,10 +89,10 @@ class ChapterQueryServiceTest {
                     .thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> chapterQueryService.getChapterById(chapterId))
+            assertThatThrownBy(() -> chapterQueryService.getChapterSummary(chapterId))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(CustomErrorCode.CHAPTER_NOT_FOUND);
+                    .isEqualTo(CHAPTER_NOT_FOUND);
         }
     }
 }

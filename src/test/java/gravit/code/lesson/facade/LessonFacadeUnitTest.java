@@ -1,20 +1,20 @@
 package gravit.code.lesson.facade;
 
 import gravit.code.bookmark.service.BookmarkService;
-import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
-import gravit.code.learning.dto.common.LearningIds;
+import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
+import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningService;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
-import gravit.code.lesson.dto.response.LessonSummary;
+import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.service.LessonQueryService;
 import gravit.code.lesson.service.LessonSubmissionCommandService;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.problem.dto.request.ProblemSubmissionRequest;
 import gravit.code.problem.service.ProblemSubmissionCommandService;
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
@@ -86,12 +86,12 @@ class LessonFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            UnitSummary unitSummary = new UnitSummary(unitId, "프로세스", "프로세스 개념");
-            List<LessonSummary> lessons = List.of(
-                    new LessonSummary(1L, "레슨1", 5, true)
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "프로세스", "프로세스 개념");
+            List<LessonSummaryResponse> lessons = List.of(
+                    new LessonSummaryResponse(1L, "레슨1", 5, true)
             );
 
-            when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummary);
+            when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummaryResponse);
             when(lessonQueryService.getAllLessonInUnit(userId, unitId)).thenReturn(lessons);
             when(bookmarkService.checkBookmarkedProblemExists(userId, unitId)).thenReturn(true);
             when(wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unitId)).thenReturn(false);
@@ -101,7 +101,7 @@ class LessonFacadeUnitTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.unitSummary().title()).isEqualTo("프로세스");
+                softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("프로세스");
                 softly.assertThat(result.lessonSummaries()).hasSize(1);
                 softly.assertThat(result.bookmarkAccessible()).isTrue();
                 softly.assertThat(result.wrongAnsweredNoteAccessible()).isFalse();
@@ -113,9 +113,9 @@ class LessonFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            UnitSummary unitSummary = new UnitSummary(unitId, "프로세스", "프로세스 개념");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "프로세스", "프로세스 개념");
 
-            when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummary);
+            when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummaryResponse);
             when(lessonQueryService.getAllLessonInUnit(userId, unitId)).thenReturn(List.of());
             when(bookmarkService.checkBookmarkedProblemExists(userId, unitId)).thenReturn(false);
             when(wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unitId)).thenReturn(false);
@@ -143,11 +143,11 @@ class LessonFacadeUnitTest {
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummary(1L, "프로세스", "프로세스 개념"));
+            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
             when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
                     .thenReturn(UserLevelResponse.create(1, 20));
-            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIds(1L, 1L, 1L));
+            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
 
             // when
@@ -172,11 +172,11 @@ class LessonFacadeUnitTest {
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(false);
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummary(1L, "프로세스", "프로세스 개념"));
+            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
             when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(false)))
                     .thenReturn(UserLevelResponse.create(1, 0));
-            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIds(1L, 1L, 1L));
+            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(1, 1));
 
             // when

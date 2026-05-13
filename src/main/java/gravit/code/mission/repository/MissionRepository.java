@@ -1,7 +1,7 @@
 package gravit.code.mission.repository;
 
 import gravit.code.mission.domain.Mission;
-import gravit.code.mission.dto.response.MissionSummary;
+import gravit.code.mission.dto.response.MissionSummaryResponse;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +20,9 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
     Page<Mission> findAll(Pageable pageable);
 
     @Query("""
-        SELECT new gravit.code.mission.dto.response.MissionSummary(m.missionType, m.isCompleted)
+        SELECT new gravit.code.mission.dto.response.MissionSummaryResponse(m.missionType, m.isCompleted)
         FROM Mission m
         WHERE m.userId = :userId
     """)
-    Optional<MissionSummary> findMissionSummaryByUserId(@Param("userId") long userId);
+    Optional<MissionSummaryResponse> findMissionSummaryByUserId(@Param("userId") long userId);
 }

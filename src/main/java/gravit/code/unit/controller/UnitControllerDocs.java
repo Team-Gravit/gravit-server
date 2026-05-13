@@ -2,7 +2,7 @@ package gravit.code.unit.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
-import gravit.code.unit.dto.response.UnitDetailResponse;
+import gravit.code.unit.dto.response.UnitPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -35,7 +35,7 @@ public interface UnitControllerDocs {
             )
     })
     @GetMapping("/{chapterId}")
-    ResponseEntity<UnitDetailResponse> getAllUnitInChapter(
+    ResponseEntity<UnitPageResponse> getAllUnitInChapter(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("chapterId") Long chapterId
     );

@@ -3,7 +3,7 @@ package gravit.code.userLeague.controller;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.userLeague.controller.docs.UserLeagueControllerDocs;
-import gravit.code.userLeague.dto.response.LeagueRankRow;
+import gravit.code.userLeague.dto.internal.LeagueRankRowDto;
 import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import gravit.code.userLeague.service.UserLeagueQueryService;
 import lombok.RequiredArgsConstructor;
@@ -32,21 +32,21 @@ public class UserLeagueController implements UserLeagueControllerDocs {
     }
 
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")
-    public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRanking(
+    public ResponseEntity<SliceResponse<LeagueRankRowDto>> getLeagueRanking(
             @PathVariable("leagueId") Long leagueId,
             @PathVariable("pageNum") int pageNum
     ){
-        SliceResponse<LeagueRankRow> sliceResponse = userLeagueQueryService.findLeagueRanking(leagueId, pageNum);
+        SliceResponse<LeagueRankRowDto> sliceResponse = userLeagueQueryService.findLeagueRanking(leagueId, pageNum);
         return ResponseEntity.ok(sliceResponse);
     }
 
     @GetMapping("/user-leagues/page/{pageNum}")
-    public ResponseEntity<SliceResponse<LeagueRankRow>> getLeagueRankingByUser(
+    public ResponseEntity<SliceResponse<LeagueRankRowDto>> getLeagueRankingByUser(
             @PathVariable("pageNum") int pageNum,
             @AuthenticationPrincipal LoginUser loginUser
     ){
         Long userId = loginUser.getId();
-        SliceResponse<LeagueRankRow> sliceResponse = userLeagueQueryService.findLeagueRankingByUser(userId, pageNum);
+        SliceResponse<LeagueRankRowDto> sliceResponse = userLeagueQueryService.findLeagueRankingByUser(userId, pageNum);
         return ResponseEntity.ok(sliceResponse);
     }
 }

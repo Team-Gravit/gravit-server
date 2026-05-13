@@ -1,7 +1,7 @@
 package gravit.code.chapter.facade;
 
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
-import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.global.annotation.Facade;
 import gravit.code.learning.service.LearningProgressRateService;
@@ -19,7 +19,7 @@ public class ChapterFacade {
 
     @Transactional(readOnly = true)
     public List<ChapterDetailResponse> getAllChapter(long userId){
-        List<ChapterSummary> chapters = chapterQueryService.getAllChapter();
+        List<ChapterSummaryResponse> chapters = chapterQueryService.getAllChapter();
 
         return chapters.stream()
                 .map(chapter -> {

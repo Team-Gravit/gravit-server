@@ -5,11 +5,12 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.mission.domain.Mission;
-import gravit.code.mission.repository.MissionRepository;
 import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.domain.RandomMissionGenerator;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.mission.dto.response.MissionSummary;
+import gravit.code.mission.dto.response.MissionDetailResponse;
+import gravit.code.mission.dto.response.MissionSummaryResponse;
+import gravit.code.mission.repository.MissionRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,8 @@ public class MissionService {
         }
     }
 
-    public MissionSummary getMissionSummary(long userId){
+    @Transactional(readOnly = true)
+    public MissionSummaryResponse getMissionSummary(long userId){
         return missionRepository.findMissionSummaryByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
     }
@@ -126,6 +128,14 @@ public class MissionService {
         missionRepository.save(mission);
     }
 
+    @Transactional(readOnly = true)
+    public MissionDetailResponse getMissionDetail(long userId) {
+        Mission mission = missionRepository.findByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
+
+        return MissionDetailResponse.from(mission);
+    }
+
     private void awardMissionXp(
             long userId,
             int awardXp
@@ -136,5 +146,6 @@ public class MissionService {
         user.getLevel().updateXp(awardXp);
         userRepository.save(user);
     }
+
 
 }

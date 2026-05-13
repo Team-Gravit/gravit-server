@@ -1,6 +1,6 @@
 package gravit.code.problem.service;
 
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class ProblemQueryService {
     private final ProblemRepository problemRepository;
 
     @Transactional(readOnly = true)
-    public List<ProblemDetail> getAllProblemInLesson(
+    public List<ProblemDetailResponse> getAllProblemInLesson(
         long userId,
         long lessonId
     ){

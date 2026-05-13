@@ -1,6 +1,5 @@
 package gravit.code.lesson.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
@@ -16,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND;
 import static gravit.code.lesson.fixture.LessonSubmissionFixture.기본_레슨_제출;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,7 +83,7 @@ class LessonSubmissionCommandServiceUnitTest {
             assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request, true))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(CustomErrorCode.LESSON_NOT_FOUND);
+                    .isEqualTo(LESSON_NOT_FOUND);
         }
 
         @Test
@@ -98,7 +99,7 @@ class LessonSubmissionCommandServiceUnitTest {
             assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request, false))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND);
+                    .isEqualTo(LESSON_SUBMISSION_NOT_FOUND);
         }
     }
 }

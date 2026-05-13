@@ -1,7 +1,7 @@
 package gravit.code.userLeague.repository.custom;
 
 import gravit.code.global.dto.response.SliceResponse;
-import gravit.code.userLeague.dto.response.LeagueRankRow;
+import gravit.code.userLeague.dto.internal.LeagueRankRowDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -21,8 +21,8 @@ public class LeagueRankingQueryRepositoryImpl implements LeagueRankingQueryRepos
 
     private static final int PAGE_SIZE = 10;
 
-    private static final RowMapper<LeagueRankRow> RANK_ROW_MAPPER = (rs, i) ->
-            new LeagueRankRow(
+    private static final RowMapper<LeagueRankRowDto> RANK_ROW_MAPPER = (rs, i) ->
+            new LeagueRankRowDto(
                     rs.getInt("rank"),
                     rs.getLong("user_id"),
                     rs.getInt("lp"),
@@ -42,13 +42,13 @@ public class LeagueRankingQueryRepositoryImpl implements LeagueRankingQueryRepos
         );
     }
 
-    private SliceResponse<LeagueRankRow> fetchSlice(
+    private SliceResponse<LeagueRankRowDto> fetchSlice(
             String sql,
             Map<String, Object> params
     ){
-        List<LeagueRankRow> rows = jdbcTemplate.query(sql, params, RANK_ROW_MAPPER);
+        List<LeagueRankRowDto> rows = jdbcTemplate.query(sql, params, RANK_ROW_MAPPER);
         boolean hasNextPage = rows.size() > PAGE_SIZE;
-        List<LeagueRankRow> contents = hasNextPage ? rows.subList(0, PAGE_SIZE) : rows;
+        List<LeagueRankRowDto> contents = hasNextPage ? rows.subList(0, PAGE_SIZE) : rows;
 
         if(contents.isEmpty()){
             return SliceResponse.empty();
@@ -58,7 +58,7 @@ public class LeagueRankingQueryRepositoryImpl implements LeagueRankingQueryRepos
     }
 
     @Override
-    public SliceResponse<LeagueRankRow> findLeagueRanking(
+    public SliceResponse<LeagueRankRowDto> findLeagueRanking(
             long leagueId,
             int safePage
     ) {
@@ -68,7 +68,7 @@ public class LeagueRankingQueryRepositoryImpl implements LeagueRankingQueryRepos
     }
 
     @Override
-    public SliceResponse<LeagueRankRow> findLeagueRankingByUser(
+    public SliceResponse<LeagueRankRowDto> findLeagueRankingByUser(
             long userId,
             int safePage
     ) {

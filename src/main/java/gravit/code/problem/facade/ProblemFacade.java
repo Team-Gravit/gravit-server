@@ -2,11 +2,11 @@ package gravit.code.problem.facade;
 
 import gravit.code.global.annotation.Facade;
 import gravit.code.lesson.dto.response.LessonResponse;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.dto.response.ProblemResponse;
 import gravit.code.problem.factory.ProblemFactory;
 import gravit.code.problem.service.ProblemQueryService;
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,14 +27,14 @@ public class ProblemFacade {
             long userId,
             long lessonId
     ){
-        UnitSummary unitSummary = unitQueryService.getUnitSummaryByLessonId(lessonId);
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(lessonId);
 
-        List<ProblemDetail> problemDetails = problemQueryService.getAllProblemInLesson(userId, lessonId);
+        List<ProblemDetailResponse> problemDetailResponses = problemQueryService.getAllProblemInLesson(userId, lessonId);
 
-        List<ProblemResponse> problemResponses = problemFactory.create(problemDetails);
+        List<ProblemResponse> problemResponses = problemFactory.create(problemDetailResponses);
 
         return LessonResponse.of(
-                unitSummary,
+                unitSummaryResponse,
                 problemResponses
         );
     }

@@ -1,6 +1,6 @@
 package gravit.code.friend.repository.strategy;
 
-import gravit.code.friend.dto.SearchPlanDto;
+import gravit.code.friend.dto.internal.SearchPlanDto;
 
 public interface FriendsSearchStrategy {
 

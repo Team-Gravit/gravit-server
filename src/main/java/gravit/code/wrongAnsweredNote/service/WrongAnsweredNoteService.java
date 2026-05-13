@@ -1,6 +1,6 @@
 package gravit.code.wrongAnsweredNote.service;
 
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.wrongAnsweredNote.domain.WrongAnsweredNote;
 import gravit.code.wrongAnsweredNote.repository.WrongAnsweredNoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class WrongAnsweredNoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProblemDetail> getAllWrongAnsweredProblemInUnit(
+    public List<ProblemDetailResponse> getAllWrongAnsweredProblemInUnit(
             long userId,
             long unitId
     ) {

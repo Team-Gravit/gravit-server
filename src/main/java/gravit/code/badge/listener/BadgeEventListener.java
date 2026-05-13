@@ -1,8 +1,8 @@
 package gravit.code.badge.listener;
 
-import gravit.code.badge.dto.MissionCompleteDto;
-import gravit.code.badge.dto.PlanetCompletionDto;
-import gravit.code.badge.dto.QualifiedSolveCountDto;
+import gravit.code.badge.dto.internal.MissionCompleteDto;
+import gravit.code.badge.dto.internal.PlanetCompletionDto;
+import gravit.code.badge.dto.internal.QualifiedSolveCountDto;
 import gravit.code.badge.service.BadgeGrantService;
 import gravit.code.badge.service.ProjectionService;
 import gravit.code.global.event.LessonCompletedEvent;

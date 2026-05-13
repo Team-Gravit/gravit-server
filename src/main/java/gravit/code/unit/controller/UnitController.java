@@ -1,7 +1,7 @@
 package gravit.code.unit.controller;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.unit.dto.response.UnitDetailResponse;
+import gravit.code.unit.dto.response.UnitPageResponse;
 import gravit.code.unit.facade.UnitFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class UnitController implements UnitControllerDocs {
     private final UnitFacade unitFacade;
 
     @GetMapping("/{chapterId}")
-    public ResponseEntity<UnitDetailResponse> getAllUnitInChapter(
+    public ResponseEntity<UnitPageResponse> getAllUnitInChapter(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("chapterId") Long chapterId
     ) {

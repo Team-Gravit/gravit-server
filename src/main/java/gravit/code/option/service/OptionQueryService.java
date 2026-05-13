@@ -3,7 +3,7 @@ package gravit.code.option.service;
 import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.option.repository.OptionRepository;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +20,15 @@ public class OptionQueryService {
 
     private final OptionRepository optionRepository;
 
-    public Map<Long, List<OptionResponse>> getOptionsInProblem(List<ProblemDetail> problemDetails) {
-        List<ProblemDetail> objectiveProblems = problemDetails.stream()
+    public Map<Long, List<OptionResponse>> getOptionsInProblem(List<ProblemDetailResponse> problemDetailResponses) {
+        List<ProblemDetailResponse> objectiveProblems = problemDetailResponses.stream()
                 .filter(p -> p.problemType() == ProblemType.OBJECTIVE)
                 .toList();
 
         Map<Long, List<OptionResponse>> optionMap;
         if(!objectiveProblems.isEmpty()){
             List<Long> objectiveProblemIds = objectiveProblems.stream()
-                    .map(ProblemDetail::id)
+                    .map(ProblemDetailResponse::id)
                     .toList();
 
             List<OptionResponse> optionResponses = optionRepository.findAllByProblemIdIn(objectiveProblemIds);

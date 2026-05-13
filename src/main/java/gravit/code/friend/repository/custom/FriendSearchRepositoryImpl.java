@@ -1,15 +1,16 @@
 package gravit.code.friend.repository.custom;
 
-import gravit.code.friend.dto.SearchPlanDto;
-import gravit.code.friend.dto.SearchUserDto;
+import gravit.code.friend.dto.internal.SearchPlanDto;
+import gravit.code.friend.dto.internal.SearchUserDto;
 import gravit.code.friend.repository.strategy.FriendsSearchFactory;
 import gravit.code.global.dto.response.SliceResponse;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Repository

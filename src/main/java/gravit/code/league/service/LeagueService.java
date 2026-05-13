@@ -3,8 +3,8 @@ package gravit.code.league.service;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
-import gravit.code.league.dto.CurrentSeasonDto;
-import gravit.code.league.dto.LastSeasonPopupDto;
+import gravit.code.league.dto.internal.CurrentSeasonDto;
+import gravit.code.league.dto.internal.LastSeasonPopupDto;
 import gravit.code.league.dto.response.LeagueHomeResponse;
 import gravit.code.league.dto.response.LeagueResponse;
 import gravit.code.league.repository.LeagueRepository;
@@ -19,7 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.*;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service

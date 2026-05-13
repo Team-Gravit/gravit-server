@@ -3,10 +3,10 @@ package gravit.code.bookmark.facade;
 import gravit.code.bookmark.service.BookmarkService;
 import gravit.code.global.annotation.Facade;
 import gravit.code.problem.dto.response.BookmarkedProblemResponse;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.dto.response.ProblemResponse;
 import gravit.code.problem.factory.ProblemFactory;
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,14 +27,14 @@ public class BookmarkFacade {
             long userId,
             long unitId
     ){
-        UnitSummary unitSummary = unitQueryService.getUnitSummaryByUnitId(unitId);
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByUnitId(unitId);
 
-        List<ProblemDetail> problemDetails = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
+        List<ProblemDetailResponse> problemDetailResponses = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
 
-        List<ProblemResponse> problemResponses = problemFactory.create(problemDetails);
+        List<ProblemResponse> problemResponses = problemFactory.create(problemDetailResponses);
 
         return BookmarkedProblemResponse.of(
-                unitSummary,
+                unitSummaryResponse,
                 problemResponses
         );
     }

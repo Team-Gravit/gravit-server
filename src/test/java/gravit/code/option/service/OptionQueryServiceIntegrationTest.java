@@ -4,7 +4,7 @@ import gravit.code.option.domain.Option;
 import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.option.repository.OptionRepository;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.support.TCSpringBootTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,7 +40,7 @@ class OptionQueryServiceIntegrationTest {
             long problemId = 1L;
             optionRepository.save(Option.create("FIFO 구조이다.", "큐는 First In First Out 구조입니다.", true, problemId));
             optionRepository.save(Option.create("LIFO 구조이다.", "이것은 스택의 특성입니다.", false, problemId));
-            ProblemDetail objective = new ProblemDetail(problemId, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
+            ProblemDetailResponse objective = new ProblemDetailResponse(problemId, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
 
             // when
             Map<Long, List<OptionResponse>> result = optionQueryService.getOptionsInProblem(List.of(objective));
@@ -59,9 +59,9 @@ class OptionQueryServiceIntegrationTest {
             optionRepository.save(Option.create("FIFO 구조이다.", "큐 해설", true, 1L));
             optionRepository.save(Option.create("LIFO 구조이다.", "스택 해설", true, 2L));
             optionRepository.save(Option.create("오답 선지", "오답 해설", false, 2L));
-            List<ProblemDetail> problems = List.of(
-                    new ProblemDetail(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false),
-                    new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "스택의 특성은?", false)
+            List<ProblemDetailResponse> problems = List.of(
+                    new ProblemDetailResponse(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false),
+                    new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "스택의 특성은?", false)
             );
 
             // when
@@ -78,7 +78,7 @@ class OptionQueryServiceIntegrationTest {
         @Test
         void 주관식_문제만_있으면_빈_Map을_반환한다() {
             // given
-            ProblemDetail subjective = new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
+            ProblemDetailResponse subjective = new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
 
             // when
             Map<Long, List<OptionResponse>> result = optionQueryService.getOptionsInProblem(List.of(subjective));
@@ -91,9 +91,9 @@ class OptionQueryServiceIntegrationTest {
         void 혼합_문제_목록에서_객관식만_선지를_반환한다() {
             // given
             optionRepository.save(Option.create("FIFO 구조이다.", "큐 해설", true, 2L));
-            List<ProblemDetail> problems = List.of(
-                    new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
-                    new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false)
+            List<ProblemDetailResponse> problems = List.of(
+                    new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
+                    new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false)
             );
 
             // when

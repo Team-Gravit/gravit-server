@@ -1,6 +1,6 @@
 //package gravit.code.domain.userLeague.service;
 //
-//import gravit.code.domain.userLeague.dto.response.LeagueRankRow;
+//import gravit.code.domain.userLeague.dto.response.LeagueRankRowDto;
 //import gravit.code.domain.userLeague.infrastructure.UserLeagueRankQueryRepository;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@
 //        int page = 0;
 //
 //        // when
-//        List<LeagueRankRow> leagueRanks = rankService.getLeagueRanks(leagueId, page);
+//        List<LeagueRankRowDto> leagueRanks = rankService.getLeagueRanks(leagueId, page);
 //
 //        // then
 //        assertThat(leagueRanks.size()).isEqualTo(10);
@@ -56,7 +56,7 @@
 //        int page = 1;
 //
 //        // when
-//        List<LeagueRankRow> leagueRanks = rankService.getLeagueRanks(leagueId, page);
+//        List<LeagueRankRowDto> leagueRanks = rankService.getLeagueRanks(leagueId, page);
 //
 //        // then
 //        assertThat(leagueRanks.size()).isEqualTo(2);
@@ -73,8 +73,8 @@
 //        int page = 0;
 //
 //        // when
-//        List<LeagueRankRow> leagueRanks = rankService.getLeagueRanks(leagueId, page);
-//        for (LeagueRankRow leagueRank : leagueRanks) {
+//        List<LeagueRankRowDto> leagueRanks = rankService.getLeagueRanks(leagueId, page);
+//        for (LeagueRankRowDto leagueRank : leagueRanks) {
 //            System.out.println("실버 1리그의 랭킹 조회 page = 0 " + leagueRank.toString());
 //        }
 //
@@ -93,7 +93,7 @@
 //        int page = 0;
 //
 //        // when
-//        List<LeagueRankRow> userLeagueRanks = rankService.getUserLeagueRanks(userId, page);
+//        List<LeagueRankRowDto> userLeagueRanks = rankService.getUserLeagueRanks(userId, page);
 //
 //        // then
 //        assertThat(userLeagueRanks.size()).isEqualTo(10);
@@ -110,7 +110,7 @@
 //        int page = 1;
 //
 //        // when
-//        List<LeagueRankRow> userLeagueRanks = rankService.getUserLeagueRanks(userId, page);
+//        List<LeagueRankRowDto> userLeagueRanks = rankService.getUserLeagueRanks(userId, page);
 //
 //        // then
 //        assertThat(userLeagueRanks.size()).isEqualTo(2);
@@ -127,7 +127,7 @@
 //        int page = 0;
 //
 //        // when
-//        List<LeagueRankRow> userLeagueRanks = rankService.getUserLeagueRanks(userId, page);
+//        List<LeagueRankRowDto> userLeagueRanks = rankService.getUserLeagueRanks(userId, page);
 //
 //        // then
 //        assertThat(userLeagueRanks.size()).isEqualTo(10);

@@ -8,7 +8,7 @@ import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.problem.domain.Problem;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.repository.ProblemRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.unit.domain.Unit;
@@ -63,7 +63,7 @@ class ProblemQueryServiceIntegrationTest {
             problemRepository.save(Problem.create(ProblemType.OBJECTIVE, "다음 중 올바른 것을 고르시오.", "큐의 특성은?", lesson.getId()));
 
             // when
-            List<ProblemDetail> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
+            List<ProblemDetailResponse> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
 
             // then
             assertSoftly(softly -> {
@@ -86,7 +86,7 @@ class ProblemQueryServiceIntegrationTest {
             bookmarkRepository.save(Bookmark.create(problem.getId(), userId));
 
             // when
-            List<ProblemDetail> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
+            List<ProblemDetailResponse> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
 
             // then
             assertThat(result.get(0).isBookmarked()).isTrue();
@@ -104,7 +104,7 @@ class ProblemQueryServiceIntegrationTest {
             bookmarkRepository.save(Bookmark.create(problem.getId(), otherUserId));
 
             // when
-            List<ProblemDetail> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
+            List<ProblemDetailResponse> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
 
             // then
             assertThat(result.get(0).isBookmarked()).isFalse();
@@ -119,7 +119,7 @@ class ProblemQueryServiceIntegrationTest {
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
             // when
-            List<ProblemDetail> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
+            List<ProblemDetailResponse> result = problemQueryService.getAllProblemInLesson(userId, lesson.getId());
 
             // then
             assertThat(result).isEmpty();

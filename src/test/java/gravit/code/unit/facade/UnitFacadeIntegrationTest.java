@@ -8,7 +8,7 @@ import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.unit.domain.Unit;
-import gravit.code.unit.dto.response.UnitDetailResponse;
+import gravit.code.unit.dto.response.UnitPageResponse;
 import gravit.code.unit.repository.UnitRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,14 +53,14 @@ class UnitFacadeIntegrationTest {
             lessonSubmissionRepository.save(LessonSubmission.create(120, lesson1.getId(), userId));
 
             // when
-            UnitDetailResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());
+            UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.chapterSummary().title()).isEqualTo("운영체제");
-                softly.assertThat(result.unitDetails()).hasSize(1);
-                softly.assertThat(result.unitDetails().get(0).unitSummaries().title()).isEqualTo("프로세스");
-                softly.assertThat(result.unitDetails().get(0).progressRate()).isEqualTo(50.0);
+                softly.assertThat(result.chapterSummaryResponse().title()).isEqualTo("운영체제");
+                softly.assertThat(result.unitDetailResponses()).hasSize(1);
+                softly.assertThat(result.unitDetailResponses().get(0).unitSummaryResponse().title()).isEqualTo("프로세스");
+                softly.assertThat(result.unitDetailResponses().get(0).progressRate()).isEqualTo(50.0);
             });
         }
 
@@ -73,12 +73,12 @@ class UnitFacadeIntegrationTest {
             lessonRepository.save(Lesson.create("레슨1", unit.getId())); // 레슨은 존재하지만 제출 기록 없음
 
             // when
-            UnitDetailResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());
+            UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.unitDetails()).hasSize(1);
-                softly.assertThat(result.unitDetails().get(0).progressRate()).isEqualTo(0.0);
+                softly.assertThat(result.unitDetailResponses()).hasSize(1);
+                softly.assertThat(result.unitDetailResponses().get(0).progressRate()).isEqualTo(0.0);
             });
         }
 
@@ -89,10 +89,10 @@ class UnitFacadeIntegrationTest {
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
 
             // when
-            UnitDetailResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());
+            UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());
 
             // then
-            assertThat(result.unitDetails()).isEmpty();
+            assertThat(result.unitDetailResponses()).isEmpty();
         }
     }
 }

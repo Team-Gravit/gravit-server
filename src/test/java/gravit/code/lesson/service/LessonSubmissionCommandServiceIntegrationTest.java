@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -91,7 +92,9 @@ class LessonSubmissionCommandServiceIntegrationTest {
 
             // when & then
             assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request, true))
-                    .isInstanceOf(RestApiException.class);
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(LESSON_NOT_FOUND);
         }
     }
 }

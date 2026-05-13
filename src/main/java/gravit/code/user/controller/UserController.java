@@ -7,6 +7,7 @@ import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserResponse;
+import gravit.code.user.facade.UserFacade;
 import gravit.code.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -22,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController implements UserControllerDocs {
 
+    private final UserFacade userFacade;
     private final UserService userService;
 
     @GetMapping
@@ -62,6 +70,6 @@ public class UserController implements UserControllerDocs {
 
     @GetMapping("/main-page")
     public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser){
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getMainPage(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(userFacade.getMainPage(loginUser.getId()));
     }
 }

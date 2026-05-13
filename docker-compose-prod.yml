@@ -1,7 +1,7 @@
 services:
   gravit-server-prod:
     container_name: gravit-server-prod
-    image: ${DOCKER_HUB_USERNAME}/gravit-server:prod
+    image: ${DOCKER_HUB_USERNAME}/gravit-server:${IMAGE_TAG}
     ports:
       - "8520:8080"
     environment:
@@ -13,7 +13,7 @@ services:
       - ./logs:/var/log/spring
     depends_on:
       gravit-redis-prod:
-        condition: service_started
+        condition: service_healthy
 
 
   gravit-redis-prod:
@@ -25,6 +25,11 @@ services:
       - ./redis_data:/data
     networks:
       - gravit-prod
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     deploy:
       resources:
         limits:

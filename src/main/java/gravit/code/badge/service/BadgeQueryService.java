@@ -1,6 +1,6 @@
 package gravit.code.badge.service;
 
-import gravit.code.badge.dto.BadgeCatalogRowDto;
+import gravit.code.badge.dto.internal.BadgeCatalogRowDto;
 import gravit.code.badge.dto.response.AllBadgesResponse;
 import gravit.code.badge.dto.response.BadgeCategoryResponse;
 import gravit.code.badge.dto.response.BadgeResponse;
@@ -10,7 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

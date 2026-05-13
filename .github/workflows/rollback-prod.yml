@@ -1,0 +1,81 @@
+name: 프로덕션 서버 롤백
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '롤백할 버전 (예: v1.1.0)'
+        required: true
+        type: string
+
+jobs:
+  rollback:
+    name: 지정한 버전으로 롤백
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 버전 입력 유효성 검사
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "오류: 유효하지 않은 버전 형식입니다: $VERSION (예: v1.1.0)"
+            exit 1
+          fi
+
+      - name: Docker Hub 이미지 존재 확인
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -u "$DOCKER_HUB_USERNAME:$DOCKER_HUB_PASSWORD" \
+            "https://hub.docker.com/v2/repositories/$DOCKER_HUB_USERNAME/gravit-server/tags/$VERSION/")
+          if [ "$STATUS" != "200" ]; then
+            echo "오류: Docker Hub에 $VERSION 태그가 존재하지 않습니다."
+            exit 1
+          fi
+
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: docker-compose-prod.yml 파일 전송
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{secrets.APPCENTER_SERVER_IP}}
+          username: ${{secrets.APPCENTER_SERVER_USERNAME}}
+          password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
+          port: ${{secrets.APPCENTER_SERVER_PORT}}
+          source: "docker-compose-prod.yml"
+          target: "/home/serverking/gravit/prod"
+
+      - name: 앱센터 서버에 롤백 배포
+        uses: appleboy/ssh-action@v1.2.5
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        with:
+          host: ${{secrets.APPCENTER_SERVER_IP}}
+          username: ${{secrets.APPCENTER_SERVER_USERNAME}}
+          password: ${{secrets.APPCENTER_SERVER_PASSWORD}}
+          port: ${{secrets.APPCENTER_SERVER_PORT}}
+          envs: VERSION,DOCKER_HUB_USERNAME,DOCKER_HUB_PASSWORD
+          script: |
+            cd /home/serverking/gravit/prod
+
+            echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+
+            echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME" > .env
+            echo "IMAGE_TAG=$VERSION" >> .env
+
+            docker-compose -f docker-compose-prod.yml pull || { echo "이미지 pull 실패. 롤백 중단."; exit 1; }
+            docker-compose -f docker-compose-prod.yml down
+            docker-compose -f docker-compose-prod.yml up -d --force-recreate
+
+            docker images "$DOCKER_HUB_USERNAME/gravit-server" \
+              --format "{{.Repository}}:{{.Tag}}" | \
+              grep -v ":latest" | \
+              grep -v ":$VERSION" | \
+              xargs docker rmi 2>/dev/null || true

@@ -4,7 +4,7 @@ import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.option.fixture.OptionFixture;
 import gravit.code.option.repository.OptionRepository;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class OptionQueryServiceUnitTest {
         @Test
         void 객관식_문제의_선지_Map을_반환한다() {
             // given
-            ProblemDetail objective = new ProblemDetail(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
+            ProblemDetailResponse objective = new ProblemDetailResponse(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
             OptionResponse optionResponse = OptionResponse.from(OptionFixture.정답_선택지(1L));
 
             when(optionRepository.findAllByProblemIdIn(List.of(1L))).thenReturn(List.of(optionResponse));
@@ -55,7 +55,7 @@ class OptionQueryServiceUnitTest {
         @Test
         void 주관식_문제만_있으면_빈_Map을_반환한다() {
             // given
-            ProblemDetail subjective = new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
+            ProblemDetailResponse subjective = new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
 
             // when
             Map<Long, List<OptionResponse>> result = optionQueryService.getOptionsInProblem(List.of(subjective));
@@ -68,8 +68,8 @@ class OptionQueryServiceUnitTest {
         @Test
         void 혼합_문제_목록에서_객관식만_필터링하여_선지를_반환한다() {
             // given
-            ProblemDetail subjective = new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
-            ProblemDetail objective = new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
+            ProblemDetailResponse subjective = new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
+            ProblemDetailResponse objective = new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
             OptionResponse optionResponse = OptionResponse.from(OptionFixture.정답_선택지(2L));
 
             when(optionRepository.findAllByProblemIdIn(List.of(2L))).thenReturn(List.of(optionResponse));
@@ -89,8 +89,8 @@ class OptionQueryServiceUnitTest {
         @Test
         void 여러_객관식_문제의_선지를_문제별로_그룹화하여_반환한다() {
             // given
-            ProblemDetail objective1 = new ProblemDetail(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
-            ProblemDetail objective2 = new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "스택의 특성은?", false);
+            ProblemDetailResponse objective1 = new ProblemDetailResponse(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
+            ProblemDetailResponse objective2 = new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "스택의 특성은?", false);
             OptionResponse option1 = OptionResponse.from(OptionFixture.저장된_선택지(1L, true, 1L));
             OptionResponse option2 = OptionResponse.from(OptionFixture.저장된_선택지(2L, false, 2L));
 

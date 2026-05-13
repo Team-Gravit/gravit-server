@@ -1,7 +1,7 @@
 package gravit.code.problem.repository;
 
 import gravit.code.problem.domain.Problem;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +18,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     boolean existsProblemById(long id);
 
     @Query("""
-        SELECT new gravit.code.problem.dto.response.ProblemDetail(
+        SELECT new gravit.code.problem.dto.response.ProblemDetailResponse(
             p.id,
             p.problemType,
             p.instruction,
@@ -30,7 +30,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
         WHERE p.lessonId = :lessonId
         ORDER BY p.id
     """)
-    List<ProblemDetail> findAllProblemDetailByLessonIdAndUserId(
+    List<ProblemDetailResponse> findAllProblemDetailByLessonIdAndUserId(
             @Param("lessonId") long lessonId,
             @Param("userId") long userId
     );

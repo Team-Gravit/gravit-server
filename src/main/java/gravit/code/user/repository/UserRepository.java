@@ -1,7 +1,6 @@
 package gravit.code.user.repository;
 
 import gravit.code.user.domain.User;
-import gravit.code.user.domain.UserLevel;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.repository.custom.UserDeletionRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,18 +35,4 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDeletionR
         where u.id = :userId
     """)
     Optional<MyPageResponse> findMyPageByUserId(@Param("userId") long userId);
-
-    @Query("""
-        SELECT u.level
-        FROM User u
-        WHERE u.id = :userId
-    """)
-    Optional<UserLevel> findUserLevelById(@Param("userId") long userId);
-
-    @Query("""
-        SELECT u.nickname
-        FROM User u
-        WHERE u.id = :userId
-    """)
-    Optional<String> findNicknameById(@Param("userId") long userId);
 }

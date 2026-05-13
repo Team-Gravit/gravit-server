@@ -3,18 +3,18 @@ package gravit.code.lesson.facade;
 import gravit.code.bookmark.service.BookmarkService;
 import gravit.code.global.annotation.Facade;
 import gravit.code.global.event.LessonCompletedEvent;
-import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
-import gravit.code.learning.dto.common.LearningIds;
+import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
+import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningService;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
-import gravit.code.lesson.dto.response.LessonSummary;
+import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.service.LessonQueryService;
 import gravit.code.lesson.service.LessonSubmissionCommandService;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.problem.service.ProblemSubmissionCommandService;
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
@@ -54,15 +54,15 @@ public class LessonFacade {
             long userId,
             long unitId
     ) {
-        UnitSummary unitSummary = unitQueryService.getUnitSummaryByUnitId(unitId);
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByUnitId(unitId);
 
-        List<LessonSummary> lessonSummaries = lessonQueryService.getAllLessonInUnit(userId, unitId);
+        List<LessonSummaryResponse> lessonSummaries = lessonQueryService.getAllLessonInUnit(userId, unitId);
 
         boolean bookmarkAccessible = bookmarkService.checkBookmarkedProblemExists(userId, unitId);
         boolean wrongAnsweredNoteAccessible = wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unitId);
 
         return LessonDetailResponse.create(
-                unitSummary,
+                unitSummaryResponse,
                 bookmarkAccessible,
                 wrongAnsweredNoteAccessible,
                 unitId,
@@ -83,18 +83,18 @@ public class LessonFacade {
         problemSubmissionCommandService.saveProblemSubmissions(userId, request.problemSubmissionRequests(), isFirstTry);
 
         // 응답 데이터 조회
-        UnitSummary unitSummary = unitQueryService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
         String leagueName = userLeagueService.getUserLeagueName(userId);
         UserLevelResponse userLevelResponse = userService.updateUserLevelByLessonSubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
 
-        LearningIds learningIds = lessonQueryService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
+        LearningIdsDto learningIdsDto = lessonQueryService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
 
-        ConsecutiveSolvedDto consecutiveSolvedDto = learningService.updateLearningStatus(userId, learningIds.chapterId());
+        ConsecutiveSolvedDto consecutiveSolvedDto = learningService.updateLearningStatus(userId, learningIdsDto.chapterId());
         if(isFirstTry){
             publisher.publishEvent(new LessonCompletedEvent(
                     userId,
-                    learningIds.lessonId(),
-                    learningIds.chapterId(),
+                    learningIdsDto.lessonId(),
+                    learningIdsDto.chapterId(),
                     POINT_PER_LESSON,
                     request.lessonSubmissionSaveRequest().accuracy(),
                     request.lessonSubmissionSaveRequest().learningTime(),
@@ -106,7 +106,7 @@ public class LessonFacade {
         return LessonSubmissionSaveResponse.create(
                 leagueName,
                 userLevelResponse,
-                unitSummary
+                unitSummaryResponse
         );
     }
 }

@@ -1,6 +1,5 @@
 package gravit.code.report.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.problem.repository.ProblemRepository;
 import gravit.code.report.domain.Report;
@@ -14,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -62,7 +62,7 @@ class ReportServiceUnitTest {
             assertThatThrownBy(() -> reportService.submitProblemReport(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.PROBLEM_NOT_FOUND);
+                    .isEqualTo(PROBLEM_NOT_FOUND);
 
             verify(reportRepository, never()).save(any());
         }

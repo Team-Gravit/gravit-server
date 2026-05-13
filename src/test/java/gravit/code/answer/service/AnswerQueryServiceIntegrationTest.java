@@ -4,7 +4,7 @@ import gravit.code.answer.domain.Answer;
 import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.answer.repository.AnswerRepository;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.support.TCSpringBootTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +39,7 @@ class AnswerQueryServiceIntegrationTest {
             // given
             long problemId = 1L;
             answerRepository.save(Answer.create("LIFO", "스택은 Last In First Out 구조입니다.", problemId));
-            ProblemDetail subjective = new ProblemDetail(problemId, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
+            ProblemDetailResponse subjective = new ProblemDetailResponse(problemId, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false);
 
             // when
             Map<Long, AnswerResponse> result = answerQueryService.getAnswersInProblem(List.of(subjective));
@@ -57,9 +57,9 @@ class AnswerQueryServiceIntegrationTest {
             // given
             answerRepository.save(Answer.create("LIFO", "스택 해설", 1L));
             answerRepository.save(Answer.create("FIFO", "큐 해설", 2L));
-            List<ProblemDetail> problems = List.of(
-                    new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
-                    new ProblemDetail(2L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "큐는 ___구조이다.", false)
+            List<ProblemDetailResponse> problems = List.of(
+                    new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
+                    new ProblemDetailResponse(2L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "큐는 ___구조이다.", false)
             );
 
             // when
@@ -76,7 +76,7 @@ class AnswerQueryServiceIntegrationTest {
         @Test
         void 객관식_문제만_있으면_빈_Map을_반환한다() {
             // given
-            ProblemDetail objective = new ProblemDetail(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
+            ProblemDetailResponse objective = new ProblemDetailResponse(1L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false);
 
             // when
             Map<Long, AnswerResponse> result = answerQueryService.getAnswersInProblem(List.of(objective));
@@ -89,9 +89,9 @@ class AnswerQueryServiceIntegrationTest {
         void 혼합_문제_목록에서_주관식만_정답을_반환한다() {
             // given
             answerRepository.save(Answer.create("LIFO", "스택 해설", 1L));
-            List<ProblemDetail> problems = List.of(
-                    new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
-                    new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false)
+            List<ProblemDetailResponse> problems = List.of(
+                    new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
+                    new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 고르시오.", "큐의 특성은?", false)
             );
 
             // when

@@ -1,7 +1,7 @@
 package gravit.code.chapter.facade;
 
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
-import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.learning.service.LearningProgressRateService;
 import org.junit.jupiter.api.DisplayName;
@@ -38,9 +38,9 @@ class ChapterFacadeUnitTest {
         void 챕터_목록과_진행도를_함께_반환한다() {
             // given
             long userId = 1L;
-            List<ChapterSummary> chapters = List.of(
-                    new ChapterSummary(1L, "운영체제", "운영체제 기초 개념"),
-                    new ChapterSummary(2L, "네트워크", "네트워크 기초 개념")
+            List<ChapterSummaryResponse> chapters = List.of(
+                    new ChapterSummaryResponse(1L, "운영체제", "운영체제 기초 개념"),
+                    new ChapterSummaryResponse(2L, "네트워크", "네트워크 기초 개념")
             );
             when(chapterQueryService.getAllChapter()).thenReturn(chapters);
             when(learningProgressRateService.getChapterProgress(1L, userId)).thenReturn(50.0);
@@ -52,9 +52,9 @@ class ChapterFacadeUnitTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result).hasSize(2);
-                softly.assertThat(result.get(0).chapterSummary().title()).isEqualTo("운영체제");
+                softly.assertThat(result.get(0).chapterSummaryResponse().title()).isEqualTo("운영체제");
                 softly.assertThat(result.get(0).chapterProgressRate()).isEqualTo(50.0);
-                softly.assertThat(result.get(1).chapterSummary().title()).isEqualTo("네트워크");
+                softly.assertThat(result.get(1).chapterSummaryResponse().title()).isEqualTo("네트워크");
                 softly.assertThat(result.get(1).chapterProgressRate()).isEqualTo(30.0);
             });
         }

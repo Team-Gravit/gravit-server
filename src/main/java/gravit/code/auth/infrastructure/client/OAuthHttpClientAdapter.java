@@ -3,7 +3,6 @@ package gravit.code.auth.infrastructure.client;
 import gravit.code.auth.service.oauth.OAuthClient;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import java.net.http.HttpTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,6 +15,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.net.http.HttpTimeoutException;
 import java.util.Map;
 import java.util.Optional;
 

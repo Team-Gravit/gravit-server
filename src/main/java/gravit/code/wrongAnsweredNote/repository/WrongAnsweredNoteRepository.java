@@ -1,6 +1,6 @@
 package gravit.code.wrongAnsweredNote.repository;
 
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.wrongAnsweredNote.domain.WrongAnsweredNote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +17,7 @@ public interface WrongAnsweredNoteRepository extends JpaRepository<WrongAnswered
     );
 
     @Query("""
-        SELECT new gravit.code.problem.dto.response.ProblemDetail(
+        SELECT new gravit.code.problem.dto.response.ProblemDetailResponse(
             p.id,
             p.problemType,
             p.instruction,
@@ -31,7 +31,7 @@ public interface WrongAnsweredNoteRepository extends JpaRepository<WrongAnswered
         LEFT JOIN Bookmark b on b.problemId = p.id AND b.userId = :userId
         WHERE wan.userId = :userId AND u.id = :unitId
     """)
-    List<ProblemDetail> findWrongAnsweredProblemDetailByUnitIdAndUserId(
+    List<ProblemDetailResponse> findWrongAnsweredProblemDetailByUnitIdAndUserId(
             @Param("unitId")long unitId,
             @Param("userId")long userId
     );

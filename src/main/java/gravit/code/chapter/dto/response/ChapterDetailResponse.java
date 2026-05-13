@@ -11,7 +11,7 @@ public record ChapterDetailResponse(
 
         @Schema(description = "챕터 요약 정보")
         @NotNull
-        ChapterSummary chapterSummary,
+        ChapterSummaryResponse chapterSummaryResponse,
 
         @Schema(
                 description = "진행도(퍼센트)",
@@ -20,11 +20,11 @@ public record ChapterDetailResponse(
         double chapterProgressRate
 ) {
     public static ChapterDetailResponse create(
-            ChapterSummary chapterSummary,
+            ChapterSummaryResponse chapterSummaryResponse,
             double chapterProgressRate
     ) {
         return ChapterDetailResponse.builder()
-                .chapterSummary(chapterSummary)
+                .chapterSummaryResponse(chapterSummaryResponse)
                 .chapterProgressRate(chapterProgressRate)
                 .build();
     }

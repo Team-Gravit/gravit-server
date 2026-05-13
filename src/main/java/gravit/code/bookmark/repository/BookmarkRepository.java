@@ -1,7 +1,7 @@
 package gravit.code.bookmark.repository;
 
 import gravit.code.bookmark.domain.Bookmark;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,7 +25,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     );
 
     @Query("""
-        SELECT new gravit.code.problem.dto.response.ProblemDetail(
+        SELECT new gravit.code.problem.dto.response.ProblemDetailResponse(
             p.id,
             p.problemType,
             p.instruction,
@@ -39,7 +39,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
         WHERE u.id = :unitId AND b.userId = :userId
         ORDER BY b.createdAt ASC
     """)
-    List<ProblemDetail> findBookmarkedProblemDetailByUnitIdAndUserId(
+    List<ProblemDetailResponse> findBookmarkedProblemDetailByUnitIdAndUserId(
             @Param("unitId")long unitId,
             @Param("userId")long userId
     );

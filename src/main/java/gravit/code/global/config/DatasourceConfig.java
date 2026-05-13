@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
 
-@Profile("!test")
+@Profile("!test & !prod")
 @RequiredArgsConstructor
 @Configuration
 public class DatasourceConfig {

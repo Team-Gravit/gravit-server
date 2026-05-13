@@ -57,7 +57,7 @@ class LessonFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.unitSummary().title()).isEqualTo("프로세스");
+                softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("프로세스");
                 softly.assertThat(result.lessonSummaries()).hasSize(2);
                 softly.assertThat(result.lessonSummaries().get(0).isSolved()).isTrue();
                 softly.assertThat(result.lessonSummaries().get(1).isSolved()).isFalse();

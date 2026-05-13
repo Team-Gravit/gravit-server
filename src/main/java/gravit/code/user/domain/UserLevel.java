@@ -1,5 +1,6 @@
 package gravit.code.user.domain;
 
+import gravit.code.user.dto.response.UserLevelDetailResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
@@ -27,6 +28,16 @@ public class UserLevel {
     public void updateXp(int xp){
         this.xp += xp;
         updateLevel(this.xp);
+    }
+
+    public UserLevelDetailResponse getUserLevelDetail() {
+        int maxXp = (this.level == 10) ? this.xp : getMaxXp(this.level);
+        return UserLevelDetailResponse.of(
+                this.level,
+                this.xp,
+                maxXp,
+                calculateLevelRate(this.xp)
+        );
     }
 
     private void updateLevel(int totalXp){
@@ -85,4 +96,15 @@ public class UserLevel {
         return Math.round(rate * 10) / 10.0;
     }
 
+    private int getMaxXp(int level){
+        if(level == 1) return 100;
+        if(level == 2) return 200;
+        if(level == 3) return 400;
+        if(level == 4) return 700;
+        if(level == 5) return 1100;
+        if(level == 6) return 1600;
+        if(level == 7) return 2200;
+        if(level == 8) return 2900;
+        return 3700;
+    }
 }

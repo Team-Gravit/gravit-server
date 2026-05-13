@@ -5,8 +5,9 @@ import gravit.code.auth.dto.oauth.android.GoogleAndroidUserInfo;
 import gravit.code.auth.dto.oauth.android.KakaoAndroidUserInfo;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 @Slf4j
 public final class AndroidUserInfoFactory {

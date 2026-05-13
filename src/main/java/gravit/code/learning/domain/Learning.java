@@ -1,7 +1,12 @@
 package gravit.code.learning.domain;
 
-import gravit.code.learning.dto.common.ConsecutiveSolvedDto;
-import jakarta.persistence.*;
+import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +42,7 @@ public class Learning {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Learning(Long userId) {
-        this.recentSolvedChapterId = 0L;
+        this.recentSolvedChapterId = 1L;
         this.todaySolved = false;
         this.consecutiveSolvedDays = 0;
         this.planetConquestRate = 0;

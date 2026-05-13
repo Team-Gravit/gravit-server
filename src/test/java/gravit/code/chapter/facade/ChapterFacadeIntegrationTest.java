@@ -60,7 +60,7 @@ class ChapterFacadeIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result).hasSize(1);
-                softly.assertThat(result.get(0).chapterSummary().title()).isEqualTo("운영체제");
+                softly.assertThat(result.get(0).chapterSummaryResponse().title()).isEqualTo("운영체제");
                 softly.assertThat(result.get(0).chapterProgressRate()).isEqualTo(50.0);
             });
         }

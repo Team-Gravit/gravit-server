@@ -2,14 +2,14 @@ package gravit.code.userLeague.repository.custom;
 
 
 import gravit.code.global.dto.response.SliceResponse;
-import gravit.code.userLeague.dto.response.LeagueRankRow;
+import gravit.code.userLeague.dto.internal.LeagueRankRowDto;
 
 public interface LeagueRankingQueryRepository {
-    SliceResponse<LeagueRankRow> findLeagueRanking(
+    SliceResponse<LeagueRankRowDto> findLeagueRanking(
             long leagueId,
             int page
     );
-    SliceResponse<LeagueRankRow> findLeagueRankingByUser(
+    SliceResponse<LeagueRankRowDto> findLeagueRankingByUser(
             long userId,
             int page
     );

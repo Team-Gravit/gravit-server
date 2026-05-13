@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.*;
+import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.getClaimAsString;
+import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.isBlank;
 
 @RequiredArgsConstructor
 public class GoogleAndroidUserInfo implements OAuthUserInfo {

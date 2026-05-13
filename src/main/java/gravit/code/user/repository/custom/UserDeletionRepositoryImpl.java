@@ -1,10 +1,11 @@
 package gravit.code.user.repository.custom;
 
 import gravit.code.user.repository.sql.UserCleanDeletionSql;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Repository

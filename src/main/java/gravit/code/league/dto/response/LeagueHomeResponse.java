@@ -1,7 +1,7 @@
 package gravit.code.league.dto.response;
 
-import gravit.code.league.dto.CurrentSeasonDto;
-import gravit.code.league.dto.LastSeasonPopupDto;
+import gravit.code.league.dto.internal.CurrentSeasonDto;
+import gravit.code.league.dto.internal.LastSeasonPopupDto;
 import jakarta.validation.constraints.NotNull;
 
 public record LeagueHomeResponse(

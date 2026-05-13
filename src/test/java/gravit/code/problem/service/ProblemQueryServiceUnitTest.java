@@ -1,7 +1,7 @@
 package gravit.code.problem.service;
 
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.repository.ProblemRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,15 +35,15 @@ class ProblemQueryServiceUnitTest {
             // given
             long userId = 1L;
             long lessonId = 1L;
-            List<ProblemDetail> expected = List.of(
-                    new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
-                    new ProblemDetail(2L, ProblemType.OBJECTIVE, "다음 중 올바른 것을 고르시오.", "큐의 특성은?", true)
+            List<ProblemDetailResponse> expected = List.of(
+                    new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
+                    new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 올바른 것을 고르시오.", "큐의 특성은?", true)
             );
 
             when(problemRepository.findAllProblemDetailByLessonIdAndUserId(lessonId, userId)).thenReturn(expected);
 
             // when
-            List<ProblemDetail> result = problemQueryService.getAllProblemInLesson(userId, lessonId);
+            List<ProblemDetailResponse> result = problemQueryService.getAllProblemInLesson(userId, lessonId);
 
             // then
             assertSoftly(softly -> {
@@ -63,7 +63,7 @@ class ProblemQueryServiceUnitTest {
             when(problemRepository.findAllProblemDetailByLessonIdAndUserId(lessonId, userId)).thenReturn(List.of());
 
             // when
-            List<ProblemDetail> result = problemQueryService.getAllProblemInLesson(userId, lessonId);
+            List<ProblemDetailResponse> result = problemQueryService.getAllProblemInLesson(userId, lessonId);
 
             // then
             assertThat(result).isEmpty();

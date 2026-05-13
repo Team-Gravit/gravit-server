@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_SUBMISSION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -123,7 +124,9 @@ class ProblemSubmissionCommandServiceIntegrationTest {
 
             // when & then
             assertThatThrownBy(() -> problemSubmissionCommandService.saveProblemSubmissions(userId, requests, false))
-                    .isInstanceOf(RestApiException.class);
+                    .isInstanceOf(RestApiException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(PROBLEM_SUBMISSION_NOT_FOUND);
         }
     }
 

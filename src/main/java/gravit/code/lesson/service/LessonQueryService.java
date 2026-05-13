@@ -2,9 +2,9 @@ package gravit.code.lesson.service;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.learning.dto.common.LearningIds;
+import gravit.code.learning.dto.internal.LearningIdsDto;
+import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.repository.LessonRepository;
-import gravit.code.lesson.dto.response.LessonSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,7 @@ public class LessonQueryService {
 
 
     @Transactional(readOnly = true)
-    public List<LessonSummary> getAllLessonInUnit(
+    public List<LessonSummaryResponse> getAllLessonInUnit(
             long userId,
             long unitId
     ) {
@@ -27,7 +27,7 @@ public class LessonQueryService {
     }
 
     @Transactional(readOnly = true)
-    public LearningIds getLearningIdsByLessonId(long lessonId){
+    public LearningIdsDto getLearningIdsByLessonId(long lessonId){
         return lessonRepository.findLearningIdsByLessonId(lessonId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_NOT_FOUND));
     }

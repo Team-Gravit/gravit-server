@@ -6,7 +6,7 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.option.dto.response.OptionResponse;
 import gravit.code.option.service.OptionQueryService;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.dto.response.ProblemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,17 +21,17 @@ public class ProblemFactory {
     private final AnswerQueryService answerQueryService;
     private final OptionQueryService optionQueryService;
 
-    public List<ProblemResponse> create(List<ProblemDetail> problemDetails) {
-        Map<Long, AnswerResponse> answerMap = answerQueryService.getAnswersInProblem(problemDetails);
-        Map<Long, List<OptionResponse>> optionMap = optionQueryService.getOptionsInProblem(problemDetails);
+    public List<ProblemResponse> create(List<ProblemDetailResponse> problemDetailResponses) {
+        Map<Long, AnswerResponse> answerMap = answerQueryService.getAnswersInProblem(problemDetailResponses);
+        Map<Long, List<OptionResponse>> optionMap = optionQueryService.getOptionsInProblem(problemDetailResponses);
 
-        return problemDetails.stream()
+        return problemDetailResponses.stream()
                 .map(detail -> create(detail, answerMap, optionMap))
                 .toList();
     }
 
     private ProblemResponse create(
-            ProblemDetail detail,
+            ProblemDetailResponse detail,
             Map<Long, AnswerResponse> answerMap,
             Map<Long, List<OptionResponse>> optionMap
     ) {
@@ -42,7 +42,7 @@ public class ProblemFactory {
     }
 
     private ProblemResponse createSubjective(
-            ProblemDetail detail,
+            ProblemDetailResponse detail,
             Map<Long, AnswerResponse> answerMap
     ) {
         AnswerResponse answer = answerMap.get(detail.id());
@@ -54,7 +54,7 @@ public class ProblemFactory {
     }
 
     private ProblemResponse createObjective(
-            ProblemDetail detail,
+            ProblemDetailResponse detail,
             Map<Long, List<OptionResponse>> optionMap
     ) {
         List<OptionResponse> options = optionMap.get(detail.id());

@@ -1,7 +1,7 @@
 package gravit.code.chapter.service;
 
 import gravit.code.chapter.domain.Chapter;
-import gravit.code.chapter.dto.response.ChapterSummary;
+import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.repository.ChapterRepository;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.support.TCSpringBootTest;
@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.CHAPTER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -38,7 +39,7 @@ class ChapterQueryServiceIntegrationTest {
             chapterRepository.save(Chapter.create("네트워크", "네트워크 기초 개념"));
 
             // when
-            List<ChapterSummary> result = chapterQueryService.getAllChapter();
+            List<ChapterSummaryResponse> result = chapterQueryService.getAllChapter();
 
             // then
             assertSoftly(softly -> {
@@ -51,7 +52,7 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 챕터가_없으면_빈_리스트를_반환한다() {
             // when
-            List<ChapterSummary> result = chapterQueryService.getAllChapter();
+            List<ChapterSummaryResponse> result = chapterQueryService.getAllChapter();
 
             // then
             assertThat(result).isEmpty();
@@ -68,7 +69,7 @@ class ChapterQueryServiceIntegrationTest {
             Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
 
             // when
-            ChapterSummary result = chapterQueryService.getChapterById(saved.getId());
+            ChapterSummaryResponse result = chapterQueryService.getChapterSummary(saved.getId());
 
             // then
             assertSoftly(softly -> {
@@ -81,8 +82,40 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 존재하지_않으면_예외를_던진다() {
             // when & then
-            assertThatThrownBy(() -> chapterQueryService.getChapterById(999L))
-                    .isInstanceOf(RestApiException.class);
+            assertThatThrownBy(() -> chapterQueryService.getChapterSummary(999L))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(CHAPTER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("챕터 엔티티를 조회할 때")
+    class GetChapter {
+
+        @Test
+        void 성공한다() {
+            // given
+            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+
+            // when
+            Chapter result = chapterQueryService.getChapter(saved.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.getId()).isEqualTo(saved.getId());
+                softly.assertThat(result.getTitle()).isEqualTo("운영체제");
+                softly.assertThat(result.getDescription()).isEqualTo("운영체제 기초 개념");
+            });
+        }
+
+        @Test
+        void 존재하지_않으면_예외를_던진다() {
+            // when & then
+            assertThatThrownBy(() -> chapterQueryService.getChapter(999L))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(CHAPTER_NOT_FOUND);
         }
     }
 }

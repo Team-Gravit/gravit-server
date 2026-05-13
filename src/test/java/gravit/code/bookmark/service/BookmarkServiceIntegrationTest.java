@@ -6,13 +6,12 @@ import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
 import gravit.code.bookmark.repository.BookmarkRepository;
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.repository.ChapterRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.problem.domain.Problem;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.repository.ProblemRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.unit.domain.Unit;
@@ -27,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_DUPLICATED;
+import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -93,7 +94,7 @@ class BookmarkServiceIntegrationTest {
             assertThatThrownBy(() -> bookmarkService.addBookmark(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.BOOKMARK_DUPLICATED);
+                    .isEqualTo(BOOKMARK_DUPLICATED);
         }
     }
 
@@ -125,7 +126,7 @@ class BookmarkServiceIntegrationTest {
             assertThatThrownBy(() -> bookmarkService.deleteBookmark(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
-                    .isEqualTo(CustomErrorCode.BOOKMARK_NOT_FOUND);
+                    .isEqualTo(BOOKMARK_NOT_FOUND);
         }
     }
 
@@ -170,7 +171,7 @@ class BookmarkServiceIntegrationTest {
             bookmarkRepository.save(Bookmark.create(problem.getId(), userId));
 
             // when
-            List<ProblemDetail> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unit.getId());
+            List<ProblemDetailResponse> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unit.getId());
 
             // then
             assertSoftly(softly -> {
@@ -188,7 +189,7 @@ class BookmarkServiceIntegrationTest {
             bookmarkRepository.save(Bookmark.create(problem.getId(), otherUserId));
 
             // when
-            List<ProblemDetail> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unit.getId());
+            List<ProblemDetailResponse> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unit.getId());
 
             // then
             assertThat(result).isEmpty();
@@ -200,7 +201,7 @@ class BookmarkServiceIntegrationTest {
             long userId = 1L;
 
             // when
-            List<ProblemDetail> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unit.getId());
+            List<ProblemDetailResponse> result = bookmarkService.getAllBookmarkedProblemInUnit(userId, unit.getId());
 
             // then
             assertThat(result).isEmpty();

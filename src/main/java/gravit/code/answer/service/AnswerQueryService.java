@@ -4,7 +4,7 @@ import gravit.code.answer.domain.Answer;
 import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.answer.repository.AnswerRepository;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,15 +21,15 @@ public class AnswerQueryService {
 
     private final AnswerRepository answerRepository;
 
-    public Map<Long, AnswerResponse> getAnswersInProblem(List<ProblemDetail> problemDetails) {
-        List<ProblemDetail> subjectiveProblems = problemDetails.stream()
+    public Map<Long, AnswerResponse> getAnswersInProblem(List<ProblemDetailResponse> problemDetailResponses) {
+        List<ProblemDetailResponse> subjectiveProblems = problemDetailResponses.stream()
                 .filter(p -> p.problemType() == ProblemType.SUBJECTIVE)
                 .toList();
 
         Map<Long, AnswerResponse> answerMap;
         if(!subjectiveProblems.isEmpty()){
             List<Long> subjectiveProblemIds = subjectiveProblems.stream()
-                    .map(ProblemDetail::id)
+                    .map(ProblemDetailResponse::id)
                     .toList();
 
             List<Answer> answers = answerRepository.findByProblemIdIn(subjectiveProblemIds);

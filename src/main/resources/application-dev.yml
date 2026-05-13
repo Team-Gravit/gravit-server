@@ -121,7 +121,7 @@ admin:
     emails: ${ADMIN_BOOTSTRAP_EMAILS}
 
 springdoc:
-  server-url: http://localhost:8080
+  server-url: https://grav-it-dev.inuappcenter.kr
 
 management:
   endpoints:

@@ -2,7 +2,7 @@ package gravit.code.friend.service;
 
 
 import gravit.code.friend.domain.Friend;
-import gravit.code.friend.dto.SearchUserDto;
+import gravit.code.friend.dto.internal.SearchUserDto;
 import gravit.code.friend.dto.response.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
@@ -13,7 +13,6 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.user.repository.UserRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,6 +22,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Service

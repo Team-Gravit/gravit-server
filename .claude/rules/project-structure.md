@@ -53,5 +53,6 @@ src/main/java/gravit/code/
 │   └── {Domain}.java
 └── dto/
     ├── request/
-    └── response/
+    ├── response/
+    └── internal/
 ```

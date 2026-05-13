@@ -1,6 +1,6 @@
 package gravit.code.problem.dto.response;
 
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -13,7 +13,7 @@ public record WrongAnsweredProblemsResponse(
 
         @Schema(description = "유닛 요약 정보")
         @NotNull
-        UnitSummary unitSummary,
+        UnitSummaryResponse unitSummaryResponse,
 
         @Schema(description = "문제 목록")
         @NotNull
@@ -26,11 +26,11 @@ public record WrongAnsweredProblemsResponse(
         int totalProblems
 ) {
     public static WrongAnsweredProblemsResponse of(
-            UnitSummary unitSummary,
+            UnitSummaryResponse unitSummaryResponse,
             List<ProblemResponse> problems
     ){
         return WrongAnsweredProblemsResponse.builder()
-                .unitSummary(unitSummary)
+                .unitSummaryResponse(unitSummaryResponse)
                 .problems(problems)
                 .totalProblems(problems.size())
                 .build();

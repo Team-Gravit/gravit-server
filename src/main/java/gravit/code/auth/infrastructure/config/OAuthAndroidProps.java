@@ -1,9 +1,9 @@
 package gravit.code.auth.infrastructure.config;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.PROVIDER_INVALID;
-
 import gravit.code.global.exception.domain.RestApiException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.PROVIDER_INVALID;
 
 @ConfigurationProperties(prefix = "oauth.android")
 public record OAuthAndroidProps(

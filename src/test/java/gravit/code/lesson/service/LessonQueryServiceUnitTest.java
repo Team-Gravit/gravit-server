@@ -1,9 +1,8 @@
 package gravit.code.lesson.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.learning.dto.common.LearningIds;
-import gravit.code.lesson.dto.response.LessonSummary;
+import gravit.code.learning.dto.internal.LearningIdsDto;
+import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.repository.LessonRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -38,14 +38,14 @@ class LessonQueryServiceUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            List<LessonSummary> expected = List.of(
-                    new LessonSummary(1L, "레슨1", 5, true),
-                    new LessonSummary(2L, "레슨2", 3, false)
+            List<LessonSummaryResponse> expected = List.of(
+                    new LessonSummaryResponse(1L, "레슨1", 5, true),
+                    new LessonSummaryResponse(2L, "레슨2", 3, false)
             );
             when(lessonRepository.findAllLessonSummaryByUnitId(unitId, userId)).thenReturn(expected);
 
             // when
-            List<LessonSummary> result = lessonQueryService.getAllLessonInUnit(userId, unitId);
+            List<LessonSummaryResponse> result = lessonQueryService.getAllLessonInUnit(userId, unitId);
 
             // then
             assertThat(result).hasSize(2);
@@ -60,7 +60,7 @@ class LessonQueryServiceUnitTest {
             when(lessonRepository.findAllLessonSummaryByUnitId(unitId, userId)).thenReturn(List.of());
 
             // when
-            List<LessonSummary> result = lessonQueryService.getAllLessonInUnit(userId, unitId);
+            List<LessonSummaryResponse> result = lessonQueryService.getAllLessonInUnit(userId, unitId);
 
             // then
             assertThat(result).isEmpty();
@@ -69,17 +69,17 @@ class LessonQueryServiceUnitTest {
 
     @Nested
     @DisplayName("레슨 ID로 학습 계층 ID를 조회할 때")
-    class GetLearningIdsByLessonId {
+    class GetLearningIdsDtoByLessonId {
 
         @Test
         void 성공한다() {
             // given
             long lessonId = 1L;
-            LearningIds expected = new LearningIds(1L, 2L, lessonId);
+            LearningIdsDto expected = new LearningIdsDto(1L, 2L, lessonId);
             when(lessonRepository.findLearningIdsByLessonId(lessonId)).thenReturn(Optional.of(expected));
 
             // when
-            LearningIds result = lessonQueryService.getLearningIdsByLessonId(lessonId);
+            LearningIdsDto result = lessonQueryService.getLearningIdsByLessonId(lessonId);
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -95,7 +95,7 @@ class LessonQueryServiceUnitTest {
             assertThatThrownBy(() -> lessonQueryService.getLearningIdsByLessonId(lessonId))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(CustomErrorCode.LESSON_NOT_FOUND);
+                    .isEqualTo(LESSON_NOT_FOUND);
         }
     }
 }

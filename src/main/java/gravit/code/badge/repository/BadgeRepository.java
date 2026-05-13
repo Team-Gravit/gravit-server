@@ -2,7 +2,7 @@ package gravit.code.badge.repository;
 
 import gravit.code.badge.domain.Badge;
 import gravit.code.badge.domain.CriteriaType;
-import gravit.code.badge.dto.BadgeCatalogRowDto;
+import gravit.code.badge.dto.internal.BadgeCatalogRowDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,7 +18,7 @@ public interface BadgeRepository extends JpaRepository<Badge, Long> {
     Optional<Badge> findByCode(String code);
 
     @Query("""
-        select new gravit.code.badge.dto.BadgeCatalogRowDto(
+        select new gravit.code.badge.dto.internal.BadgeCatalogRowDto(
             bc.id, bc.name, bc.displayOrder,bc.description,
             b.id, b.code, b.name, b.description,
             b.iconId, b.displayOrder

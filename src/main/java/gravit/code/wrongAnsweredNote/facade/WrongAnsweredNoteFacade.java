@@ -1,11 +1,11 @@
 package gravit.code.wrongAnsweredNote.facade;
 
 import gravit.code.global.annotation.Facade;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.problem.dto.response.ProblemResponse;
 import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
 import gravit.code.problem.factory.ProblemFactory;
-import gravit.code.unit.dto.response.UnitSummary;
+import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +27,14 @@ public class WrongAnsweredNoteFacade {
             long userId,
             long unitId
     ) {
-        UnitSummary unitSummary = unitQueryService.getUnitSummaryByUnitId(unitId);
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByUnitId(unitId);
 
-        List<ProblemDetail> problemDetails = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId);
+        List<ProblemDetailResponse> problemDetailResponses = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId);
 
-        List<ProblemResponse> problemResponses = problemFactory.create(problemDetails);
+        List<ProblemResponse> problemResponses = problemFactory.create(problemDetailResponses);
 
         return WrongAnsweredProblemsResponse.of(
-                unitSummary,
+                unitSummaryResponse,
                 problemResponses
         );
     }

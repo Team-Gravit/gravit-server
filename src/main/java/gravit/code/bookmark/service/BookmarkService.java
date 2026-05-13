@@ -1,12 +1,12 @@
 package gravit.code.bookmark.service;
 
 import gravit.code.bookmark.domain.Bookmark;
-import gravit.code.bookmark.repository.BookmarkRepository;
 import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
 import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
+import gravit.code.bookmark.repository.BookmarkRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +55,7 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProblemDetail> getAllBookmarkedProblemInUnit(
+    public List<ProblemDetailResponse> getAllBookmarkedProblemInUnit(
             long userId,
             long unitId
     ){

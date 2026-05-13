@@ -1,7 +1,7 @@
 package gravit.code.wrongAnsweredNote.service;
 
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemDetail;
+import gravit.code.problem.dto.response.ProblemDetailResponse;
 import gravit.code.wrongAnsweredNote.domain.WrongAnsweredNote;
 import gravit.code.wrongAnsweredNote.fixture.WrongAnsweredNoteFixture;
 import gravit.code.wrongAnsweredNote.repository.WrongAnsweredNoteRepository;
@@ -78,14 +78,14 @@ class WrongAnsweredNoteServiceUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            List<ProblemDetail> expected = List.of(
-                    new ProblemDetail(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false)
+            List<ProblemDetailResponse> expected = List.of(
+                    new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false)
             );
 
             when(wrongAnsweredNoteRepository.findWrongAnsweredProblemDetailByUnitIdAndUserId(unitId, userId)).thenReturn(expected);
 
             // when
-            List<ProblemDetail> result = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId);
+            List<ProblemDetailResponse> result = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId);
 
             // then
             assertSoftly(softly -> {
@@ -103,7 +103,7 @@ class WrongAnsweredNoteServiceUnitTest {
             when(wrongAnsweredNoteRepository.findWrongAnsweredProblemDetailByUnitIdAndUserId(unitId, userId)).thenReturn(List.of());
 
             // when
-            List<ProblemDetail> result = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId);
+            List<ProblemDetailResponse> result = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId);
 
             // then
             assertThat(result).isEmpty();
