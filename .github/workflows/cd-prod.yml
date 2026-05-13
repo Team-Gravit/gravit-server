@@ -3,6 +3,12 @@ name: 프로덕션 서버 CD
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: '배포할 이미지 태그 (예: v1.0.0)'
+        required: true
+        default: 'v1.0.0'
 
 jobs:
   build:
@@ -14,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+          ref: ${{ github.event.inputs.image_tag || github.event.release.tag_name }}
 
       - name: JDK 버전 설정
         uses: actions/setup-java@v4
@@ -66,7 +73,7 @@ jobs:
 
       - name: 도커 이미지 빌드
         env:
-          IMAGE_TAG: ${{ github.event.release.tag_name }}
+          IMAGE_TAG: ${{ github.event.inputs.image_tag || github.event.release.tag_name }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
           docker build \
@@ -76,7 +83,7 @@ jobs:
 
       - name: 도커 이미지 푸쉬
         env:
-          IMAGE_TAG: ${{ github.event.release.tag_name }}
+          IMAGE_TAG: ${{ github.event.inputs.image_tag || github.event.release.tag_name }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
           docker push "$DOCKER_USERNAME/gravit-server:$IMAGE_TAG"
@@ -104,7 +111,7 @@ jobs:
       - name: 앱센터 서버에 배포
         uses: appleboy/ssh-action@v1.2.5
         env:
-          IMAGE_TAG: ${{ github.event.release.tag_name }}
+          IMAGE_TAG: ${{ github.event.inputs.image_tag || github.event.release.tag_name }}
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         with:
           host: ${{secrets.APPCENTER_SERVER_IP}}
