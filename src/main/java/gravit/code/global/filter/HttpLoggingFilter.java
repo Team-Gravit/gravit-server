@@ -1,6 +1,5 @@
 package gravit.code.global.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,31 +8,36 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.PathContainer;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class HttpLoggingFilter extends OncePerRequestFilter {
 
-    private final ObjectMapper objectMapper;
-
-    private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
-    private static final List<String> EXCLUDE_PATTERNS = List.of(
-            "/actuator/**",      // 전체 액추에이터
-            "/swagger-ui/**",
-            "/v3/api-docs/**"
+    private static final PathPatternParser PATH_PATTERN_PARSER = new PathPatternParser();
+    private static final List<PathPattern> EXCLUDE_PATTERNS = List.of(
+            PATH_PATTERN_PARSER.parse("/actuator/**"),
+            PATH_PATTERN_PARSER.parse("/swagger-ui/**"),
+            PATH_PATTERN_PARSER.parse("/v3/api-docs/**")
     );
-    private static final int RESPONSE_BODY_MAX_LENGTH = 200;
+
+
+    private static final List<String> SENSITIVE_KEYS = List.of(
+            "token", "accessToken", "refreshToken", "password", "authorization", "apiKey"
+    );
+    private static final String MASK_VALUE = "****";
+    private static final String USER_ID_ATTRIBUTE = "user_id";
 
     @Override
     protected void doFilterInternal(
@@ -43,40 +47,34 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         // 1) traceId 부여 (MDC)
-        String traceId = generateTraceId();
-        MDC.put("traceId", traceId);
-
-        ContentCachingRequestWrapper wrappingRequest = new ContentCachingRequestWrapper(request);
-        ContentCachingResponseWrapper wrappingResponse = new ContentCachingResponseWrapper(response);
+        MDC.put("traceId", generateTraceId());
 
         boolean excluded = isExcluded(request);
 
         // 2) 로깅 제외 대상이면 그냥 통과 (traceId는 유지: 추후 하위 레이어 로그에도 붙음)
         if (excluded) {
             try {
-                filterChain.doFilter(wrappingRequest, wrappingResponse);
+                filterChain.doFilter(request, response);
             } finally {
-                wrappingResponse.copyBodyToResponse();
                 MDC.clear();
             }
             return;
         }
 
-        printRequestUri(wrappingRequest);
+        printRequestUri(request);
 
         try {
-            filterChain.doFilter(wrappingRequest, wrappingResponse);
-            printResponse(request, response, wrappingResponse);
-            wrappingResponse.copyBodyToResponse();
+            filterChain.doFilter(request, response);
+            printResponse(request, response);
         } finally {
             MDC.clear();
         }
     }
 
     private boolean isExcluded(HttpServletRequest req) {
-        String path = req.getRequestURI();
-        for (String p : EXCLUDE_PATTERNS) {
-            if (PATH_MATCHER.match(p, path)) {
+        PathContainer path = PathContainer.parsePath(req.getRequestURI());
+        for (PathPattern p : EXCLUDE_PATTERNS) {
+            if (p.matches(path)) {
                 return true;
             }
         }
@@ -84,56 +82,84 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
     }
 
     private String generateTraceId() {
-        return java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+    }
+
+    private void printRequestUri(HttpServletRequest request) {
+        String methodType = request.getMethod();
+        String uri = buildDecodedRequestUri(request);
+        log.info("[REQUEST] {} {}", methodType, uri);
+    }
+
+    private void printResponse(HttpServletRequest request, HttpServletResponse response) {
+        Long userId = (Long) request.getAttribute(USER_ID_ATTRIBUTE);
+        String uri = buildDecodedRequestUri(request);
+        HttpStatus status = HttpStatus.valueOf(response.getStatus());
+
+        log.info("[RESPONSE] {} userId = {}, ({})", uri, userId, status);
     }
 
     private String buildDecodedRequestUri(HttpServletRequest request) {
         String path = request.getRequestURI();
-        String query = decodeQuery(request.getQueryString());
-        return (query == null || query.isBlank()) ? path : path + "?" + query;
+        String query = request.getQueryString();
+
+        if (query == null || query.isBlank()) {
+            return path;
+        }
+
+        String decodedQuery = decodeQuery(query);
+        String maskedQuery = maskSensitiveParams(decodedQuery);
+
+        return path + "?" + maskedQuery;
     }
 
     private String decodeQuery(String rawQuery) {
-        if (rawQuery == null) {
-            return null;
+        if (rawQuery == null || rawQuery.isBlank()) {
+            return rawQuery;
         }
+
         try {
             return URLDecoder.decode(rawQuery, StandardCharsets.UTF_8);
         } catch (IllegalArgumentException e) {
+            log.warn("Query 디코딩 실패 parameter: {}, msg: {}", rawQuery, e.getMessage());
             return rawQuery;
         }
     }
 
-    private void printResponse(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            ContentCachingResponseWrapper responseWrapper
-    ) {
-        Long userId = (Long) request.getAttribute("user_id");
-        String uri = buildDecodedRequestUri(request);
-        HttpStatus status = HttpStatus.valueOf(response.getStatus());
+    private String maskSensitiveParams(String decodedQuery) {
+        String[] params = decodedQuery.split("&");
+        StringBuilder maskedQuery = new StringBuilder();
 
-        String body;
-        try {
-            byte[] bytes = responseWrapper.getContentAsByteArray();
-            if (bytes.length == 0) {
-                body = "NONE";
+        for (int i = 0; i < params.length; i++) {
+            String param = params[i];
+
+            if (!param.contains("=")) {
+                maskedQuery.append(param);
             } else {
-                body = objectMapper.writeValueAsString(objectMapper.readTree(bytes));
-                if (body.length() > RESPONSE_BODY_MAX_LENGTH) {
-                    body = body.substring(0, RESPONSE_BODY_MAX_LENGTH) + "...(truncated)";
+                int equalIndex = param.indexOf("=");
+                String key = param.substring(0, equalIndex);
+
+                if (isSensitiveKey(key)) {
+                    maskedQuery.append(key).append("=").append(MASK_VALUE);
+                } else {
+                    maskedQuery.append(param);
                 }
             }
-        } catch (IOException e) {
-            body = responseWrapper.getContentType() + "NOT JSON";
+
+            if (i < params.length - 1) {
+                maskedQuery.append("&");
+            }
         }
 
-        log.info("[RESPONSE] {} userId = {}, ({})  responseBody: {}", uri, userId, status, body);
+        return maskedQuery.toString();
     }
 
-    private void printRequestUri(ContentCachingRequestWrapper request) {
-        String methodType = request.getMethod();
-        String uri = buildDecodedRequestUri(request);
-        log.info("[REQUEST] {} {}", methodType, uri);
+    private boolean isSensitiveKey(String key) {
+        for (String sensitive : SENSITIVE_KEYS) {
+            if (sensitive.equalsIgnoreCase(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

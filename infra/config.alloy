@@ -118,6 +118,7 @@ loki.process "spring_api_perf_labels" {
 loki.write "local" {
   endpoint {
     url        = "http://loki:3100/loki/api/v1/push"  // ← 로컬 Loki 서비스로 보냄
+    tenant_id  = "fake"
     batch_wait = "1s"
     batch_size = "1MB"
   }
