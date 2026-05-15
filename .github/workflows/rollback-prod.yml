@@ -70,9 +70,8 @@ jobs:
             echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME" > .env
             echo "IMAGE_TAG=$VERSION" >> .env
 
-            docker-compose -f docker-compose-prod.yml pull || { echo "이미지 pull 실패. 롤백 중단."; exit 1; }
-            docker-compose -f docker-compose-prod.yml down
-            docker-compose -f docker-compose-prod.yml up -d --force-recreate
+            docker-compose -f docker-compose-prod.yml pull gravit-server-prod || { echo "이미지 pull 실패. 롤백 중단."; exit 1; }
+            docker-compose -f docker-compose-prod.yml up -d --no-deps --force-recreate gravit-server-prod
 
             docker images "$DOCKER_HUB_USERNAME/gravit-server" \
               --format "{{.Repository}}:{{.Tag}}" | \

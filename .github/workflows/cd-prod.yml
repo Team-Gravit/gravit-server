@@ -118,9 +118,8 @@ jobs:
             echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME" > .env
             echo "IMAGE_TAG=$IMAGE_TAG" >> .env
 
-            docker-compose -f docker-compose-prod.yml pull
-            docker-compose -f docker-compose-prod.yml down
-            docker-compose -f docker-compose-prod.yml up -d --force-recreate
+            docker-compose -f docker-compose-prod.yml pull gravit-server-prod
+            docker-compose -f docker-compose-prod.yml up -d --no-deps --force-recreate gravit-server-prod
 
             docker images "$DOCKER_HUB_USERNAME/gravit-server" \
               --format "{{.Repository}}:{{.Tag}}" | \
