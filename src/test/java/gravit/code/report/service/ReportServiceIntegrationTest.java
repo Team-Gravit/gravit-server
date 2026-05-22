@@ -1,4 +1,4 @@
-﻿package gravit.code.report.service;
+package gravit.code.report.service;
 
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.repository.ChapterRepository;

@@ -1,4 +1,4 @@
-﻿package gravit.code.userLeague.service;
+package gravit.code.userLeague.service;
 
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;

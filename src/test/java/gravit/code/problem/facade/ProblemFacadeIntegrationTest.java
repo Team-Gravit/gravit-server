@@ -1,4 +1,4 @@
-﻿package gravit.code.problem.facade;
+package gravit.code.problem.facade;
 
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;

@@ -1,4 +1,4 @@
-﻿package gravit.code.lesson.facade;
+package gravit.code.lesson.facade;
 
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.repository.ChapterRepository;

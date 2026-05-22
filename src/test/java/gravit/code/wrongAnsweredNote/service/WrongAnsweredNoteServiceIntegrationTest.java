@@ -1,4 +1,4 @@
-﻿package gravit.code.wrongAnsweredNote.service;
+package gravit.code.wrongAnsweredNote.service;
 
 import gravit.code.bookmark.domain.Bookmark;
 import gravit.code.bookmark.repository.BookmarkRepository;

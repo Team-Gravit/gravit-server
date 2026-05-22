@@ -1,4 +1,4 @@
-﻿package gravit.code.lesson.service;
+package gravit.code.lesson.service;
 
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.dto.response.TopChapterResponse;

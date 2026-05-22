@@ -1,4 +1,4 @@
-﻿package gravit.code.bookmark.facade;
+package gravit.code.bookmark.facade;
 
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;

@@ -1,4 +1,4 @@
-﻿package gravit.code.bookmark.service;
+package gravit.code.bookmark.service;
 
 import gravit.code.bookmark.domain.Bookmark;
 import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;

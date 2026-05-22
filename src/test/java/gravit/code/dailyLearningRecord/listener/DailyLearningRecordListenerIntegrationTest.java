@@ -1,4 +1,4 @@
-﻿package gravit.code.dailyLearningRecord.listener;
+package gravit.code.dailyLearningRecord.listener;
 
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.global.event.LessonCompletedEvent;

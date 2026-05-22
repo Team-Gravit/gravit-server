@@ -1,4 +1,4 @@
-﻿package gravit.code.mission.service;
+package gravit.code.mission.service;
 
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.LessonSubmission;
