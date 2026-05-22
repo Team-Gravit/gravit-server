@@ -125,9 +125,6 @@ public enum CustomErrorCode implements ErrorCode {
     JSON_CONVERT_TO_STRING_INVALID(HttpStatus.BAD_REQUEST, "CONVERT_4001", "Json 객체를 String 객체로 변환에 실패하였습니다."),
     STRING_CONVERT_TO_JSON_INVALID(HttpStatus.BAD_REQUEST, "CONVERT_4002", "String 객체를 Json 객체로 변환에 실패하였습니다."),
 
-    // Badge
-    NO_PLANET_MAPPING_CHAPTER_ID(HttpStatus.NOT_FOUND,"BADGE_4041", "챕터 아이디에 해당하는 행성을 찾을 수 없습니다."),
-
     // Page
     PAGE_MUST_START_FROM_1(HttpStatus.BAD_REQUEST, "PAGE_4001", "notice 페이지는 1번부터 시작합니다."),
 

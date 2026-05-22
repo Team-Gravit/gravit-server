@@ -1,6 +1,5 @@
 package gravit.code.mission.service;
 
-import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
@@ -14,7 +13,6 @@ import gravit.code.mission.repository.MissionRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,8 +31,6 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
     private final UserRepository userRepository;
-
-    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public void reassignMission(){
@@ -98,7 +94,6 @@ public class MissionService {
         // 미션을 완료했다면, 경험치 지급
         if (mission.isCompleted()){
             awardMissionXp(userId, mission.getMissionType().getAwardXp());
-            publisher.publishEvent(new MissionCompletedEvent(userId));
         }
     }
 

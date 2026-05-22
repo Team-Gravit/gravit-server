@@ -1,6 +1,5 @@
 package gravit.code.mission.service;
 
-import gravit.code.global.event.badge.MissionCompletedEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.mission.domain.Mission;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -47,9 +45,6 @@ class MissionServiceUnitTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private ApplicationEventPublisher publisher;
 
     private User createUser(long id) {
         User user = User.create("test@test.com", "provider_" + id, "테스터", "handle" + id, 1, Role.USER);
@@ -218,7 +213,6 @@ class MissionServiceUnitTest {
             // then
             assertThat(mission.isCompleted()).isTrue();
             assertThat(mission.getProgressRate()).isEqualTo(100.0);
-            verify(publisher).publishEvent(any(MissionCompletedEvent.class));
         }
 
         @Test
@@ -236,7 +230,6 @@ class MissionServiceUnitTest {
 
             // then
             assertThat(mission.getProgressRate()).isEqualTo(0.0);
-            verify(publisher, never()).publishEvent(any());
         }
 
         @Test
@@ -256,7 +249,6 @@ class MissionServiceUnitTest {
 
             // then
             assertThat(mission.isCompleted()).isTrue();
-            verify(publisher).publishEvent(any(MissionCompletedEvent.class));
         }
 
         @Test
