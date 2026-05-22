@@ -35,9 +35,10 @@ public class SeasonService {
         if(prepSeason.isPresent()) return prepSeason.get();
 
         // FINALIZING 이 존재 -> 배치(해당 시즌 마무리-> history 저장 및 UserLeague 초기화) 진행중이라는 뜻
-        // 새 시즌은 PREP 으로 만들기
-        if(seasonRepository.existsByStatus(SeasonStatus.FINALIZING)){
-            SeasonDto next = calendar.nextFromEndsAt(calendar.currentWeek().endsAt());
+        // 새 시즌은 PREP 으로 만들기 (FINALIZING 시즌의 실제 endsAt 기준으로 다음 시즌 계산)
+        Optional<Season> finalizingSeason = seasonRepository.findByStatus(SeasonStatus.FINALIZING);
+        if(finalizingSeason.isPresent()){
+            SeasonDto next = calendar.nextFromEndsAt(finalizingSeason.get().getEndsAt());
             log.info("next season start time = {}", next.startsAt());
             log.info("next season end time = {}", next.endsAt());
 
@@ -52,7 +53,7 @@ public class SeasonService {
         }
 
         // 정말 아무것도 없는 초기 부트스트랩 시 에만 ACTIVE 생성
-        SeasonDto current = calendar.currentWeek();
+        SeasonDto current = calendar.currentSeason();
 
         return seasonRepository.findBySeasonKey(current.seasonKey()).orElseGet(()->{
             try{

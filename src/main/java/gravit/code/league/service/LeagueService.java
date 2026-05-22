@@ -13,6 +13,7 @@ import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.season.service.port.SeasonPopupSeenStore;
+import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class LeagueService {
     private final SeasonClosedCache seasonClosedCache;
     private final SeasonPopupSeenStore seasonPopupSeenStore;
     private final UserLeagueHistoryRepository userLeagueHistoryRepository;
+    private final UserLeagueRepository userLeagueRepository;
     private final Clock clock;
 
     private static final Duration TTL_BUFFER = Duration.ofHours(2);
@@ -75,9 +77,10 @@ public class LeagueService {
         boolean firstSeen = seasonPopupSeenStore.markSeenIfFirst(userId, lastClosedSeasonId, ttl);
         if (!firstSeen) return Optional.empty();
 
-        // 위 3가지 조건을 다 통과하면 db 접근해서 유저의 이전 리그 정보를 가져온다.
+        // 위 3가지 조건을 다 통과하면 db 접근해서 유저의 이전/현재 리그 정보를 가져온다.
         return userLeagueHistoryRepository.findByUserIdAndSeasonId(userId, lastClosedSeasonId)
-                .map(LastSeasonPopupDto::from);
+                .flatMap(history -> userLeagueRepository.findByUserIdAndSeasonId(userId, activeSeason.getId())
+                        .map(nextUl -> LastSeasonPopupDto.from(history, nextUl)));
     }
 
     private Duration ttlUntil(LocalDateTime activeSeasonEndedAt) {

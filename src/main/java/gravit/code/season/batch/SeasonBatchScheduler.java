@@ -15,18 +15,19 @@ public class SeasonBatchScheduler {
     private final SeasonBatchService seasonBatchService;
 
     @Scheduled(
-            cron = "${scheduler.season.rollover-cron:0 0 0 * * MON}",
+            cron = "${scheduler.season.rollover-cron:0 0 0 1 1,5,9 *}",
             zone = "Asia/Seoul"
     )
-    public void tryWeeklyRollover(){
+    public void tryQuarterlyRollover(){
         try{
-            seasonBatchService.finalizeAndRolloverWeekly();
+            seasonBatchService.finalizeAndRollover();
             log.info("Season Rollover 실행");
         }catch (RestApiException e){
             if(e.getErrorCode() == CustomErrorCode.ACTIVE_SEASON_NOT_FOUND){
                 log.error("시즌 변경 작업 도중 ACTIVE 인 시즌이 존재하지 않아 예외 발생");
                 return;
             }
+            throw e;
         }
     }
 }

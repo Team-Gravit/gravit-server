@@ -28,7 +28,7 @@ public class Season {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 2025-W33 (ISO 주차 기반)
+    // 2026-S1 (4개월 단위: S1=1~4월, S2=5~8월, S3=9~12월)
     @Column(name = "season_key", nullable = false, length = 16)
     private String seasonKey;
 

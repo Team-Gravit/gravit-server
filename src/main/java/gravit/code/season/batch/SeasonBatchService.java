@@ -2,8 +2,6 @@ package gravit.code.season.batch;
 
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.league.domain.League;
-import gravit.code.league.repository.LeagueRepository;
 import gravit.code.season.calendar.SeasonCalendar;
 import gravit.code.season.domain.Season;
 import gravit.code.season.repository.SeasonRepository;
@@ -31,7 +29,6 @@ public class SeasonBatchService {
     private final SeasonRepository seasonRepository;
     private final UserLeagueHistoryRepository historyRepository;
     private final UserLeagueRepository userLeagueRepository;
-    private final LeagueRepository leagueRepository;
     private final SeasonClosedCache seasonClosedCache;
     private final Clock clock;
 
@@ -40,7 +37,7 @@ public class SeasonBatchService {
             backoff = @Backoff(delay = 2000, multiplier = 2)
     )
     @Transactional
-    public void finalizeAndRolloverWeekly(){
+    public void finalizeAndRollover(){
         // 닫을 시즌 확정 , 락
         LocalDateTime nowKst = LocalDateTime.now(clock);
         Season currentSeason = seasonRepository.findCloseableActiveByNowForUpdate(nowKst).orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
@@ -50,16 +47,15 @@ public class SeasonBatchService {
         historyRepository.deleteBySeasonId(currentSeason); // 멱등성 보장
         int snap = historyRepository.insertFromCurrent(currentSeason.getId(), nowKst);
 
-        // 다음 시즌 확보
+        // 다음 시즌 확보 (4개월 단위)
         LocalDateTime nextStartsAt = currentSeason.getEndsAt();
-        LocalDateTime nextEndsAt = nextStartsAt.plusWeeks(1);
+        LocalDateTime nextEndsAt = nextStartsAt.plusMonths(4);
         Season nextSeason = seasonRepository.findPrepByStartingAt(nextStartsAt).orElseGet(()->
-                seasonRepository.save(Season.prep(SeasonCalendar.isoWeekKey(nextStartsAt.toLocalDate()), nextStartsAt, nextEndsAt))
+                seasonRepository.save(Season.prep(SeasonCalendar.seasonKey(nextStartsAt.toLocalDate()), nextStartsAt, nextEndsAt))
         );
 
-        // UserLeague 초기화 및 시즌 변경
-        League league = leagueRepository.findFirstByOrderBySortOrderAsc().orElseThrow(()-> new RestApiException(CustomErrorCode.LEAGUE_NOT_FOUND));
-        int inits = userLeagueRepository.resetAllForNextSeason(currentSeason, nextSeason, league);
+        // UserLeague 소프트 리셋: 직전 시즌 티어 기준으로 시작 티어·LP 차등 지급
+        int inits = userLeagueRepository.softResetForNextSeason(currentSeason.getId(), nextSeason.getId());
         log.info("히스토리 스냅샷 로우 수: {},  유저 리그 롤오버 로우 수 = {}", snap, inits);
 
         nextSeason.activate();

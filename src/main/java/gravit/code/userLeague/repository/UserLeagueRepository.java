@@ -1,7 +1,5 @@
 package gravit.code.userLeague.repository;
 
-import gravit.code.league.domain.League;
-import gravit.code.season.domain.Season;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.repository.custom.LeagueRankingQueryRepository;
 import gravit.code.userLeague.repository.custom.MyLeagueProfileQueryRepository;
@@ -25,18 +23,36 @@ public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, Le
 
     Optional<UserLeague> findByUserId(Long userId);
 
+    Optional<UserLeague> findByUserIdAndSeasonId(Long userId, Long seasonId);
+
     @Modifying(clearAutomatically = false, flushAutomatically = true)
-    @Query("""
-        update UserLeague ul
-        set ul.season   = :nextSeason,
-            ul.league   = :startLeague,
-            ul.lp       = 0,
-            ul.updatedAt = CURRENT_TIMESTAMP
-        where ul.season = :currentSeason
-    """)
-    int resetAllForNextSeason(
-            @Param("currentSeason") Season currentSeason,
-            @Param("nextSeason") Season nextSeason,
-            @Param("startLeague") League startLeague
+    @Query(value = """
+            UPDATE user_league ul
+            SET season_id    = :nextSeasonId,
+                league_id    = (SELECT l2.id FROM league l2
+                                WHERE l2.sort_order = CASE l_prev.sort_order
+                                    WHEN 1  THEN 1  WHEN 2  THEN 1  WHEN 3  THEN 1
+                                    WHEN 4  THEN 2  WHEN 5  THEN 2  WHEN 6  THEN 3
+                                    WHEN 7  THEN 4  WHEN 8  THEN 5  WHEN 9  THEN 6
+                                    WHEN 10 THEN 7  WHEN 11 THEN 8  WHEN 12 THEN 9
+                                    WHEN 13 THEN 10 WHEN 14 THEN 11 WHEN 15 THEN 12
+                                END),
+                league_point = CASE l_prev.sort_order
+                    WHEN 1  THEN 0    WHEN 2  THEN 0    WHEN 3  THEN 50
+                    WHEN 4  THEN 101  WHEN 5  THEN 150  WHEN 6  THEN 201
+                    WHEN 7  THEN 321  WHEN 8  THEN 461  WHEN 9  THEN 621
+                    WHEN 10 THEN 801  WHEN 11 THEN 1001 WHEN 12 THEN 1221
+                    WHEN 13 THEN 1461 WHEN 14 THEN 1721 WHEN 15 THEN 2001
+                END,
+                updated_at   = NOW()
+            FROM user_league_history ulh
+            JOIN league l_prev ON ulh.final_league_id = l_prev.id
+            WHERE ul.season_id  = :currentSeasonId
+              AND ulh.season_id = :currentSeasonId
+              AND ulh.user_id   = ul.user_id
+            """, nativeQuery = true)
+    int softResetForNextSeason(
+            @Param("currentSeasonId") long currentSeasonId,
+            @Param("nextSeasonId") long nextSeasonId
     );
 }
