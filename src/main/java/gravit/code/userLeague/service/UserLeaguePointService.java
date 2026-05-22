@@ -1,5 +1,6 @@
 package gravit.code.userLeague.service;
 
+import gravit.code.global.event.TierPromotionFeedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
@@ -8,6 +9,7 @@ import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserLeaguePointService {
     private final UserLeagueRepository userLeagueRepository;
     private final LeagueRepository leagueRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public void addLeaguePoints(
@@ -26,9 +29,17 @@ public class UserLeaguePointService {
     ) {
         UserLeague userLeague = userLeagueRepository.findByUserId(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
 
+        League oldLeague = userLeague.getLeague();
         int updatedLp = userLeague.addLeaguePoints((int) Math.round(points * accuracy * 0.01));
-        League league = leagueRepository.findByLpBetween(updatedLp).orElseThrow(() -> new RestApiException(CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT));
+        League newLeague = leagueRepository.findByLpBetween(updatedLp).orElseThrow(() -> new RestApiException(CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT));
 
-        userLeague.updateLeagueIfDifferent(league);
+        boolean isPromotion = !newLeague.getId().equals(oldLeague.getId())
+                && newLeague.getSortOrder() > oldLeague.getSortOrder();
+
+        userLeague.updateLeagueIfDifferent(newLeague);
+
+        if (isPromotion) {
+            publisher.publishEvent(new TierPromotionFeedEvent(userId, newLeague.getName()));
+        }
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -129,6 +130,11 @@ public class FriendService {
         long followeeCount = friendRepository.countByFollowerId(userId);
 
         return new FollowCountsResponse(followerCount, followeeCount);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> getFolloweeIds(long followerId) {
+        return friendRepository.findFolloweeIdsByFollowerId(followerId);
     }
 
     @Transactional(readOnly = true)

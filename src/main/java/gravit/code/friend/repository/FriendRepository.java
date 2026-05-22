@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSearchRepository {
@@ -76,4 +77,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
             )
             """)
     long countByFolloweeId(long userId);
+
+    @Query("SELECT f.followeeId FROM Friend f WHERE f.followerId = :followerId")
+    List<Long> findFolloweeIdsByFollowerId(@Param("followerId") long followerId);
 }

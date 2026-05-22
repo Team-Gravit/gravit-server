@@ -1,5 +1,6 @@
 package gravit.code.user.service;
 
+import gravit.code.global.event.LevelUpFeedEvent;
 import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -106,8 +107,14 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
+        int oldLevel = user.getLevel().getLevel();
         user.getLevel().updateXp((int) Math.round(xp * accuracy * 0.01));
+        int newLevel = user.getLevel().getLevel();
 
-        return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
+        if (newLevel > oldLevel) {
+            publisher.publishEvent(new LevelUpFeedEvent(userId, newLevel));
+        }
+
+        return UserLevelResponse.create(newLevel, user.getLevel().getXp());
     }
 }
