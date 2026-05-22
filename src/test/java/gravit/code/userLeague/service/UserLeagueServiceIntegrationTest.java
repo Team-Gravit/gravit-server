@@ -1,4 +1,4 @@
-package gravit.code.userLeague.service;
+﻿package gravit.code.userLeague.service;
 
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -26,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class UserLeagueServiceIntegrationTest {
 
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");

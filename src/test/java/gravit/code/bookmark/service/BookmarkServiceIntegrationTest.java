@@ -1,4 +1,4 @@
-package gravit.code.bookmark.service;
+﻿package gravit.code.bookmark.service;
 
 import gravit.code.bookmark.domain.Bookmark;
 import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -34,7 +33,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
 @Transactional
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class BookmarkServiceIntegrationTest {
 
     @Autowired

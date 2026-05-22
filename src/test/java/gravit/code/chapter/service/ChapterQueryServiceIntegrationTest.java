@@ -1,4 +1,4 @@
-package gravit.code.chapter.service;
+﻿package gravit.code.chapter.service;
 
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
@@ -19,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ChapterQueryServiceIntegrationTest {
 
     @Autowired

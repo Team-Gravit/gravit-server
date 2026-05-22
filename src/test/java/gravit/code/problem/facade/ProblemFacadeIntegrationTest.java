@@ -1,4 +1,4 @@
-package gravit.code.problem.facade;
+﻿package gravit.code.problem.facade;
 
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;
@@ -20,14 +20,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ProblemFacadeIntegrationTest {
 
     @Autowired

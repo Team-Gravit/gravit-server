@@ -1,4 +1,4 @@
-package gravit.code.dailyLearningRecord.listener;
+﻿package gravit.code.dailyLearningRecord.listener;
 
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.global.event.LessonCompletedEvent;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,6 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.verify;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class DailyLearningRecordListenerIntegrationTest {
 
     @Autowired

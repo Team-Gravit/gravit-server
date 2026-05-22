@@ -46,10 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = {
-        "classpath:sql/truncate_all.sql",
-        "classpath:sql/reset_main_page_ids.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "classpath:sql/reset_main_page_ids.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class UserFacadeIntegrationTest {
 
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
