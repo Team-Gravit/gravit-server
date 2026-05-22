@@ -1,157 +1,133 @@
-//package gravit.code.season.batch;
-//
-//import gravit.code.global.exception.domain.RestApiException;
-//import gravit.code.league.domain.League;
-//import gravit.code.league.repository.LeagueRepository;
-//import gravit.code.season.domain.Season;
-//import gravit.code.season.domain.SeasonStatus;
-//import gravit.code.season.repository.SeasonRepository;
-//import gravit.code.season.service.port.SeasonClosedCache;
-//import gravit.code.userLeague.domain.UserLeagueRepository;
-//import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.ArgumentCaptor;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.springframework.test.util.ReflectionTestUtils;
-//
-//import java.time.LocalDateTime;
-//import java.util.Optional;
-//
-//import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.*;
-//
-//@ExtendWith(MockitoExtension.class)
-//class SeasonBatchServiceTest {
-//
-//    @Mock
-//    SeasonRepository seasonRepository;
-//
-//    @Mock
-//    UserLeagueHistoryRepository userLeagueHistoryRepository;
-//
-//    @Mock
-//    UserLeagueRepository userLeagueRepository;
-//
-//    @Mock
-//    LeagueRepository leagueRepository;
-//
-//    @Mock
-//    SeasonClosedCache seasonClosedCache;
-//
-//    @InjectMocks
-//    SeasonBatchService seasonBatchService;
-//
-//    @Test
-//    void 활성_시즌을_닫고_히스토리_스냅샷_후_다음_시즌을_활성화_하고_UserLeague_를_롤오버한다(){
-//        // given
-//        Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
-//        Season newNextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
-//        ReflectionTestUtils.setField(nowSeason, "id", 1L);
-//        ReflectionTestUtils.setField(newNextSeason, "id", 2L);
-//
-//        doNothing().when(seasonClosedCache).setLastClosedSeasonId(any(Long.class));
-//        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
-//        when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
-//        when(userLeagueHistoryRepository.insertFromCurrent(any(Long.class), any(LocalDateTime.class))).thenReturn(12);
-//
-//        /** prep 상태인 다음시즌이 존재하지 않는 상황 **/
-//        when(seasonRepository.findPrepByStartingAt(newNextSeason.getStartsAt())).thenReturn(Optional.empty());
-//        when(seasonRepository.save(any(Season.class))).thenReturn(newNextSeason);
-//
-//        League firstLeague = League.create("BRONZE 1", 100,0, 1);
-//        when(leagueRepository.findFirstByOrderBySortOrderAsc()).thenReturn(Optional.of(firstLeague));
-//        when(userLeagueRepository.resetAllForNextSeason(nowSeason,newNextSeason,firstLeague)).thenReturn(12);
-//
-//        // when
-//        seasonBatchService.finalizeAndRolloverWeekly();
-//
-//        // then
-//        assertThat(nowSeason.getStatus()).isEqualTo(SeasonStatus.CLOSED);
-//        assertThat(newNextSeason.getStatus()).isEqualTo(SeasonStatus.ACTIVE);
-//        verify(userLeagueHistoryRepository).insertFromCurrent(any(Long.class), any(LocalDateTime.class));
-//
-//        // findPrepStartingAtForUpdate 인자로 들어간 nextStartsAt이 nowSeason.endsAt 과 같은지 확인
-//        ArgumentCaptor<LocalDateTime> startCapture = ArgumentCaptor.forClass(LocalDateTime.class);
-//        verify(seasonRepository).findPrepByStartingAt(startCapture.capture());
-//        assertThat(startCapture.getValue()).isEqualTo(newNextSeason.getStartsAt());
-//
-//        verify(seasonRepository, times(1)).save(any(Season.class));
-//        verify(userLeagueRepository, times(1)).resetAllForNextSeason(nowSeason, newNextSeason, firstLeague);
-//    }
-//
-//    @Test
-//    void 다음_시즌이_이미_PREP_상태로_있으면_save_하지_않고_그_시즌을_활성화_한다(){
-//        // given
-//        Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
-//        Season nextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
-//        ReflectionTestUtils.setField(nowSeason, "id", 1L);
-//        ReflectionTestUtils.setField(nextSeason, "id", 2L);
-//        doNothing().when(seasonClosedCache).setLastClosedSeasonId(any(Long.class));
-//        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
-//        when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
-//        when(userLeagueHistoryRepository.insertFromCurrent(any(Long.class), any(LocalDateTime.class))).thenReturn(12);
-//
-//        /** PREP 인 다음 시즌이 존재함 **/
-//        when(seasonRepository.findPrepByStartingAt(nextSeason.getStartsAt())).thenReturn(Optional.of(nextSeason));
-//
-//        League firstLeague = League.create("BRONZE 1", 100,0, 1);
-//        when(leagueRepository.findFirstByOrderBySortOrderAsc()).thenReturn(Optional.of(firstLeague));
-//        when(userLeagueRepository.resetAllForNextSeason(nowSeason, nextSeason, firstLeague)).thenReturn(12);
-//
-//        // when
-//        seasonBatchService.finalizeAndRolloverWeekly();
-//
-//        // then
-//        assertThat(nowSeason.getStatus()).isEqualTo(SeasonStatus.CLOSED);
-//        assertThat(nextSeason.getStatus()).isEqualTo(SeasonStatus.ACTIVE);
-//        verify(userLeagueHistoryRepository).insertFromCurrent(any(Long.class), any(LocalDateTime.class));
-//
-//        // findPrepStartingAtForUpdate 인자로 들어간 nextStartsAt이 nowSeason.endsAt 과 같은지 확인
-//        ArgumentCaptor<LocalDateTime> startCapture = ArgumentCaptor.forClass(LocalDateTime.class);
-//        verify(seasonRepository).findPrepByStartingAt(startCapture.capture());
-//        assertThat(startCapture.getValue()).isEqualTo(nextSeason.getStartsAt());
-//
-//        verify(seasonRepository, times(0)).save(any(Season.class));
-//        verify(userLeagueRepository, times(1)).resetAllForNextSeason(nowSeason, nextSeason, firstLeague);
-//
-//    }
-//
-//    @Test
-//    void 배치_실행_시_활성_시즌이_없으면_예외를_던진다() {
-//        // given
-//        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.empty());
-//
-//        // when
-//        // then
-//        assertThrows(RestApiException.class, ()-> seasonBatchService.finalizeAndRolloverWeekly());
-//    }
-//
-//    @Test
-//    void 리그가_없으면_예외를_던진다() {
-//        // given
-//        Season nowSeason = Season.active("2025-W32", LocalDateTime.of(2025,8,5,0,0),LocalDateTime.of(2025,8,11,0,0));
-//        Season newNextSeason = Season.prep("2025-W33", LocalDateTime.of(2025,8,  11,0,0),LocalDateTime.of(2025,8,18,0,0));
-//        ReflectionTestUtils.setField(nowSeason, "id", 1L);
-//        ReflectionTestUtils.setField(newNextSeason, "id", 2L);
-//
-//        when(seasonRepository.findCloseableActiveByNowForUpdate(any(LocalDateTime.class))).thenReturn(Optional.of(nowSeason));
-//        when(userLeagueHistoryRepository.deleteBySeasonId(nowSeason)).thenReturn(12);
-//        when(userLeagueHistoryRepository.insertFromCurrent(any(Long.class), any(LocalDateTime.class))).thenReturn(12);
-//
-//        /** prep 상태인 다음시즌이 존재하지 않는 상황 **/
-//        when(seasonRepository.findPrepByStartingAt(newNextSeason.getStartsAt())).thenReturn(Optional.empty());
-//        when(seasonRepository.save(any(Season.class))).thenReturn(newNextSeason);
-//
-//        /** 리그가 존재하지 않을 때 **/
-//        when(leagueRepository.findFirstByOrderBySortOrderAsc()).thenReturn(Optional.empty());
-//
-//        //when
-//        //then
-//        assertThrows(RestApiException.class, ()-> seasonBatchService.finalizeAndRolloverWeekly());
-//    }
-//}
+package gravit.code.season.batch;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.league.domain.League;
+import gravit.code.league.fixture.LeagueFixture;
+import gravit.code.season.domain.Season;
+import gravit.code.season.domain.SeasonStatus;
+import gravit.code.season.fixture.SeasonFixture;
+import gravit.code.season.repository.SeasonRepository;
+import gravit.code.support.TCSpringBootTest;
+import gravit.code.user.domain.User;
+import gravit.code.user.fixture.UserFixture;
+import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.fixture.UserLeagueFixture;
+import gravit.code.userLeague.repository.UserLeagueRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionTemplate;
+
+
+@TCSpringBootTest
+class SeasonBatchServiceTest {
+
+    @Autowired SeasonBatchService seasonBatchService;
+    @Autowired SeasonRepository seasonRepository;
+    @Autowired UserLeagueRepository userLeagueRepository;
+    @PersistenceContext EntityManager entityManager;
+    @Autowired TransactionTemplate transactionTemplate;
+
+    @Autowired UserFixture userFixture;
+    @Autowired LeagueFixture leagueFixture;
+    @Autowired SeasonFixture seasonFixture;
+    @Autowired UserLeagueFixture userLeagueFixture;
+
+    // 소프트 리셋 검증에 필요한 리그 (sort_order 기준 매핑)
+    // B3(1)→B3(1)/0LP, S3(4)→B2(2)/101LP, G1(9)→S1(6)/621LP
+    private League bronze3;
+    private League bronze2;
+    private League silver3;
+    private League silver1;
+    private League gold1;
+    private Season currentSeason;
+
+    @BeforeEach
+    void setUpLeaguesAndSeason() {
+        bronze3 = leagueFixture.브론즈_3();
+        bronze2 = leagueFixture.브론즈_2();
+        silver3 = leagueFixture.실버_3();
+        silver1 = leagueFixture.실버_1();
+        gold1   = leagueFixture.골드_1();
+
+        currentSeason = seasonFixture.진행중인_시즌("2025-S1");
+    }
+
+    @Nested
+    @DisplayName("시즌 롤오버 실행 시")
+    class WhenRollover {
+
+        @Test
+        @DisplayName("직전 시즌 티어 기반으로 소프트 리셋이 적용된다")
+        void 소프트_리셋_매핑이_올바르게_적용된다() {
+            User user1 = userFixture.일반_유저(1);
+            User user2 = userFixture.일반_유저(2);
+            User user3 = userFixture.일반_유저(3);
+
+            userLeagueRepository.save(UserLeague.create(user1, currentSeason, bronze3)); // sort=1 → sort=1, LP=0
+            userLeagueRepository.save(UserLeague.create(user2, currentSeason, silver3)); // sort=4 → sort=2, LP=101
+            userLeagueRepository.save(UserLeague.create(user3, currentSeason, gold1));   // sort=9 → sort=6, LP=621
+
+            seasonBatchService.finalizeAndRollover();
+
+            // native SQL 벌크 업데이트 후 JPA 1차 캐시 무효화
+            entityManager.clear();
+
+            transactionTemplate.executeWithoutResult((status) ->{
+                Season updatedSeason = seasonRepository.findById(currentSeason.getId()).orElseThrow();
+                Season nextSeason = seasonRepository.findBySeasonKey("2025-S2").orElseThrow();
+                UserLeague ul1 = userLeagueRepository.findByUserId(user1.getId()).orElseThrow();
+                UserLeague ul2 = userLeagueRepository.findByUserId(user2.getId()).orElseThrow();
+                UserLeague ul3 = userLeagueRepository.findByUserId(user3.getId()).orElseThrow();
+
+                assertSoftly(softly -> {
+                    // 현재 시즌 재조회
+                    softly.assertThat(updatedSeason.getStatus()).isEqualTo(SeasonStatus.CLOSED);
+                    softly.assertThat(nextSeason.getStatus()).isEqualTo(SeasonStatus.ACTIVE);
+
+                    softly.assertThat(ul1.getLp()).isEqualTo(0);
+                    softly.assertThat(ul1.getLeague().getSortOrder()).isEqualTo(1); // 브론즈 3 유지
+
+                    softly.assertThat(ul2.getLp()).isEqualTo(101);
+                    softly.assertThat(ul2.getLeague().getSortOrder()).isEqualTo(2); // 실버3 → 브론즈2
+
+                    softly.assertThat(ul3.getLp()).isEqualTo(621);
+                    softly.assertThat(ul3.getLeague().getSortOrder()).isEqualTo(6); // 골드1 → 실버1
+                });
+            });
+        }
+
+        @Test
+        @DisplayName("다음 PREP 시즌이 없으면 새로 생성한다")
+        void 다음_시즌이_없으면_새로_생성하고_활성화한다() {
+            seasonBatchService.finalizeAndRollover();
+            entityManager.clear();
+
+            Season updatedSeason = seasonRepository.findById(currentSeason.getId()).orElseThrow();
+            assertThat(seasonRepository.findBySeasonKey("2025-S2")).isPresent();
+            assertThat(updatedSeason.getStatus()).isEqualTo(SeasonStatus.CLOSED);
+        }
+
+        @Test
+        @DisplayName("ACTIVE 시즌이 없으면 예외를 던진다")
+        void ACTIVE_시즌이_없으면_예외를_던진다() {
+            // 현재 시즌을 CLOSED 상태로 변환
+            Season activeSeason = seasonRepository.findByStatus(SeasonStatus.ACTIVE).orElseThrow();
+            activeSeason.finalizing();
+            activeSeason.close();
+
+            seasonRepository.save(activeSeason);
+
+            assertThatThrownBy(() -> seasonBatchService.finalizeAndRollover())
+                    .isInstanceOf(RestApiException.class);
+        }
+    }
+}

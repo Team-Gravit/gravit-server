@@ -1,127 +1,108 @@
-//package gravit.code.season.service;
-//
-//import gravit.code.season.calendar.SeasonCalendar;
-//import gravit.code.season.domain.Season;
-//import gravit.code.season.domain.SeasonStatus;
-//import gravit.code.season.repository.SeasonRepository;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//
-//import java.time.Clock;
-//import java.time.LocalDateTime;
-//import java.time.OffsetDateTime;
-//import java.time.ZoneId;
-//import java.util.Optional;
-//
-//import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.when;
-//
-//@ExtendWith(MockitoExtension.class)
-//class SeasonServiceTest {
-//
-//    @Mock
-//    private SeasonRepository seasonRepository;
-//
-//    SeasonService seasonService;
-//
-//    @BeforeEach
-//    void setUp(){
-//        Clock fixedKst = Clock.fixed(
-//                OffsetDateTime.parse("2025-08-05T12:34:56+09:00").toInstant(),
-//                ZoneId.of("Asia/Seoul")
-//        );
-//
-//        SeasonCalendar seasonCalendar = new SeasonCalendar(fixedKst);
-//        seasonService = new SeasonService(seasonRepository, seasonCalendar);
-//    }
-//
-//    @Test
-//    void 만약_ACTIVE_인_Season이_존재한다면_해당_Season_리턴(){
-//        // given
-//        Season activeSeason = Season.active("2025-w32",
-//                LocalDateTime.of(2025,8,4,0,0),
-//                LocalDateTime.of(2025,8,11,0,0));
-//
-//        when(seasonRepository.findByStatus(SeasonStatus.ACTIVE)).thenReturn(Optional.of(activeSeason));
-//
-//        // when
-//        Season result = seasonService.getOrCreateActiveSeason();
-//
-//        // then
-//        assertThat(activeSeason.getStatus()).isEqualTo(SeasonStatus.ACTIVE);
-//        assertThat(activeSeason.getSeasonKey()).isEqualTo("2025-w32");
-//        assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025,8,4,0,0));
-//        assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2025,8,11,0,0));
-//
-//    }
-//
-//    @Test
-//    void 만약_ACTIVE_인_Season이_없고_PREP_Season이_존재한다면_해당_Season_리턴(){
-//        // given
-//        Season prepSeason = Season.prep("2025-w33",
-//                LocalDateTime.of(2025,8,11,0,0),
-//                LocalDateTime.of(2025,8,18,0,0));
-//
-//        when(seasonRepository.findByStatus(SeasonStatus.ACTIVE)).thenReturn(Optional.empty());
-//        when(seasonRepository.findByStatus(SeasonStatus.PREP)).thenReturn(Optional.of(prepSeason));
-//
-//        // when
-//        Season result = seasonService.getOrCreateActiveSeason();
-//
-//        // then
-//        assertThat(result.getStatus()).isEqualTo(SeasonStatus.PREP);
-//        assertThat(result.getSeasonKey()).isEqualTo("2025-w33");
-//        assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025,8,11,0,0));
-//        assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2025,8,18,0,0));
-//
-//    }
-//
-//    @Test
-//    void ACTIVE_PREP_둘다_없고_FINALIZING_이_존재한다면_PREP_시즌_생성하고_리턴(){
-//        // given
-//        // 테스트 시 Clock 클래스는 "2025-08-05T12:34:56+09:00" 가 고정 값
-//
-//        when(seasonRepository.findByStatus(SeasonStatus.ACTIVE)).thenReturn(Optional.empty());
-//        when(seasonRepository.findByStatus(SeasonStatus.PREP)).thenReturn(Optional.empty());
-//        when(seasonRepository.existsByStatus(SeasonStatus.FINALIZING)).thenReturn(true);
-//        when(seasonRepository.findBySeasonKey("2025-W33")).thenReturn(Optional.empty());
-//
-//        // 서비스 로직이 clock 값을 기반으로 만든 객체 리턴
-//        when(seasonRepository.save(any(Season.class))).thenAnswer(inv -> inv.getArgument(0));
-//
-//        // when
-//        Season result = seasonService.getOrCreateActiveSeason();
-//
-//        // then
-//        assertThat(result.getStatus()).isEqualTo(SeasonStatus.PREP);
-//        assertThat(result.getSeasonKey()).isEqualTo("2025-W33");
-//        assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025,8,11,0,0));
-//        assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2025,8,18,0,0));
-//    }
-//
-//    @Test
-//    void FINALIZING_도_없다면_초기_시작이므로_ACTIVE_SEASON_생성하고_리턴(){
-//        // given
-//        when(seasonRepository.findByStatus(SeasonStatus.ACTIVE)).thenReturn(Optional.empty());
-//        when(seasonRepository.findByStatus(SeasonStatus.PREP)).thenReturn(Optional.empty());
-//        when(seasonRepository.existsByStatus(SeasonStatus.FINALIZING)).thenReturn(false);
-//        when(seasonRepository.findBySeasonKey("2025-W32")).thenReturn(Optional.empty());
-//
-//        // 서비스 로직이 clock 값을 기반으로 만든 객체 리턴
-//        when(seasonRepository.save(any(Season.class))).thenAnswer(inv -> inv.getArgument(0));
-//
-//        // when
-//        Season result = seasonService.getOrCreateActiveSeason();
-//
-//        // then
-//        assertThat(result.getStatus()).isEqualTo(SeasonStatus.ACTIVE);
-//        assertThat(result.getSeasonKey()).isEqualTo("2025-W32");
-//        assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025,8,4,0,0));
-//        assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2025,8,11,0,0));
-//
-//    }
-//}
+package gravit.code.season.service;
+
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
+import gravit.code.season.domain.Season;
+import gravit.code.season.domain.SeasonStatus;
+import gravit.code.season.fixture.SeasonFixture;
+import gravit.code.support.TCSpringBootTest;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+@TCSpringBootTest
+class SeasonServiceTest {
+
+    @Autowired SeasonService seasonService;
+    @Autowired SeasonFixture seasonFixture;
+
+    @Test
+    void ACTIVE_시즌이_존재하면_해당_시즌을_그대로_반환한다() {
+        // given
+        seasonFixture.진행중인_시즌("2025-S2",
+                              LocalDateTime.of(2025, 5, 1, 0, 0),
+                              LocalDateTime.of(2025, 9, 1, 0, 0));
+
+        // when
+        Season result = seasonService.getOrCreateActiveSeason();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(SeasonStatus.ACTIVE);
+            softly.assertThat(result.getSeasonKey()).isEqualTo("2025-S2");
+        });
+    }
+
+    @Test
+    void ACTIVE_시즌이_없고_PREP_시즌이_존재하면_PREP_시즌을_반환한다() {
+        // given
+        seasonFixture.준비중인_시즌("2025-S2",
+                              LocalDateTime.of(2025, 5, 1, 0, 0),
+                              LocalDateTime.of(2025, 9, 1, 0, 0));
+
+        // when
+        Season result = seasonService.getOrCreateActiveSeason();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(SeasonStatus.PREP);
+            softly.assertThat(result.getSeasonKey()).isEqualTo("2025-S2");
+        });
+    }
+
+    @Test
+    void ACTIVE와_PREP이_없고_FINALIZING만_존재하면_다음_시즌을_PREP으로_생성하여_반환한다() {
+        // given
+        seasonFixture.정산중인_시즌("2025-S2",
+                              LocalDateTime.of(2025, 5, 1, 0, 0),
+                              LocalDateTime.of(2025, 9, 1, 0, 0));
+
+        // when
+        Season result = seasonService.getOrCreateActiveSeason();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(SeasonStatus.PREP);
+            softly.assertThat(result.getSeasonKey()).isEqualTo("2025-S3");
+            softly.assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025, 9, 1, 0, 0));
+            softly.assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2026, 1, 1, 0, 0));
+        });
+    }
+
+    @Test
+    void FINALIZING_시즌이_이전_시즌이고_시계가_다음_기간에_있어도_FINALIZING_endsAt_기준으로_다음_시즌을_생성한다() {
+        // given
+        // S1이 FINALIZING 상태로 남아있고, 시계는 이미 S2 기간(2025-08-05)
+        // calendar.currentSeason().endsAt() = 2025-09-01 이지만
+        // finalizingSeason.getEndsAt() = 2025-05-01 이므로 S2가 생성되어야 한다
+        seasonFixture.정산중인_시즌("2025-S1",
+                              LocalDateTime.of(2025, 1, 1, 0, 0),
+                              LocalDateTime.of(2025, 5, 1, 0, 0));
+
+        // when
+        Season result = seasonService.getOrCreateActiveSeason();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(SeasonStatus.PREP);
+            softly.assertThat(result.getSeasonKey()).isEqualTo("2025-S2");
+            softly.assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025, 5, 1, 0, 0));
+            softly.assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2025, 9, 1, 0, 0));
+        });
+    }
+
+    @Test
+    void 시즌이_전혀_없는_초기_상태이면_현재_달력_기준_ACTIVE_시즌을_생성하여_반환한다() {
+        // given & when
+        Season result = seasonService.getOrCreateActiveSeason();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(SeasonStatus.ACTIVE);
+            softly.assertThat(result.getSeasonKey()).isEqualTo("2025-S2");
+            softly.assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025, 5, 1, 0, 0));
+            softly.assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2025, 9, 1, 0, 0));
+        });
+    }
+}
