@@ -13,18 +13,18 @@ import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.season.service.port.SeasonPopupSeenStore;
+import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +37,7 @@ public class LeagueService {
     private final SeasonPopupSeenStore seasonPopupSeenStore;
     private final UserLeagueHistoryRepository userLeagueHistoryRepository;
     private final UserLeagueRepository userLeagueRepository;
+    private final UserRepository userRepository;
     private final Clock clock;
 
     private static final Duration TTL_BUFFER = Duration.ofHours(2);
@@ -50,8 +51,8 @@ public class LeagueService {
 
     @Transactional
     public LeagueHomeResponse enterLeagueHome(long userId){
-        Season actvieSeason = seasonRepository.findByStatus(SeasonStatus.ACTIVE).orElseThrow(
-                ()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
+        Season actvieSeason = seasonRepository.findByStatus(SeasonStatus.ACTIVE)
+                .orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
 
         CurrentSeasonDto current = new CurrentSeasonDto("시즌 " + actvieSeason.getSeasonKey());
 

@@ -11,6 +11,24 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, LeagueRankingQueryRepository, MyLeagueProfileQueryRepository {
+
+    @Query(value = """
+            SELECT ranked.rank_in_league
+            FROM (
+                SELECT ul.user_id,
+                       DENSE_RANK() OVER (
+                           PARTITION BY ul.league_id
+                           ORDER BY ul.league_point DESC, ul.updated_at ASC, ul.user_id ASC
+                       ) AS rank_in_league
+                FROM user_league ul
+                WHERE ul.season_id = :seasonId
+            ) ranked
+            WHERE ranked.user_id = :userId
+            """, nativeQuery = true)
+    Optional<Integer> findCurrentRankByUserId(
+            @Param("userId") long userId,
+            @Param("seasonId") long seasonId
+    );
     @Query("""
         SELECT l.name
         FROM UserLeague ul

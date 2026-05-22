@@ -8,9 +8,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHistory, Long> {
+
+    @Query("""
+        SELECT h FROM UserLeagueHistory h
+        JOIN FETCH h.season s
+        JOIN FETCH h.finalLeague l
+        WHERE h.user.id = :userId
+        ORDER BY s.startsAt ASC
+    """)
+    List<UserLeagueHistory> findAllByUserIdOrderBySeason(@Param("userId") long userId);
+
+    long countByUserId(long userId);
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
     @Query("delete from UserLeagueHistory lh where lh.season = :season")
