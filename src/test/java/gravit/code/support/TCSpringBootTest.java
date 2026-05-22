@@ -10,15 +10,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 @ComponentScan(basePackages = "gravit.code")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ActiveProfiles("test")
 @SpringBootTest
+@ContextConfiguration(initializers = RedisTestContainerConfig.class)
 @Import({
         PostgreSQLTestContainerConfig.class,
-        RedisTestContainerConfig.class,
         DatabaseCleaner.class,
         FixedClockConfig.class
 })
