@@ -95,7 +95,7 @@ token:
 
 scheduler:
   season:
-    rollover-cron: "* * * * * *"
+    rollover-cron: "-"
 
 auth0:
   issuer: https://dev-wdqwk434kl24h2k.us.auth0.com/
