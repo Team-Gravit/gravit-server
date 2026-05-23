@@ -55,4 +55,19 @@ public class AsyncConfig {
 
         return executor;
     }
+
+    @Bean(name = "socialFeedAsync")
+    public Executor socialFeedAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(50);
+        executor.setKeepAliveSeconds(60);
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setThreadNamePrefix("SocialFeedAsync - ");
+        executor.initialize();
+
+        return executor;
+    }
 }

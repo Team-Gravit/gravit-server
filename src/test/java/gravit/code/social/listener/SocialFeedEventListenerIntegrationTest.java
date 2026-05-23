@@ -1,9 +1,12 @@
 package gravit.code.social.listener;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
@@ -65,7 +68,7 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            verify(socialFacade).publishFeed(1L, FeedEventType.STREAK_DAYS, "7");
+            verify(socialFacade, timeout(3000)).publishFeed(1L, FeedEventType.STREAK_DAYS, "7");
         }
 
         @Test
@@ -79,8 +82,8 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.flagForCommit();
             TestTransaction.end();
 
-            // then
-            verify(socialFacade, never()).publishFeed(anyLong(), any(), any());
+            // then — 500ms 대기 후 호출이 없음을 확인
+            verify(socialFacade, after(500).never()).publishFeed(anyLong(), any(), any());
         }
     }
 
@@ -100,7 +103,7 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            verify(socialFacade).publishFeed(1L, FeedEventType.LEVEL_UP, "5");
+            verify(socialFacade, timeout(3000)).publishFeed(1L, FeedEventType.LEVEL_UP, "5");
         }
 
         @Test
@@ -115,8 +118,10 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            assertThat(socialFeedRepository.findAll())
-                    .anyMatch(f -> f.getEventType() == FeedEventType.LEVEL_UP && f.getEventValue().equals("5"));
+            await().atMost(3, SECONDS).untilAsserted(() ->
+                    assertThat(socialFeedRepository.findAll())
+                            .anyMatch(f -> f.getEventType() == FeedEventType.LEVEL_UP && f.getEventValue().equals("5"))
+            );
         }
     }
 
@@ -136,7 +141,7 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            verify(socialFacade).publishFeed(1L, FeedEventType.TIER_PROMOTION, "골드");
+            verify(socialFacade, timeout(3000)).publishFeed(1L, FeedEventType.TIER_PROMOTION, "골드");
         }
 
         @Test
@@ -151,8 +156,10 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            assertThat(socialFeedRepository.findAll())
-                    .anyMatch(f -> f.getEventType() == FeedEventType.TIER_PROMOTION && f.getEventValue().equals("골드"));
+            await().atMost(3, SECONDS).untilAsserted(() ->
+                    assertThat(socialFeedRepository.findAll())
+                            .anyMatch(f -> f.getEventType() == FeedEventType.TIER_PROMOTION && f.getEventValue().equals("골드"))
+            );
         }
     }
 }
