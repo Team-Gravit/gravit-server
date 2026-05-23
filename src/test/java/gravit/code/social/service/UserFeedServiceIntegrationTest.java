@@ -17,10 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @TCSpringBootTest
-class UserFeedCommandServiceIntegrationTest {
+class UserFeedServiceIntegrationTest {
 
     @Autowired
-    private UserFeedCommandService userFeedCommandService;
+    private UserFeedService userFeedService;
 
     @Autowired
     private UserFeedFixture userFeedFixture;
@@ -35,7 +35,7 @@ class UserFeedCommandServiceIntegrationTest {
         @Test
         void 팔로워_목록이_비어있으면_UserFeed가_생성되지_않는다() {
             // given & when
-            userFeedCommandService.distributeToFollowers(999L, List.of());
+            userFeedService.distributeToFollowers(999L, List.of());
 
             // then
             assertThat(userFeedRepository.findAll()).isEmpty();
@@ -48,7 +48,7 @@ class UserFeedCommandServiceIntegrationTest {
             long followerId = 1L;
 
             // when
-            userFeedCommandService.distributeToFollowers(feedId, List.of(followerId));
+            userFeedService.distributeToFollowers(feedId, List.of(followerId));
 
             // then
             List<UserFeed> userFeeds = userFeedRepository.findAll();
@@ -67,7 +67,7 @@ class UserFeedCommandServiceIntegrationTest {
             List<Long> followerIds = List.of(1L, 2L, 3L);
 
             // when
-            userFeedCommandService.distributeToFollowers(feedId, followerIds);
+            userFeedService.distributeToFollowers(feedId, followerIds);
 
             // then
             assertThat(userFeedRepository.findAll()).hasSize(3);
@@ -84,7 +84,7 @@ class UserFeedCommandServiceIntegrationTest {
             UserFeed userFeed = userFeedFixture.기본_유저피드(1L, 999L);
 
             // when
-            userFeedCommandService.hideFeed(1L, 999L);
+            userFeedService.hideFeed(1L, 999L);
 
             // then
             UserFeed updated = userFeedRepository.findById(userFeed.getId()).orElseThrow();
@@ -94,7 +94,7 @@ class UserFeedCommandServiceIntegrationTest {
         @Test
         void 존재하지_않는_UserFeed면_예외가_발생한다() {
             // given && when && then
-            assertThatThrownBy(() -> userFeedCommandService.hideFeed(99L, 99L))
+            assertThatThrownBy(() -> userFeedService.hideFeed(99L, 99L))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
                     .isEqualTo(USER_FEED_NOT_FOUND);
@@ -111,7 +111,7 @@ class UserFeedCommandServiceIntegrationTest {
             UserFeed userFeed = userFeedFixture.기본_유저피드(1L, 999L);
 
             // when
-            userFeedCommandService.congratulateFeed(1L, 999L);
+            userFeedService.congratulateFeed(1L, 999L);
 
             // then
             UserFeed updated = userFeedRepository.findById(userFeed.getId()).orElseThrow();
@@ -124,7 +124,7 @@ class UserFeedCommandServiceIntegrationTest {
         @Test
         void 존재하지_않는_UserFeed면_예외가_발생한다() {
             // given & when & then
-            assertThatThrownBy(() -> userFeedCommandService.congratulateFeed(99L, 99L))
+            assertThatThrownBy(() -> userFeedService.congratulateFeed(99L, 99L))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
                     .isEqualTo(USER_FEED_NOT_FOUND);

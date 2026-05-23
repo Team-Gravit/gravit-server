@@ -3,6 +3,7 @@ package gravit.code.social.service;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
 import gravit.code.social.dto.internal.SocialFeedProjection;
 import gravit.code.social.dto.response.SocialFeedResponse;
@@ -17,12 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SocialFeedQueryService {
-
-    private final UserFeedRepository userFeedRepository;
-    private final SocialFeedRepository socialFeedRepository;
+public class SocialFeedService {
 
     private static final int PAGE_SIZE = 4;
+
+    private final SocialFeedRepository socialFeedRepository;
+    private final UserFeedRepository userFeedRepository;
+
+    @Transactional
+    public SocialFeed createFeed(
+            long actorId,
+            FeedEventType eventType,
+            String eventValue
+    ) {
+        return socialFeedRepository.save(SocialFeed.create(actorId, eventType, eventValue));
+    }
 
     @Transactional(readOnly = true)
     public SliceResponse<SocialFeedResponse> getFeed(

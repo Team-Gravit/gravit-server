@@ -9,10 +9,9 @@ import gravit.code.notification.service.NotificationCommandService;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
 import gravit.code.social.dto.response.SocialFeedResponse;
-import gravit.code.social.service.CongratulationCommandService;
-import gravit.code.social.service.SocialFeedCommandService;
-import gravit.code.social.service.SocialFeedQueryService;
-import gravit.code.social.service.UserFeedCommandService;
+import gravit.code.social.service.CongratulationService;
+import gravit.code.social.service.SocialFeedService;
+import gravit.code.social.service.UserFeedService;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeaguePointService;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +26,9 @@ public class SocialFacade {
     private static final int CONGRATULATION_LP = 5;
     private static final int FULL_ACCURACY = 100;
 
-    private final SocialFeedQueryService socialFeedQueryService;
-    private final SocialFeedCommandService socialFeedCommandService;
-    private final UserFeedCommandService userFeedCommandService;
-    private final CongratulationCommandService congratulationCommandService;
+    private final SocialFeedService socialFeedService;
+    private final UserFeedService userFeedService;
+    private final CongratulationService congratulationService;
     private final FriendService friendService;
     private final UserService userService;
     private final UserLeaguePointService userLeaguePointService;
@@ -41,7 +39,7 @@ public class SocialFacade {
             long userId,
             int page
     ) {
-        return socialFeedQueryService.getFeed(userId, page);
+        return socialFeedService.getFeed(userId, page);
     }
 
     @Transactional
@@ -50,9 +48,9 @@ public class SocialFacade {
             FeedEventType eventType,
             String eventValue
     ) {
-        SocialFeed feed = socialFeedCommandService.createFeed(actorId, eventType, eventValue);
+        SocialFeed feed = socialFeedService.createFeed(actorId, eventType, eventValue);
         List<Long> followerIds = friendService.getFollowerIds(actorId);
-        userFeedCommandService.distributeToFollowers(feed.getId(), followerIds);
+        userFeedService.distributeToFollowers(feed.getId(), followerIds);
     }
 
     @Transactional
@@ -60,7 +58,7 @@ public class SocialFacade {
             long userId,
             long feedId
     ) {
-        userFeedCommandService.hideFeed(userId, feedId);
+        userFeedService.hideFeed(userId, feedId);
     }
 
     @Transactional
@@ -68,12 +66,12 @@ public class SocialFacade {
             long userId,
             long feedId
     ) {
-        long actorId = socialFeedQueryService.getActorId(feedId);
+        long actorId = socialFeedService.getActorId(feedId);
         if (userId == actorId) {
             throw new RestApiException(CustomErrorCode.CANNOT_CONGRATULATE_OWN_FEED);
         }
-        congratulationCommandService.checkAndRecord(userId, actorId, feedId);
-        userFeedCommandService.congratulateFeed(userId, feedId);
+        congratulationService.checkAndRecord(userId, actorId, feedId);
+        userFeedService.congratulateFeed(userId, feedId);
         userLeaguePointService.addLeaguePoints(actorId, CONGRATULATION_LP, FULL_ACCURACY);
         String congratulatorNickname = userService.getUser(userId).getNickname();
         notificationCommandService.notify(actorId, congratulatorNickname + "님이 축하해줬어요!");

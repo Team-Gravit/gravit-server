@@ -5,7 +5,7 @@ import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
 import gravit.code.social.domain.UserFeed;
 import gravit.code.social.repository.UserFeedRepository;
-import gravit.code.social.service.SocialFeedCommandService;
+import gravit.code.social.service.SocialFeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SocialFeedFixtureBuilder {
 
-    private final SocialFeedCommandService socialFeedCommandService;
+    private final SocialFeedService socialFeedService;
     private final UserFeedRepository userFeedRepository;
     private final FriendRepository friendRepository;
 
@@ -24,7 +24,7 @@ public class SocialFeedFixtureBuilder {
     private String eventValue = "1";
 
     public SocialFeedFixtureBuilder feed() {
-        return new SocialFeedFixtureBuilder(socialFeedCommandService, userFeedRepository, friendRepository);
+        return new SocialFeedFixtureBuilder(socialFeedService, userFeedRepository, friendRepository);
     }
 
     public SocialFeedFixtureBuilder actorId(long actorId) { this.actorId = actorId; return this; }
@@ -32,7 +32,7 @@ public class SocialFeedFixtureBuilder {
     public SocialFeedFixtureBuilder eventValue(String eventValue) { this.eventValue = eventValue; return this; }
 
     public SocialFeed create() {
-        SocialFeed feed = socialFeedCommandService.createFeed(actorId, eventType, eventValue);
+        SocialFeed feed = socialFeedService.createFeed(actorId, eventType, eventValue);
         List<Long> followerIds = friendRepository.findFollowerIdsByFolloweeId(actorId);
         if (!followerIds.isEmpty()) {
             userFeedRepository.saveAll(

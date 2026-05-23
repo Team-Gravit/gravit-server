@@ -6,21 +6,28 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.repository.FriendRepository;
 import gravit.code.global.dto.response.SliceResponse;
+import gravit.code.social.domain.FeedEventType;
+import gravit.code.social.domain.SocialFeed;
 import gravit.code.social.dto.response.SocialFeedResponse;
 import gravit.code.social.fixture.SocialFeedFixture;
+import gravit.code.social.repository.SocialFeedRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @TCSpringBootTest
-class SocialFeedQueryServiceIntegrationTest {
+class SocialFeedServiceIntegrationTest {
 
     @Autowired
-    private SocialFeedQueryService socialFeedQueryService;
+    private SocialFeedService socialFeedService;
+
+    @Autowired
+    private SocialFeedRepository socialFeedRepository;
 
     @Autowired
     private UserFixture userFixture;
@@ -32,6 +39,43 @@ class SocialFeedQueryServiceIntegrationTest {
     private SocialFeedFixture socialFeedFixture;
 
     @Nested
+    @DisplayName("피드를 생성할 때")
+    class CreateFeed {
+
+        @Test
+        void 피드가_DB에_저장된다() {
+            // given
+            long actorId = 1L;
+            FeedEventType eventType = FeedEventType.LEVEL_UP;
+            String eventValue = "5";
+
+            // when
+            socialFeedService.createFeed(actorId, eventType, eventValue);
+
+            // then
+            List<SocialFeed> feeds = socialFeedRepository.findAll();
+            assertThat(feeds).hasSize(1);
+            SocialFeed saved = feeds.get(0);
+            assertSoftly(softly -> {
+                softly.assertThat(saved.getActorId()).isEqualTo(actorId);
+                softly.assertThat(saved.getEventType()).isEqualTo(eventType);
+                softly.assertThat(saved.getEventValue()).isEqualTo(eventValue);
+            });
+        }
+
+        @Test
+        void 여러_피드를_저장할_수_있다() {
+            // when
+            socialFeedService.createFeed(1L, FeedEventType.LEVEL_UP, "5");
+            socialFeedService.createFeed(2L, FeedEventType.STREAK_DAYS, "7");
+            socialFeedService.createFeed(3L, FeedEventType.TIER_PROMOTION, "골드");
+
+            // then
+            assertThat(socialFeedRepository.findAll()).hasSize(3);
+        }
+    }
+
+    @Nested
     @DisplayName("피드를 조회할 때")
     class GetFeed {
 
@@ -41,7 +85,7 @@ class SocialFeedQueryServiceIntegrationTest {
             User requester = userFixture.일반_유저(1);
 
             // when
-            SliceResponse<SocialFeedResponse> result = socialFeedQueryService.getFeed(requester.getId(), 0);
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
             assertSoftly(softly -> {
@@ -59,7 +103,7 @@ class SocialFeedQueryServiceIntegrationTest {
             socialFeedFixture.레벨업_피드(actor.getId(), 5);
 
             // when
-            SliceResponse<SocialFeedResponse> result = socialFeedQueryService.getFeed(requester.getId(), 0);
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
             assertThat(result.contents()).hasSize(1);
@@ -74,7 +118,7 @@ class SocialFeedQueryServiceIntegrationTest {
             socialFeedFixture.레벨업_피드(other.getId(), 5);
 
             // when
-            SliceResponse<SocialFeedResponse> result = socialFeedQueryService.getFeed(requester.getId(), 0);
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
             assertThat(result.contents()).isEmpty();
@@ -91,7 +135,7 @@ class SocialFeedQueryServiceIntegrationTest {
             }
 
             // when
-            SliceResponse<SocialFeedResponse> result = socialFeedQueryService.getFeed(requester.getId(), 0);
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
             assertSoftly(softly -> {
@@ -111,7 +155,7 @@ class SocialFeedQueryServiceIntegrationTest {
             }
 
             // when
-            SliceResponse<SocialFeedResponse> result = socialFeedQueryService.getFeed(requester.getId(), 1);
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 1);
 
             // then
             assertSoftly(softly -> {
@@ -129,7 +173,7 @@ class SocialFeedQueryServiceIntegrationTest {
             socialFeedFixture.레벨업_피드(actor.getId(), 5);
 
             // when
-            SliceResponse<SocialFeedResponse> result = socialFeedQueryService.getFeed(requester.getId(), -5);
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), -5);
 
             // then
             assertThat(result.contents()).hasSize(1);

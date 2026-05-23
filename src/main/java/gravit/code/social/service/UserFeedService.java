@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserFeedCommandService {
+public class UserFeedService {
 
     private final UserFeedRepository userFeedRepository;
 

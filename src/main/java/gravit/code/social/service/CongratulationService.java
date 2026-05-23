@@ -1,6 +1,7 @@
 package gravit.code.social.service;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.*;
+import static gravit.code.global.exception.domain.CustomErrorCode.ALREADY_CONGRATULATED;
+import static gravit.code.global.exception.domain.CustomErrorCode.CONGRATULATE_LIMIT_EXCEEDED;
 
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.social.domain.Congratulation;
@@ -15,7 +16,7 @@ import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
-public class CongratulationCommandService {
+public class CongratulationService {
 
     private static final int DAILY_LIMIT = 3;
     private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
