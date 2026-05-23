@@ -179,4 +179,69 @@ class SocialFeedServiceIntegrationTest {
             assertThat(result.contents()).hasSize(1);
         }
     }
+
+    @Nested
+    @DisplayName("피드 메시지를 생성할 때")
+    class MessageGeneration {
+
+        @Test
+        void LEVEL_UP_메시지를_생성한다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            User actor = userFixture.일반_유저(2);
+            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            socialFeedFixture.레벨업_피드(actor.getId(), 5);
+
+            // when
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
+
+            // then
+            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 LV.5로 레벨업했어요!");
+        }
+
+        @Test
+        void STREAK_DAYS_메시지를_생성한다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            User actor = userFixture.일반_유저(2);
+            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            socialFeedFixture.연속학습_피드(actor.getId(), 30);
+
+            // when
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
+
+            // then
+            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 30일 연속 학습을 달성했어요!");
+        }
+
+        @Test
+        void TIER_PROMOTION_메시지를_생성한다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            User actor = userFixture.일반_유저(2);
+            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            socialFeedFixture.티어승급_피드(actor.getId(), "골드");
+
+            // when
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
+
+            // then
+            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 골드로 승급했어요!");
+        }
+
+        @Test
+        void PLANET_COMPLETE_메시지를_생성한다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            User actor = userFixture.일반_유저(2);
+            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            socialFeedFixture.행성정복_피드(actor.getId(), "지구");
+
+            // when
+            SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
+
+            // then
+            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 지구 행성을 정복했어요!");
+        }
+    }
 }

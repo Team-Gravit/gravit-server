@@ -34,4 +34,12 @@ public class SocialFeedFixture {
                 .eventValue(tierName)
                 .create();
     }
+
+    public SocialFeed 행성정복_피드(long actorId, String planetName) {
+        return builder.feed()
+                .actorId(actorId)
+                .eventType(FeedEventType.PLANET_COMPLETE)
+                .eventValue(planetName)
+                .create();
+    }
 }
