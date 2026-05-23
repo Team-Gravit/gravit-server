@@ -85,6 +85,7 @@ public enum CustomErrorCode implements ErrorCode {
     USER_FEED_NOT_FOUND(HttpStatus.NOT_FOUND, "SOCIAL_4041", "피드를 찾을 수 없습니다."),
     SOCIAL_FEED_NOT_FOUND(HttpStatus.NOT_FOUND, "SOCIAL_4042", "소셜 피드를 찾을 수 없습니다."),
     CONGRATULATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "SOCIAL_4001", "오늘 축하 횟수를 모두 사용했어요."),
+    ALREADY_CONGRATULATED(HttpStatus.CONFLICT, "SOCIAL_4091", "이미 축하한 피드입니다."),
 
     // Friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_4041", "팔로우 내역이 존재하지 않습니다."),

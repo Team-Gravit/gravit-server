@@ -1,5 +1,6 @@
 package gravit.code.social.service;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.ALREADY_CONGRATULATED;
 import static gravit.code.global.exception.domain.CustomErrorCode.CONGRATULATE_LIMIT_EXCEEDED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -75,6 +76,18 @@ class CongratulationCommandServiceIntegrationTest {
             // when & then — actor 3에게는 처음이므로 성공
             congratulationCommandService.checkAndRecord(1L, 3L, 4L);
             assertThat(congratulationRepository.findAll()).hasSize(4);
+        }
+
+        @Test
+        void 동일_피드를_중복_축하하면_예외가_발생한다() {
+            // given
+            congratulationCommandService.checkAndRecord(1L, 2L, 999L);
+
+            // when & then
+            assertThatThrownBy(() -> congratulationCommandService.checkAndRecord(1L, 2L, 999L))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ALREADY_CONGRATULATED);
         }
     }
 }

@@ -2,11 +2,11 @@ package gravit.code.social.service;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.*;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.social.domain.Congratulation;
 import gravit.code.social.repository.CongratulationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +34,10 @@ public class CongratulationCommandService {
         if (todayCount >= DAILY_LIMIT) {
             throw new RestApiException(CONGRATULATE_LIMIT_EXCEEDED);
         }
-        congratulationRepository.save(Congratulation.create(userId, actorId, feedId));
+        try {
+            congratulationRepository.saveAndFlush(Congratulation.create(userId, actorId, feedId));
+        } catch (DataIntegrityViolationException e) {
+            throw new RestApiException(ALREADY_CONGRATULATED);
+        }
     }
 }
