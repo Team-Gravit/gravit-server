@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -26,7 +27,7 @@ public class SocialFeedEventListener {
 
     @Async("socialFeedAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLessonCompleted(LessonCompletedEvent event) {
         try {
             int days = event.afterConsecutiveSolved();
@@ -40,7 +41,7 @@ public class SocialFeedEventListener {
 
     @Async("socialFeedAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLevelUp(LevelUpFeedEvent event) {
         try {
             socialFacade.publishFeed(event.userId(), FeedEventType.LEVEL_UP, String.valueOf(event.newLevel()));
@@ -51,7 +52,7 @@ public class SocialFeedEventListener {
 
     @Async("socialFeedAsync")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleTierPromotion(TierPromotionFeedEvent event) {
         try {
             socialFacade.publishFeed(event.userId(), FeedEventType.TIER_PROMOTION, event.tierName());
