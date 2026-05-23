@@ -1,5 +1,6 @@
 package gravit.code.social.facade;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.CANNOT_CONGRATULATE_OWN_FEED;
 import static gravit.code.global.exception.domain.CustomErrorCode.CONGRATULATE_LIMIT_EXCEEDED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -222,6 +223,22 @@ class SocialFacadeIntegrationTest {
                 softly.assertThat(notifications.get(0).getUserId()).isEqualTo(followee.getId());
                 softly.assertThat(notifications.get(0).getMessage()).isEqualTo("유저1님이 축하해줬어요!");
             });
+        }
+
+        @Test
+        void 자신의_피드는_축하할_수_없다() {
+            // given
+            User actor = userFixture.일반_유저(1);
+            League league = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            userLeagueFixture.참여(actor, season, league, 0);
+            SocialFeed feed = socialFeedFixture.레벨업_피드(actor.getId(), 5);
+
+            // when & then
+            assertThatThrownBy(() -> socialFacade.congratulateFeed(actor.getId(), feed.getId()))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(CANNOT_CONGRATULATE_OWN_FEED);
         }
 
         @Test

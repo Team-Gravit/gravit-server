@@ -18,4 +18,6 @@ public interface CongratulationRepository extends JpaRepository<Congratulation, 
             @Param("actorId") long actorId,
             @Param("startOfDay") LocalDateTime startOfDay
     );
+
+    boolean existsByUserIdAndFeedId(long userId, long feedId);
 }

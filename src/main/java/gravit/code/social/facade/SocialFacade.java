@@ -3,6 +3,8 @@ package gravit.code.social.facade;
 import gravit.code.friend.service.FriendService;
 import gravit.code.global.annotation.Facade;
 import gravit.code.global.dto.response.SliceResponse;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notification.service.NotificationCommandService;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
@@ -67,6 +69,9 @@ public class SocialFacade {
             long feedId
     ) {
         long actorId = socialFeedQueryService.getActorId(feedId);
+        if (userId == actorId) {
+            throw new RestApiException(CustomErrorCode.CANNOT_CONGRATULATE_OWN_FEED);
+        }
         congratulationCommandService.checkAndRecord(userId, actorId, feedId);
         userFeedCommandService.congratulateFeed(userId, feedId);
         userLeaguePointService.addLeaguePoints(actorId, CONGRATULATION_LP, FULL_ACCURACY);
