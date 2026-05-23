@@ -12,6 +12,7 @@ public record SocialFeedProjection(
         String actorHandle,
         FeedEventType eventType,
         String eventValue,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime congratulatedAt
 ) {
 }

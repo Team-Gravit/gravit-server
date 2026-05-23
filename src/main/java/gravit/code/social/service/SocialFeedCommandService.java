@@ -14,11 +14,11 @@ public class SocialFeedCommandService {
     private final SocialFeedRepository socialFeedRepository;
 
     @Transactional
-    public void saveFeed(
+    public SocialFeed createFeed(
             long actorId,
             FeedEventType eventType,
             String eventValue
     ) {
-        socialFeedRepository.save(SocialFeed.create(actorId, eventType, eventValue));
+        return socialFeedRepository.save(SocialFeed.create(actorId, eventType, eventValue));
     }
 }

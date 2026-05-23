@@ -12,7 +12,8 @@ public record SocialFeedResponse(
         int actorProfileImgNumber,
         String actorHandle,
         String message,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime congratulatedAt
 ) {
     public static SocialFeedResponse from(SocialFeedProjection projection) {
         return new SocialFeedResponse(
@@ -22,7 +23,8 @@ public record SocialFeedResponse(
                 projection.actorProfileImgNumber(),
                 projection.actorHandle(),
                 generateMessage(projection.eventType(), projection.actorNickname(), projection.eventValue()),
-                projection.createdAt()
+                projection.createdAt(),
+                projection.congratulatedAt()
         );
     }
 

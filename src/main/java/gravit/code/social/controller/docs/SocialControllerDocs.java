@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Social API", description = "친구 활동 피드 조회 API")
@@ -77,5 +79,51 @@ public interface SocialControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0")
             @RequestParam(defaultValue = "0") int page
+    );
+
+    @Operation(
+            summary = "피드 항목 축하하기",
+            description = """
+                    친구의 활동 피드 항목에 축하를 보냅니다.<br>
+                    축하받은 유저에게 5 LP가 지급됩니다.<br>
+                    동일 유저에게 하루 최대 3회까지 축하할 수 있습니다.<br>
+                    🔐 <strong>Jwt 필요</strong>
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "✅ 축하하기 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "🚫 오늘 축하 횟수 초과",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "축하 횟수 초과",
+                                    value = "{\"error\": \"SOCIAL_4001\", \"message\": \"오늘 축하 횟수를 모두 사용했어요.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "🚫 피드 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "피드 없음",
+                                    value = "{\"error\": \"SOCIAL_4041\", \"message\": \"피드를 찾을 수 없습니다.\"}"
+                            )
+                    )
+            )
+    })
+    @PostMapping("/feed/{feedId}/congratulate")
+    ResponseEntity<Void> congratulateFeed(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Parameter(description = "축하할 피드 ID", example = "1")
+            @PathVariable long feedId
     );
 }

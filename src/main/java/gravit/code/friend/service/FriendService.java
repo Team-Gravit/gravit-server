@@ -138,6 +138,11 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
+    public List<Long> getFollowerIds(long followeeId) {
+        return friendRepository.findFollowerIdsByFolloweeId(followeeId);
+    }
+
+    @Transactional(readOnly = true)
     public SliceResponse<SearchUserDto> searchUsersForFollowing(
             Long requesterId,
             String queryText,
