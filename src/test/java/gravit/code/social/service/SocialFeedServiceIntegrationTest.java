@@ -3,8 +3,7 @@ package gravit.code.social.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import gravit.code.friend.domain.Friend;
-import gravit.code.friend.repository.FriendRepository;
+import gravit.code.friend.fixture.FriendFixture;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
@@ -33,7 +32,7 @@ class SocialFeedServiceIntegrationTest {
     private UserFixture userFixture;
 
     @Autowired
-    private FriendRepository friendRepository;
+    private FriendFixture friendFixture;
 
     @Autowired
     private SocialFeedFixture socialFeedFixture;
@@ -99,7 +98,7 @@ class SocialFeedServiceIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             socialFeedFixture.레벨업_피드(actor.getId(), 5);
 
             // when
@@ -129,7 +128,7 @@ class SocialFeedServiceIntegrationTest {
             // given — PAGE_SIZE = 4, 피드 5개
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             for (int i = 1; i <= 5; i++) {
                 socialFeedFixture.레벨업_피드(actor.getId(), i);
             }
@@ -149,7 +148,7 @@ class SocialFeedServiceIntegrationTest {
             // given — 피드 5개, 두 번째 페이지에 1개
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             for (int i = 1; i <= 5; i++) {
                 socialFeedFixture.레벨업_피드(actor.getId(), i);
             }
@@ -169,7 +168,7 @@ class SocialFeedServiceIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             socialFeedFixture.레벨업_피드(actor.getId(), 5);
 
             // when
@@ -189,7 +188,7 @@ class SocialFeedServiceIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             socialFeedFixture.레벨업_피드(actor.getId(), 5);
 
             // when
@@ -204,7 +203,7 @@ class SocialFeedServiceIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             socialFeedFixture.연속학습_피드(actor.getId(), 30);
 
             // when
@@ -219,7 +218,7 @@ class SocialFeedServiceIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             socialFeedFixture.티어승급_피드(actor.getId(), "골드");
 
             // when
@@ -234,7 +233,7 @@ class SocialFeedServiceIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User actor = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), actor.getId()));
+            friendFixture.팔로우(requester, actor);
             socialFeedFixture.행성정복_피드(actor.getId(), "지구");
 
             // when

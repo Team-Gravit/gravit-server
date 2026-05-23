@@ -6,8 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import gravit.code.friend.domain.Friend;
-import gravit.code.friend.repository.FriendRepository;
+import gravit.code.friend.fixture.FriendFixture;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
@@ -41,7 +40,7 @@ class SocialFacadeIntegrationTest {
     private UserFixture userFixture;
 
     @Autowired
-    private FriendRepository friendRepository;
+    private FriendFixture friendFixture;
 
     @Autowired
     private SocialFeedFixture socialFeedFixture;
@@ -85,7 +84,7 @@ class SocialFacadeIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User followee = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), followee.getId()));
+            friendFixture.팔로우(requester, followee);
             SocialFeed feed = socialFeedFixture.레벨업_피드(followee.getId(), 5);
 
             // when
@@ -126,8 +125,8 @@ class SocialFacadeIntegrationTest {
             User requester = userFixture.일반_유저(1);
             User followee1 = userFixture.일반_유저(2);
             User followee2 = userFixture.일반_유저(3);
-            friendRepository.save(Friend.create(requester.getId(), followee1.getId()));
-            friendRepository.save(Friend.create(requester.getId(), followee2.getId()));
+            friendFixture.팔로우(requester, followee1);
+            friendFixture.팔로우(requester, followee2);
             socialFeedFixture.레벨업_피드(followee1.getId(), 3);
             socialFeedFixture.연속학습_피드(followee2.getId(), 7);
 
@@ -150,7 +149,7 @@ class SocialFacadeIntegrationTest {
             // given
             User requester = userFixture.일반_유저(1);
             User followee = userFixture.일반_유저(2);
-            friendRepository.save(Friend.create(requester.getId(), followee.getId()));
+            friendFixture.팔로우(requester, followee);
             SocialFeed feed = socialFeedFixture.레벨업_피드(followee.getId(), 5);
 
             // when
@@ -167,7 +166,7 @@ class SocialFacadeIntegrationTest {
     class CongratullateFeed {
 
         private void 축하_환경_셋업(User requester, User followee) {
-            friendRepository.save(Friend.create(requester.getId(), followee.getId()));
+            friendFixture.팔로우(requester, followee);
             League league = leagueFixture.브론즈_3();
             Season season = seasonFixture.진행중인_시즌("S1");
             userLeagueFixture.참여(followee, season, league, 0);
