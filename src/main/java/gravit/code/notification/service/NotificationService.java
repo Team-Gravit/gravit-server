@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationCommandService {
+public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
