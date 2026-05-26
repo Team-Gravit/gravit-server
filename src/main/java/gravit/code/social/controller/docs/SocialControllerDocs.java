@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@Tag(name = "Social API", description = "친구 활동 피드 조회 API")
+@Tag(name = "Social API", description = "소셜 기능 API (친구 추천, 팔로우, 활동 피드 조회 및 축하)")
 public interface SocialControllerDocs {
 
     @Operation(

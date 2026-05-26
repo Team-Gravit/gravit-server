@@ -164,7 +164,7 @@ class SocialFacadeIntegrationTest {
 
     @Nested
     @DisplayName("피드를 축하할 때")
-    class CongratullateFeed {
+    class CongratulateFeed {
 
         private void 축하_환경_셋업(User requester, User followee) {
             friendFixture.팔로우(requester, followee);

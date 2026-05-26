@@ -21,7 +21,7 @@ public interface UserFeedRepository extends JpaRepository<UserFeed, Long> {
             JOIN SocialFeed sf ON sf.id = uf.feedId
             JOIN User u ON u.id = sf.actorId
             WHERE uf.userId = :userId AND uf.hidden = false
-            ORDER BY sf.createdAt DESC
+            ORDER BY sf.createdAt DESC, sf.id DESC
             """)
     Slice<SocialFeedProjection> findVisibleFeedsByUserId(
             @Param("userId") long userId,

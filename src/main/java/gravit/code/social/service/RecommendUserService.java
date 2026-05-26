@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,9 @@ public class RecommendUserService {
         );
 
         if (candidates.size() < MIN_RECOMMEND_THRESHOLD) {
+            Set<Long> existingIds = candidates.stream()
+                    .map(RecommendCandidateDto::userId)
+                    .collect(Collectors.toSet());
             int remaining = MAX_RECOMMEND - candidates.size();
             List<RecommendCandidateDto> additional = recommendUserRepository.findAdjacentSortOrderCandidates(
                     userId,
@@ -35,7 +40,9 @@ public class RecommendUserService {
                     mainSortOrder + 1,
                     mainSortOrder,
                     remaining
-            );
+            ).stream()
+                    .filter(c -> !existingIds.contains(c.userId()))
+                    .toList();
             candidates.addAll(additional);
         }
 
