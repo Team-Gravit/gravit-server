@@ -30,6 +30,7 @@ public class FriendSearchRepositoryImpl implements FriendSearchRepository {
                     rs.getBoolean("is_following")
             );
 
+    @Override
     public SliceResponse<SearchUserDto> searchUsersByQueryText(
             long requesterId,
             String queryText,

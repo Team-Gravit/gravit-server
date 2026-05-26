@@ -8,12 +8,16 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notification.service.NotificationService;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
+import gravit.code.social.dto.internal.RecommendCandidateDto;
+import gravit.code.social.dto.response.RecommendUserResponse;
 import gravit.code.social.dto.response.SocialFeedResponse;
 import gravit.code.social.service.CongratulationService;
+import gravit.code.social.service.RecommendUserService;
 import gravit.code.social.service.SocialFeedService;
 import gravit.code.social.service.UserFeedService;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeaguePointService;
+import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +36,26 @@ public class SocialFacade {
     private final FriendService friendService;
     private final UserService userService;
     private final UserLeaguePointService userLeaguePointService;
+    private final UserLeagueService userLeagueService;
     private final NotificationService notificationService;
+    private final RecommendUserService recommendUserService;
+
+    @Transactional(readOnly = true)
+    public List<RecommendUserResponse> getRecommendedUsers(long userId) {
+        int mainSortOrder = userLeagueService.getLeagueSortOrder(userId);
+        List<RecommendCandidateDto> candidates = recommendUserService.findCandidates(userId, mainSortOrder);
+        return candidates.stream()
+                .map(c -> RecommendUserResponse.of(c.userId(), c.nickname(), c.profileImgNumber(), c.mutualFollowCount()))
+                .toList();
+    }
+
+    @Transactional
+    public void follow(
+            long userId,
+            long targetUserId
+    ) {
+        friendService.following(userId, targetUserId);
+    }
 
     @Transactional(readOnly = true)
     public SliceResponse<SocialFeedResponse> getFeed(

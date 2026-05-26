@@ -37,6 +37,9 @@ public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, Le
     """)
     Optional<String> findUserLeagueNameByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT ul.league.sortOrder FROM UserLeague ul WHERE ul.user.id = :userId")
+    Optional<Integer> findLeagueSortOrderByUserId(@Param("userId") Long userId);
+
     boolean existsByUserId(Long userId);
 
     Optional<UserLeague> findByUserId(Long userId);

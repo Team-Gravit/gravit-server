@@ -18,6 +18,10 @@ public class LeagueFixture {
         return leagueFixtureBuilder.league().name("브론즈 2").maxLp(200).minLp(101).sortOrder(2).create();
     }
 
+    public League 브론즈_1() {
+        return leagueFixtureBuilder.league().name("브론즈 1").maxLp(320).minLp(201).sortOrder(3).create();
+    }
+
     public League 실버_3() {
         return leagueFixtureBuilder.league().name("실버 3").maxLp(460).minLp(321).sortOrder(4).create();
     }

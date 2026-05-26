@@ -16,6 +16,7 @@ import gravit.code.notification.repository.NotificationRepository;
 import gravit.code.season.domain.Season;
 import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.social.domain.SocialFeed;
+import gravit.code.social.dto.response.RecommendUserResponse;
 import gravit.code.social.dto.response.SocialFeedResponse;
 import gravit.code.social.fixture.SocialFeedFixture;
 import gravit.code.support.TCSpringBootTest;
@@ -260,6 +261,112 @@ class SocialFacadeIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
                     .isEqualTo(CONGRATULATE_LIMIT_EXCEEDED);
+        }
+    }
+
+    @Nested
+    @DisplayName("추천 유저를 조회할 때")
+    class GetRecommendedUsers {
+
+        @Test
+        void 같은_티어에_5명_이상이면_같은_티어_유저만_반환한다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈 = leagueFixture.브론즈_3();   // sortOrder=1
+            League 실버 = leagueFixture.실버_3();        // sortOrder=4 (폴백 범위 밖)
+            userLeagueFixture.참여(requester, season, 브론즈, 0);
+
+            User u2 = userFixture.일반_유저(2);
+            User u3 = userFixture.일반_유저(3);
+            User u4 = userFixture.일반_유저(4);
+            User u5 = userFixture.일반_유저(5);
+            User u6 = userFixture.일반_유저(6);
+            User silverUser = userFixture.일반_유저(7);
+            userLeagueFixture.참여(u2, season, 브론즈, 0);
+            userLeagueFixture.참여(u3, season, 브론즈, 0);
+            userLeagueFixture.참여(u4, season, 브론즈, 0);
+            userLeagueFixture.참여(u5, season, 브론즈, 0);
+            userLeagueFixture.참여(u6, season, 브론즈, 0);
+            userLeagueFixture.참여(silverUser, season, 실버, 0);
+
+            // when
+            List<RecommendUserResponse> result = socialFacade.getRecommendedUsers(requester.getId());
+
+            // then - 브론즈 5명 충족 → 폴백 없이 브론즈만 반환
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(5);
+                softly.assertThat(result).extracting(RecommendUserResponse::userId)
+                        .containsExactlyInAnyOrder(u2.getId(), u3.getId(), u4.getId(), u5.getId(), u6.getId());
+                softly.assertThat(result).extracting(RecommendUserResponse::nickname)
+                        .containsExactlyInAnyOrder("유저2", "유저3", "유저4", "유저5", "유저6");
+            });
+        }
+
+        @Test
+        void 이미_팔로우한_유저는_추천에서_제외된다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(requester, season, 브론즈, 0);
+
+            User followedUser = userFixture.일반_유저(2);
+            User notFollowedUser = userFixture.일반_유저(3);
+            userLeagueFixture.참여(followedUser, season, 브론즈, 0);
+            userLeagueFixture.참여(notFollowedUser, season, 브론즈, 0);
+            friendFixture.팔로우(requester, followedUser);
+
+            // when
+            List<RecommendUserResponse> result = socialFacade.getRecommendedUsers(requester.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).userId()).isEqualTo(notFollowedUser.getId());
+                softly.assertThat(result.get(0).nickname()).isEqualTo("유저3");
+            });
+        }
+
+        @Test
+        void 본인은_추천에서_제외된다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(requester, season, 브론즈, 0);
+
+            // when
+            List<RecommendUserResponse> result = socialFacade.getRecommendedUsers(requester.getId());
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void 추천_유저는_최대_8명까지만_반환한다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(requester, season, 브론즈, 0);
+
+            for (int i = 2; i <= 11; i++) {
+                User u = userFixture.일반_유저(i);
+                userLeagueFixture.참여(u, season, 브론즈, 0);
+            }
+
+            // when
+            List<RecommendUserResponse> result = socialFacade.getRecommendedUsers(requester.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(8);
+                softly.assertThat(result).extracting(RecommendUserResponse::userId)
+                        .doesNotContain(requester.getId());
+                softly.assertThat(result).extracting(RecommendUserResponse::nickname)
+                        .doesNotContain("유저1");
+            });
         }
     }
 }

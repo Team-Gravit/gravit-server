@@ -3,6 +3,7 @@ package gravit.code.social.controller.docs;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
+import gravit.code.social.dto.response.RecommendUserResponse;
 import gravit.code.social.dto.response.SocialFeedResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,8 +21,100 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Tag(name = "Social API", description = "친구 활동 피드 조회 API")
 public interface SocialControllerDocs {
+
+    @Operation(
+            summary = "추천 친구 목록 조회",
+            description = """
+                    나와 같은 티어의 팔로우하지 않은 유저를 최대 8명 추천합니다.<br>
+                    같은 티어 유저가 5명 미만이면 ±1 티어로 확장합니다.<br>
+                    노출 순서는 랜덤입니다.<br>
+                    mutualFollowCount: 추천 유저의 팔로잉 중 내가 팔로잉하는 유저 수입니다.<br>
+                    🔐 <strong>Jwt 필요</strong>
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "✅ 추천 친구 목록 조회 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = RecommendUserResponse.class),
+                            examples = @ExampleObject(
+                                    name = "추천 친구 목록 조회 성공 예시",
+                                    value = """
+                                            [
+                                              {"userId": 2, "nickname": "학습자A", "profileImgNumber": 1, "mutualFollowCount": 3},
+                                              {"userId": 3, "nickname": "학습자B", "profileImgNumber": 2, "mutualFollowCount": 0}
+                                            ]
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "🚫 유저 리그 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "유저 리그 없음",
+                                    value = "{\"error\": \"U_L_4041\", \"message\": \"유저의 리그가 존재하지 않습니다\"}"
+                            )
+                    )
+            )
+    })
+    @GetMapping("/recommend")
+    ResponseEntity<List<RecommendUserResponse>> getRecommendedUsers(
+            @AuthenticationPrincipal LoginUser loginUser
+    );
+
+    @Operation(
+            summary = "소셜 탭에서 팔로우",
+            description = """
+                    추천 친구 목록에서 팔로우 버튼을 눌러 즉시 팔로우합니다.<br>
+                    🔐 <strong>Jwt 필요</strong>
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "✅ 팔로우 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "🚫 자기 자신 팔로우 불가",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "자기 자신 팔로우 불가",
+                                    value = "{\"error\": \"FRIEND_4001\", \"message\": \"자기 자신에게 팔로잉은 불가능합니다\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "🚫 이미 팔로우 중",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "이미 팔로우 중",
+                                    value = "{\"error\": \"FRIEND_4091\", \"message\": \"이미 팔로잉을 한 유저입니다.\"}"
+                            )
+                    )
+            )
+    })
+    @PostMapping("/follow/{userId}")
+    ResponseEntity<Void> follow(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Parameter(description = "팔로우할 유저 ID", example = "2")
+            @PathVariable long userId
+    );
 
     @Operation(
             summary = "친구 활동 피드 조회",

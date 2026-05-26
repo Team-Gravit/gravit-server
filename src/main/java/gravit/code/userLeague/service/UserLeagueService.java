@@ -48,6 +48,12 @@ public class UserLeagueService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public int getLeagueSortOrder(long userId) {
+        return userLeagueRepository.findLeagueSortOrderByUserId(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
+    }
+
     @Transactional
     public void initUserLeague(Long userId){
 

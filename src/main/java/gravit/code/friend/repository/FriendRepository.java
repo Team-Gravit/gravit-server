@@ -78,9 +78,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
             """)
     long countByFolloweeId(long userId);
 
-    @Query("SELECT f.followeeId FROM Friend f WHERE f.followerId = :followerId")
-    List<Long> findFolloweeIdsByFollowerId(@Param("followerId") long followerId);
-
     @Query("SELECT f.followerId FROM Friend f WHERE f.followeeId = :followeeId")
     List<Long> findFollowerIdsByFolloweeId(@Param("followeeId") long followeeId);
 }
