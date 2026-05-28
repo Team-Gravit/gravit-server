@@ -29,10 +29,12 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
                 u.id,
                 u.nickname,
                 u.profileImgNumber,
-                u.handle
+                u.handle,
+                case when f2.id is not null then true else false end
             )
             from Friend f
             join User u on u.id = f.followerId
+            left join Friend f2 on f2.followerId = :followeeId and f2.followeeId = u.id
             where f.followeeId = :followeeId
             """)
     Slice<FollowerResponse> findFollowersByFolloweeId(

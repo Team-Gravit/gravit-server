@@ -9,6 +9,7 @@ public record FollowerResponse(
         String nickname,
         int profileImgNumber,
         @NotNull
-        String handle
+        String handle,
+        boolean isFollowing
 ) {
 }

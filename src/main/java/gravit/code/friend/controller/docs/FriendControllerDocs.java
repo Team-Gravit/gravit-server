@@ -145,10 +145,38 @@ public interface FriendControllerDocs {
     @Operation(summary = "팔로워 목록 조회", description = "현재 사용자를 팔로우하고 있는 사용자 목록을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>" +
             "<strong>Slice 페이징을 적용합니다</strong><br>" +
-            "쿼리 파라미터로 page 값을 보내주세요(0부터 시작)"
+            "쿼리 파라미터로 page 값을 보내주세요(0부터 시작)<br>" +
+            "<strong>isFollowing</strong>: 내가 해당 팔로워를 팔로우하고 있으면 true (맞팔 여부)"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공"),
+            @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "hasNextPage": false,
+                                              "contents": [
+                                                {
+                                                  "id": 1,
+                                                  "nickname": "김나영",
+                                                  "profileImgNumber": 2,
+                                                  "handle": "@1235cws",
+                                                  "isFollowing": false
+                                                },
+                                                {
+                                                  "id": 2,
+                                                  "nickname": "이철수",
+                                                  "profileImgNumber": 3,
+                                                  "handle": "@iron99",
+                                                  "isFollowing": true
+                                                }
+                                              ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {

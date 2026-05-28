@@ -1,142 +1,139 @@
-//package gravit.code.friend.service;
-//
-//import gravit.code.friend.domain.Friend;
-//import gravit.code.friend.domain.FriendRepository;
-//import gravit.code.friend.dto.response.FollowerResponse;
-//import gravit.code.friend.dto.response.FollowingResponse;
-//import gravit.code.friend.dto.response.FriendResponse;
-//import gravit.code.global.dto.response.SliceResponse;
-//import gravit.code.support.TCSpringBootTest;
-//import gravit.code.user.domain.Role;
-//import gravit.code.user.domain.User;
-//import gravit.code.user.domain.UserRepository;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.data.domain.Slice;
-//import org.springframework.test.context.jdbc.Sql;
-//
-//import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//@TCSpringBootTest
-//@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//class FriendServiceTest {
-//
-//    @Autowired
-//    private FriendService friendService;
-//
-//    @Autowired
-//    private UserRepository userRepository;
-//
-//    @Autowired
-//    private FriendRepository friendRepository;
-//
-//    @Test
-//    void 상호_팔로우_가능한지_검증() {
-//        // given
-//        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, Role.USER);
-//        userRepository.save(user1);
-//        User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, Role.USER);
-//        userRepository.save(user2);
-//
-//        // when
-//        FriendResponse response1 = friendService.following(user1.getId(), user2.getId()); // user2 -> user1
-//        FriendResponse response2 = friendService.following(user2.getId(), user1.getId()); // user1 -> user2
-//
-//
-//        // then
-//        assertEquals(response1.followerId(), user1.getId());
-//        assertEquals(response1.followeeId(), user2.getId());
-//
-//        assertEquals(response2.followerId(), user2.getId());
-//        assertEquals(response2.followeeId(), user1.getId());
-//
-//        // 추가 검증
-//        assertTrue(friendRepository.existsByFollowerIdAndFolloweeId(user1.getId(), user2.getId()));
-//        assertTrue(friendRepository.existsByFollowerIdAndFolloweeId(user2.getId(), user1.getId()));
-//
-//    }
-//
-//    @Test
-//    void 팔로잉을_한_유저를_대상으로_팔로잉을_취소합니다() {
-//        // given
-//        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1,Role.USER);
-//        userRepository.save(user1);
-//        User user2 = User.create("user2@example.com", "google123677438112", "User2", "@user2", 2, Role.USER);
-//        userRepository.save(user2);
-//        friendService.following(user1.getId(), user2.getId());
-//        Pageable pageable = PageRequest.of(0, 10);
-//
-//        // when
-//        friendService.unFollowing(user1.getId(), user2.getId());
-//
-//        // then
-//        Slice<FollowingResponse> followings = friendRepository.findFollowingsByFollowerId(user1.getId(), pageable);
-//        assertThat(followings.getContent().isEmpty()).isTrue();
-//    }
-//
-//    @Test
-//    void 나를_팔로우_한_사람들을_조회합니다() {
-//        // given
-//        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, Role.USER);
-//        userRepository.save(user1);
-//        User user2 = User.create("user2@example.com", "kakao1258853439443", "User2", "@user2", 1, Role.USER);
-//        userRepository.save(user2);
-//        User user3 = User.create("user3@example.com", "kakao6438123471324", "User3", "@user3", 1, Role.USER);
-//        userRepository.save(user3);
-//
-//        Friend friend1 = Friend.create(user1.getId(), user2.getId());
-//        friendRepository.save(friend1);
-//        Friend friend2 = Friend.create(user1.getId(), user3.getId());
-//        friendRepository.save(friend2);
-//        Friend friend3 = Friend.create(user2.getId(), user1.getId());
-//        friendRepository.save(friend3);
-//        Friend friend4 = Friend.create(user3.getId(), user1.getId());
-//        friendRepository.save(friend4);
-//
-//        // when
-//        SliceResponse<FollowerResponse> followerResponses = friendService.getFollowers(user1.getId(), 0);
-//
-//        // then
-//        assertEquals(2, followerResponses.contents().size());
-//        for (FollowerResponse followerResponse : followerResponses.contents()) {
-//            assertNotNull(followerResponse.nickname());
-//            assertNotNull(followerResponse.handle());
-//            assertTrue(followerResponse.profileImgNumber() > 0);
-//        }
-//    }
-//
-//    @Test
-//    void 내가_팔로우_한_사람들을_조회합니다() {
-//        // given
-//        User user1 = User.create("user1@example.com", "kakao1231513141231", "User1", "@user1", 1, Role.USER);
-//        userRepository.save(user1);
-//        User user2 = User.create("user2@example.com", "kakao1258853439443", "User2", "@user2", 1, Role.USER);
-//        userRepository.save(user2);
-//        User user3 = User.create("user3@example.com", "kakao6438123471324", "User3", "@user3", 1, Role.USER);
-//        userRepository.save(user3);
-//
-//        Friend friend1 = Friend.create(user1.getId(), user2.getId());
-//        friendRepository.save(friend1);
-//        Friend friend2 = Friend.create(user1.getId(), user3.getId());
-//        friendRepository.save(friend2);
-//        Friend friend3 = Friend.create(user2.getId(), user1.getId());
-//        friendRepository.save(friend3);
-//        Friend friend4 = Friend.create(user3.getId(), user1.getId());
-//        friendRepository.save(friend4);
-//
-//        // when
-//        SliceResponse<FollowingResponse> followingResponses = friendService.getFollowings(user1.getId(), 0);
-//
-//        // then
-//        assertEquals(2, followingResponses.contents().size());
-//
-//        for (FollowingResponse followingResponse : followingResponses.contents()) {
-//            assertNotNull(followingResponse.nickname());
-//            assertNotNull(followingResponse.handle());
-//            assertTrue(followingResponse.profileImgNumber() > 0);
-//        }
-//    }
-//}
+package gravit.code.friend.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import gravit.code.friend.dto.response.FollowerResponse;
+import gravit.code.friend.fixture.FriendFixture;
+import gravit.code.global.dto.response.SliceResponse;
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.support.TCSpringBootTest;
+import gravit.code.user.domain.User;
+import gravit.code.user.fixture.UserFixture;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+@TCSpringBootTest
+class FriendServiceTest {
+
+    @Autowired
+    private FriendService friendService;
+
+    @Autowired
+    private UserFixture userFixture;
+
+    @Autowired
+    private FriendFixture friendFixture;
+
+    @Test
+    void 나를_팔로우한_사람을_내가_팔로우하지_않으면_isFollowing이_false다() {
+        // given
+        User me = userFixture.일반_유저(1);
+        User follower = userFixture.일반_유저(2);
+        friendFixture.팔로우(follower, me);
+
+        // when
+        SliceResponse<FollowerResponse> result = friendService.getFollowers(me.getId(), 0);
+
+        // then
+        assertThat(result.contents()).hasSize(1);
+        assertThat(result.contents().get(0).id()).isEqualTo(follower.getId());
+        assertThat(result.contents().get(0).isFollowing()).isFalse();
+    }
+
+    @Test
+    void 나를_팔로우한_사람을_내가도_팔로우하면_isFollowing이_true다() {
+        // given
+        User me = userFixture.일반_유저(1);
+        User follower = userFixture.일반_유저(2);
+        friendFixture.팔로우(follower, me);
+        friendFixture.팔로우(me, follower);
+
+        // when
+        SliceResponse<FollowerResponse> result = friendService.getFollowers(me.getId(), 0);
+
+        // then
+        assertThat(result.contents()).hasSize(1);
+        assertThat(result.contents().get(0).isFollowing()).isTrue();
+    }
+
+    @Test
+    void 팔로워_목록에서_맞팔과_단방향_팔로워가_혼재할_때_isFollowing이_각각_올바르게_반환된다() {
+        // given
+        User me = userFixture.일반_유저(1);
+        User mutualFollower = userFixture.일반_유저(2);
+        User oneWayFollower = userFixture.일반_유저(3);
+
+        friendFixture.팔로우(mutualFollower, me);
+        friendFixture.팔로우(me, mutualFollower); // 맞팔
+        friendFixture.팔로우(oneWayFollower, me); // 단방향
+
+        // when
+        SliceResponse<FollowerResponse> result = friendService.getFollowers(me.getId(), 0);
+
+        // then
+        assertThat(result.contents()).hasSize(2);
+        List<FollowerResponse> contents = result.contents();
+
+        FollowerResponse mutual = contents.stream()
+                .filter(r -> r.id() == mutualFollower.getId())
+                .findFirst().orElseThrow();
+        FollowerResponse oneWay = contents.stream()
+                .filter(r -> r.id() == oneWayFollower.getId())
+                .findFirst().orElseThrow();
+
+        assertThat(mutual.isFollowing()).isTrue();
+        assertThat(oneWay.isFollowing()).isFalse();
+    }
+
+    @Test
+    void 팔로워가_없으면_빈_목록을_반환한다() {
+        // given
+        User me = userFixture.일반_유저(1);
+
+        // when
+        SliceResponse<FollowerResponse> result = friendService.getFollowers(me.getId(), 0);
+
+        // then
+        assertThat(result.contents()).isEmpty();
+        assertThat(result.hasNextPage()).isFalse();
+    }
+
+    @Test
+    void 자기_자신에게_팔로잉하면_예외가_발생한다() {
+        // given
+        User me = userFixture.일반_유저(1);
+
+        // when & then
+        assertThatThrownBy(() -> friendService.following(me.getId(), me.getId()))
+                .isInstanceOf(RestApiException.class);
+    }
+
+    @Test
+    void 이미_팔로잉_중인_유저에게_팔로잉하면_예외가_발생한다() {
+        // given
+        User me = userFixture.일반_유저(1);
+        User target = userFixture.일반_유저(2);
+        friendFixture.팔로우(me, target);
+
+        // when & then
+        assertThatThrownBy(() -> friendService.following(me.getId(), target.getId()))
+                .isInstanceOf(RestApiException.class);
+    }
+
+    @Test
+    void 팔로잉_취소_시_팔로워_목록에서_제거된다() {
+        // given
+        User me = userFixture.일반_유저(1);
+        User follower = userFixture.일반_유저(2);
+        friendFixture.팔로우(me, follower);
+
+        // when
+        friendService.unFollowing(me.getId(), follower.getId());
+
+        // then
+        SliceResponse<FollowerResponse> result = friendService.getFollowers(follower.getId(), 0);
+        assertThat(result.contents()).isEmpty();
+    }
+}
