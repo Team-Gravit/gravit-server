@@ -15,7 +15,9 @@ public record LeagueHistoryResponse(
 ) {
     public record SeasonHistoryEntry(
             String seasonKey,
-            String leagueName
+            String leagueName,
+            int sortOrder,
+            boolean isCurrent
     ) {}
 
     public static LeagueHistoryResponse of(

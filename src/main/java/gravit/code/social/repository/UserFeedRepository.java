@@ -15,7 +15,7 @@ public interface UserFeedRepository extends JpaRepository<UserFeed, Long> {
     @Query("""
             SELECT new gravit.code.social.dto.internal.SocialFeedProjection(
                 sf.id, sf.actorId, u.nickname, u.profileImgNumber, u.handle,
-                sf.eventType, sf.eventValue, sf.createdAt, uf.congratulatedAt
+                sf.eventType, sf.eventValue, sf.createdAt
             )
             FROM UserFeed uf
             JOIN SocialFeed sf ON sf.id = uf.feedId

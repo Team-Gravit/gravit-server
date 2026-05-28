@@ -33,6 +33,11 @@ public class LeagueHistoryService {
         return buildLeagueHistory(userId);
     }
 
+    @Transactional(readOnly = true)
+    public LeagueHistoryResponse getUserLeagueHistory(long userId) {
+        return buildLeagueHistory(userId);
+    }
+
     private LeagueHistoryResponse buildLeagueHistory(long userId) {
         Season activeSeason = seasonRepository.findByStatus(SeasonStatus.ACTIVE)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
@@ -49,13 +54,17 @@ public class LeagueHistoryService {
         for (UserLeagueHistory h : histories) {
             seasonHistory.add(new LeagueHistoryResponse.SeasonHistoryEntry(
                     h.getSeason().getSeasonKey(),
-                    h.getFinalLeague().getName()
+                    h.getFinalLeague().getName(),
+                    h.getFinalLeague().getSortOrder(),
+                    false
             ));
         }
         currentUserLeague.ifPresent(ul -> seasonHistory.add(
                 new LeagueHistoryResponse.SeasonHistoryEntry(
                         activeSeason.getSeasonKey(),
-                        ul.getLeague().getName()
+                        ul.getLeague().getName(),
+                        ul.getLeague().getSortOrder(),
+                        true
                 )
         ));
 

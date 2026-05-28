@@ -77,6 +77,8 @@ class LeagueHistoryServiceTest {
                 softly.assertThat(result.bestLeagueName()).isEqualTo("브론즈 3");
                 softly.assertThat(result.seasonHistory()).hasSize(1);
                 softly.assertThat(result.seasonHistory().get(0).seasonKey()).isEqualTo("2025-S2");
+                softly.assertThat(result.seasonHistory().get(0).sortOrder()).isEqualTo(1); // bronze3
+                softly.assertThat(result.seasonHistory().get(0).isCurrent()).isTrue();
             });
         }
 
@@ -95,7 +97,11 @@ class LeagueHistoryServiceTest {
                 softly.assertThat(result.totalSeasonCount()).isEqualTo(2);
                 softly.assertThat(result.seasonHistory()).hasSize(2);
                 softly.assertThat(result.seasonHistory().get(0).seasonKey()).isEqualTo("2025-S1");
+                softly.assertThat(result.seasonHistory().get(0).sortOrder()).isEqualTo(4); // silver3
+                softly.assertThat(result.seasonHistory().get(0).isCurrent()).isFalse();
                 softly.assertThat(result.seasonHistory().get(1).seasonKey()).isEqualTo("2025-S2");
+                softly.assertThat(result.seasonHistory().get(1).sortOrder()).isEqualTo(1); // bronze3
+                softly.assertThat(result.seasonHistory().get(1).isCurrent()).isTrue();
             });
         }
 

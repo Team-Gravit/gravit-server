@@ -4,6 +4,8 @@ import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.dto.internal.SocialFeedProjection;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public record SocialFeedResponse(
         Long feedId,
@@ -12,10 +14,14 @@ public record SocialFeedResponse(
         int actorProfileImgNumber,
         String actorHandle,
         String message,
-        LocalDateTime createdAt,
-        LocalDateTime congratulatedAt
+        String timeAgo,
+        boolean canCongratulate,
+        LocalDateTime createdAt
 ) {
-    public static SocialFeedResponse from(SocialFeedProjection projection) {
+    public static SocialFeedResponse from(
+            SocialFeedProjection projection,
+            boolean canCongratulate
+    ) {
         return new SocialFeedResponse(
                 projection.id(),
                 projection.actorId(),
@@ -23,8 +29,9 @@ public record SocialFeedResponse(
                 projection.actorProfileImgNumber(),
                 projection.actorHandle(),
                 generateMessage(projection.eventType(), projection.actorNickname(), projection.eventValue()),
-                projection.createdAt(),
-                projection.congratulatedAt()
+                computeTimeAgo(projection.createdAt()),
+                canCongratulate,
+                projection.createdAt()
         );
     }
 
@@ -39,5 +46,19 @@ public record SocialFeedResponse(
             case TIER_PROMOTION -> nickname + "님이 " + eventValue + "로 승급했어요!";
             case LEVEL_UP -> nickname + "님이 LV." + eventValue + "로 레벨업했어요!";
         };
+    }
+
+    private static String computeTimeAgo(LocalDateTime createdAt) {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        long minutes = ChronoUnit.MINUTES.between(createdAt, now);
+
+        if (minutes < 1) return "방금 전";
+        if (minutes < 60) return minutes + "분 전";
+
+        long hours = ChronoUnit.HOURS.between(createdAt, now);
+        if (hours < 24) return hours + "시간 전";
+
+        long days = ChronoUnit.DAYS.between(createdAt, now);
+        return Math.min(days, 7) + "일 전";
     }
 }
