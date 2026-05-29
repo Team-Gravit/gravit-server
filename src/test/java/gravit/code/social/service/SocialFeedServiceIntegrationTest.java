@@ -195,7 +195,7 @@ class SocialFeedServiceIntegrationTest {
             SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
-            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 LV.5로 레벨업했어요!");
+            assertThat(result.contents().get(0).message()).isEqualTo("LV.5로 레벨업했어요!");
         }
 
         @Test
@@ -210,7 +210,7 @@ class SocialFeedServiceIntegrationTest {
             SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
-            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 30일 연속 학습을 달성했어요!");
+            assertThat(result.contents().get(0).message()).isEqualTo("30일 연속 학습을 달성했어요!");
         }
 
         @Test
@@ -225,7 +225,7 @@ class SocialFeedServiceIntegrationTest {
             SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
-            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 골드로 승급했어요!");
+            assertThat(result.contents().get(0).message()).isEqualTo("골드로 승급했어요!");
         }
 
         @Test
@@ -240,7 +240,7 @@ class SocialFeedServiceIntegrationTest {
             SliceResponse<SocialFeedResponse> result = socialFeedService.getFeed(requester.getId(), 0);
 
             // then
-            assertThat(result.contents().get(0).message()).isEqualTo("유저2님이 지구 행성을 정복했어요!");
+            assertThat(result.contents().get(0).message()).isEqualTo("지구 행성을 정복했어요!");
         }
     }
 }

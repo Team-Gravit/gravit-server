@@ -100,7 +100,7 @@ class SocialFacadeIntegrationTest {
                 softly.assertThat(response.actorNickname()).isEqualTo("유저2");
                 softly.assertThat(response.actorHandle()).isEqualTo("h2");
                 softly.assertThat(response.actorProfileImgNumber()).isEqualTo(1);
-                softly.assertThat(response.message()).isEqualTo("유저2님이 LV.5로 레벨업했어요!");
+                softly.assertThat(response.message()).isEqualTo("LV.5로 레벨업했어요!");
                 softly.assertThat(response.timeAgo()).isNotNull();
                 softly.assertThat(response.canCongratulate()).isTrue();
                 softly.assertThat(response.createdAt()).isNotNull();

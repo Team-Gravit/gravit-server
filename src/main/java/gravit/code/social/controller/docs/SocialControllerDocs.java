@@ -145,7 +145,7 @@ public interface SocialControllerDocs {
                                                   "actorNickname": "테스터",
                                                   "actorProfileImgNumber": 3,
                                                   "actorHandle": "@tester01",
-                                                  "message": "테스터님이 지구 행성을 정복했어요!",
+                                                  "message": "지구 행성을 정복했어요!",
                                                   "createdAt": "2026-05-22T10:00:00"
                                                 }
                                               ]
