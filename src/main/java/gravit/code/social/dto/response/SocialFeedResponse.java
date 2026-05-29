@@ -28,7 +28,7 @@ public record SocialFeedResponse(
                 projection.actorNickname(),
                 projection.actorProfileImgNumber(),
                 projection.actorHandle(),
-                generateMessage(projection.eventType(), projection.actorNickname(), projection.eventValue()),
+                generateMessage(projection.eventType(), projection.eventValue()),
                 computeTimeAgo(projection.createdAt()),
                 canCongratulate,
                 projection.createdAt()
@@ -37,14 +37,13 @@ public record SocialFeedResponse(
 
     private static String generateMessage(
             FeedEventType eventType,
-            String nickname,
             String eventValue
     ) {
         return switch (eventType) {
-            case PLANET_COMPLETE -> nickname + "님이 " + eventValue + " 행성을 정복했어요!";
-            case STREAK_DAYS -> nickname + "님이 " + eventValue + "일 연속 학습을 달성했어요!";
-            case TIER_PROMOTION -> nickname + "님이 " + eventValue + "로 승급했어요!";
-            case LEVEL_UP -> nickname + "님이 LV." + eventValue + "로 레벨업했어요!";
+            case PLANET_COMPLETE -> eventValue + " 행성을 정복했어요!";
+            case STREAK_DAYS -> eventValue + "일 연속 학습을 달성했어요!";
+            case TIER_PROMOTION -> eventValue + "로 승급했어요!";
+            case LEVEL_UP -> "LV." + eventValue + "로 레벨업했어요!";
         };
     }
 
