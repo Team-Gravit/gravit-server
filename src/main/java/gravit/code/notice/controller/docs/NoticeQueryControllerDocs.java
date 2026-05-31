@@ -2,8 +2,8 @@ package gravit.code.notice.controller.docs;
 
 
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.notice.dto.response.NoticeDetailResponse;
+import gravit.code.notice.dto.response.NoticeSummaryPageResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +30,7 @@ public interface NoticeQueryControllerDocs {
             @ApiResponse(responseCode = "200", description = "✅ 조회 성공",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = SliceResponse.class),
+                            schema = @Schema(implementation = NoticeSummaryPageResponse.class),
                             examples = @ExampleObject(
                                     name = "notice-summaries",
                                     value = """

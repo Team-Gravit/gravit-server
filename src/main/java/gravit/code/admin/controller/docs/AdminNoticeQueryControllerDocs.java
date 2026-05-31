@@ -1,6 +1,7 @@
 package gravit.code.admin.controller.docs;
 
 import gravit.code.admin.dto.response.AdminNoticeDetailResponse;
+import gravit.code.admin.dto.response.AdminNoticeSummaryPageResponse;
 import gravit.code.admin.dto.response.AdminNoticeSummaryResponse;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.dto.response.PageResponse;
@@ -105,7 +106,7 @@ public interface AdminNoticeQueryControllerDocs {
                     description = "✅ 목록 조회 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PageResponse.class),
+                            schema = @Schema(implementation = AdminNoticeSummaryPageResponse.class),
                             examples = @ExampleObject(name = "성공 예시", value = """
                     {
                       "page": 0,

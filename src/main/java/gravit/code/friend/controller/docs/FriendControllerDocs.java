@@ -4,7 +4,9 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.dto.internal.SearchUserDto;
 import gravit.code.friend.dto.response.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
+import gravit.code.friend.dto.response.FollowerSliceResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
+import gravit.code.friend.dto.response.SearchUserSliceResponse;
 import gravit.code.friend.dto.response.FriendResponse;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
@@ -150,7 +152,9 @@ public interface FriendControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = FollowerSliceResponse.class),
                             examples = @ExampleObject(
                                     name = "성공 예시",
                                     value = """
@@ -174,7 +178,7 @@ public interface FriendControllerDocs {
                                               ]
                                             }
                                             """
-                            )
+                                    )
                     )
             ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
@@ -311,7 +315,7 @@ public interface FriendControllerDocs {
                     description = "✅ 검색 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = SliceResponse.class),
+                            schema = @Schema(implementation = SearchUserSliceResponse.class),
                             examples = @ExampleObject(
                                     name = "검색 결과 예시",
                                     value = """

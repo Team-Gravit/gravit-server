@@ -5,6 +5,7 @@ import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.social.dto.response.RecommendUserResponse;
 import gravit.code.social.dto.response.SocialFeedResponse;
+import gravit.code.social.dto.response.SocialFeedSliceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -132,7 +133,7 @@ public interface SocialControllerDocs {
                     description = "✅ 피드 조회 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = SliceResponse.class),
+                            schema = @Schema(implementation = SocialFeedSliceResponse.class),
                             examples = @ExampleObject(
                                     name = "피드 조회 성공 예시",
                                     value = """
