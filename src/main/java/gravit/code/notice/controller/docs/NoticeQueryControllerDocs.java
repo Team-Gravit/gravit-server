@@ -35,8 +35,10 @@ public interface NoticeQueryControllerDocs {
                                     name = "notice-summaries",
                                     value = """
                                     {
+                                      "page": 1,
+                                      "totalPages": 5,
                                       "hasNext": true,
-                                      "content": [
+                                      "contents": [
                                         {
                                           "id": 123,
                                           "title": "9월 정기 점검 안내",
