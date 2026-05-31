@@ -1,5 +1,6 @@
 package gravit.code.unit.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -8,6 +9,7 @@ import static lombok.AccessLevel.PRIVATE;
 public record UnitProgressSummaryResponse(
         long unitId,
         String title,
+        @JsonProperty("isCompleted")
         boolean isCompleted
 ) {
     public static UnitProgressSummaryResponse of(

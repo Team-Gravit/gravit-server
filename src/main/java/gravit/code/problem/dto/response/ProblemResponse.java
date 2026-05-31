@@ -1,6 +1,7 @@
 package gravit.code.problem.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.option.dto.response.OptionResponse;
@@ -60,6 +61,7 @@ public record ProblemResponse(
                 description = "북마크 여부",
                 example = "true"
         )
+        @JsonProperty("isBookmarked")
         boolean isBookmarked
 
 ) {

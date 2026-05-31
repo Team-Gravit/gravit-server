@@ -1,5 +1,6 @@
 package gravit.code.admin.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.report.domain.ReportType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -38,6 +39,7 @@ public record ReportDetailResponse(
                 description = "해결 여부",
                 example = "false"
         )
+        @JsonProperty("isResolved")
         boolean isResolved,
 
         @Schema(

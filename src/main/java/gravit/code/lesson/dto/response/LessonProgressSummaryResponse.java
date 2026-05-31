@@ -1,5 +1,6 @@
 package gravit.code.lesson.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -26,6 +27,7 @@ public record LessonProgressSummaryResponse(
                 description = "레슨 완료 여부",
                 example = "true"
         )
+        @JsonProperty("isCompleted")
         boolean isCompleted
 ) {
         public static LessonProgressSummaryResponse create(

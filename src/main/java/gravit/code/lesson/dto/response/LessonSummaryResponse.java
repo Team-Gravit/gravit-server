@@ -1,5 +1,6 @@
 package gravit.code.lesson.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
@@ -28,6 +29,7 @@ public record LessonSummaryResponse(
                 description = "해결 여부",
                 example = "true"
         )
+        @JsonProperty("isSolved")
         boolean isSolved
 ) {
 }

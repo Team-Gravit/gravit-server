@@ -1,5 +1,6 @@
 package gravit.code.mission.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.mission.domain.Mission;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,6 +11,7 @@ public record MissionDetailResponse(
         String missionDescription,
         int awardXp,
         double progressRate,
+        @JsonProperty("isCompleted")
         boolean isCompleted
 ) {
     public static MissionDetailResponse from(Mission mission) {

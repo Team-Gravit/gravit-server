@@ -1,5 +1,6 @@
 package gravit.code.league.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -17,6 +18,7 @@ public record LeagueHistoryResponse(
             String seasonKey,
             String leagueName,
             int sortOrder,
+            @JsonProperty("isCurrent")
             boolean isCurrent
     ) {}
 
