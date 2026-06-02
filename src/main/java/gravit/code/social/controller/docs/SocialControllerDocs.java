@@ -8,6 +8,7 @@ import gravit.code.social.dto.response.SocialFeedResponse;
 import gravit.code.social.dto.response.SocialFeedSliceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,7 +44,7 @@ public interface SocialControllerDocs {
                     description = "✅ 추천 친구 목록 조회 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = RecommendUserResponse.class),
+                            array = @ArraySchema(schema = @Schema(implementation = RecommendUserResponse.class)),
                             examples = @ExampleObject(
                                     name = "추천 친구 목록 조회 성공 예시",
                                     value = """
