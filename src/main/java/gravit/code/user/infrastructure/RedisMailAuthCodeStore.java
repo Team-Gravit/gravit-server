@@ -50,6 +50,7 @@ public class RedisMailAuthCodeStore implements MailAuthCodeStore {
                 GETDEL_SCRIPT,
                 Collections.singletonList(makeMailAuthCodeKeyW(mailAuthCode))
         );
+        if (userId == null) return null;
         return Long.parseLong(userId);
     }
 }
