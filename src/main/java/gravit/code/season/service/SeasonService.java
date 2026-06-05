@@ -7,6 +7,7 @@ import gravit.code.season.calendar.dto.SeasonDto;
 import gravit.code.season.domain.Season;
 import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.repository.SeasonRepository;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -62,5 +63,12 @@ public class SeasonService {
                 return seasonRepository.findBySeasonKey(current.seasonKey()).orElseThrow(()-> new RestApiException(CustomErrorCode.BATCH_ACTIVE_SEASON_CONFLICT));
             }
         });
+    }
+
+    // 시즌 종료 임박 알림 발송 시점 판정을 위해 현재 ACTIVE 시즌의 종료 시각을 조회한다
+    @Transactional(readOnly = true)
+    public Optional<LocalDateTime> getActiveSeasonEndsAt() {
+        return seasonRepository.findByStatus(SeasonStatus.ACTIVE)
+                .map(Season::getEndsAt);
     }
 }

@@ -8,8 +8,10 @@ import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
+import gravit.code.global.event.SeasonRolledOverEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
@@ -30,6 +32,7 @@ public class SeasonBatchService {
     private final UserLeagueHistoryRepository historyRepository;
     private final UserLeagueRepository userLeagueRepository;
     private final SeasonClosedCache seasonClosedCache;
+    private final ApplicationEventPublisher publisher;
     private final Clock clock;
 
     @Retryable(
@@ -63,5 +66,8 @@ public class SeasonBatchService {
 
         // 전 시즌 id 캐싱
         seasonClosedCache.setLastClosedSeasonId(currentSeason.getId());
+
+        // 3.8 시즌 종료 + 새 시즌 시작 알림: 커밋 이후 AFTER_COMMIT 리스너에서 전체 발송
+        publisher.publishEvent(new SeasonRolledOverEvent(nextSeason.getSeasonKey()));
     }
 }

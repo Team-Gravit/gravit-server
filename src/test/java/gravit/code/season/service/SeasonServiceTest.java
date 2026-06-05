@@ -1,5 +1,6 @@
 package gravit.code.season.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import gravit.code.season.domain.Season;
@@ -7,6 +8,7 @@ import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -104,5 +106,30 @@ class SeasonServiceTest {
             softly.assertThat(result.getStartsAt()).isEqualTo(LocalDateTime.of(2025, 5, 1, 0, 0));
             softly.assertThat(result.getEndsAt()).isEqualTo(LocalDateTime.of(2025, 9, 1, 0, 0));
         });
+    }
+
+    @Test
+    void ACTIVE_시즌의_종료_시각을_조회한다() {
+        // given
+        LocalDateTime endsAt = LocalDateTime.of(2025, 9, 1, 0, 0);
+        seasonFixture.진행중인_시즌("2025-S2", LocalDateTime.of(2025, 5, 1, 0, 0), endsAt);
+
+        // when
+        Optional<LocalDateTime> result = seasonService.getActiveSeasonEndsAt();
+
+        // then
+        assertThat(result).contains(endsAt);
+    }
+
+    @Test
+    void ACTIVE_시즌이_없으면_종료_시각_조회_결과가_비어있다() {
+        // given - CLOSED 시즌만 존재 (ACTIVE 아님)
+        seasonFixture.종료된_시즌("2025-S1");
+
+        // when
+        Optional<LocalDateTime> result = seasonService.getActiveSeasonEndsAt();
+
+        // then
+        assertThat(result).isEmpty();
     }
 }

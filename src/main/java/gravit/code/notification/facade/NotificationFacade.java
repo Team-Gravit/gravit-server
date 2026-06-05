@@ -9,12 +9,17 @@ import gravit.code.learning.service.LearningQueryService;
 import gravit.code.notification.domain.NotificationType;
 import gravit.code.notification.dto.internal.InactivityMilestone;
 import gravit.code.notification.support.NotificationMessageProvider;
+import gravit.code.season.service.SeasonService;
 import gravit.code.user.service.UserAccessService;
-import lombok.RequiredArgsConstructor;
-
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
+import lombok.RequiredArgsConstructor;
 
 @Facade
 @RequiredArgsConstructor
@@ -25,6 +30,8 @@ public class NotificationFacade {
     private final FcmTokenQueryService fcmTokenQueryService;
     private final FcmService fcmService;
     private final NotificationMessageProvider messageProvider;
+    private final SeasonService seasonService;
+    private final Clock clock;
 
     public void sendConsecutiveLearningWarnings() {
 
@@ -99,6 +106,31 @@ public class NotificationFacade {
         fcmService.sendNotifications(List.of(message));
     }
 
+    // 시즌 종료 임박: ACTIVE 시즌의 종료일까지 남은 일수가 마일스톤(7일/3일)과 일치하면 전체 발송
+    public void sendSeasonEndingReminders() {
+
+        Optional<LocalDateTime> endsAt = seasonService.getActiveSeasonEndsAt();
+
+        if (endsAt.isEmpty()) {
+            return;
+        }
+
+        long daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(clock), endsAt.get().toLocalDate());
+
+        messageProvider.seasonEndingMilestones().stream()
+                .filter(milestone -> milestone.daysBefore() == daysRemaining)
+                .findFirst()
+                .ifPresent(milestone -> broadcastToAll(
+                        NotificationType.SEASON_ENDING.toPushData(),
+                        milestone.message()
+                ));
+    }
+
+    // 시즌 종료 + 새 시즌 시작: 롤오버 직후 전체 발송 (소프트 리셋 결과는 알림에 포함하지 않음)
+    public void sendSeasonResetAlerts() {
+        broadcastToAll(NotificationType.SEASON_RESET.toPushData(), messageProvider.seasonReset());
+    }
+
     public void sendConsecutiveLearningWarningToUser(
             long userId,
             int consecutiveDays
@@ -138,6 +170,21 @@ public class NotificationFacade {
                 NotificationType.NEW_CONTENT.toPushData(unitId),
                 messageProvider.newContent()
         );
+    }
+
+    private void broadcastToAll(
+            Map<String, String> data,
+            String message
+    ) {
+        List<String> tokens = fcmTokenQueryService.getAllTokens();
+
+        if (tokens.isEmpty()) {
+            return;
+        }
+
+        PushMessage pushMessage = PushMessage.of(tokens, message, null, data);
+
+        fcmService.sendNotifications(List.of(pushMessage));
     }
 
     private void pushToUser(

@@ -1,6 +1,7 @@
 package gravit.code.notification.support;
 
 import gravit.code.notification.dto.internal.InactivityMilestone;
+import gravit.code.notification.dto.internal.SeasonEndingMilestone;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +13,13 @@ public class NotificationMessageProvider {
     private static final String CONSECUTIVE_WARNING_MESSAGE = "오늘 학습을 하지 않으면 %d일 연속학습이 끊겨요!";
 
     private static final String NEW_CONTENT_MESSAGE = "새 레슨이 업데이트됐어요! 오늘 학습에 도전해보세요 🔥";
+
+    private static final String SEASON_RESET_MESSAGE = "시즌 종료! 새 시즌이 찾아왔어요. 다시 시작해봐요 💪";
+
+    private static final List<SeasonEndingMilestone> SEASON_ENDING_MILESTONES = List.of(
+            new SeasonEndingMilestone(7, "시즌이 일주일 뒤 끝나요! 지금이 티어 올릴 마지막 기회예요 💪"),
+            new SeasonEndingMilestone(3, "시즌 종료가 3일 앞으로 다가왔어요! 마지막까지 달려봐요 🔥")
+    );
 
     private static final List<String> DAILY_INCOMPLETE_MESSAGES = List.of(
             "오늘 아직 학습을 안 했어요! 10분만 투자해보세요 📚",
@@ -54,5 +62,13 @@ public class NotificationMessageProvider {
 
     public String newContent() {
         return NEW_CONTENT_MESSAGE;
+    }
+
+    public List<SeasonEndingMilestone> seasonEndingMilestones() {
+        return SEASON_ENDING_MILESTONES;
+    }
+
+    public String seasonReset() {
+        return SEASON_RESET_MESSAGE;
     }
 }
