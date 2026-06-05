@@ -39,15 +39,15 @@ jobs:
 
           spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          spring.security.oauth2.client.registration.google.redirect-uri: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          spring.security.oauth2.client.registration.google.redirect-uri: ${{ secrets.DEV_GOOGLE_REDIRECT_URI }}
 
           spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_CLIENT_ID }}
           spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          spring.security.oauth2.client.registration.kakao.redirect-uri: ${{ secrets.KAKAO_REDIRECT_URI }}
+          spring.security.oauth2.client.registration.kakao.redirect-uri: ${{ secrets.DEV_KAKAO_REDIRECT_URI }}
 
           spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_CLIENT_ID }}
           spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_CLIENT_SECRET }}
-          spring.security.oauth2.client.registration.naver.redirect-uri: ${{ secrets.NAVER_REDIRECT_URI }}
+          spring.security.oauth2.client.registration.naver.redirect-uri: ${{ secrets.DEV_NAVER_REDIRECT_URI }}
 
           oauth.android.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           oauth.android.kakao.client-id: ${{ secrets.KAKAO_NATIVE_APP_KEY }}
