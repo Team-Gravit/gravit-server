@@ -15,6 +15,7 @@ import gravit.code.social.domain.SocialFeed;
 import gravit.code.social.dto.response.RecommendUserResponse;
 import gravit.code.social.dto.response.SocialFeedResponse;
 import gravit.code.social.fixture.SocialFeedFixture;
+import gravit.code.social.repository.SocialFeedRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
@@ -64,6 +65,9 @@ class SocialFacadeIntegrationTest {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private SocialFeedRepository socialFeedRepository;
+
     @Nested
     @DisplayName("팔로우할 때")
     class Follow {
@@ -85,6 +89,7 @@ class SocialFacadeIntegrationTest {
                 softly.assertThat(notifications.get(0).getType()).isEqualTo(NotificationType.FOLLOW);
                 softly.assertThat(notifications.get(0).getMessage()).isEqualTo("유저1님이 나를 팔로우했어요! 👀");
                 softly.assertThat(notifications.get(0).isRead()).isFalse();
+                softly.assertThat(notifications.get(0).getTargetId()).isEqualTo(follower.getId());
             });
         }
     }
@@ -110,9 +115,11 @@ class SocialFacadeIntegrationTest {
             assertThat(notifications).hasSize(2);
             List<Long> recipientIds = notifications.stream().map(Notification::getUserId).toList();
             assertThat(recipientIds).containsExactlyInAnyOrder(follower1.getId(), follower2.getId());
+            Long feedId = socialFeedRepository.findAll().get(0).getId();
             notifications.forEach(n -> assertSoftly(softly -> {
                 softly.assertThat(n.getType()).isEqualTo(NotificationType.FRIEND_ACTIVITY);
                 softly.assertThat(n.getMessage()).isEqualTo("유저1님이 LV.5이 됐어요! 💪");
+                softly.assertThat(n.getTargetId()).isEqualTo(feedId);
             }));
         }
 

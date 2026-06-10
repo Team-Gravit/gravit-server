@@ -1,6 +1,8 @@
 package gravit.code.notification.repository;
 
 import gravit.code.notification.domain.Notification;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,5 +25,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             @Param("message") String message,
             @Param("targetId") Long targetId,
             @Param("now") LocalDateTime now
+    );
+
+    @Query("SELECT n FROM Notification n WHERE n.userId = :userId ORDER BY n.createdAt DESC")
+    Slice<Notification> findByUserIdOrderByCreatedAtDesc(
+            @Param("userId") long userId,
+            Pageable pageable
     );
 }

@@ -54,11 +54,21 @@ public class NotificationService {
             NotificationType type,
             String message
     ) {
+        notifyUsers(userIds, type, message, null);
+    }
+
+    @Transactional
+    public void notifyUsers(
+            List<Long> userIds,
+            NotificationType type,
+            String message,
+            Long targetId
+    ) {
         if (userIds.isEmpty()) {
             return;
         }
         List<Notification> notifications = userIds.stream()
-                .map(userId -> Notification.create(userId, type, message))
+                .map(userId -> Notification.create(userId, type, message, targetId))
                 .toList();
         notificationRepository.saveAll(notifications);
     }

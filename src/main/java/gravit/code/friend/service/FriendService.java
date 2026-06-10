@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Slf4j
@@ -136,6 +137,14 @@ public class FriendService {
     @Transactional(readOnly = true)
     public List<Long> getFollowerIds(long followeeId) {
         return friendRepository.findFollowerIdsByFolloweeId(followeeId);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<Long> followingIdsAmong(
+            long followerId,
+            Set<Long> followeeIds
+    ) {
+        return friendRepository.findFollowingIdsAmong(followerId, followeeIds);
     }
 
     @Transactional(readOnly = true)

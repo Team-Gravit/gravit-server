@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSearchRepository {
     boolean existsByFollowerIdAndFolloweeId(
@@ -82,4 +83,10 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
 
     @Query("SELECT f.followerId FROM Friend f WHERE f.followeeId = :followeeId")
     List<Long> findFollowerIdsByFolloweeId(@Param("followeeId") long followeeId);
+
+    @Query("SELECT f.followeeId FROM Friend f WHERE f.followerId = :followerId AND f.followeeId IN :followeeIds")
+    Set<Long> findFollowingIdsAmong(
+            @Param("followerId") long followerId,
+            @Param("followeeIds") Set<Long> followeeIds
+    );
 }
