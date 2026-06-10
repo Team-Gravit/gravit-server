@@ -27,7 +27,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             @Param("now") LocalDateTime now
     );
 
-    @Query("SELECT n FROM Notification n WHERE n.userId = :userId ORDER BY n.createdAt DESC")
+    @Query("SELECT n FROM Notification n WHERE n.userId = :userId ORDER BY n.createdAt DESC, n.id DESC")
     Slice<Notification> findByUserIdOrderByCreatedAtDesc(
             @Param("userId") long userId,
             Pageable pageable

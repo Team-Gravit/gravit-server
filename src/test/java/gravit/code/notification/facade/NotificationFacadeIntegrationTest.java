@@ -331,6 +331,7 @@ class NotificationFacadeIntegrationTest {
 
             // then
             List<Notification> saved = notificationRepository.findAll();
+            assertThat(saved).hasSize(2);
             assertThat(saved).allMatch(n -> feedId == n.getTargetId());
         }
     }

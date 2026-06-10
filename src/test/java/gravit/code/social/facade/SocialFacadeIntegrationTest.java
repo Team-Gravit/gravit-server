@@ -115,7 +115,9 @@ class SocialFacadeIntegrationTest {
             assertThat(notifications).hasSize(2);
             List<Long> recipientIds = notifications.stream().map(Notification::getUserId).toList();
             assertThat(recipientIds).containsExactlyInAnyOrder(follower1.getId(), follower2.getId());
-            Long feedId = socialFeedRepository.findAll().get(0).getId();
+            List<SocialFeed> feeds = socialFeedRepository.findAll();
+            assertThat(feeds).hasSize(1);
+            Long feedId = feeds.get(0).getId();
             notifications.forEach(n -> assertSoftly(softly -> {
                 softly.assertThat(n.getType()).isEqualTo(NotificationType.FRIEND_ACTIVITY);
                 softly.assertThat(n.getMessage()).isEqualTo("유저1님이 LV.5이 됐어요! 💪");
