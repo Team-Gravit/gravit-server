@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Facade
 @RequiredArgsConstructor
@@ -185,7 +186,7 @@ public class NotificationFacade {
         pushToUsers(userIds, type.toPushData(targetId), () -> message);
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public SliceResponse<NotificationResponse> getInbox(
             long userId,
             int page
