@@ -59,7 +59,7 @@ public class SocialFacade {
     ) {
         friendService.following(userId, targetUserId);
         String followerNickname = userService.getUser(userId).getNickname();
-        notificationFacade.notifyUser(targetUserId, NotificationType.FOLLOW, messageProvider.followReceived(followerNickname));
+        notificationFacade.notifyUser(targetUserId, NotificationType.FOLLOW, messageProvider.followReceived(followerNickname), userId);
     }
 
     @Transactional(readOnly = true)
@@ -82,7 +82,7 @@ public class SocialFacade {
         if (!followerIds.isEmpty()) {
             String actorNickname = userService.getUser(actorId).getNickname();
             String message = messageProvider.friendActivity(actorNickname, eventType, eventValue);
-            notificationFacade.notifyUsers(followerIds, NotificationType.FRIEND_ACTIVITY, message);
+            notificationFacade.notifyUsers(followerIds, NotificationType.FRIEND_ACTIVITY, message, feed.getId());
         }
     }
 

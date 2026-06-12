@@ -4,9 +4,12 @@ import gravit.code.fcm.domain.FcmToken;
 import gravit.code.fcm.dto.internal.PushMessage;
 import gravit.code.fcm.repository.FcmTokenRepository;
 import gravit.code.fcm.service.FcmService;
+import gravit.code.friend.fixture.FriendFixture;
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.notification.domain.Notification;
 import gravit.code.notification.domain.NotificationActionType;
 import gravit.code.notification.domain.NotificationType;
+import gravit.code.notification.dto.response.NotificationResponse;
 import gravit.code.notification.repository.NotificationRepository;
 import gravit.code.notification.support.NotificationMessageProvider;
 import gravit.code.season.batch.SeasonBatchService;
@@ -50,6 +53,9 @@ class NotificationFacadeIntegrationTest {
 
     @Autowired
     private UserFixture userFixture;
+
+    @Autowired
+    private FriendFixture friendFixture;
 
     @Autowired
     private FcmTokenRepository fcmTokenRepository;
@@ -257,6 +263,23 @@ class NotificationFacadeIntegrationTest {
             // FCM 미발송
             verify(fcmService, never()).sendNotifications(anyList());
         }
+
+        @Test
+        void targetId가_있으면_알림에_함께_저장된다() {
+            // given
+            User receiver = userFixture.일반_유저(1);
+            long followerId = 42L;
+
+            // when
+            notificationFacade.notifyUser(receiver.getId(), NotificationType.FOLLOW, "유저42님이 나를 팔로우했어요! 👀", followerId);
+
+            // then
+            List<Notification> saved = notificationRepository.findAll();
+            assertSoftly(softly -> {
+                softly.assertThat(saved).hasSize(1);
+                softly.assertThat(saved.get(0).getTargetId()).isEqualTo(followerId);
+            });
+        }
     }
 
     @Nested
@@ -289,6 +312,164 @@ class NotificationFacadeIntegrationTest {
             });
             // FCM 발송
             verify(fcmService, timeout(1000)).sendNotifications(anyList());
+        }
+
+        @Test
+        void targetId가_있으면_모든_알림에_저장된다() {
+            // given
+            User user1 = userFixture.일반_유저(1);
+            User user2 = userFixture.일반_유저(2);
+            long feedId = 99L;
+
+            // when
+            notificationFacade.notifyUsers(
+                    List.of(user1.getId(), user2.getId()),
+                    NotificationType.FRIEND_ACTIVITY,
+                    "유저3님이 OS행성을 정복했어요! 🌍",
+                    feedId
+            );
+
+            // then
+            List<Notification> saved = notificationRepository.findAll();
+            assertThat(saved).hasSize(2);
+            assertThat(saved).allMatch(n -> feedId == n.getTargetId());
+        }
+    }
+
+    @Nested
+    @DisplayName("알림 인박스를 조회할 때")
+    class GetInbox {
+
+        @Test
+        void 알림이_없으면_빈_결과를_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(user.getId(), 0);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.contents()).isEmpty();
+                softly.assertThat(result.hasNextPage()).isFalse();
+            });
+        }
+
+        @Test
+        void FOLLOW_알림에서_상대를_아직_팔로우하지_않았으면_FOLLOW_BACK을_반환한다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            User follower = userFixture.일반_유저(2);
+            // follower가 me를 팔로우했고, me는 아직 맞팔로우 안 함
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
+                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            assertThat(result.contents()).hasSize(1);
+            assertSoftly(softly -> {
+                softly.assertThat(result.contents().get(0).actionType()).isEqualTo(NotificationActionType.FOLLOW_BACK.name());
+                softly.assertThat(result.contents().get(0).targetId()).isEqualTo(follower.getId());
+            });
+        }
+
+        @Test
+        void FOLLOW_알림에서_상대를_이미_팔로우했으면_UNFOLLOW를_반환한다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            User follower = userFixture.일반_유저(2);
+            // follower가 me를 팔로우했고, me도 follower를 맞팔로우한 상태
+            friendFixture.팔로우(me, follower);
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
+                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            assertThat(result.contents()).hasSize(1);
+            assertSoftly(softly -> {
+                softly.assertThat(result.contents().get(0).actionType()).isEqualTo(NotificationActionType.UNFOLLOW.name());
+                softly.assertThat(result.contents().get(0).targetId()).isEqualTo(follower.getId());
+            });
+        }
+
+        @Test
+        void CONGRATULATION_알림은_NONE_액션을_반환한다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.CONGRATULATION,
+                    "유저2님이 축하해줬어요! 🎉"));
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.contents().get(0).actionType()).isEqualTo(NotificationActionType.NONE.name());
+                softly.assertThat(result.contents().get(0).targetId()).isNull();
+            });
+        }
+
+        @Test
+        void FRIEND_ACTIVITY_알림은_CONGRATULATE_액션과_feedId를_반환한다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            long feedId = 77L;
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.FRIEND_ACTIVITY,
+                    "유저2님이 OS행성을 정복했어요! 🌍", feedId));
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.contents().get(0).actionType()).isEqualTo(NotificationActionType.CONGRATULATE.name());
+                softly.assertThat(result.contents().get(0).targetId()).isEqualTo(feedId);
+            });
+        }
+
+        @Test
+        void 여러_타입의_알림이_혼재할_때_각_타입에_맞는_액션을_반환한다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            User followerA = userFixture.일반_유저(2); // 아직 맞팔로우 안 함
+            User followerB = userFixture.일반_유저(3); // 이미 맞팔로우 함
+            friendFixture.팔로우(me, followerB);
+
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
+                    "유저2님이 나를 팔로우했어요! 👀", followerA.getId()));
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
+                    "유저3님이 나를 팔로우했어요! 👀", followerB.getId()));
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.CONGRATULATION,
+                    "유저2님이 축하해줬어요! 🎉"));
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            assertThat(result.contents()).hasSize(3);
+            assertThat(result.contents())
+                    .filteredOn(n -> n.type().equals(NotificationType.FOLLOW.name())
+                            && n.targetId().equals(followerA.getId()))
+                    .singleElement()
+                    .extracting(NotificationResponse::actionType)
+                    .isEqualTo(NotificationActionType.FOLLOW_BACK.name());
+
+            assertThat(result.contents())
+                    .filteredOn(n -> n.type().equals(NotificationType.FOLLOW.name())
+                            && n.targetId().equals(followerB.getId()))
+                    .singleElement()
+                    .extracting(NotificationResponse::actionType)
+                    .isEqualTo(NotificationActionType.UNFOLLOW.name());
+
+            assertThat(result.contents())
+                    .filteredOn(n -> n.type().equals(NotificationType.CONGRATULATION.name()))
+                    .singleElement()
+                    .extracting(NotificationResponse::actionType)
+                    .isEqualTo(NotificationActionType.NONE.name());
         }
     }
 }

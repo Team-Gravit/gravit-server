@@ -3,11 +3,17 @@ package gravit.code.notification.facade;
 import gravit.code.fcm.dto.internal.PushMessage;
 import gravit.code.fcm.service.FcmService;
 import gravit.code.fcm.service.FcmTokenQueryService;
+import gravit.code.friend.service.FriendService;
 import gravit.code.global.annotation.Facade;
+import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.learning.dto.internal.ConsecutiveAtRiskUser;
 import gravit.code.learning.service.LearningQueryService;
+import gravit.code.notification.domain.Notification;
+import gravit.code.notification.domain.NotificationActionType;
 import gravit.code.notification.domain.NotificationType;
 import gravit.code.notification.dto.internal.InactivityMilestone;
+import gravit.code.notification.dto.response.NotificationResponse;
+import gravit.code.notification.service.NotificationQueryService;
 import gravit.code.notification.service.NotificationService;
 import gravit.code.notification.support.NotificationMessageProvider;
 import gravit.code.season.service.SeasonService;
@@ -18,10 +24,14 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Facade
 @RequiredArgsConstructor
@@ -33,6 +43,8 @@ public class NotificationFacade {
     private final FcmService fcmService;
     private final NotificationMessageProvider messageProvider;
     private final NotificationService notificationService;
+    private final NotificationQueryService notificationQueryService;
+    private final FriendService friendService;
     private final SeasonService seasonService;
     private final Clock clock;
 
@@ -142,8 +154,17 @@ public class NotificationFacade {
             NotificationType type,
             String message
     ) {
-        notificationService.notify(userId, type, message);
-        pushToUser(userId, type.toPushData(), message);
+        notifyUser(userId, type, message, null);
+    }
+
+    public void notifyUser(
+            long userId,
+            NotificationType type,
+            String message,
+            Long targetId
+    ) {
+        notificationService.notify(userId, type, message, targetId);
+        pushToUser(userId, type.toPushData(targetId), message);
     }
 
     // 여러 유저에게 인앱 알림 저장 + FCM 푸시 발송
@@ -152,8 +173,53 @@ public class NotificationFacade {
             NotificationType type,
             String message
     ) {
-        notificationService.notifyUsers(userIds, type, message);
-        pushToUsers(userIds, type.toPushData(), () -> message);
+        notifyUsers(userIds, type, message, null);
+    }
+
+    public void notifyUsers(
+            List<Long> userIds,
+            NotificationType type,
+            String message,
+            Long targetId
+    ) {
+        notificationService.notifyUsers(userIds, type, message, targetId);
+        pushToUsers(userIds, type.toPushData(targetId), () -> message);
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<NotificationResponse> getInbox(
+            long userId,
+            int page
+    ) {
+        SliceResponse<Notification> raw = notificationQueryService.getNotifications(userId, page);
+
+        Set<Long> followTargetIds = raw.contents().stream()
+                .filter(n -> n.getType() == NotificationType.FOLLOW && n.getTargetId() != null)
+                .map(Notification::getTargetId)
+                .collect(Collectors.toSet());
+
+        Set<Long> alreadyFollowing = followTargetIds.isEmpty()
+                ? Collections.emptySet()
+                : friendService.followingIdsAmong(userId, followTargetIds);
+
+        List<NotificationResponse> responses = raw.contents().stream()
+                .map(n -> toResponse(n, alreadyFollowing))
+                .toList();
+
+        return SliceResponse.of(raw.hasNextPage(), responses);
+    }
+
+    private NotificationResponse toResponse(
+            Notification notification,
+            Set<Long> alreadyFollowing
+    ) {
+        NotificationActionType actionType = notification.getType() == NotificationType.FOLLOW
+                && notification.getTargetId() != null
+                ? (alreadyFollowing.contains(notification.getTargetId())
+                        ? NotificationActionType.UNFOLLOW
+                        : NotificationActionType.FOLLOW_BACK)
+                : notification.getType().getActionType();
+        return NotificationResponse.of(notification, actionType);
     }
 
     public void sendConsecutiveLearningWarningToUser(
