@@ -66,14 +66,14 @@ class LessonSubmissionCommandServiceIntegrationTest {
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lesson.getId(), userId));
+            LessonSubmission saved = lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lesson.getId(), userId));
             LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(lesson.getId(), 90, 85);
 
             // when
             lessonSubmissionCommandService.saveLessonSubmission(userId, request, false);
 
             // then
-            LessonSubmission updated = lessonSubmissionRepository.findByLessonIdAndUserId(lesson.getId(), userId).get();
+            LessonSubmission updated = lessonSubmissionRepository.findById(saved.getId()).get();
             assertSoftly(softly -> {
                 softly.assertThat(updated.getLearningTime()).isEqualTo(90);
                 softly.assertThat(updated.getTryCount()).isEqualTo(2);
