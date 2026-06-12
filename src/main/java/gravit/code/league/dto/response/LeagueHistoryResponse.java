@@ -29,6 +29,9 @@ public record LeagueHistoryResponse(
             String seasonKey,
 
             @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+            String displayKey,
+
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
             String leagueName,
 
             @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

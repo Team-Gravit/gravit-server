@@ -53,23 +53,33 @@ public class LeagueHistoryService {
 
         List<LeagueHistoryResponse.SeasonHistoryEntry> seasonHistory = new ArrayList<>();
         for (UserLeagueHistory h : histories) {
+            String seasonKey = h.getSeason().getSeasonKey();
             seasonHistory.add(new LeagueHistoryResponse.SeasonHistoryEntry(
-                    h.getSeason().getSeasonKey(),
+                    seasonKey,
+                    toDisplayKey(seasonKey),
                     h.getFinalLeague().getName(),
                     h.getFinalLeague().getSortOrder(),
                     false
             ));
         }
-        currentUserLeague.ifPresent(ul -> seasonHistory.add(
-                new LeagueHistoryResponse.SeasonHistoryEntry(
-                        activeSeason.getSeasonKey(),
-                        ul.getLeague().getName(),
-                        ul.getLeague().getSortOrder(),
-                        true
-                )
-        ));
+        currentUserLeague.ifPresent(ul -> {
+            String seasonKey = activeSeason.getSeasonKey();
+            seasonHistory.add(new LeagueHistoryResponse.SeasonHistoryEntry(
+                    seasonKey,
+                    toDisplayKey(seasonKey),
+                    ul.getLeague().getName(),
+                    ul.getLeague().getSortOrder(),
+                    true
+            ));
+        });
 
         return LeagueHistoryResponse.of(currentRank, totalSeasonCount, top3SeasonCount, bestLeagueName, seasonHistory);
+    }
+
+    // "2023-S1" → "S1"
+    private String toDisplayKey(String seasonKey) {
+        int idx = seasonKey.indexOf('-');
+        return idx >= 0 ? seasonKey.substring(idx + 1) : seasonKey;
     }
 
     private String computeBestLeagueName(
