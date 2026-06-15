@@ -44,6 +44,7 @@ public class UserLeagueService {
                 userLeague.getLeague().getId(),
                 userLeague.getLeague().getName(),
                 userLeague.getLp(),
+                userLeague.getLeague().getMinLp(),
                 userLeague.getLeague().getMaxLp()
         );
     }

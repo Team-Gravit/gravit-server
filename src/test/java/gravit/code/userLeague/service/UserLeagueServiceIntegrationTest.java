@@ -83,6 +83,7 @@ class UserLeagueServiceIntegrationTest {
                 softly.assertThat(result.leagueId()).isEqualTo(league.getId());
                 softly.assertThat(result.leagueName()).isEqualTo("Bronze");
                 softly.assertThat(result.currentLP()).isEqualTo(50);
+                softly.assertThat(result.minLP()).isEqualTo(0);
                 softly.assertThat(result.maxLP()).isEqualTo(100);
             });
         }

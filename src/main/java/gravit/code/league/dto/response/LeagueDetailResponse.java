@@ -17,18 +17,23 @@ public record LeagueDetailResponse(
         int currentLP,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        int minLP,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         int maxLP
 ) {
     public static LeagueDetailResponse of(
             long leagueId,
             String leagueName,
             int currentLP,
+            int minLP,
             int maxLP
     ){
         return  LeagueDetailResponse.builder()
                 .leagueId(leagueId)
                 .leagueName(leagueName)
                 .currentLP(currentLP)
+                .minLP(minLP)
                 .maxLP(maxLP)
                 .build();
     }
