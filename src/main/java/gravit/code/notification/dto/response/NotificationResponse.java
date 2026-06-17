@@ -42,12 +42,16 @@ public record NotificationResponse(
         boolean read,
 
         @Schema(description = "생성 시각", requiredMode = Schema.RequiredMode.REQUIRED)
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+
+        @Schema(description = "팔로우 알림의 상대 유저 정보 (FOLLOW 알림이 아니거나 탈퇴한 유저면 null)")
+        NotificationActor actor
 
 ) {
     public static NotificationResponse of(
             Notification notification,
-            NotificationActionType resolvedActionType
+            NotificationActionType resolvedActionType,
+            NotificationActor actor
     ) {
         return NotificationResponse.builder()
                 .id(notification.getId())
@@ -57,6 +61,7 @@ public record NotificationResponse(
                 .targetId(notification.getTargetId())
                 .read(notification.isRead())
                 .createdAt(notification.getCreatedAt())
+                .actor(actor)
                 .build();
     }
 }

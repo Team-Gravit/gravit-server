@@ -10,12 +10,17 @@ import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
+import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -298,6 +303,76 @@ class UserServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("유저 요약 목록을 조회할 때")
+    class GetUserSummaries {
+
+        @Test
+        void 존재하는_유저들의_요약을_Map으로_반환한다() {
+            // given
+            User user1 = userFixture.일반_유저(1);
+            User user2 = userFixture.일반_유저(2);
+
+            // when
+            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(Set.of(user1.getId(), user2.getId()));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(2);
+                softly.assertThat(result.get(user1.getId()).nickname()).isEqualTo(user1.getNickname());
+                softly.assertThat(result.get(user1.getId()).profileImgNumber()).isEqualTo(user1.getProfileImgNumber());
+                softly.assertThat(result.get(user2.getId()).nickname()).isEqualTo(user2.getNickname());
+            });
+        }
+
+        @Test
+        void 빈_아이디_집합이면_빈_Map을_반환한다() {
+            // given
+            Set<Long> emptyIds = Collections.emptySet();
+
+            // when
+            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(emptyIds);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void 탈퇴한_유저는_결과에서_제외된다() {
+            // given
+            User active = userFixture.일반_유저(1);
+            User deleted = userFixture.일반_유저(2);
+            userRepository.deleteById(deleted.getId()); // soft-delete
+
+            // when
+            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(Set.of(active.getId(), deleted.getId()));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result).containsKey(active.getId());
+                softly.assertThat(result).doesNotContainKey(deleted.getId());
+            });
+        }
+
+        @Test
+        void 존재하지_않는_아이디는_결과에서_제외된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            long nonExistentUserId = 999L;
+
+            // when
+            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(Set.of(user.getId(), nonExistentUserId));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result).containsKey(user.getId());
+                softly.assertThat(result).doesNotContainKey(nonExistentUserId);
+            });
         }
     }
 }

@@ -11,12 +11,19 @@ import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
+import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.user.support.RandomHandleGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -97,6 +104,17 @@ public class UserService {
     public User getUser(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+    }
+
+    // 탈퇴 유저는 조회 결과에서 제외되므로 반환 Map에 키가 존재하지 않는다
+    @Transactional(readOnly = true)
+    public Map<Long, UserSummaryResponse> getUserSummaries(Set<Long> userIds) {
+        if (userIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        return userRepository.findSummariesByIds(userIds).stream()
+                .collect(Collectors.toMap(UserSummaryResponse::id, Function.identity()));
     }
 
     private UserLevelResponse updateUserLevelAndXp(

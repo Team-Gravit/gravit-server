@@ -9,6 +9,7 @@ import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.notification.domain.Notification;
 import gravit.code.notification.domain.NotificationActionType;
 import gravit.code.notification.domain.NotificationType;
+import gravit.code.notification.dto.response.NotificationActor;
 import gravit.code.notification.dto.response.NotificationResponse;
 import gravit.code.notification.repository.NotificationRepository;
 import gravit.code.notification.support.NotificationMessageProvider;
@@ -17,6 +18,7 @@ import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
+import gravit.code.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -62,6 +64,9 @@ class NotificationFacadeIntegrationTest {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // FCM 외부 발송 경계만 격리하고, 토큰 조회·메시지 구성 등 우리 로직은 실제로 동작시킨다
     @MockitoBean
@@ -394,6 +399,63 @@ class NotificationFacadeIntegrationTest {
                 softly.assertThat(result.contents().get(0).actionType()).isEqualTo(NotificationActionType.UNFOLLOW.name());
                 softly.assertThat(result.contents().get(0).targetId()).isEqualTo(follower.getId());
             });
+        }
+
+        @Test
+        void FOLLOW_알림은_상대_유저의_actor_정보를_포함한다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            User follower = userFixture.일반_유저(2);
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
+                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            NotificationActor actor = result.contents().get(0).actor();
+            assertThat(actor).isNotNull();
+            assertSoftly(softly -> {
+                softly.assertThat(actor.profileId()).isEqualTo(follower.getId());
+                softly.assertThat(actor.nickname()).isEqualTo("유저2");
+                softly.assertThat(actor.profileImgNumber()).isEqualTo(follower.getProfileImgNumber());
+            });
+        }
+
+        @Test
+        void 탈퇴한_유저의_FOLLOW_알림은_actor가_null이다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            User follower = userFixture.일반_유저(2);
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
+                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
+            // 상대 유저 탈퇴 (soft delete)
+            userRepository.delete(follower);
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.contents().get(0).actor()).isNull();
+                // 알림 자체와 액션 정보는 그대로 유지된다
+                softly.assertThat(result.contents().get(0).targetId()).isEqualTo(follower.getId());
+                softly.assertThat(result.contents().get(0).actionType()).isEqualTo(NotificationActionType.FOLLOW_BACK.name());
+            });
+        }
+
+        @Test
+        void FOLLOW가_아닌_알림은_actor가_null이다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            notificationRepository.save(Notification.create(me.getId(), NotificationType.CONGRATULATION,
+                    "유저2님이 축하해줬어요! 🎉"));
+
+            // when
+            SliceResponse<NotificationResponse> result = notificationFacade.getInbox(me.getId(), 0);
+
+            // then
+            assertThat(result.contents().get(0).actor()).isNull();
         }
 
         @Test
