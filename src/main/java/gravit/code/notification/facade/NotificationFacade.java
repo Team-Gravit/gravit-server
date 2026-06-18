@@ -12,12 +12,15 @@ import gravit.code.notification.domain.Notification;
 import gravit.code.notification.domain.NotificationActionType;
 import gravit.code.notification.domain.NotificationType;
 import gravit.code.notification.dto.internal.InactivityMilestone;
+import gravit.code.notification.dto.response.NotificationActor;
 import gravit.code.notification.dto.response.NotificationResponse;
 import gravit.code.notification.service.NotificationQueryService;
 import gravit.code.notification.service.NotificationService;
 import gravit.code.notification.support.NotificationMessageProvider;
 import gravit.code.season.service.SeasonService;
+import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.service.UserAccessService;
+import gravit.code.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;
@@ -46,6 +49,7 @@ public class NotificationFacade {
     private final NotificationQueryService notificationQueryService;
     private final FriendService friendService;
     private final SeasonService seasonService;
+    private final UserService userService;
     private final Clock clock;
 
     public void sendConsecutiveLearningWarnings() {
@@ -202,8 +206,10 @@ public class NotificationFacade {
                 ? Collections.emptySet()
                 : friendService.followingIdsAmong(userId, followTargetIds);
 
+        Map<Long, UserSummaryResponse> actorsByUserId = userService.getUserSummaries(followTargetIds);
+
         List<NotificationResponse> responses = raw.contents().stream()
-                .map(n -> toResponse(n, alreadyFollowing))
+                .map(n -> toResponse(n, alreadyFollowing, actorsByUserId))
                 .toList();
 
         return SliceResponse.of(raw.hasNextPage(), responses);
@@ -211,15 +217,30 @@ public class NotificationFacade {
 
     private NotificationResponse toResponse(
             Notification notification,
-            Set<Long> alreadyFollowing
+            Set<Long> alreadyFollowing,
+            Map<Long, UserSummaryResponse> actorsByUserId
     ) {
-        NotificationActionType actionType = notification.getType() == NotificationType.FOLLOW
-                && notification.getTargetId() != null
+        boolean isFollow = notification.getType() == NotificationType.FOLLOW
+                && notification.getTargetId() != null;
+
+        NotificationActionType actionType = isFollow
                 ? (alreadyFollowing.contains(notification.getTargetId())
                         ? NotificationActionType.UNFOLLOW
                         : NotificationActionType.FOLLOW_BACK)
                 : notification.getType().getActionType();
-        return NotificationResponse.of(notification, actionType);
+
+        NotificationActor actor = isFollow
+                ? toActor(actorsByUserId.get(notification.getTargetId()))
+                : null;
+
+        return NotificationResponse.of(notification, actionType, actor);
+    }
+
+    private NotificationActor toActor(UserSummaryResponse summary) {
+        if (summary == null) {
+            return null;
+        }
+        return new NotificationActor(summary.id(), summary.nickname(), summary.profileImgNumber());
     }
 
     public void sendConsecutiveLearningWarningToUser(

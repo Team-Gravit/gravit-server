@@ -2,6 +2,7 @@ package gravit.code.user.repository;
 
 import gravit.code.user.domain.User;
 import gravit.code.user.dto.response.MyPageResponse;
+import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.repository.custom.UserDeletionRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserDeletionRepository {
 
@@ -61,4 +63,12 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDeletionR
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    // @SQLRestriction(deleted_at IS NULL)이 적용되어 탈퇴 유저는 결과에서 자동 제외된다
+    @Query("""
+        SELECT new gravit.code.user.dto.response.UserSummaryResponse(u.id, u.nickname, u.profileImgNumber)
+        FROM User u
+        WHERE u.id IN :ids
+    """)
+    List<UserSummaryResponse> findSummariesByIds(@Param("ids") Set<Long> ids);
 }
