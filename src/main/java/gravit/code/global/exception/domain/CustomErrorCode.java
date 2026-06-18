@@ -121,6 +121,13 @@ public enum CustomErrorCode implements ErrorCode {
     NOTICE_STATUS_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4005", "유효하지 않은 공지 상태입니다. (작성 시 ARCHIVED 불가)"),
     NOTICE_INVALID_STATUS_TRANSITION(HttpStatus.CONFLICT, "NOTICE_4091", "허용되지 않는 공지 상태 전이입니다."),
 
+    // Inquiry
+    INQUIRY_TITLE_INVALID(HttpStatus.BAD_REQUEST, "INQUIRY_4001", "문의 제목이 유효하지 않습니다."),
+    INQUIRY_CONTENT_INVALID(HttpStatus.BAD_REQUEST, "INQUIRY_4002", "문의 내용이 유효하지 않습니다."),
+    INQUIRY_FORBIDDEN(HttpStatus.FORBIDDEN, "INQUIRY_4031", "본인의 문의만 접근할 수 있습니다."),
+    INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "INQUIRY_4041", "존재하지 않는 문의입니다."),
+    INQUIRY_ALREADY_RESOLVED(HttpStatus.CONFLICT, "INQUIRY_4091", "이미 답변이 완료된 문의는 수정/삭제할 수 없습니다."),
+
     // Staging (admin 콘텐츠 검수/승급)
     STAGING_LABEL_NOT_FOUND(HttpStatus.NOT_FOUND, "STAGING_4041", "존재하지 않는 스테이징 라벨입니다."),
     STAGING_LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "STAGING_4042", "존재하지 않는 스테이징 레슨입니다."),
