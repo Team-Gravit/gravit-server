@@ -14,10 +14,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
-import java.time.LocalDateTime;
 
 import static gravit.code.inquiry.domain.InquiryStatus.PENDING;
 import static gravit.code.inquiry.domain.InquiryStatus.RESOLVED;
@@ -25,8 +21,6 @@ import static gravit.code.inquiry.domain.InquiryStatus.RESOLVED;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE inquiry SET deleted_at = NOW() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 public class Inquiry extends BaseEntity {
 
     private static final int TITLE_MAX_SIZE = 50;
@@ -51,9 +45,6 @@ public class Inquiry extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
     private long userId;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
 
     @Builder
     private Inquiry(
@@ -86,26 +77,6 @@ public class Inquiry extends BaseEntity {
                 .status(PENDING)
                 .userId(userId)
                 .build();
-    }
-
-    public void update(
-            String title,
-            InquiryType type,
-            String content
-    ) {
-        ensureModifiable();
-        validateTitle(title);
-        validateContent(content);
-
-        this.title = title.trim();
-        this.type = type;
-        this.content = content;
-    }
-
-    public void ensureModifiable() {
-        if (status == RESOLVED) {
-            throw new RestApiException(CustomErrorCode.INQUIRY_ALREADY_RESOLVED);
-        }
     }
 
     // 관리자 답변 등록 시 자동 완료 처리

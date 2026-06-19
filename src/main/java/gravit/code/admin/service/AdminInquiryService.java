@@ -88,7 +88,7 @@ public class AdminInquiryService {
         );
         inquiry.resolve();
 
-        publisher.publishEvent(new InquiryAnsweredEvent(inquiryId, inquiry.getUserId(), inquiry.getTitle()));
+        publisher.publishEvent(new InquiryAnsweredEvent(inquiryId, inquiry.getUserId()));
 
         User submitter = userRepository.findById(inquiry.getUserId()).orElse(null);
 

@@ -61,8 +61,8 @@ public class NotificationMessageProvider {
         return "[공지] " + noticeTitle;
     }
 
-    public String inquiryAnswered(String inquiryTitle) {
-        return "문의하신 \"" + inquiryTitle + "\"에 답변이 등록되었어요 ✅";
+    public String inquiryAnswered() {
+        return "문의하신 내용에 답변이 등록되었어요";
     }
 
     public String newContent() {

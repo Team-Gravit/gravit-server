@@ -39,7 +39,7 @@ public class NotificationEventListener {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleInquiryAnswered(InquiryAnsweredEvent event) {
         try {
-            String message = messageProvider.inquiryAnswered(event.inquiryTitle());
+            String message = messageProvider.inquiryAnswered();
             notificationFacade.notifyUser(event.userId(), NotificationType.INQUIRY_ANSWERED, message, event.inquiryId());
         } catch (Exception e) {
             log.error("문의 답변 알림 발송 실패 - inquiryId: {}", event.inquiryId(), e);

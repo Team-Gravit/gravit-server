@@ -2,7 +2,6 @@ package gravit.code.inquiry.fixture;
 
 import gravit.code.inquiry.domain.Inquiry;
 import gravit.code.inquiry.domain.InquiryAnswer;
-import gravit.code.inquiry.domain.InquiryStatus;
 import gravit.code.inquiry.domain.InquiryType;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -19,15 +18,6 @@ public class InquiryFixture {
                 userId
         );
         ReflectionTestUtils.setField(inquiry, "id", id);
-        return inquiry;
-    }
-
-    public static Inquiry 해결된_문의(
-            long id,
-            long userId
-    ) {
-        Inquiry inquiry = 기본_문의(id, userId);
-        ReflectionTestUtils.setField(inquiry, "status", InquiryStatus.RESOLVED);
         return inquiry;
     }
 

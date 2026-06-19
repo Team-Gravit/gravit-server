@@ -245,7 +245,6 @@ class AdminInquiryServiceIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(published.get(0).inquiryId()).isEqualTo(inquiry.getId());
                 softly.assertThat(published.get(0).userId()).isEqualTo(submitterId);
-                softly.assertThat(published.get(0).inquiryTitle()).isEqualTo("답변 알림 대상 문의");
             });
         }
 
