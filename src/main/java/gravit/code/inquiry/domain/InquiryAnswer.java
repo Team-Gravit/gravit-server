@@ -53,4 +53,8 @@ public class InquiryAnswer extends BaseEntity {
                 .adminId(adminId)
                 .build();
     }
+
+    public void update(String content) {
+        this.content = content;
+    }
 }
