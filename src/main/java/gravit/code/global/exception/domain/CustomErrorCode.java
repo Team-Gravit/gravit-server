@@ -127,7 +127,6 @@ public enum CustomErrorCode implements ErrorCode {
     INQUIRY_FORBIDDEN(HttpStatus.FORBIDDEN, "INQUIRY_4031", "본인의 문의만 접근할 수 있습니다."),
     INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "INQUIRY_4041", "존재하지 않는 문의입니다."),
     INQUIRY_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "INQUIRY_4042", "등록된 답변이 없습니다."),
-    INQUIRY_ALREADY_RESOLVED(HttpStatus.CONFLICT, "INQUIRY_4091", "이미 답변이 완료된 문의는 수정/삭제할 수 없습니다."),
     INQUIRY_ALREADY_ANSWERED(HttpStatus.CONFLICT, "INQUIRY_4092", "이미 답변이 등록된 문의입니다."),
 
     // Staging (admin 콘텐츠 검수/승급)
