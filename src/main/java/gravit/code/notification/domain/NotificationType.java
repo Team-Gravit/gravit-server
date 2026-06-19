@@ -21,7 +21,8 @@ public enum NotificationType {
     FRIEND_ACTIVITY(CONGRATULATE),     // 3.11 친구 활동
     NOTICE(GO_TO_NOTICE),              // 3.12 공지사항
     VERSION(GO_TO_NOTICE),             // 3.13 버전 관리
-    NEW_CONTENT(GO_TO_LEARNING);       // 3.14 새 콘텐츠 업데이트
+    NEW_CONTENT(GO_TO_LEARNING),       // 3.14 새 콘텐츠 업데이트
+    INQUIRY_ANSWERED(GO_TO_INQUIRY);   // 3.15 문의 답변 등록
 
     private final NotificationActionType actionType;
 
