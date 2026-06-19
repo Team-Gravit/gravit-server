@@ -1,5 +1,6 @@
 package gravit.code.notification.listener;
 
+import gravit.code.global.event.InquiryAnsweredEvent;
 import gravit.code.global.event.NoticeCreatedEvent;
 import gravit.code.global.event.SeasonRolledOverEvent;
 import gravit.code.notification.domain.NotificationType;
@@ -31,6 +32,17 @@ public class NotificationEventListener {
             notificationService.notifyAllUsers(NotificationType.NOTICE, message, event.noticeId());
         } catch (Exception e) {
             log.error("공지 알림 적재 실패 - noticeId: {}", event.noticeId(), e);
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleInquiryAnswered(InquiryAnsweredEvent event) {
+        try {
+            String message = messageProvider.inquiryAnswered(event.inquiryTitle());
+            notificationFacade.notifyUser(event.userId(), NotificationType.INQUIRY_ANSWERED, message, event.inquiryId());
+        } catch (Exception e) {
+            log.error("문의 답변 알림 발송 실패 - inquiryId: {}", event.inquiryId(), e);
         }
     }
 

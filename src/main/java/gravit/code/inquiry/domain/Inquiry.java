@@ -108,6 +108,16 @@ public class Inquiry extends BaseEntity {
         }
     }
 
+    // 관리자 답변 등록 시 자동 완료 처리
+    public void resolve() {
+        this.status = RESOLVED;
+    }
+
+    // 관리자 답변 삭제 시 미답변 상태로 되돌린다
+    public void reopen() {
+        this.status = PENDING;
+    }
+
     public boolean isOwnedBy(long userId) {
         return this.userId == userId;
     }

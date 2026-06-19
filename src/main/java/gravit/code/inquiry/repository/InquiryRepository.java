@@ -1,6 +1,7 @@
 package gravit.code.inquiry.repository;
 
 import gravit.code.inquiry.domain.Inquiry;
+import gravit.code.inquiry.domain.InquiryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,11 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
 
     Page<Inquiry> findAllByUserId(
             long userId,
+            Pageable pageable
+    );
+
+    Page<Inquiry> findAllByStatus(
+            InquiryStatus status,
             Pageable pageable
     );
 
