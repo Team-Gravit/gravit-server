@@ -1,12 +1,11 @@
 package gravit.code.social.dto.response;
 
+import gravit.code.global.util.TimeAgoFormatter;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.dto.internal.SocialFeedProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 
 public record SocialFeedResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -47,7 +46,7 @@ public record SocialFeedResponse(
                 projection.actorProfileImgNumber(),
                 projection.actorHandle(),
                 generateMessage(projection.eventType(), projection.eventValue()),
-                computeTimeAgo(projection.createdAt()),
+                TimeAgoFormatter.format(projection.createdAt()),
                 canCongratulate,
                 projection.createdAt()
         );
@@ -63,19 +62,5 @@ public record SocialFeedResponse(
             case TIER_PROMOTION -> eventValue + "로 승급했어요!";
             case LEVEL_UP -> "LV." + eventValue + "로 레벨업했어요!";
         };
-    }
-
-    private static String computeTimeAgo(LocalDateTime createdAt) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        long minutes = ChronoUnit.MINUTES.between(createdAt, now);
-
-        if (minutes < 1) return "방금 전";
-        if (minutes < 60) return minutes + "분 전";
-
-        long hours = ChronoUnit.HOURS.between(createdAt, now);
-        if (hours < 24) return hours + "시간 전";
-
-        long days = ChronoUnit.DAYS.between(createdAt, now);
-        return Math.min(days, 7) + "일 전";
     }
 }

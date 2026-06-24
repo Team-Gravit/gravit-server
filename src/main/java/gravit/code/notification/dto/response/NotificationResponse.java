@@ -1,5 +1,6 @@
 package gravit.code.notification.dto.response;
 
+import gravit.code.global.util.TimeAgoFormatter;
 import gravit.code.notification.domain.Notification;
 import gravit.code.notification.domain.NotificationActionType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,6 +45,13 @@ public record NotificationResponse(
         @Schema(description = "생성 시각", requiredMode = Schema.RequiredMode.REQUIRED)
         LocalDateTime createdAt,
 
+        @Schema(
+                description = "생성 시각의 상대 표현 (방금 전 / N분 전 / N시간 전 / N일 전, 최대 7일 전)",
+                example = "3시간 전",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        String timeAgo,
+
         @Schema(description = "팔로우 알림의 상대 유저 정보 (FOLLOW 알림이 아니거나 탈퇴한 유저면 null)")
         NotificationActor actor
 
@@ -61,6 +69,7 @@ public record NotificationResponse(
                 .targetId(notification.getTargetId())
                 .read(notification.isRead())
                 .createdAt(notification.getCreatedAt())
+                .timeAgo(TimeAgoFormatter.format(notification.getCreatedAt()))
                 .actor(actor)
                 .build();
     }
