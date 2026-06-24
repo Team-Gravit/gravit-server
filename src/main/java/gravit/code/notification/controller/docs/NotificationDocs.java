@@ -5,8 +5,6 @@ import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.notification.dto.response.NotificationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,47 +31,7 @@ public interface NotificationDocs {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "✅ 조회 성공",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    name = "inbox-sample",
-                                    value = """
-                                            {
-                                              "hasNextPage": true,
-                                              "contents": [
-                                                {
-                                                  "id": 101,
-                                                  "type": "FOLLOW",
-                                                  "message": "홍길동님이 나를 팔로우했어요! 👀",
-                                                  "actionType": "FOLLOW_BACK",
-                                                  "targetId": 42,
-                                                  "read": false,
-                                                  "createdAt": "2025-09-25T10:00:00"
-                                                },
-                                                {
-                                                  "id": 100,
-                                                  "type": "FOLLOW",
-                                                  "message": "김철수님이 나를 팔로우했어요! 👀",
-                                                  "actionType": "UNFOLLOW",
-                                                  "targetId": 37,
-                                                  "read": true,
-                                                  "createdAt": "2025-09-24T08:30:00"
-                                                },
-                                                {
-                                                  "id": 99,
-                                                  "type": "FRIEND_ACTIVITY",
-                                                  "message": "이영희님이 OS행성을 정복했어요! 🌍",
-                                                  "actionType": "CONGRATULATE",
-                                                  "targetId": 55,
-                                                  "read": false,
-                                                  "createdAt": "2025-09-23T20:15:00"
-                                                }
-                                              ]
-                                            }
-                                            """
-                            )
-                    )
+                    description = "✅ 조회 성공"
             )
     })
     @GetMapping
