@@ -9,6 +9,7 @@ import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
 import gravit.code.friend.repository.FriendRepository;
 import gravit.code.global.dto.response.SliceResponse;
+import gravit.code.global.event.FollowedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.dto.event.FollowMissionEvent;
@@ -64,6 +65,7 @@ public class FriendService {
         friendRepository.save(friend);
 
         publisher.publishEvent(new FollowMissionEvent(followerId));
+        publisher.publishEvent(new FollowedEvent(followerId, followeeId));
 
         return FriendResponse.from(friend);
     }

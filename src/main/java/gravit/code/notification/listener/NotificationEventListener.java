@@ -1,5 +1,6 @@
 package gravit.code.notification.listener;
 
+import gravit.code.global.event.FollowedEvent;
 import gravit.code.global.event.InquiryAnsweredEvent;
 import gravit.code.global.event.NoticeCreatedEvent;
 import gravit.code.global.event.SeasonRolledOverEvent;
@@ -7,6 +8,7 @@ import gravit.code.notification.domain.NotificationType;
 import gravit.code.notification.facade.NotificationFacade;
 import gravit.code.notification.service.NotificationService;
 import gravit.code.notification.support.NotificationMessageProvider;
+import gravit.code.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ public class NotificationEventListener {
     private final NotificationService notificationService;
     private final NotificationMessageProvider messageProvider;
     private final NotificationFacade notificationFacade;
+    private final UserService userService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -32,6 +35,18 @@ public class NotificationEventListener {
             notificationService.notifyAllUsers(NotificationType.NOTICE, message, event.noticeId());
         } catch (Exception e) {
             log.error("공지 알림 적재 실패 - noticeId: {}", event.noticeId(), e);
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleFollowed(FollowedEvent event) {
+        try {
+            String followerNickname = userService.getUser(event.followerId()).getNickname();
+            String message = messageProvider.followReceived(followerNickname);
+            notificationFacade.notifyUser(event.followeeId(), NotificationType.FOLLOW, message, event.followerId());
+        } catch (Exception e) {
+            log.error("팔로우 알림 발송 실패 - followerId: {}, followeeId: {}", event.followerId(), event.followeeId(), e);
         }
     }
 

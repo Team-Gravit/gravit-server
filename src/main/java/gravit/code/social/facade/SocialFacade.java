@@ -57,9 +57,8 @@ public class SocialFacade {
             long userId,
             long targetUserId
     ) {
+        // 팔로우 알림은 FriendService.following()이 발행하는 FollowedEvent를 통해 일원화 처리된다
         friendService.following(userId, targetUserId);
-        String followerNickname = userService.getUser(userId).getNickname();
-        notificationFacade.notifyUser(targetUserId, NotificationType.FOLLOW, messageProvider.followReceived(followerNickname), userId);
     }
 
     @Transactional(readOnly = true)
