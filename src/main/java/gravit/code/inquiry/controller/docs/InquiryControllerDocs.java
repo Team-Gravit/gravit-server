@@ -60,6 +60,7 @@ public interface InquiryControllerDocs {
                                       "page": 1,
                                       "totalPages": 3,
                                       "hasNext": true,
+                                      "totalElements": 27,
                                       "contents": [
                                         {
                                           "id": 12,

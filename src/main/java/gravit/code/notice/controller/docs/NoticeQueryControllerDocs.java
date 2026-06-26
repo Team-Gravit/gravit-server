@@ -38,6 +38,7 @@ public interface NoticeQueryControllerDocs {
                                       "page": 1,
                                       "totalPages": 5,
                                       "hasNext": true,
+                                      "totalElements": 42,
                                       "contents": [
                                         {
                                           "id": 123,
