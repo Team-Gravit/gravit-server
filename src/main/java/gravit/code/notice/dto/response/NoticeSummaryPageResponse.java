@@ -29,6 +29,13 @@ public class NoticeSummaryPageResponse {
     public boolean hasNext;
 
     @Schema(
+            description = "전체 공지 개수",
+            example = "42",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    public long totalElements;
+
+    @Schema(
             description = "공지 요약 목록",
             requiredMode = Schema.RequiredMode.REQUIRED
     )

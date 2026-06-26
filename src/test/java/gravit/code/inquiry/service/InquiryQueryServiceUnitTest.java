@@ -66,6 +66,7 @@ class InquiryQueryServiceUnitTest {
             assertSoftly(softly -> {
                 softly.assertThat(result.page()).isEqualTo(1);
                 softly.assertThat(result.hasNext()).isFalse();
+                softly.assertThat(result.totalElements()).isEqualTo(1);
                 softly.assertThat(result.contents()).hasSize(1);
                 softly.assertThat(result.contents().get(0).id()).isEqualTo(INQUIRY_ID);
                 softly.assertThat(result.contents().get(0).status()).isEqualTo("PENDING");

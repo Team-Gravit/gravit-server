@@ -16,6 +16,9 @@ public record PageResponse<T>(
         boolean hasNext,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        long totalElements,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<T> contents
 ) {
     public static <T> PageResponse<T> from(Page<T> page) {
@@ -23,6 +26,7 @@ public record PageResponse<T>(
                 page.getNumber() + 1,
                 page.getTotalPages(),
                 page.hasNext(),
+                page.getTotalElements(),
                 page.getContent()
         );
     }

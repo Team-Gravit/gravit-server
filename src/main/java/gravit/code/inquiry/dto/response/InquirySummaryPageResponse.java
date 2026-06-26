@@ -29,6 +29,13 @@ public class InquirySummaryPageResponse {
     public boolean hasNext;
 
     @Schema(
+            description = "전체 문의 개수",
+            example = "27",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    public long totalElements;
+
+    @Schema(
             description = "문의 요약 목록",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
