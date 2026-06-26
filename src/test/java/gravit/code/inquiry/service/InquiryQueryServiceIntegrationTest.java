@@ -56,6 +56,7 @@ class InquiryQueryServiceIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(result.page()).isEqualTo(1);
                 softly.assertThat(result.hasNext()).isFalse();
+                softly.assertThat(result.totalElements()).isEqualTo(2);
                 softly.assertThat(result.contents()).hasSize(2);
                 // id 내림차순 → 나중에 저장된 second 가 먼저
                 softly.assertThat(result.contents().get(0).id()).isEqualTo(second.getId());
