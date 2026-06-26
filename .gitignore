@@ -50,3 +50,7 @@ grafana_data
 ### Firebase ###
 /src/main/resources/firebase/firebase_service_key.json
 /BACKEND_ADMIN_API_SPEC.md
+
+/scripts/dev-seed/README.md
+/scripts/dev-seed/01_reset.sql
+/scripts/dev-seed/02_seed.sql
