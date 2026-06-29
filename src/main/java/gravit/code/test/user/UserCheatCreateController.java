@@ -10,6 +10,8 @@ import gravit.code.friend.domain.Friend;
 import gravit.code.friend.repository.FriendRepository;
 import gravit.code.global.event.NoticeCreatedEvent;
 import gravit.code.global.event.SeasonRolledOverEvent;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -19,8 +21,10 @@ import gravit.code.user.support.RandomHandleGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,14 +50,19 @@ public class UserCheatCreateController {
 
     private final String PROVIDER = "gravit";
 
+    @Transactional
     @PostMapping("/users/create")
     public ResponseEntity<LoginResponse> createUser(
             @RequestParam String email,
             @RequestParam String nickname,
             @RequestParam String role
     ) {
+        // 실제 서버 제약과 동일하게 저장 전에 검증한다. (저장과 onboarding은 @Transactional로 원자적 처리)
+        validateEmail(email);
+        Role userRole = parseRole(role);
+        validateNickname(nickname);
+
         String handle = handleGenerator.generateUniqueHandle();
-        Role userRole = role.equals("admin") ? Role.ADMIN : Role.USER;
         String s = UUID.randomUUID().toString().substring(0, 6);
         User user = User.create(email,PROVIDER + s, nickname, handle, 1, userRole);
         userRepository.save(user);
@@ -64,6 +73,39 @@ public class UserCheatCreateController {
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
 
         return ResponseEntity.ok().body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
+    }
+
+    // cheat 전용 검증이라 운영 카탈로그(CustomErrorCode)를 오염시키지 않도록 ResponseStatusException으로 400을 던진다.
+    // User.email 은 NOT NULL 제약만 존재하므로 공백 여부만 검증한다.
+    private void validateEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 null 이거나 empty 일 순 없습니다.");
+        }
+    }
+
+    // 실제 서버는 Role enum(ADMIN/USER)만 허용한다. 유효하지 않으면 예외를 던진다.
+    private Role parseRole(String role) {
+        if (role == null || role.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 권한 값입니다.");
+        }
+        try {
+            return Role.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 권한 값입니다.");
+        }
+    }
+
+    // OnboardingRequest / User.validateNickname 과 동일한 제약 (2~8자, 한글/영문/숫자).
+    private void validateNickname(String nickname) {
+        if (nickname == null || nickname.isBlank()) {
+            throw new RestApiException(CustomErrorCode.NICKNAME_NOT_NULL);
+        }
+        if (nickname.length() < 2 || nickname.length() > 8) {
+            throw new RestApiException(CustomErrorCode.NICKNAME_LENGTH_INVALID);
+        }
+        if (!nickname.matches("^[가-힣a-zA-Z0-9]+$")) {
+            throw new RestApiException(CustomErrorCode.NICKNAME_PATTERN_INVALID);
+        }
     }
 
     @PostMapping("/users/login")
