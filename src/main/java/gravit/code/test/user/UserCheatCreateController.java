@@ -18,6 +18,7 @@ import gravit.code.user.service.UserService;
 import gravit.code.user.support.RandomHandleGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 
+@Profile("!prod")
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor

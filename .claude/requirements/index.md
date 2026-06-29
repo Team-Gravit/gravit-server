@@ -7,12 +7,11 @@
 
 | 태그 | 설명 |
 |------|------|
-| REQ-014 | Test/Cheat API 정비 및 prod 비활성화 |
-
 ## Done
 
 | 태그 | 설명 |
 |------|------|
+| REQ-014 | Test/Cheat API prod 비활성화 (@Profile("!prod")) — 컨벤션 정비는 후속 |
 | REQ-013 | main-page Learning 조회 get-or-create (LEARNING_4041 해소) |
 | REQ-012 | 문의(Inquiry) API — 유저 CRUD, 답변 도메인(InquiryAnswer) 분리 (이슈 #404) |
 | REQ-011 | 소셜 알림 (팔로우, 축하하기 받음, 친구 활동) |
