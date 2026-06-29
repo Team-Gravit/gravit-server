@@ -4,6 +4,7 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.notification.facade.NotificationFacade;
 import gravit.code.test.notification.controller.docs.TestNotificationDocs;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Profile("!prod")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/test/notifications")
