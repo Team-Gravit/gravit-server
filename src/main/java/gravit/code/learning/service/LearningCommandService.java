@@ -35,6 +35,14 @@ public class LearningCommandService {
         learningRepository.save(learning);
     }
 
+    // main-page 조회 시 Learning이 없으면 즉시 생성해 반환한다(get-or-create).
+    // 동시 생성은 learning.user_id 유니크 제약으로 중복이 차단된다.
+    @Transactional
+    public Learning getOrCreateLearning(long userId){
+        return learningRepository.findByUserId(userId)
+                .orElseGet(() -> learningRepository.save(Learning.create(userId)));
+    }
+
     @Transactional
     public ConsecutiveSolvedDto updateLearningStatus(
             long userId,
