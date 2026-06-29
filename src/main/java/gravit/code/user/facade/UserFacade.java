@@ -41,10 +41,10 @@ public class UserFacade {
     private final MissionService missionService;
     private final DailyLearningRecordService dailyLearningRecordService;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public MainPageResponse getMainPage(long userId) {
         User user = userService.getUser(userId);
-        Learning learning = learningCommandService.getOrCreateLearning(userId);
+        Learning learning = learningQueryService.getLearning(userId);
 
         UserLevelDetailResponse userLevelDetailResponse = user.getLevel().getUserLevelDetail();
         LeagueDetailResponse leagueDetailResponse = userLeagueService.getUserLeagueDetail(userId);
