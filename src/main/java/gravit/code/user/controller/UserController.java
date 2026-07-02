@@ -68,6 +68,7 @@ public class UserController implements UserControllerDocs {
         return ResponseEntity.ok().build();
     }
 
+    @Deprecated(forRemoval = true)
     @GetMapping("/main-page")
     public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser){
         return ResponseEntity.status(HttpStatus.OK).body(userFacade.getMainPage(loginUser.getId()));

@@ -212,7 +212,8 @@ public interface UserControllerDocs {
     @PatchMapping("/restore")
     ResponseEntity<Void> restoreUser(@RequestParam("providerId") String providerId);
 
-    @Operation(summary = "메인 페이지 조회", description = "사용자의 메인 페이지 정보를 조회합니다<br>" +
+    @Operation(summary = "메인 페이지 조회", deprecated = true, description = "[Deprecated] 위젯별 API(GET /api/v1/main-pages/*)로 분리되었습니다(#415). 후속 릴리스에서 제거 예정입니다.<br>" +
+            "사용자의 메인 페이지 정보를 조회합니다<br>" +
             "닉네임, 리그명, 레벨 정보, 미션 정보, 학습 정보를 포함합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({

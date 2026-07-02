@@ -1,19 +1,26 @@
 package gravit.code.learning.facade;
 
+import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.dto.response.TopChapterResponse;
+import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.dailyLearningRecord.dto.response.DailySolvedCountResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.global.annotation.Facade;
 import gravit.code.global.consts.TimeZoneConst;
+import gravit.code.learning.domain.Learning;
+import gravit.code.learning.dto.response.LearningDetailResponse;
 import gravit.code.learning.dto.response.LearningHistoryResponse;
 import gravit.code.learning.dto.response.LearningSummaryResponse;
 import gravit.code.learning.dto.response.MyPageLearningResponse;
 import gravit.code.learning.dto.response.MyPageSummaryResponse;
 import gravit.code.learning.dto.response.WeakConceptResponse;
 import gravit.code.learning.service.LearningProgressRateService;
+import gravit.code.learning.service.LearningQueryService;
 import gravit.code.lesson.service.LessonQueryService;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
+import gravit.code.unit.dto.response.UnitProgressSummaryResponse;
+import gravit.code.unit.service.UnitQueryService;
 import gravit.code.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +34,32 @@ import java.util.stream.IntStream;
 public class LearningFacade {
 
     private final LearningProgressRateService learningProgressRateService;
+    private final LearningQueryService learningQueryService;
     private final LessonSubmissionQueryService lessonSubmissionQueryService;
     private final LessonQueryService lessonQueryService;
     private final DailyLearningRecordService dailyLearningRecordService;
+    private final UnitQueryService unitQueryService;
+    private final ChapterQueryService chapterQueryService;
     private final UserService userService;
+
+    @Transactional(readOnly = true)
+    public LearningDetailResponse getLearningDetail(long userId) {
+        Learning learning = learningQueryService.getLearning(userId);
+        long chapterId = learning.getRecentSolvedChapterId();
+
+        List<UnitProgressSummaryResponse> units = unitQueryService.getAllUnitProgressSummariesInChapter(chapterId, userId);
+
+        Chapter recentSolvedChapter = chapterQueryService.getChapter(chapterId);
+        double chapterProgressRate = learningProgressRateService.getChapterProgress(chapterId, userId);
+
+        return LearningDetailResponse.of(
+                learning.getConsecutiveSolvedDays(),
+                recentSolvedChapter.getId(),
+                recentSolvedChapter.getTitle(),
+                chapterProgressRate,
+                units
+        );
+    }
 
     @Transactional(readOnly = true)
     public MyPageLearningResponse getMyPageLearning(long userId) {
