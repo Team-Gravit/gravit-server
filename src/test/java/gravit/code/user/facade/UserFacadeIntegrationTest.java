@@ -25,6 +25,7 @@ import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.dto.response.MainPageResponse;
 import gravit.code.user.dto.response.MyPageBannerResponse;
+import gravit.code.user.dto.response.ProfileSummaryResponse;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.repository.UserLeagueRepository;
@@ -173,6 +174,39 @@ class UserFacadeIntegrationTest {
             assertThatThrownBy(() -> userFacade.getMainPage(nonExistentUserId))
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("메인 페이지 프로필을 조회할 때")
+    class GetProfileSummary {
+
+        @Test
+        void 프로필_이미지_닉네임_레벨_상세를_정상적으로_반환한다() {
+            // given
+            User user = userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 3, Role.USER));
+
+            // when
+            ProfileSummaryResponse result = userFacade.getProfileSummary(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.profileImgNumber()).isEqualTo(3);
+                softly.assertThat(result.nickname()).isEqualTo("테스터");
+                softly.assertThat(result.userLevelDetailResponse().level()).isEqualTo(1);
+            });
+        }
+
+        @Test
+        void 사용자가_존재하지_않으면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userFacade.getProfileSummary(nonExistentUserId))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_NOT_FOUND);
         }
     }
