@@ -44,6 +44,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash
    - Entity / Flyway 마이그레이션 → Repository → Service → Facade(계획서가 필요하다고 한 경우만) → DTO → Controller
 2. 각 파일 작성 전 이미 존재하는지 Glob으로 확인하고, 존재하면 Edit으로 추가하라.
 3. 계획서에 적힌 클래스·메서드 시그니처와 경로를 그대로 따르라.
+4. public 엔드포인트를 추가·변경하면 `SecurityConfig`의 `permitAll()`과 `JwtAuthFilter.EXCLUDE_ENDPOINTS`를 함께 수정하라 (한쪽만 바꾸면 인증 우회 또는 401). Admin 전용 경로는 `.hasRole("ADMIN")`.
 
 > 다음 Phase 조건: 계획서의 모든 항목이 구현되었을 때
 

@@ -28,7 +28,7 @@ allowed-tools: Bash(git *), Bash(gh *), Read
 ## Phase 2: PR 제목 및 본문 작성
 
 1. `.github/PULL_REQUEST_TEMPLATE.md`를 Read로 읽어 섹션 구조(`1. 연관 이슈`, `2. 구현 사항`)를 그대로 따르라.
-2. `.claude/rules/git-convention.md`를 Read로 읽어 PR 제목의 커밋 메시지 형식을 확인하라.
+2. `.claude/spec/git-convention.md`를 Read로 읽어 PR 제목의 커밋 메시지 형식을 확인하라.
 3. 본문은 템플릿 섹션에 맞춰 컴팩트하게 작성하라:
    - 1. 연관 이슈: `- close #{이슈번호}`
    - 2. 구현 사항: 이 브랜치의 변경을 추가/수정한 것 위주로 항목화하라.

@@ -39,7 +39,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## Phase 2: 이슈 본문 작성
 
-1. 종류별 title 접두사·이슈 라벨·브랜치 접두사는 `.claude/rules/git-convention.md`의 커밋 타입 표를 참조하라 (접두사 `{종류}:`, 브랜치 `{종류}/`, 라벨은 표의 이슈 라벨).
+1. 종류별 title 접두사·이슈 라벨·브랜치 접두사는 `.claude/spec/git-convention.md`의 커밋 타입 표를 참조하라 (접두사 `{종류}:`, 브랜치 `{종류}/`, 라벨은 표의 이슈 라벨).
    이슈 본문 템플릿은 다음을 쓴다:
    - `.github/ISSUE_TEMPLATE/{종류}-issue-template.md`가 있으면 Read해서 본문 구조를 그대로 따른다.
    - 전용 템플릿이 없는 종류(test, cicd, chore)는 `feat-issue-template.md`의 본문 구조를 재사용한다.
@@ -55,7 +55,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## Phase 3: 이슈 생성
 
-1. 아래 명령으로 이슈를 생성하라 (title 접두사·라벨은 `.claude/rules/git-convention.md`의 커밋 타입 표를 참조하라):
+1. 아래 명령으로 이슈를 생성하라 (title 접두사·라벨은 `.claude/spec/git-convention.md`의 커밋 타입 표를 참조하라):
    ```bash
    gh issue create --title "{접두}: {제목}" --body-file {본문파일} --label "{라벨}"
    ```
@@ -67,7 +67,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## Phase 4: 브랜치 생성·체크아웃
 
-1. 브랜치 컨벤션(`.claude/rules/git-convention.md`)을 따른다:
+1. 브랜치 컨벤션(`.claude/spec/git-convention.md`)을 따른다:
    `{종류}/{이슈번호}-{slug}` - 종류는 Phase 1에서 정한 타입, slug은 영문 kebab-case 간단 설명.
    - 예: fix 이슈 #420 "로그인 리다이렉트 오류" → `fix/420-login-redirect`
 2. 개발 브랜치는 `dev`에서 분기한다 (컨벤션: main → dev → 개발 브랜치).

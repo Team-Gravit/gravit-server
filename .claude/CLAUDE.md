@@ -23,12 +23,21 @@ CS(Computer Science) 학습 보조 서비스 백엔드. IT 취준생이 CS 핵�
 
 ## 규칙 참조
 
-세부 규칙은 `.claude/rules/`에 정의되어 있으며, 관련 파일 작업 시 자동 로드된다.
+`.claude/rules/` — paths 매칭 파일 작업 시 자동 로드
+
+- 프로젝트 구조 (패키지 배치) → `project-structure.md`
+- Flyway 마이그레이션 / SQL → `migration.md`
+- 코드 컨벤션 → `code-convention/`
+  - 공통 (네이밍, 포맷팅, 예외, 객체 생성, 상수, 레이어 흐름) → `common.md`
+  - Entity(domain) + DB 매핑 → `domain.md`
+  - DTO(Request/Response) → `dto.md`
+  - Controller → `controller.md`
+  - Facade → `facade.md`
+  - Service → `service.md`
+  - Repository → `repository.md`
+
+`.claude/spec/` — 스킬·작업에서 필요할 때만 참조 (자동 로드 아님)
 
 - Git 작업 (커밋, 브랜치, PR) → `git-convention.md`
-- 공통 (네이밍, 포맷팅, 예외, 레이어 구조) → `common-code-convention.md`
-- 레이어별 (Controller, Facade, Service, Repository) → `layer-convention.md`
-- 클래스 타입별 (Entity, DTO) → `class-convention.md`
-- 프로젝트 구조 (패키지 배치) → `project-structure.md`
-- DB / 마이그레이션 → `database.md`
-- 보안 / 인증 / 시크릿 → `security.md`
+- 테스트 작성 규칙 → `test-convention.md`
+- API 문서 작성 규칙 → `api-docs-convention.md`

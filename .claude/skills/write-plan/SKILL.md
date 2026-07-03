@@ -45,9 +45,8 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 
 ## Phase 3: 컨벤션 확인
 
-1. `.claude/rules/layer-convention.md`를 Read로 읽어라.
-2. `.claude/rules/common-code-convention.md`를 Read로 읽어라.
-3. DB 변경이 필요하면 `.claude/rules/database.md`를 Read로 읽어라.
+1. 손댈 레이어·타입에 맞는 코드 컨벤션을 `.claude/rules/code-convention/`에서 Read로 읽어라 (공통 `common.md`, 그리고 domain / dto / controller / facade / service / repository 중 해당하는 것).
+2. DB 변경이 필요하면 `.claude/rules/migration.md`를 Read로 읽어라.
 
 > 다음 Phase 조건: 관련 컨벤션 파일을 모두 읽었을 때
 
