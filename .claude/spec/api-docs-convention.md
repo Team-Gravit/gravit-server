@@ -1,3 +1,7 @@
+---
+description: Swagger API 문서(ControllerDocs 인터페이스) 작성 규칙
+---
+
 # API Docs Convention
 
 ## 파일 구조
