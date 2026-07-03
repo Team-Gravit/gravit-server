@@ -23,7 +23,7 @@ public class BookmarkService {
     public void addBookmark(
             long userId,
             BookmarkSaveRequest request
-    ){
+    ) {
         if(bookmarkRepository.existsByProblemIdAndUserId(request.problemId(), userId))
             throw new RestApiException(CustomErrorCode.BOOKMARK_DUPLICATED);
 
@@ -58,7 +58,7 @@ public class BookmarkService {
     public List<ProblemDetailResponse> getAllBookmarkedProblemInUnit(
             long userId,
             long unitId
-    ){
+    ) {
         return bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
     }
 }

@@ -25,7 +25,7 @@ public class Bookmark {
     @Column(name = "problem_id", nullable = false)
     private long problemId;
 
-    @Column(name = "user_id",  nullable = false)
+    @Column(name = "user_id", nullable = false)
     private long userId;
 
     @Column(name = "created_at", nullable = false)
