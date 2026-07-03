@@ -78,8 +78,13 @@ allowed-tools: Read, Grep, Glob, Bash
    ```
    - `origin/dev`가 없으면 `origin/main`을 base로 사용하고, 이 사실을 보고에 명시하라.
    - 단, hotfix는 성격상 base가 다를 수 있으니 base 브랜치를 사용자에게 확인하라.
+3. 브랜치를 원격에 반영하고 upstream을 정정하라:
+   ```bash
+   git push -u origin HEAD
+   ```
+   - `git checkout -b ... origin/dev`는 upstream을 `origin/dev`로 잡아, 이후 `git push`가 브랜치명 불일치로 실패하고 브랜치가 원격에 없다. `-u origin HEAD`로 동일명 원격 브랜치를 만들고 upstream을 그쪽으로 재설정해 재발을 막는다.
 
-> 다음 Phase 조건: 새 브랜치로 체크아웃되었을 때
+> 다음 Phase 조건: 새 브랜치로 체크아웃되고 원격에 push(-u)되었을 때
 
 > Skip 조건: 없음 (필수 Phase)
 
