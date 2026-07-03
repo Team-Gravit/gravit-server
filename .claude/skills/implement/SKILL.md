@@ -1,81 +1,58 @@
 ---
 name: implement
 description: |
-  요구사항 파일(REQ-{번호})을 읽고 기능을 구현한다.
-  Trigger: "REQ-{번호} 개발해줘", "REQ-{번호} 구현해줘", "REQ-{번호} 만들어줘"
-  Do NOT use for: 테스트 작성(→ write-test), PR 생성(→ create-pr), 요구사항 파일 수정(직접 Edit)
-  Boundary: 구현 완료 후 요구사항 파일을 todo → done으로 이동한다. 테스트 코드 작성은 이 스킬 범위 밖이다.
+  계획서(PLAN-{번호})를 읽고 그대로 기능을 구현한다.
+  Trigger: "구현해줘", "PLAN-{번호} 구현해줘", "계획서대로 만들어줘", "이 계획 구현 시작"
+  Do NOT use for: 계획 수립(→ write-plan), 이슈 발의(→ open-issue), 테스트 작성(→ write-test), PR 생성(→ open-pr)
+  Boundary: 계획서대로 코드를 구현한다. 계획을 새로 짜지 않는다. 테스트 코드 작성은 이 스킬 범위 밖이다.
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
-# 기능 구현
+# 기능 구현 (계획서 기반)
 
-대상: $ARGUMENTS
+본 스킬은 이미 검토된 계획서를 기준으로 구현되며, 계획에 대한 추가와 수정, 삭제를 금지한다.
+구현 중 이슈가 발생하면, 심각도에 따라 다르게 처리하며, 분기는 아래와 같다.
 
-## Phase 1: 요구사항 파악
+**critical**
+1. 계획에 논리적 오류가 존재하는 경우
+2. 결정되지 않은 사항이 발견된 경우
 
-1. `.claude/requirements/todo/REQ-{번호}.md`를 Read로 읽어라
-   - 파일이 없으면 `.claude/requirements/done/REQ-{번호}.md`를 확인하라
-   - done에 있으면 "이미 완료된 요구사항입니다"를 사용자에게 알리고 중단하라
-   - 둘 다 없으면 "요구사항 파일이 존재하지 않습니다"를 알리고 중단하라
-2. API 스펙, 비즈니스 규칙, 관련 엔티티를 정리하라
+> 진행을 멈추고 사용자와의 인터렉션을 통해 명확한 답을 받은 뒤 진행
 
-> 다음 Phase 조건: 요구사항 내용이 파악되었을 때
+**trivial**
+1. 로직 자체에는 오류가 없지만, 사용자 직관이 더해지면 좋은 경우
+2. 기존 계획된 로직을 우아하게 개선이 가능한 경우
 
-> Skip 조건: 없음 (필수 Phase)
+> 계획서의 `Deviation Log`에 `- {파일}: {바꾼 것} — 이유: {이유}` 형식으로 기록하고 게속 진행한다.
 
-## Phase 2: 코드베이스 파악
+## Phase 1: 계획서 로드
 
-1. 요구사항의 도메인 패키지를 Glob으로 탐색하라
-   - 예: `src/main/java/gravit/code/{domain}/**/*.java`
-2. 동일 도메인의 Controller, Facade, Service, Repository 파일을 Read로 읽어 기존 패턴을 파악하라
-3. 관련 Entity 파일을 찾아 필드와 연관관계를 확인하라
+1. 대상 계획서를 찾아라:
+   - $ARGUMENTS에 번호가 있으면 `.claude/resources/plans/PLAN-{번호}.md`
+   - 없으면 현재 브랜치명에서 이슈 번호를 파싱해 사용하라 (`git branch --show-current`).
+2. 계획서를 Read로 읽어라.
+   - 파일이 없으면 "계획서가 없습니다. 먼저 `write-plan` 스킬을 실행하세요"를 알리고 중단하라.
+   - "결정 필요"에 미체크 항목이 남아있으면, 이는 치명적이므로 사용자에게 확정을 요청하고 반영(계획서 Edit) 전까지 구현을 시작하지 마라.
 
-> 다음 Phase 조건: 관련 도메인의 기존 코드 패턴이 파악되었을 때
-
-> Skip 조건: 해당 도메인이 신규라면 유사 도메인 하나를 참고 패턴으로 선택
-
-## Phase 3: 컨벤션 확인
-
-1. `.claude/rules/layer-convention.md`를 Read로 읽어라
-2. `.claude/rules/common-code-convention.md`를 Read로 읽어라
-3. DB 변경이 필요하면 `.claude/rules/database.md`를 Read로 읽어라
-
-> 다음 Phase 조건: 관련 컨벤션 파일을 모두 읽었을 때
+> 다음 Phase 조건: 계획서를 읽었고 미결정 항목이 없을 때
 
 > Skip 조건: 없음 (필수 Phase)
 
-## Phase 4: 구현
+## Phase 2: 구현
 
-1. **Facade 필요 여부를 먼저 판단하라**:
-   - 여러 도메인 Service를 조합해야 하는 경우 → Facade 사용
-   - 단일 Service 호출로 충분한 경우 → Facade 없이 Controller에서 Service 직접 주입
-   - 판단 결과를 사용자에게 한 줄로 보고하라 (예: "단일 Service 호출이므로 Facade 없이 진행합니다")
+1. 계획서 "구현 계획"에 명시된 순서(레이어 순)대로 구현하라:
+   - Entity / Flyway 마이그레이션 → Repository → Service → Facade(계획서가 필요하다고 한 경우만) → DTO → Controller
+2. 각 파일 작성 전 이미 존재하는지 Glob으로 확인하고, 존재하면 Edit으로 추가하라.
+3. 계획서에 적힌 클래스·메서드 시그니처와 경로를 그대로 따르라.
+4. public 엔드포인트를 추가·변경하면 `SecurityConfig`의 `permitAll()`과 `JwtAuthFilter.EXCLUDE_ENDPOINTS`를 함께 수정하라 (한쪽만 바꾸면 인증 우회 또는 401). Admin 전용 경로는 `.hasRole("ADMIN")`.
 
-2. 판단 결과에 따라 아래 순서로 구현하라:
-   - Entity / Flyway 마이그레이션 (DB 변경 필요 시)
-   - Repository
-   - Service
-   - Facade (Phase 4-1에서 필요하다고 판단한 경우에만)
-   - DTO (Request/Response)
-   - Controller
-
-3. 각 파일 작성 전, 이미 존재하는지 Glob으로 확인하고 존재하면 Edit으로 추가하라
-
-> 다음 Phase 조건: 요구사항의 모든 API와 비즈니스 규칙이 구현되었을 때
+> 다음 Phase 조건: 계획서의 모든 항목이 구현되었을 때
 
 > Skip 조건: 없음 (필수 Phase)
 
-## Phase 5: 완료 처리
+## Phase 3: 완료 처리
 
-1. 구현한 파일 목록을 정리하라
-2. 아래 명령으로 요구사항 파일을 todo → done으로 이동하라:
-   ```bash
-   mv .claude/requirements/todo/REQ-{번호}.md .claude/requirements/done/REQ-{번호}.md
-   ```
-3. `.claude/requirements/index.md`를 Read로 읽은 뒤, 해당 항목을 Todo 테이블에서 Done 테이블로 이동하라
-4. 구현 완료 사항을 사용자에게 보고하라:
-   - 구현된 파일 경로 목록
-   - 요구사항 파일 이동 완료 여부
+1. 보고 템플릿을 Read로 읽어라: `.claude/skills/implement/template/output.md`
+2. 템플릿 상단 작성 가이드에 따라 항목을 채워 보고하라. (가이드 주석은 출력에 포함하지 않는다.)
 
 > Skip 조건: 없음 (필수 Phase)

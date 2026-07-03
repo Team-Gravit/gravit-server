@@ -54,3 +54,6 @@ grafana_data
 /scripts/dev-seed/README.md
 /scripts/dev-seed/01_reset.sql
 /scripts/dev-seed/02_seed.sql
+
+### 로컬 작업 메모 (커밋 제외) ###
+/.claude/resources/code-cleanup-todo.md
