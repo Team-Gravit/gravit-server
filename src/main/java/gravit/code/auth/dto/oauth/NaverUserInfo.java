@@ -2,11 +2,10 @@ package gravit.code.auth.dto.oauth;
 
 import java.util.Map;
 
-public class NaverUserInfo implements OAuthUserInfo {
+public record NaverUserInfo(Map<String, Object> attributes) implements OAuthUserInfo {
 
-    private final Map<String, Object> attributes;
-    public NaverUserInfo(Map<String, Object> attributes){
-        this.attributes = (Map<String, Object>)attributes.get("response");
+    public NaverUserInfo {
+        attributes = (Map<String, Object>) attributes.get("response");
     }
 
     @Override

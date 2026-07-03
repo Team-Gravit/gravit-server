@@ -1,23 +1,18 @@
 package gravit.code.auth.dto.oauth.android;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.getClaimAsString;
 import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.isBlank;
 
-
-@RequiredArgsConstructor
-public class KakaoAndroidUserInfo implements OAuthUserInfo {
+public record KakaoAndroidUserInfo(Map<String, Object> claims) implements OAuthUserInfo {
 
     private static final String PROVIDER = "kakao";
     private static final String CLAIM_SUB = "sub";
     private static final String CLAIM_EMAIL = "email";
     private static final String CLAIM_NAME = "nickname";
-
-    private final Map<String, Object> claims;
 
     @Override
     public String getProvider() {

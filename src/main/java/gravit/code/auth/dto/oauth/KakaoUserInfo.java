@@ -1,13 +1,8 @@
 package gravit.code.auth.dto.oauth;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.Map;
 
-@RequiredArgsConstructor
-public class KakaoUserInfo implements OAuthUserInfo {
-
-    private final Map<String, Object> attributes;
+public record KakaoUserInfo(Map<String, Object> attributes) implements OAuthUserInfo {
 
     @Override
     public String getProvider() {
