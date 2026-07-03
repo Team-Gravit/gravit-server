@@ -68,7 +68,7 @@ public class Notice extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Notice (
             String title,
             String summary,

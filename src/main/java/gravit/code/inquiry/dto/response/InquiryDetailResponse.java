@@ -3,11 +3,12 @@ package gravit.code.inquiry.dto.response;
 import gravit.code.inquiry.domain.Inquiry;
 import gravit.code.inquiry.domain.InquiryAnswer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public record InquiryDetailResponse(
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

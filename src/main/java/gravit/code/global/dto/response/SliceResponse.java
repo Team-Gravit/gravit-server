@@ -1,12 +1,13 @@
 package gravit.code.global.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public record SliceResponse<T>(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         boolean hasNextPage,

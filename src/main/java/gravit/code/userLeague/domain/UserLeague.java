@@ -48,7 +48,7 @@ public class UserLeague extends BaseEntity {
     @Column(name = "league_point", columnDefinition = "integer", nullable = false)
     private int lp;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private UserLeague(
             User user,
             Season season,

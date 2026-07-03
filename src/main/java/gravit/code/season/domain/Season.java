@@ -45,7 +45,7 @@ public class Season {
     @Column(name = "tz", nullable = false)
     private String tz;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Season(
             String seasonKey,
             LocalDateTime startsAt,

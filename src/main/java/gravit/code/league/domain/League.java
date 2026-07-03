@@ -31,7 +31,7 @@ public class League {
     @Column(name = "sort_order", nullable = false, unique = true)
     private int sortOrder;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private League(
             String name,
             int maxLp,

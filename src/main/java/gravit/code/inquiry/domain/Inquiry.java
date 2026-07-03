@@ -46,7 +46,7 @@ public class Inquiry extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private long userId;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Inquiry(
             String title,
             InquiryType type,

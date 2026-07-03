@@ -44,7 +44,7 @@ public class Report {
     @Column(name = "submitted_at", columnDefinition = "timestamp", nullable = false)
     private LocalDateTime submittedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Report(
             ReportType reportType,
             String content,
@@ -67,6 +67,20 @@ public class Report {
                 .reportType(ReportType.from(request.reportType()))
                 .content(request.content() == null ? "-" : request.content())
                 .problemId(request.problemId())
+                .userId(userId)
+                .build();
+    }
+
+    public static Report of(
+            ReportType reportType,
+            String content,
+            long problemId,
+            long userId
+    ) {
+        return Report.builder()
+                .reportType(reportType)
+                .content(content)
+                .problemId(problemId)
                 .userId(userId)
                 .build();
     }

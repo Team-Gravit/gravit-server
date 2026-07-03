@@ -68,7 +68,7 @@ public class User extends BaseEntity {
     @Column(name = "last_accessed_at")
     private LocalDateTime lastAccessedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private User(
             String email,
             String providerId,
