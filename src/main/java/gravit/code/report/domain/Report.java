@@ -1,5 +1,6 @@
 package gravit.code.report.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -56,7 +56,7 @@ public class Report {
         this.problemId = problemId;
         this.userId = userId;
         this.isResolved = false;
-        this.submittedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        this.submittedAt = LocalDateTime.now(TimeZoneConst.KST);
     }
 
     public static Report create(

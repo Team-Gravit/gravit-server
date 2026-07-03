@@ -1,5 +1,6 @@
 package gravit.code.unit.service;
 
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.unit.dto.internal.UnitProgressRowDto;
@@ -13,15 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UnitQueryService {
-
-    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     private final UnitRepository unitRepository;
 
@@ -56,7 +54,7 @@ public class UnitQueryService {
             throw new RestApiException(CustomErrorCode.UNIT_NOT_FOUND);
         }
 
-        long seed = userId * 31L + LocalDate.now(KST).toEpochDay();
+        long seed = userId * 31L + LocalDate.now(TimeZoneConst.KST).toEpochDay();
 
         int[] indexes = RandomUnitIdGenerator.pickTwoDistinctIndexes(seed, allUnitIds.size());
 

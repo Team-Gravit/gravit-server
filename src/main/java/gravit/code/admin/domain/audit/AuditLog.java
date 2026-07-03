@@ -1,5 +1,6 @@
 package gravit.code.admin.domain.audit;
 
+import gravit.code.global.consts.TimeZoneConst;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import static java.time.temporal.ChronoUnit.MICROS;
 
@@ -23,8 +23,6 @@ import static java.time.temporal.ChronoUnit.MICROS;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuditLog {
-
-    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,7 +60,7 @@ public class AuditLog {
         this.targetId = targetId;
         this.beforeValue = beforeValue;
         this.afterValue = afterValue;
-        this.createdAt = LocalDateTime.now(SEOUL).truncatedTo(MICROS);
+        this.createdAt = LocalDateTime.now(TimeZoneConst.KST).truncatedTo(MICROS);
     }
 
     public static AuditLog create(

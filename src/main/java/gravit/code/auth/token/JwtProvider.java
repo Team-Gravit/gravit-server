@@ -3,6 +3,7 @@ package gravit.code.auth.token;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.token.config.JwtProperties;
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
@@ -23,7 +24,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +38,6 @@ import static io.jsonwebtoken.Jwts.SIG.HS256;
 public class JwtProvider {
 
     private final SecretKey secretKey;
-    private static final ZoneId SEOUL_ZONE = ZoneId.of("Asia/Seoul");
 
     public JwtProvider(JwtProperties jwtProperties) {
         this.secretKey = new SecretKeySpec(jwtProperties.secret().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
@@ -49,7 +48,7 @@ public class JwtProvider {
             Map<String, String> claims,
             Duration expireTime
     ) {
-        ZonedDateTime now = ZonedDateTime.now(SEOUL_ZONE);
+        ZonedDateTime now = ZonedDateTime.now(TimeZoneConst.KST);
         ZonedDateTime expiredDateTime = now.plus(expireTime);
 
         Date nowDate = Date.from(now.toInstant());
@@ -68,7 +67,7 @@ public class JwtProvider {
             Subject subject,
             Duration expireTime
     ) {
-        ZonedDateTime now = ZonedDateTime.now(SEOUL_ZONE);
+        ZonedDateTime now = ZonedDateTime.now(TimeZoneConst.KST);
         ZonedDateTime expiredDateTime = now.plus(expireTime);
 
         Date nowDate = Date.from(now.toInstant());

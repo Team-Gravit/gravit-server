@@ -1,5 +1,6 @@
 package gravit.code.social.service;
 
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +29,6 @@ import java.util.Set;
 public class SocialFeedService {
 
     private static final int PAGE_SIZE = 4;
-    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
 
     private final SocialFeedRepository socialFeedRepository;
     private final UserFeedRepository userFeedRepository;
@@ -70,7 +69,7 @@ public class SocialFeedService {
         if (actorIds.isEmpty()) {
             return Set.of();
         }
-        LocalDateTime startOfDay = LocalDate.now(SEOUL).atStartOfDay();
+        LocalDateTime startOfDay = LocalDate.now(TimeZoneConst.KST).atStartOfDay();
         return new HashSet<>(congratulationRepository.findActorIdsWithLimitReached(userId, actorIds, startOfDay));
     }
 

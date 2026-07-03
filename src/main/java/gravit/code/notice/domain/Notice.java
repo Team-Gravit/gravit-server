@@ -1,5 +1,6 @@
 package gravit.code.notice.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -23,7 +24,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import static gravit.code.notice.domain.NoticeStatus.*;
 import static java.time.temporal.ChronoUnit.MICROS;
@@ -36,7 +36,6 @@ import static java.time.temporal.ChronoUnit.MICROS;
 @SQLRestriction("deleted_at IS NULL")
 public class Notice extends BaseEntity {
 
-    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
     private static final int TITLE_MAX_SIZE = 50;
     private static final int SUMMARY_MAX_SIZE = 255;
 
@@ -148,13 +147,13 @@ public class Notice extends BaseEntity {
         }
 
         if (next == PUBLISHED && this.publishedAt == null) {
-            this.publishedAt = LocalDateTime.now(SEOUL).truncatedTo(MICROS);
+            this.publishedAt = LocalDateTime.now(TimeZoneConst.KST).truncatedTo(MICROS);
         }
     }
 
     private static LocalDateTime getLocalDateTime(NoticeStatus status) {
         if (status == PUBLISHED) {
-            return LocalDateTime.now(SEOUL).truncatedTo(MICROS);
+            return LocalDateTime.now(TimeZoneConst.KST).truncatedTo(MICROS);
         }
         return null;
     }

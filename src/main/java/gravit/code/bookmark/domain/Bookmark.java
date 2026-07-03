@@ -1,5 +1,6 @@
 package gravit.code.bookmark.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -35,7 +35,7 @@ public class Bookmark {
     private Bookmark(long problemId, long userId) {
         this.problemId = problemId;
         this.userId = userId;
-        this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        this.createdAt = LocalDateTime.now(TimeZoneConst.KST);
     }
 
     public static Bookmark create(long problemId, long userId) {
