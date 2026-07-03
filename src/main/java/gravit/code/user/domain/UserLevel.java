@@ -3,11 +3,13 @@ package gravit.code.user.domain;
 import gravit.code.user.dto.response.UserLevelDetailResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class UserLevel {
 
@@ -17,12 +19,23 @@ public class UserLevel {
     @Column(name = "xp", nullable = false)
     private int xp;
 
-    public UserLevel(
+    @Builder(access = AccessLevel.PRIVATE)
+    private UserLevel(
             int level,
             int xp
     ) {
         this.level = level;
         this.xp = xp;
+    }
+
+    public static UserLevel create(
+            int level,
+            int xp
+    ) {
+        return UserLevel.builder()
+                .level(level)
+                .xp(xp)
+                .build();
     }
 
     public void updateXp(int xp){

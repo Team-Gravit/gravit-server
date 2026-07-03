@@ -82,7 +82,7 @@ public class User extends BaseEntity {
         this.nickname = nickname;
         this.handle = handle;
         this.profileImgNumber = profileImgNumber;
-        this.level = new UserLevel(1, 0);
+        this.level = UserLevel.create(1, 0);
         this.role = role;
         this.deletedAt = null;
         this.isOnboarded = false;
