@@ -8,6 +8,7 @@ import gravit.code.admin.service.AdminUnitService;
 import gravit.code.global.dto.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,7 +27,7 @@ public class AdminUnitController implements AdminUnitControllerDocs {
 
     @GetMapping("/{unitId}")
     public ResponseEntity<UnitDetailResponse> getUnit(@PathVariable("unitId") Long unitId) {
-        return ResponseEntity.ok(adminUnitService.getUnit(unitId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminUnitService.getUnit(unitId));
     }
 
     @PatchMapping("/{unitId}")
@@ -35,7 +36,7 @@ public class AdminUnitController implements AdminUnitControllerDocs {
             @Valid @RequestBody UnitUpdateRequest request
     ) {
         adminUnitService.updateUnit(unitId, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/{unitId}/lessons")
@@ -43,6 +44,6 @@ public class AdminUnitController implements AdminUnitControllerDocs {
             @PathVariable("unitId") Long unitId,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        return ResponseEntity.ok(adminUnitService.getLessons(unitId, page));
+        return ResponseEntity.status(HttpStatus.OK).body(adminUnitService.getLessons(unitId, page));
     }
 }

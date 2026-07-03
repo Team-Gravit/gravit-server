@@ -31,7 +31,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     public ResponseEntity<BookmarkedProblemResponse> getAllBookmarkedProblemInUnit(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("unitId") Long unitId
-    ){
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(bookmarkFacade.getAllBookmarkedProblemInUnit(loginUser.getId(), unitId));
     }
 
@@ -39,18 +39,18 @@ public class BookmarkController implements BookmarkControllerDocs {
     public ResponseEntity<Void> addBookmark(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid @RequestBody BookmarkSaveRequest request
-    ){
+    ) {
         bookmarkService.addBookmark(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> deleteBookmark(
             @AuthenticationPrincipal LoginUser loginUser,
-            @Valid@RequestBody BookmarkDeleteRequest request
+            @Valid @RequestBody BookmarkDeleteRequest request
     ) {
         bookmarkService.deleteBookmark(loginUser.getId(), request);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

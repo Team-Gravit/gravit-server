@@ -6,6 +6,7 @@ import gravit.code.notification.controller.docs.NotificationDocs;
 import gravit.code.notification.dto.response.NotificationResponse;
 import gravit.code.notification.facade.NotificationFacade;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,6 @@ public class NotificationController implements NotificationDocs {
             @RequestParam(defaultValue = "0") int page
     ) {
         SliceResponse<NotificationResponse> inbox = notificationFacade.getInbox(loginUser.getId(), page);
-        return ResponseEntity.ok(inbox);
+        return ResponseEntity.status(HttpStatus.OK).body(inbox);
     }
 }

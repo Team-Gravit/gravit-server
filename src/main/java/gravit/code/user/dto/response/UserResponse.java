@@ -2,9 +2,10 @@ package gravit.code.user.dto.response;
 
 import gravit.code.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public record UserResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         long userId,

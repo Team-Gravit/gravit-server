@@ -1,5 +1,7 @@
 package gravit.code.season.domain;
 
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,7 +47,7 @@ public class Season {
     @Column(name = "tz", nullable = false)
     private String tz;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Season(
             String seasonKey,
             LocalDateTime startsAt,
@@ -105,7 +107,7 @@ public class Season {
 
     private void validateStatus(SeasonStatus expected) {
         if (this.status != expected) {
-            throw new RuntimeException();
+            throw new RestApiException(CustomErrorCode.INVALID_SEASON_STATUS_TRANSITION);
         }
     }
 

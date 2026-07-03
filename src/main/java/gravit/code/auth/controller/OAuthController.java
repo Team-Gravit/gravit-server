@@ -39,7 +39,7 @@ public class OAuthController implements OAuthControllerDocs {
             @RequestParam String dest
     ) {
         String loginUrl = oAuthLoginUrlService.generateLoginUrl(provider, dest);
-        return ResponseEntity.ok(Map.of("loginUrl", loginUrl));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("loginUrl", loginUrl));
     }
 
     /**
@@ -55,7 +55,7 @@ public class OAuthController implements OAuthControllerDocs {
         String code = authCodeRequest.code();
 
         if(code == null){
-            return  ResponseEntity.badRequest().build();
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         OAuthUserInfo userInfo = oAuthClientService.getUserInfo(code, provider, dest);

@@ -1,5 +1,6 @@
 package gravit.code.admin.domain.staging;
 
+import gravit.code.global.consts.TimeZoneConst;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 /**
  * 스테이징 라벨. PK(id)·status·created_at 은 generator 적재 시 DB 가 발번/기본값 처리한다.
@@ -72,7 +72,7 @@ public class StagingLabel {
                 .unitId(unitId)
                 .description(description)
                 .status(LabelStatus.PENDING)
-                .createdAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+                .createdAt(LocalDateTime.now(TimeZoneConst.KST))
                 .build();
     }
 

@@ -2,21 +2,11 @@ package gravit.code.auth.dto.oauth.android;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 
-
-public class NaverAndroidUserInfo implements OAuthUserInfo {
-    private final String providerId;
-    private final String email;
-    private final String nickname;
-
-    public NaverAndroidUserInfo(
-            String providerId,
-            String email,
-            String nickname
-    ) {
-        this.providerId = providerId;
-        this.email = email;
-        this.nickname = nickname;
-    }
+public record NaverAndroidUserInfo(
+        String providerId,
+        String email,
+        String nickname
+) implements OAuthUserInfo {
 
     @Override
     public String getProvider() {
@@ -25,17 +15,16 @@ public class NaverAndroidUserInfo implements OAuthUserInfo {
 
     @Override
     public String getProviderId() {
-        return this.providerId;
+        return providerId;
     }
 
     @Override
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     @Override
     public String getName() {
-        return this.nickname;
+        return nickname;
     }
-
 }

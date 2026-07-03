@@ -5,18 +5,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 @Schema(description = "피드 슬라이스 응답")
-public class SocialFeedSliceResponse {
+public record SocialFeedSliceResponse(
 
-    @Schema(
-            description = "다음 페이지 존재 여부",
-            example = "false",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    public boolean hasNextPage;
+        @Schema(
+                description = "다음 페이지 존재 여부",
+                example = "false",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        boolean hasNextPage,
 
-    @Schema(
-            description = "피드 목록",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    public List<SocialFeedResponse> contents;
+        @Schema(
+                description = "피드 목록",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        List<SocialFeedResponse> contents
+) {
 }

@@ -111,6 +111,7 @@ public enum CustomErrorCode implements ErrorCode {
     ACTIVE_SEASON_NOT_FOUND(HttpStatus.NOT_FOUND, "SEASON_4041", "ACTIVE 시즌이 없습니다."),
     BATCH_PREP_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4091", "배치 처리 도중, PREP 시즌 생성 관련하여 충돌이 발생하였습니다."),
     BATCH_ACTIVE_SEASON_CONFLICT(HttpStatus.CONFLICT, "SEASON_4092", "배치 처리 도중, ACTIVE 시즌 생성 관련하여 충돌이 발생하였습니다."),
+    INVALID_SEASON_STATUS_TRANSITION(HttpStatus.CONFLICT, "SEASON_4093", "시즌 상태 전이가 유효하지 않습니다."),
 
     // Notice
     NOTICE_TITLE_INVALID(HttpStatus.BAD_REQUEST, "NOTICE_4001", "공지 사항의 제목이 유효하지 않습니다."),

@@ -1,5 +1,6 @@
 package gravit.code.report.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -44,7 +44,7 @@ public class Report {
     @Column(name = "submitted_at", columnDefinition = "timestamp", nullable = false)
     private LocalDateTime submittedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Report(
             ReportType reportType,
             String content,
@@ -56,7 +56,7 @@ public class Report {
         this.problemId = problemId;
         this.userId = userId;
         this.isResolved = false;
-        this.submittedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        this.submittedAt = LocalDateTime.now(TimeZoneConst.KST);
     }
 
     public static Report create(
@@ -67,6 +67,20 @@ public class Report {
                 .reportType(ReportType.from(request.reportType()))
                 .content(request.content() == null ? "-" : request.content())
                 .problemId(request.problemId())
+                .userId(userId)
+                .build();
+    }
+
+    public static Report of(
+            ReportType reportType,
+            String content,
+            long problemId,
+            long userId
+    ) {
+        return Report.builder()
+                .reportType(reportType)
+                .content(content)
+                .problemId(problemId)
                 .userId(userId)
                 .build();
     }

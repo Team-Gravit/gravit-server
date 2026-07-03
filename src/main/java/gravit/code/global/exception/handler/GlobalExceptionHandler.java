@@ -75,10 +75,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse<String>> handleSoftDeleted(AccountSoftDeletedException ex) {
         String errorCode = "USER_423";
         String message = ex.getProviderId();
-        ErrorResponse<String> errorResponse = ErrorResponse.<String>builder()
-                .error(errorCode)
-                .message(message)
-                .build();
+        ErrorResponse<String> errorResponse = ErrorResponse.of(errorCode, message);
         HttpStatus status = HttpStatus.LOCKED;
         return ResponseEntity.status(status).body(errorResponse);
     }
@@ -94,16 +91,10 @@ public class GlobalExceptionHandler {
     }
 
     private ErrorResponse<String> makeErrorResponse(ErrorCode errorCode){
-        return ErrorResponse.<String>builder()
-                .error(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
+        return ErrorResponse.of(errorCode.getCode(), errorCode.getMessage());
     }
 
     private ErrorResponse<List<String>> makeErrorResponse(List<String> message){
-        return ErrorResponse.<List<String>>builder()
-                .error(CustomErrorCode.INVALID_PARAMS.getCode())
-                .message(message)
-                .build();
+        return ErrorResponse.of(CustomErrorCode.INVALID_PARAMS.getCode(), message);
     }
 }

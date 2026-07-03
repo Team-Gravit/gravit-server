@@ -41,12 +41,7 @@ class AdminDashboardServiceIntegrationTest {
             long problemId,
             boolean resolved
     ) {
-        Report report = Report.builder()
-                .reportType(type)
-                .content("내용")
-                .problemId(problemId)
-                .userId(100L)
-                .build();
+        Report report = Report.of(type, "내용", problemId, 100L);
         if (resolved) {
             report.changeResolved(true);
         }

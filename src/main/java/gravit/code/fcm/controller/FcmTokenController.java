@@ -9,6 +9,7 @@ import gravit.code.fcm.service.FcmTokenQueryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -34,7 +35,7 @@ public class FcmTokenController implements FcmTokenControllerDocs {
             @Valid @RequestBody RegisterFcmTokenRequest request
     ){
         fcmTokenCommandService.registerFcmToken(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/exists")
@@ -43,7 +44,7 @@ public class FcmTokenController implements FcmTokenControllerDocs {
             @NotBlank(message = "디바이스 아이디가 비어있습니다.")
             @RequestParam("deviceId") String deviceId
     ){
-        return ResponseEntity.ok(fcmTokenQueryService.checkFcmTokenExist(loginUser.getId(), deviceId));
+        return ResponseEntity.status(HttpStatus.OK).body(fcmTokenQueryService.checkFcmTokenExist(loginUser.getId(), deviceId));
     }
 
 }

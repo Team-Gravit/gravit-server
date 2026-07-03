@@ -1,9 +1,10 @@
 package gravit.code.user.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Schema(description = "유저 레벨 정보 Response(학습 종료 후)")
 public record UserLevelResponse(
         @Schema(

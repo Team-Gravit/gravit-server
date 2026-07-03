@@ -39,6 +39,6 @@ public class WrongAnsweredNoteController implements WrongAnsweredNoteControllerD
             @Valid @RequestBody WrongAnsweredNoteDeleteRequest request
     ){
         wrongAnsweredNoteService.deleteWrongAnsweredProblem(loginUser.getId(), request.problemId());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -2,11 +2,12 @@ package gravit.code.notice.dto.response;
 
 import gravit.code.notice.domain.Notice;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public record NoticeDetailResponse(
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

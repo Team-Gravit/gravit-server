@@ -1,5 +1,6 @@
 package gravit.code.social.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Table(name = "user_feed")
 @Entity
@@ -62,7 +62,7 @@ public class UserFeed extends BaseEntity {
     }
 
     public void congratulate() {
-        this.congratulatedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        this.congratulatedAt = LocalDateTime.now(TimeZoneConst.KST);
         this.hidden = true;
     }
 }

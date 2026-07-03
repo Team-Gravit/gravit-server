@@ -31,7 +31,7 @@ public class InquiryAnswer extends BaseEntity {
     @Column(name = "admin_id", nullable = false)
     private long adminId;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private InquiryAnswer(
             long inquiryId,
             String content,

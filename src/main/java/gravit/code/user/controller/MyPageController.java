@@ -11,6 +11,7 @@ import gravit.code.user.facade.UserFacade;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -30,17 +31,17 @@ public class MyPageController implements MyPageControllerDocs {
 
     @GetMapping("/banners")
     public ResponseEntity<MyPageBannerResponse> getMyPageBanner(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.ok(userFacade.getMyPageBanner(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(userFacade.getMyPageBanner(loginUser.getId()));
     }
 
     @GetMapping("/summaries")
     public ResponseEntity<MyPageSummaryResponse> getMyPageSummary(@AuthenticationPrincipal LoginUser loginUser){
-        return ResponseEntity.ok(learningFacade.getMyPageSummary(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getMyPageSummary(loginUser.getId()));
     }
 
     @GetMapping("/learning")
     public ResponseEntity<MyPageLearningResponse> getMyPageLearning(@AuthenticationPrincipal LoginUser loginUser){
-        return ResponseEntity.ok(learningFacade.getMyPageLearning(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getMyPageLearning(loginUser.getId()));
     }
 
     @GetMapping("/learning/history")
@@ -48,6 +49,6 @@ public class MyPageController implements MyPageControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam("year") @Min(2025) @Max(2099)int year
     ){
-        return ResponseEntity.ok(learningFacade.getMyPageLearningHistory(loginUser.getId(), year));
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getMyPageLearningHistory(loginUser.getId(), year));
     }
 }

@@ -10,6 +10,7 @@ import gravit.code.admin.service.AdminChapterService;
 import gravit.code.global.dto.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,17 +31,17 @@ public class AdminChapterController implements AdminChapterControllerDocs {
     public ResponseEntity<PageResponse<ChapterListItemResponse>> getChapters(
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        return ResponseEntity.ok(adminChapterService.getChapters(page));
+        return ResponseEntity.status(HttpStatus.OK).body(adminChapterService.getChapters(page));
     }
 
     @GetMapping("/{chapterId}")
     public ResponseEntity<ChapterDetailResponse> getChapter(@PathVariable("chapterId") Long chapterId) {
-        return ResponseEntity.ok(adminChapterService.getChapter(chapterId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminChapterService.getChapter(chapterId));
     }
 
     @GetMapping("/{chapterId}/stats")
     public ResponseEntity<ChapterStatsResponse> getChapterStats(@PathVariable("chapterId") Long chapterId) {
-        return ResponseEntity.ok(adminChapterService.getChapterStats(chapterId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminChapterService.getChapterStats(chapterId));
     }
 
     @PatchMapping("/{chapterId}")
@@ -49,7 +50,7 @@ public class AdminChapterController implements AdminChapterControllerDocs {
             @Valid @RequestBody ChapterUpdateRequest request
     ) {
         adminChapterService.updateChapter(chapterId, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/{chapterId}/units")
@@ -57,6 +58,6 @@ public class AdminChapterController implements AdminChapterControllerDocs {
             @PathVariable("chapterId") Long chapterId,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        return ResponseEntity.ok(adminChapterService.getUnits(chapterId, page));
+        return ResponseEntity.status(HttpStatus.OK).body(adminChapterService.getUnits(chapterId, page));
     }
 }

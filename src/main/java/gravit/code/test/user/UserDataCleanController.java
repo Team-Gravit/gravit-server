@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +34,7 @@ public class UserDataCleanController {
                 .getResultList();
 
         if(userIds.isEmpty()){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         // 각 userId에 대해 삭제 실행
@@ -43,7 +44,7 @@ public class UserDataCleanController {
             deletedCount++;
         }
 
-        return ResponseEntity.ok(deletedCount + " user(s) deleted");
+        return ResponseEntity.status(HttpStatus.OK).body(deletedCount + " user(s) deleted");
     }
 
     private void deleteUserData(Long userId) {

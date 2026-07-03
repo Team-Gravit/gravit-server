@@ -38,9 +38,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     }
 
     private ErrorResponse<String> makeErrorResponse(ErrorCode errorCode) {
-        return ErrorResponse.<String>builder()
-                .error(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
+        return ErrorResponse.of(errorCode.getCode(), errorCode.getMessage());
     }
 }

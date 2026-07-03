@@ -8,6 +8,7 @@ import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import gravit.code.userLeague.service.UserLeagueQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public class UserLeagueController implements UserLeagueControllerDocs {
         Long userId = loginUser.getId();
         MyLeagueRankWithProfileResponse myLeagueRankWithProfile = userLeagueQueryService.getMyLeagueRankWithProfile(userId);
 
-        return ResponseEntity.ok(myLeagueRankWithProfile);
+        return ResponseEntity.status(HttpStatus.OK).body(myLeagueRankWithProfile);
     }
 
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")
@@ -37,7 +38,7 @@ public class UserLeagueController implements UserLeagueControllerDocs {
             @PathVariable("pageNum") int pageNum
     ){
         SliceResponse<LeagueRankRowDto> sliceResponse = userLeagueQueryService.findLeagueRanking(leagueId, pageNum);
-        return ResponseEntity.ok(sliceResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(sliceResponse);
     }
 
     @GetMapping("/user-leagues/page/{pageNum}")
@@ -47,6 +48,6 @@ public class UserLeagueController implements UserLeagueControllerDocs {
     ){
         Long userId = loginUser.getId();
         SliceResponse<LeagueRankRowDto> sliceResponse = userLeagueQueryService.findLeagueRankingByUser(userId, pageNum);
-        return ResponseEntity.ok(sliceResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(sliceResponse);
     }
 }

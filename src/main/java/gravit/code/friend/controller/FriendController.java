@@ -98,6 +98,6 @@ public class FriendController implements FriendControllerDocs {
             @RequestParam(defaultValue = "0") int page
     ){
         SliceResponse<SearchUserDto> pageResponse = friendService.searchUsersForFollowing(loginUser.getId(), queryText, page);
-        return ResponseEntity.ok(pageResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
     }
 }

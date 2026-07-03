@@ -13,12 +13,12 @@ import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class AuthTokenProvider {
 

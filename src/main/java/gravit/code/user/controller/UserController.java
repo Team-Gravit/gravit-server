@@ -35,7 +35,7 @@ public class UserController implements UserControllerDocs {
     @GetMapping
     public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal LoginUser loginUser) {
         UserResponse userResponse = userService.findById(loginUser.getId());
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
     @PostMapping("/onboarding")
@@ -44,7 +44,7 @@ public class UserController implements UserControllerDocs {
             @Valid @RequestBody OnboardingRequest request
     ) {
         UserResponse userResponse = userService.onboarding(loginUser.getId(), request);
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
     @PatchMapping
@@ -53,19 +53,19 @@ public class UserController implements UserControllerDocs {
             @Valid @RequestBody UserProfileUpdateRequest request
     ) {
         UserResponse userResponse = userService.updateUserProfile(loginUser.getId(), request);
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
     @GetMapping("/my-page")
     public ResponseEntity<MyPageResponse> getMyPage(@AuthenticationPrincipal LoginUser loginUser) {
         MyPageResponse myPageResponse = userService.getMyPage(loginUser.getId());
-        return ResponseEntity.ok(myPageResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(myPageResponse);
     }
 
     @PatchMapping("/restore")
     public ResponseEntity<Void> restoreUser(@RequestParam("providerId") String providerId) {
         userService.restoreUser(providerId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Deprecated(forRemoval = true)
