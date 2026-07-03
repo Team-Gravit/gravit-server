@@ -43,7 +43,7 @@ public class InquiryController implements InquiryControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        return ResponseEntity.ok(inquiryQueryService.getMyInquiries(loginUser.getId(), page));
+        return ResponseEntity.status(HttpStatus.OK).body(inquiryQueryService.getMyInquiries(loginUser.getId(), page));
     }
 
     @GetMapping("/{inquiryId}")
@@ -51,6 +51,6 @@ public class InquiryController implements InquiryControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("inquiryId") long inquiryId
     ) {
-        return ResponseEntity.ok(inquiryQueryService.getMyInquiryDetail(loginUser.getId(), inquiryId));
+        return ResponseEntity.status(HttpStatus.OK).body(inquiryQueryService.getMyInquiryDetail(loginUser.getId(), inquiryId));
     }
 }

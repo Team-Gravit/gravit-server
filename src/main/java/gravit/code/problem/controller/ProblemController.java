@@ -39,6 +39,6 @@ public class ProblemController implements ProblemControllerDocs {
             @Valid @RequestBody ProblemSubmissionRequest request
     ){
         problemSubmissionCommandService.saveProblemSubmission(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

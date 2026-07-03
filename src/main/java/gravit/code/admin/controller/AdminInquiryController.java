@@ -36,12 +36,12 @@ public class AdminInquiryController implements AdminInquiryControllerDocs {
             @RequestParam(value = "status", required = false) InquiryStatus status,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        return ResponseEntity.ok(adminInquiryService.getInquiries(status, page));
+        return ResponseEntity.status(HttpStatus.OK).body(adminInquiryService.getInquiries(status, page));
     }
 
     @GetMapping("/{inquiryId}")
     public ResponseEntity<InquiryDetailResponse> getInquiry(@PathVariable("inquiryId") long inquiryId) {
-        return ResponseEntity.ok(adminInquiryService.getInquiry(inquiryId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminInquiryService.getInquiry(inquiryId));
     }
 
     @PostMapping("/{inquiryId}/answer")
@@ -59,12 +59,12 @@ public class AdminInquiryController implements AdminInquiryControllerDocs {
             @PathVariable("inquiryId") long inquiryId,
             @Valid @RequestBody InquiryAnswerUpdateRequest request
     ) {
-        return ResponseEntity.ok(adminInquiryService.updateAnswer(inquiryId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(adminInquiryService.updateAnswer(inquiryId, request));
     }
 
     @DeleteMapping("/{inquiryId}/answer")
     public ResponseEntity<Void> deleteAnswer(@PathVariable("inquiryId") long inquiryId) {
         adminInquiryService.deleteAnswer(inquiryId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

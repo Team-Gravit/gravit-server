@@ -32,12 +32,12 @@ public class AdminNoticeController implements AdminNoticeControllerDocs {
 
     @GetMapping
     public ResponseEntity<PageResponse<NoticeListItemResponse>> getNotices(@RequestParam(value = "page", defaultValue = "1") int page) {
-        return ResponseEntity.ok(adminNoticeService.getNotices(page));
+        return ResponseEntity.status(HttpStatus.OK).body(adminNoticeService.getNotices(page));
     }
 
     @GetMapping("/{noticeId}")
     public ResponseEntity<NoticeDetailResponse> getNotice(@PathVariable("noticeId") Long noticeId) {
-        return ResponseEntity.ok(adminNoticeService.getNotice(noticeId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminNoticeService.getNotice(noticeId));
     }
 
     @PostMapping
@@ -56,7 +56,7 @@ public class AdminNoticeController implements AdminNoticeControllerDocs {
             @Valid @RequestBody NoticeUpdateRequest request
     ) {
         NoticeDetailResponse notice = adminNoticeService.updateNotice(loginUser.getId(), noticeId, request);
-        return ResponseEntity.ok(notice);
+        return ResponseEntity.status(HttpStatus.OK).body(notice);
     }
 
     @DeleteMapping("/{noticeId}")
@@ -65,6 +65,6 @@ public class AdminNoticeController implements AdminNoticeControllerDocs {
             @PathVariable("noticeId") Long noticeId
     ) {
         adminNoticeService.deleteNotice(loginUser.getId(), noticeId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

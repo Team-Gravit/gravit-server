@@ -41,7 +41,7 @@ public class BookmarkController implements BookmarkControllerDocs {
             @Valid @RequestBody BookmarkSaveRequest request
     ) {
         bookmarkService.addBookmark(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping
@@ -50,7 +50,7 @@ public class BookmarkController implements BookmarkControllerDocs {
             @Valid @RequestBody BookmarkDeleteRequest request
     ) {
         bookmarkService.deleteBookmark(loginUser.getId(), request);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

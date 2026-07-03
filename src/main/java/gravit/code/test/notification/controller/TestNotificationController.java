@@ -5,6 +5,7 @@ import gravit.code.notification.facade.NotificationFacade;
 import gravit.code.test.notification.controller.docs.TestNotificationDocs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,7 @@ public class TestNotificationController implements TestNotificationDocs {
     ) {
         notificationFacade.sendConsecutiveLearningWarningToUser(loginUser.getId(), consecutiveDays);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     @PostMapping("/daily-incomplete")
@@ -36,7 +37,7 @@ public class TestNotificationController implements TestNotificationDocs {
     ) {
         notificationFacade.sendDailyIncompleteToUser(loginUser.getId());
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     @PostMapping("/inactivity")
@@ -46,7 +47,7 @@ public class TestNotificationController implements TestNotificationDocs {
     ) {
         notificationFacade.sendInactivityToUser(loginUser.getId(), inactiveDays);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     @PostMapping("/new-content")
@@ -56,6 +57,6 @@ public class TestNotificationController implements TestNotificationDocs {
     ) {
         notificationFacade.sendNewContentToUser(loginUser.getId(), unitId);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 }

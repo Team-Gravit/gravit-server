@@ -9,6 +9,7 @@ import gravit.code.global.dto.response.PageResponse;
 import gravit.code.report.domain.ReportType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,12 +32,12 @@ public class AdminReportController implements AdminReportControllerDocs {
             @RequestParam(value = "reportType", required = false) ReportType reportType,
             @RequestParam(value = "isResolved", required = false) Boolean isResolved
     ) {
-        return ResponseEntity.ok(adminReportService.getReports(page, reportType, isResolved));
+        return ResponseEntity.status(HttpStatus.OK).body(adminReportService.getReports(page, reportType, isResolved));
     }
 
     @GetMapping("/{reportId}")
     public ResponseEntity<ReportDetailResponse> getReport(@PathVariable("reportId") Long reportId) {
-        return ResponseEntity.ok(adminReportService.getReport(reportId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminReportService.getReport(reportId));
     }
 
     @PatchMapping("/{reportId}/status")
@@ -45,6 +46,6 @@ public class AdminReportController implements AdminReportControllerDocs {
             @Valid @RequestBody ReportStatusUpdateRequest request
     ) {
         adminReportService.updateResolved(reportId, request.isResolved());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

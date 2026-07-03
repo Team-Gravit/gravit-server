@@ -24,7 +24,7 @@ public class LeagueController implements LeagueControllerSpecification {
 
     @GetMapping("/{leagueId}")
     public ResponseEntity<LeagueResponse> getLeague(@PathVariable("leagueId") Long leagueId) {
-        return ResponseEntity.ok(leagueService.getLeague(leagueId));
+        return ResponseEntity.status(HttpStatus.OK).body(leagueService.getLeague(leagueId));
     }
 
     @GetMapping("/home")

@@ -12,6 +12,7 @@ import gravit.code.user.domain.Role;
 import gravit.code.user.domain.UserStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,12 +37,12 @@ public class AdminUserController implements AdminUserControllerDocs {
             @RequestParam(value = "status", required = false) UserStatus status,
             @RequestParam(value = "role", required = false) Role role
     ) {
-        return ResponseEntity.ok(adminUserService.getUsers(page, search, status, role));
+        return ResponseEntity.status(HttpStatus.OK).body(adminUserService.getUsers(page, search, status, role));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDetailResponse> getUser(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(adminUserService.getUser(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminUserService.getUser(userId));
     }
 
     @PatchMapping("/{userId}/status")
@@ -51,7 +52,7 @@ public class AdminUserController implements AdminUserControllerDocs {
             @Valid @RequestBody UserStatusUpdateRequest request
     ) {
         adminUserService.updateStatus(loginUser.getId(), userId, request.status());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping("/{userId}/role")
@@ -61,6 +62,6 @@ public class AdminUserController implements AdminUserControllerDocs {
             @Valid @RequestBody UserRoleUpdateRequest request
     ) {
         adminUserService.updateRole(loginUser.getId(), userId, request.role());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

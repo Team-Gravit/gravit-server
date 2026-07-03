@@ -14,6 +14,7 @@ import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,7 +67,7 @@ public class TestScenarioController {
             submitLesson(userId, lesson.getId());
         }
 
-        return ResponseEntity.ok(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userId);
     }
 
     private void submitLesson(Long userId, Long lessonId) {
@@ -106,6 +107,6 @@ public class TestScenarioController {
 
         learningRepository.save(learning);
 
-        return ResponseEntity.ok(user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(user.getId());
     }
 }

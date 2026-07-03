@@ -15,6 +15,7 @@ import gravit.code.user.dto.response.ProfileSummaryResponse;
 import gravit.code.user.facade.UserFacade;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,31 +38,31 @@ public class MainPageController implements MainPageControllerDocs {
 
     @GetMapping("/profile")
     public ResponseEntity<ProfileSummaryResponse> getProfile(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.ok(userFacade.getProfileSummary(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(userFacade.getProfileSummary(loginUser.getId()));
     }
 
     @GetMapping("/league")
     public ResponseEntity<LeagueDetailResponse> getLeague(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.ok(userLeagueService.getUserLeagueDetail(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(userLeagueService.getUserLeagueDetail(loginUser.getId()));
     }
 
     @GetMapping("/learning")
     public ResponseEntity<LearningDetailResponse> getLearning(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.ok(learningFacade.getLearningDetail(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getLearningDetail(loginUser.getId()));
     }
 
     @GetMapping("/units")
     public ResponseEntity<List<RecommendedUnitResponse>> getUnits(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.ok(unitQueryService.getRecommendedUnits(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(unitQueryService.getRecommendedUnits(loginUser.getId()));
     }
 
     @GetMapping("/weekly-record")
     public ResponseEntity<WeeklyLearningRecordResponse> getWeeklyRecord(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.ok(dailyLearningRecordService.getWeeklyLearningRecord(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(dailyLearningRecordService.getWeeklyLearningRecord(loginUser.getId()));
     }
 
     @GetMapping("/mission")
     public ResponseEntity<MissionDetailResponse> getMission(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.ok(missionService.getMissionDetail(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(missionService.getMissionDetail(loginUser.getId()));
     }
 }

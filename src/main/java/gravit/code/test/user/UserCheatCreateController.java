@@ -72,7 +72,7 @@ public class UserCheatCreateController {
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
 
-        return ResponseEntity.ok().body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
+        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }
 
     // cheat 전용 검증이라 운영 카탈로그(CustomErrorCode)를 오염시키지 않도록 ResponseStatusException으로 400을 던진다.
@@ -117,7 +117,7 @@ public class UserCheatCreateController {
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
 
-        return ResponseEntity.ok().body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
+        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }
 
     @PostMapping("/tokens/custom")
@@ -127,7 +127,7 @@ public class UserCheatCreateController {
     ){
         User user = authTokenProvider.parseUser(accessToken);
         AccessToken newAccessToken = createNewCustomAccessToken(user, newExpirationMinutes);
-        return ResponseEntity.ok().body(LoginResponse.of(newAccessToken,new RefreshToken("refresh"),true, user.getRole()));
+        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(newAccessToken,new RefreshToken("refresh"),true, user.getRole()));
     }
 
     private AccessToken createNewCustomAccessToken(User user, Long newExpirationMinutes) {
@@ -160,7 +160,7 @@ public class UserCheatCreateController {
         for (long i = 11; i <= 19; i++) {
             follow(i, 1L);
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/events/notice-created")
@@ -169,7 +169,7 @@ public class UserCheatCreateController {
             @RequestParam String title
     ) {
         publisher.publishEvent(new NoticeCreatedEvent(noticeId, title));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/events/season-rolled-over")
@@ -177,7 +177,7 @@ public class UserCheatCreateController {
             @RequestParam String newSeasonKey
     ) {
         publisher.publishEvent(new SeasonRolledOverEvent(newSeasonKey));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     private void follow(long followerId, long followeeId) {
