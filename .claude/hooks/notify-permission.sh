@@ -1,17 +1,14 @@
 #!/bin/bash
-# Notification(permission_prompt) hook: 권한 승인 요청 알림
+# Notification(permission_prompt|idle_prompt) hook: 권한 승인·입력 대기 알림
+# stdin의 .message를 60자로 잘라 전달해 어떤 도구가 왜 멈췄는지 알 수 있게 한다.
 
-MSG="권한 승인이 필요합니다."
-TITLE="Claude Code"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-OS=$(uname -s)
-if [ "$OS" = "Darwin" ]; then
-  osascript -e "display notification \"$MSG\" with title \"$TITLE\"" 2>/dev/null
-elif grep -qi microsoft /proc/version 2>/dev/null; then
-  powershell.exe -Command "[void](New-BurntToastNotification -Text '$TITLE','$MSG')" 2>/dev/null \
-    || powershell.exe -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('$MSG','$TITLE')" 2>/dev/null
-else
-  notify-send "$TITLE" "$MSG" 2>/dev/null
-fi
+INPUT=$(cat)
+MSG=$(echo "$INPUT" | jq -r '(.message // "권한 승인이 필요합니다.")
+  | gsub("\\s+"; " ")
+  | if length > 60 then .[:60] + "…" else . end')
+
+"$DIR/notify.sh" "Claude Code" "$MSG"
 
 exit 0
