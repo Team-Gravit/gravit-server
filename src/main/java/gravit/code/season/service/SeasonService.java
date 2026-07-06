@@ -71,4 +71,12 @@ public class SeasonService {
         return seasonRepository.findByStatus(SeasonStatus.ACTIVE)
                 .map(Season::getEndsAt);
     }
+
+    // 시즌 종료 + 새 시즌 시작 알림 발송 판정을 위해 현재 ACTIVE 시즌의 시작 시각을 조회한다
+    // (시작일이 오늘이면 직전 자정에 롤오버된 것으로 본다)
+    @Transactional(readOnly = true)
+    public Optional<LocalDateTime> getActiveSeasonStartsAt() {
+        return seasonRepository.findByStatus(SeasonStatus.ACTIVE)
+                .map(Season::getStartsAt);
+    }
 }

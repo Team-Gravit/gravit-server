@@ -1,6 +1,5 @@
 package gravit.code.season.batch;
 
-import gravit.code.global.event.SeasonRolledOverEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
@@ -21,8 +20,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.event.ApplicationEvents;
-import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +28,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 
 @TCSpringBootTest
-@RecordApplicationEvents
 class SeasonBatchServiceTest {
 
     @Autowired SeasonBatchService seasonBatchService;
@@ -118,17 +114,6 @@ class SeasonBatchServiceTest {
             Season updatedSeason = seasonRepository.findById(currentSeason.getId()).orElseThrow();
             assertThat(seasonRepository.findBySeasonKey("2025-S2")).isPresent();
             assertThat(updatedSeason.getStatus()).isEqualTo(SeasonStatus.CLOSED);
-        }
-
-        @Test
-        @DisplayName("롤오버 성공 시 새 시즌 키를 담은 SeasonRolledOverEvent를 발행한다")
-        void 롤오버_성공시_시즌_롤오버_이벤트를_발행한다(ApplicationEvents events) {
-            seasonBatchService.finalizeAndRollover();
-
-            assertThat(events.stream(SeasonRolledOverEvent.class))
-                    .singleElement()
-                    .extracting(SeasonRolledOverEvent::newSeasonKey)
-                    .isEqualTo("2025-S2");
         }
 
         @Test

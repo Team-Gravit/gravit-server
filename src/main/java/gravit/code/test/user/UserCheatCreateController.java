@@ -9,7 +9,7 @@ import gravit.code.auth.token.JwtProvider;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.repository.FriendRepository;
 import gravit.code.global.event.NoticeCreatedEvent;
-import gravit.code.global.event.SeasonRolledOverEvent;
+import gravit.code.test.user.docs.UserCheatCreateControllerDocs;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
@@ -38,7 +38,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
-public class UserCheatCreateController {
+public class UserCheatCreateController implements UserCheatCreateControllerDocs {
 
     private final AuthTokenProvider authTokenProvider;
     private final JwtProvider jwtProvider;
@@ -72,7 +72,7 @@ public class UserCheatCreateController {
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
+        return ResponseEntity.ok().body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }
 
     // cheat 전용 검증이라 운영 카탈로그(CustomErrorCode)를 오염시키지 않도록 ResponseStatusException으로 400을 던진다.
@@ -117,7 +117,7 @@ public class UserCheatCreateController {
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
+        return ResponseEntity.ok().body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }
 
     @PostMapping("/tokens/custom")
@@ -127,7 +127,7 @@ public class UserCheatCreateController {
     ){
         User user = authTokenProvider.parseUser(accessToken);
         AccessToken newAccessToken = createNewCustomAccessToken(user, newExpirationMinutes);
-        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(newAccessToken,new RefreshToken("refresh"),true, user.getRole()));
+        return ResponseEntity.ok().body(LoginResponse.of(newAccessToken,new RefreshToken("refresh"),true, user.getRole()));
     }
 
     private AccessToken createNewCustomAccessToken(User user, Long newExpirationMinutes) {
@@ -160,24 +160,19 @@ public class UserCheatCreateController {
         for (long i = 11; i <= 19; i++) {
             follow(i, 1L);
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
+    // NoticeCreatedEvent 리스너가 @TransactionalEventListener(AFTER_COMMIT)라, 커밋되는 트랜잭션 안에서
+    // publish해야 실행된다. @Transactional 없이 publish하면 리스너가 발화되지 않아 알림이 생성되지 않는다.
+    @Transactional
     @PostMapping("/events/notice-created")
     public ResponseEntity<Void> publishNoticeCreatedEvent(
             @RequestParam long noticeId,
             @RequestParam String title
     ) {
         publisher.publishEvent(new NoticeCreatedEvent(noticeId, title));
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @PostMapping("/events/season-rolled-over")
-    public ResponseEntity<Void> publishSeasonRolledOverEvent(
-            @RequestParam String newSeasonKey
-    ) {
-        publisher.publishEvent(new SeasonRolledOverEvent(newSeasonKey));
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     private void follow(long followerId, long followeeId) {

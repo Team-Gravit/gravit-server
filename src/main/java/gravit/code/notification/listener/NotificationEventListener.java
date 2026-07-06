@@ -3,7 +3,6 @@ package gravit.code.notification.listener;
 import gravit.code.global.event.FollowedEvent;
 import gravit.code.global.event.InquiryAnsweredEvent;
 import gravit.code.global.event.NoticeCreatedEvent;
-import gravit.code.global.event.SeasonRolledOverEvent;
 import gravit.code.notification.domain.NotificationType;
 import gravit.code.notification.facade.NotificationFacade;
 import gravit.code.notification.service.NotificationService;
@@ -27,48 +26,44 @@ public class NotificationEventListener {
     private final NotificationFacade notificationFacade;
     private final UserService userService;
 
+    // 3.12 공지: 헤드라인 고정 + 공지 제목은 서브텍스트. 인앱 only(푸시 미발송)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleNoticeCreated(NoticeCreatedEvent event) {
         try {
-            String message = messageProvider.noticePublished(event.title());
-            notificationService.notifyAllUsers(NotificationType.NOTICE, message, event.noticeId());
+            notificationService.notifyAllUsers(
+                    NotificationType.NOTICE,
+                    messageProvider.noticeHeadline(),
+                    event.title(),
+                    event.noticeId()
+            );
         } catch (Exception e) {
             log.error("공지 알림 적재 실패 - noticeId: {}", event.noticeId(), e);
         }
     }
 
+    // 3.9 팔로우: 인앱 알림함에만 적재(푸시 미발송)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFollowed(FollowedEvent event) {
         try {
             String followerNickname = userService.getUser(event.followerId()).getNickname();
             String message = messageProvider.followReceived(followerNickname);
-            notificationFacade.notifyUser(event.followeeId(), NotificationType.FOLLOW, message, event.followerId());
+            notificationFacade.notifyUserInApp(event.followeeId(), NotificationType.FOLLOW, message, event.followerId());
         } catch (Exception e) {
             log.error("팔로우 알림 발송 실패 - followerId: {}, followeeId: {}", event.followerId(), event.followeeId(), e);
         }
     }
 
+    // 문의 답변(명세 외, 현행 유지): 인앱 저장 + 푸시
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleInquiryAnswered(InquiryAnsweredEvent event) {
         try {
-            String message = messageProvider.inquiryAnswered();
+            String message = messageProvider.inquiryAnswered(event.title());
             notificationFacade.notifyUser(event.userId(), NotificationType.INQUIRY_ANSWERED, message, event.inquiryId());
         } catch (Exception e) {
             log.error("문의 답변 알림 발송 실패 - inquiryId: {}", event.inquiryId(), e);
-        }
-    }
-
-    // 3.8 시즌 롤오버 커밋 직후 전체 유저에게 새 시즌 시작 알림 푸시
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleSeasonRolledOver(SeasonRolledOverEvent event) {
-        try {
-            notificationFacade.sendSeasonResetAlerts();
-        } catch (Exception e) {
-            log.error("시즌 종료 알림 발송 실패 - newSeasonKey: {}", event.newSeasonKey(), e);
         }
     }
 }

@@ -31,4 +31,11 @@ public class NotificationScheduler {
     public void sendSeasonEndingReminders(){
         notificationFacade.sendSeasonEndingReminders();
     }
+
+    // 매일 오전 9시: 직전 자정에 시즌이 롤오버됐으면(=ACTIVE 시즌 시작일이 오늘) 시즌 종료+새 시즌 알림 발송.
+    // 자정 즉시 발송 시 발생하는 새벽 푸시를 피하기 위해 오전 9시로 분리한다.
+    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
+    public void sendSeasonResetAlerts(){
+        notificationFacade.sendSeasonResetAlerts();
+    }
 }

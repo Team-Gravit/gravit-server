@@ -80,6 +80,24 @@ class UserDeletionServiceIntegrationTest {
     }
 
     @Nested
+    @DisplayName("탈퇴 유저 데이터를 완전 삭제(cleanUserDeletion)할 때")
+    class CleanUserDeletion {
+
+        @Test
+        @DisplayName("연관 데이터가 없어도 전체 삭제 SQL이 실제 스키마에서 정상 실행되고 유저가 삭제된다")
+        void 연관데이터_없이_정상_삭제() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when — 전체 CTE(DELETE 문)를 실제 DB에 실행: 존재하지 않는 테이블/문법 오류가 있으면 여기서 실패한다
+            userDeletionService.cleanUserDeletion(user.getId());
+
+            // then
+            assertThat(userRepository.findById(user.getId())).isEmpty();
+        }
+    }
+
+    @Nested
     @DisplayName("메일 인증 코드로 회원 탈퇴를 확인할 때")
     class ConfirmDeleteByMailAuthCode {
 

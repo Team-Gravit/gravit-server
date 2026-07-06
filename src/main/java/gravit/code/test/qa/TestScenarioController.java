@@ -12,6 +12,7 @@ import gravit.code.unit.domain.Unit;
 import gravit.code.unit.repository.UnitRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
+import gravit.code.test.qa.docs.TestScenarioControllerDocs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
-public class TestScenarioController {
+public class TestScenarioController implements TestScenarioControllerDocs {
 
     private final LessonFacade lessonFacade;
     private final LessonRepository lessonRepository;

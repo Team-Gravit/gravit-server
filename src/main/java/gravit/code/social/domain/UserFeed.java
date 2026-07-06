@@ -1,6 +1,5 @@
 package gravit.code.social.domain;
 
-import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Table(name = "user_feed")
 @Entity
@@ -62,7 +62,7 @@ public class UserFeed extends BaseEntity {
     }
 
     public void congratulate() {
-        this.congratulatedAt = LocalDateTime.now(TimeZoneConst.KST);
-        this.hidden = true;
+        // 축하한 피드는 목록에서 숨기지 않고 '축하 완료' 상태로 남긴다(명세 3.2). hidden은 명시적 hide()로만 설정된다.
+        this.congratulatedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 }

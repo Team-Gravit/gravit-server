@@ -29,7 +29,7 @@ public class FcmTokenQueryService {
 
     @Transactional(readOnly = true)
     public Map<Long, List<String>> getTokensByUserIds(List<Long> userIds) {
-        return fcmTokenRepository.findByUserIdIn(userIds).stream()
+        return fcmTokenRepository.findAndroidTokensByUserIdIn(userIds).stream()
                 .collect(Collectors.groupingBy(
                         FcmToken::getUserId,
                         Collectors.mapping(FcmToken::getToken, Collectors.toList())
@@ -38,6 +38,6 @@ public class FcmTokenQueryService {
 
     @Transactional(readOnly = true)
     public List<String> getAllTokens() {
-        return fcmTokenRepository.findAllTokens();
+        return fcmTokenRepository.findAllAndroidTokens();
     }
 }

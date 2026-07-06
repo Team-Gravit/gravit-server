@@ -11,15 +11,19 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 public class NotificationMessageProvider {
 
-    private static final String CONSECUTIVE_WARNING_MESSAGE = "오늘 학습을 하지 않으면 %d일 연속학습이 끊겨요!";
+    private static final String CONSECUTIVE_WARNING_MESSAGE = "%d일 연속학습이 끊길 위기예요!";
+
+    private static final String CONSECUTIVE_WARNING_SUB_TEXT = "오늘 학습하면 계속 이어갈 수 있어요";
+
+    private static final String NOTICE_HEADLINE = "새로운 공지사항이 있어요";
 
     private static final String NEW_CONTENT_MESSAGE = "새 레슨이 업데이트됐어요! 오늘 학습에 도전해보세요 🔥";
 
     private static final String SEASON_RESET_MESSAGE = "시즌 종료! 새 시즌이 찾아왔어요. 다시 시작해봐요 💪";
 
     private static final List<SeasonEndingMilestone> SEASON_ENDING_MILESTONES = List.of(
-            new SeasonEndingMilestone(7, "시즌이 일주일 뒤 끝나요! 지금이 티어 올릴 마지막 기회예요 💪"),
-            new SeasonEndingMilestone(3, "시즌 종료가 3일 앞으로 다가왔어요! 마지막까지 달려봐요 🔥")
+            new SeasonEndingMilestone(7, "시즌이 일주일 뒤 끝나요!", "지금이 티어 올릴 마지막 기회예요 💪"),
+            new SeasonEndingMilestone(3, "시즌 종료가 3일 앞으로 다가왔어요!", "마지막까지 달려봐요 🔥")
     );
 
     private static final List<String> DAILY_INCOMPLETE_MESSAGES = List.of(
@@ -28,16 +32,19 @@ public class NotificationMessageProvider {
             "지금 이 시간에도 누군가는 CS를 공부하고 있어요 👀"
     );
 
+    // 장기 미접속 마일스톤. 60·90·120일은 기획 문구 미정이라 확정 후 아래 목록에 추가하면 동작한다.
     private static final List<InactivityMilestone> INACTIVITY_MILESTONES = List.of(
-            new InactivityMilestone(7, "일주일 비웠더니 실력도 쉬는 중... 다시 깨워볼까요?"),
-            new InactivityMilestone(14, "2주.. 슬슬 돌아오실 때가 되었는데요? 👀"),
-            new InactivityMilestone(30, "한 달간 안 까먹었어요. 당신은.. 좀 까먹었을지도?"),
-            new InactivityMilestone(60, "두 달째 그래빗이 우주에서 당신의 신호를 기다리고 있어요 🛜"),
-            new InactivityMilestone(90, "저를 잊으셨나요?")
+            new InactivityMilestone(7, "벌써 일주일이 지났어요 😢 Gravit이 기다리고 있어요!"),
+            new InactivityMilestone(14, "14일이 지났어요. 슬슬 돌아올 때가 된 것 같은데요? 👀"),
+            new InactivityMilestone(30, "한 달 동안 보고 싶었어요 😭 지금 돌아와도 늦지 않아요!")
     );
 
     public String consecutiveWarning(int consecutiveDays) {
         return CONSECUTIVE_WARNING_MESSAGE.formatted(consecutiveDays);
+    }
+
+    public String consecutiveWarningSubText() {
+        return CONSECUTIVE_WARNING_SUB_TEXT;
     }
 
     public String randomDailyIncomplete() {
@@ -57,12 +64,14 @@ public class NotificationMessageProvider {
                 .orElseGet(() -> "%d일째 그래빗이 당신을 기다리고 있어요 🛜".formatted(inactiveDays));
     }
 
-    public String noticePublished(String noticeTitle) {
-        return "[공지] " + noticeTitle;
+    // 공지 알림: 헤드라인은 고정, 공지 제목은 서브텍스트로 전달한다(3.12)
+    public String noticeHeadline() {
+        return NOTICE_HEADLINE;
     }
 
-    public String inquiryAnswered() {
-        return "문의하신 내용에 답변이 등록되었어요";
+    // 3.14 문의 답변: 헤드라인에 문의 제목을 그대로 동적 삽입한다. 노출 길이 제한(말줄임)은 프론트에서 처리한다.
+    public String inquiryAnswered(String title) {
+        return "[%s]에 답변이 달렸어요!".formatted(title == null ? "" : title);
     }
 
     public String newContent() {

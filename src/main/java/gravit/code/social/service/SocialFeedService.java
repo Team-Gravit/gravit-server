@@ -4,6 +4,7 @@ import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.global.util.TimeAgoFormatter;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
 import gravit.code.social.dto.internal.SocialFeedProjection;
@@ -33,6 +34,7 @@ public class SocialFeedService {
     private final SocialFeedRepository socialFeedRepository;
     private final UserFeedRepository userFeedRepository;
     private final CongratulationRepository congratulationRepository;
+    private final TimeAgoFormatter timeAgoFormatter;
 
     @Transactional
     public SocialFeed createFeed(
@@ -53,8 +55,12 @@ public class SocialFeedService {
         Slice<SocialFeedProjection> projections = userFeedRepository.findVisibleFeedsByUserId(userId, pageable);
 
         Set<Long> limitReachedActorIds = resolveActorIdsWithLimitReached(userId, projections.getContent());
-        Slice<SocialFeedResponse> responses = projections.map(p ->
-                SocialFeedResponse.from(p, !limitReachedActorIds.contains(p.actorId())));
+        Set<Long> congratulatedFeedIds = resolveCongratulatedFeedIds(userId, projections.getContent());
+        Slice<SocialFeedResponse> responses = projections.map(p -> {
+            boolean congratulated = congratulatedFeedIds.contains(p.id());
+            boolean canCongratulate = !congratulated && !limitReachedActorIds.contains(p.actorId());
+            return SocialFeedResponse.of(p, congratulated, canCongratulate, timeAgoFormatter.format(p.createdAt()));
+        });
         return SliceResponse.of(responses);
     }
 
@@ -71,6 +77,21 @@ public class SocialFeedService {
         }
         LocalDateTime startOfDay = LocalDate.now(TimeZoneConst.KST).atStartOfDay();
         return new HashSet<>(congratulationRepository.findActorIdsWithLimitReached(userId, actorIds, startOfDay));
+    }
+
+    // 이 페이지의 피드 중 유저가 이미 축하한 피드 id 집합. Congratulation 테이블을 원천으로 하며,
+    // 알림함(NotificationFacade)도 같은 데이터를 읽어 축하 완료 상태를 양쪽에서 동기화한다.
+    private Set<Long> resolveCongratulatedFeedIds(
+            long userId,
+            List<SocialFeedProjection> projections
+    ) {
+        List<Long> feedIds = projections.stream()
+                .map(SocialFeedProjection::id)
+                .toList();
+        if (feedIds.isEmpty()) {
+            return Set.of();
+        }
+        return new HashSet<>(congratulationRepository.findCongratulatedFeedIds(userId, feedIds));
     }
 
     @Transactional(readOnly = true)

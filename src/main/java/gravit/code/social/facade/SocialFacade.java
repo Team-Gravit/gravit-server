@@ -81,7 +81,7 @@ public class SocialFacade {
         if (!followerIds.isEmpty()) {
             String actorNickname = userService.getUser(actorId).getNickname();
             String message = messageProvider.friendActivity(actorNickname, eventType, eventValue);
-            notificationFacade.notifyUsers(followerIds, NotificationType.FRIEND_ACTIVITY, message, feed.getId());
+            notificationFacade.notifyUsersInApp(followerIds, NotificationType.FRIEND_ACTIVITY, message, feed.getId());
         }
     }
 
@@ -106,6 +106,6 @@ public class SocialFacade {
         userFeedService.congratulateFeed(userId, feedId);
         userLeaguePointService.addLeaguePoints(actorId, CONGRATULATION_LP, FULL_ACCURACY);
         String congratulatorNickname = userService.getUser(userId).getNickname();
-        notificationFacade.notifyUser(actorId, NotificationType.CONGRATULATION, messageProvider.congratulation(congratulatorNickname));
+        notificationFacade.notifyUserInApp(actorId, NotificationType.CONGRATULATION, messageProvider.congratulation(congratulatorNickname), null);
     }
 }

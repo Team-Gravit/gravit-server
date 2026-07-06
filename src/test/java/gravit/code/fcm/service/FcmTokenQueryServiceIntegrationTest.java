@@ -1,6 +1,7 @@
 package gravit.code.fcm.service;
 
 import gravit.code.fcm.domain.FcmToken;
+import gravit.code.fcm.domain.Platform;
 import gravit.code.fcm.dto.response.FcmTokenExistsResponse;
 import gravit.code.fcm.repository.FcmTokenRepository;
 import gravit.code.support.TCSpringBootTest;
@@ -30,7 +31,7 @@ class FcmTokenQueryServiceIntegrationTest extends FcmServiceIntegrationTestBase 
         @Test
         void 해당_기기에_토큰이_등록되어_있으면_true를_반환한다() {
             // given
-            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "token-1"));
+            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "token-1", Platform.ANDROID));
 
             // when
             FcmTokenExistsResponse response = fcmTokenQueryService.checkFcmTokenExist(userId, "device-1");
@@ -51,7 +52,7 @@ class FcmTokenQueryServiceIntegrationTest extends FcmServiceIntegrationTestBase 
         @Test
         void 같은_기기라도_다른_유저의_토큰이면_false를_반환한다() {
             // given
-            fcmTokenRepository.save(FcmToken.create(otherUserId, "device-1", "token-1"));
+            fcmTokenRepository.save(FcmToken.create(otherUserId, "device-1", "token-1", Platform.ANDROID));
 
             // when
             FcmTokenExistsResponse response = fcmTokenQueryService.checkFcmTokenExist(userId, "device-1");
@@ -68,9 +69,9 @@ class FcmTokenQueryServiceIntegrationTest extends FcmServiceIntegrationTestBase 
         @Test
         void 유저별로_토큰을_묶어_반환하며_멀티_디바이스를_모두_포함한다() {
             // given
-            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "token-1"));
-            fcmTokenRepository.save(FcmToken.create(userId, "device-2", "token-2"));
-            fcmTokenRepository.save(FcmToken.create(otherUserId, "device-3", "token-3"));
+            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "token-1", Platform.ANDROID));
+            fcmTokenRepository.save(FcmToken.create(userId, "device-2", "token-2", Platform.ANDROID));
+            fcmTokenRepository.save(FcmToken.create(otherUserId, "device-3", "token-3", Platform.ANDROID));
 
             // when
             Map<Long, List<String>> result = fcmTokenQueryService.getTokensByUserIds(List.of(userId, otherUserId));
@@ -88,6 +89,19 @@ class FcmTokenQueryServiceIntegrationTest extends FcmServiceIntegrationTestBase 
             // then
             assertThat(result).doesNotContainKey(userId);
         }
+
+        @Test
+        void 웹_토큰은_푸시_대상에서_제외된다() {
+            // given - 웹은 푸시 미지원
+            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "android-token", Platform.ANDROID));
+            fcmTokenRepository.save(FcmToken.create(userId, "device-2", "web-token", Platform.WEB));
+
+            // when
+            Map<Long, List<String>> result = fcmTokenQueryService.getTokensByUserIds(List.of(userId));
+
+            // then
+            assertThat(result.get(userId)).containsExactly("android-token");
+        }
     }
 
     @Nested
@@ -95,16 +109,29 @@ class FcmTokenQueryServiceIntegrationTest extends FcmServiceIntegrationTestBase 
     class GetAllTokens {
 
         @Test
-        void 모든_디바이스_토큰을_반환한다() {
+        void 모든_안드로이드_디바이스_토큰을_반환한다() {
             // given
-            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "token-1"));
-            fcmTokenRepository.save(FcmToken.create(otherUserId, "device-2", "token-2"));
+            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "token-1", Platform.ANDROID));
+            fcmTokenRepository.save(FcmToken.create(otherUserId, "device-2", "token-2", Platform.ANDROID));
 
             // when
             List<String> result = fcmTokenQueryService.getAllTokens();
 
             // then
             assertThat(result).containsExactlyInAnyOrder("token-1", "token-2");
+        }
+
+        @Test
+        void 웹_토큰은_전체_조회에서_제외된다() {
+            // given
+            fcmTokenRepository.save(FcmToken.create(userId, "device-1", "android-token", Platform.ANDROID));
+            fcmTokenRepository.save(FcmToken.create(otherUserId, "device-2", "web-token", Platform.WEB));
+
+            // when
+            List<String> result = fcmTokenQueryService.getAllTokens();
+
+            // then
+            assertThat(result).containsExactly("android-token");
         }
 
         @Test

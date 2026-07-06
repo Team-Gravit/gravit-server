@@ -2,6 +2,7 @@ package gravit.code.global.event;
 
 public record InquiryAnsweredEvent(
         long inquiryId,
-        long userId
+        long userId,
+        String title
 ) {
 }

@@ -252,7 +252,7 @@ class SocialFacadeIntegrationTest {
         }
 
         @Test
-        void 축하한_피드는_목록에서_사라진다() {
+        void 축하한_피드는_목록에_완료_상태로_남는다() {
             // given
             User requester = userFixture.일반_유저(1);
             User followee = userFixture.일반_유저(2);
@@ -262,9 +262,35 @@ class SocialFacadeIntegrationTest {
             // when
             socialFacade.congratulateFeed(requester.getId(), feed.getId());
 
-            // then
+            // then — 피드가 사라지지 않고 축하 완료(비활성) 상태로 노출된다
             SliceResponse<SocialFeedResponse> result = socialFacade.getFeed(requester.getId(), 0);
-            assertThat(result.contents()).isEmpty();
+            assertThat(result.contents()).hasSize(1);
+            SocialFeedResponse response = result.contents().get(0);
+            assertSoftly(softly -> {
+                softly.assertThat(response.feedId()).isEqualTo(feed.getId());
+                softly.assertThat(response.congratulated()).isTrue();
+                softly.assertThat(response.canCongratulate()).isFalse();
+            });
+        }
+
+        @Test
+        void 축하하지_않은_피드는_축하_가능_상태로_노출된다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            User followee = userFixture.일반_유저(2);
+            축하_환경_셋업(requester, followee);
+            SocialFeed feed = socialFeedFixture.레벨업_피드(followee.getId(), 5);
+
+            // when
+            SliceResponse<SocialFeedResponse> result = socialFacade.getFeed(requester.getId(), 0);
+
+            // then
+            assertThat(result.contents()).hasSize(1);
+            SocialFeedResponse response = result.contents().get(0);
+            assertSoftly(softly -> {
+                softly.assertThat(response.congratulated()).isFalse();
+                softly.assertThat(response.canCongratulate()).isTrue();
+            });
         }
 
         @Test
