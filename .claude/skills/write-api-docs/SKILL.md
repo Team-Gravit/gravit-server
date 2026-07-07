@@ -6,6 +6,8 @@ description: |
   Do NOT use for: DTO에 @Schema만 추가하는 작업(직접 Edit), Controller 로직 수정, 기존 Docs 인터페이스의 단순 오타 수정
   Boundary: Controller 자체의 구현 변경은 이 스킬 범위 밖이다. Docs 인터페이스 생성과 Controller의 implements 연결까지만 수행한다.
 allowed-tools: Read, Grep, Glob, Edit, Write
+model: sonnet
+effort: xhigh
 ---
 
 # API 문서 작성

@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 계획 수립(→ write-plan), 이슈 발의(→ open-issue), 테스트 작성(→ write-test), PR 생성(→ open-pr)
   Boundary: 계획서대로 코드를 구현한다. 계획을 새로 짜지 않는다. 테스트 코드 작성은 이 스킬 범위 밖이다.
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+model: sonnet
+effort: xhigh
 ---
 
 # 기능 구현 (계획서 기반)

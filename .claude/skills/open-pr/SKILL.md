@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 커밋 생성(직접 git commit), 브랜치 생성, 코드 리뷰
   Boundary: PR 생성까지만 수행한다. 머지, 리뷰 요청, 라벨 설정은 범위 밖이다.
 allowed-tools: Bash(git *), Bash(gh *), Read
+model: sonnet
+effort: xhigh
 ---
 
 # PR 생성

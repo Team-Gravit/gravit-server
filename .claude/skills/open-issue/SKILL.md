@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 작업 계획 수립(→ write-plan), 구현(→ implement), 이미 열린 이슈에 브랜치만 파는 경우(직접 git)
   Boundary: 이슈 생성과 브랜치 생성·체크아웃까지만 수행한다. 작업 계획과 구현은 이 스킬 범위 밖이다.
 allowed-tools: Read, Grep, Glob, Bash
+model: sonnet
+effort: xhigh
 ---
 
 # 작업 발의 (이슈 + 브랜치)

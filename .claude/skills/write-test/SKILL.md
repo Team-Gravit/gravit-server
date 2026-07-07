@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 테스트 실행/결과 확인(→ run-test), 기존 테스트 수정만 필요한 경우(직접 Edit), 코드 리뷰
   Boundary: 테스트 대상 코드의 버그 수정은 이 스킬 범위 밖이다. 테스트 작성 중 버그를 발견하면 사용자에게 보고만 하라.
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+model: opus
+effort: xhigh
 ---
 
 # 테스트 코드 작성

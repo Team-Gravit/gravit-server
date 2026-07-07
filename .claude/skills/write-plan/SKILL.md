@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 이슈 발의(→ open-issue), 실제 구현(→ implement), 계획서 없이 바로 코딩
   Boundary: 계획서(.claude/resources/plans/PLAN-{번호}.md) 작성까지만 수행한다. 실제 코드 수정은 이 스킬 범위 밖이다.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+model: opus
+effort: xhigh
 ---
 
 # 작업 계획 수립

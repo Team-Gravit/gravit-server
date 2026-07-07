@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 코드 리뷰(→ code-review), 테스트/요구사항 등 작업 수행, 외부 파일 저장
   Boundary: 화면 출력까지만 수행한다. 결과를 파일이나 메모리에 저장하지 않는다(누적 추적 미지원).
 allowed-tools:
+model: opus
+effort: xhigh
 ---
 
 # 대화 피드백
