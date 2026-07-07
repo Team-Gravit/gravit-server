@@ -2,8 +2,11 @@
 -- 3.1(연속학습 위기)·3.7(시즌 종료 임박)·3.12(공지) 등에서 사용. 없으면 NULL.
 ALTER TABLE notification ADD COLUMN sub_text VARCHAR(255);
 
--- 미사용 VERSION 타입 제거 (기획에서 삭제된 항목, 실제 생성 이력 없음)
+-- 미사용 VERSION 타입 제거 (기획에서 삭제된 항목)
 ALTER TABLE notification DROP CONSTRAINT IF EXISTS ck_notification_type;
+
+-- 제거된 VERSION 타입의 기존 알림 행 정리 (신규 제약 추가 전 위반 행 제거)
+DELETE FROM notification WHERE type = 'VERSION';
 
 ALTER TABLE notification ADD CONSTRAINT ck_notification_type CHECK (
     type IN (
