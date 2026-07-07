@@ -70,7 +70,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationFacade.sendSeasonEndingToUser(loginUser.getId(), daysBefore);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     @PostMapping("/season-reset")
@@ -79,7 +79,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationFacade.sendSeasonResetToUser(loginUser.getId());
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     @PostMapping("/follow")
@@ -90,7 +90,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
         long actor = followerId != null ? followerId : loginUser.getId();
         notificationFacade.sendFollowToUser(loginUser.getId(), actor);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     @PostMapping("/congratulation")
@@ -101,7 +101,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
         long actor = congratulatorId != null ? congratulatorId : loginUser.getId();
         notificationFacade.sendCongratulationToUser(loginUser.getId(), actor);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     // 실제 발행 흐름(SocialFacade.publishFeed)을 그대로 재사용한다.
@@ -117,7 +117,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
         long actor = actorId != null ? actorId : loginUser.getId();
         socialFacade.publishFeed(actor, eventType, eventValue);
 
-        return ResponseEntity.ok(actor);
+        return ResponseEntity.status(HttpStatus.OK).body(actor);
     }
 
     @PostMapping("/notice")
@@ -128,7 +128,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationFacade.sendNoticeToUser(loginUser.getId(), title, noticeId);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 
     @PostMapping("/inquiry-answered")
@@ -139,6 +139,6 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationFacade.sendInquiryAnsweredToUser(loginUser.getId(), title, inquiryId);
 
-        return ResponseEntity.ok(loginUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
 }
