@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 이슈·브랜치 생성(→ open-issue), PR 생성(→ open-pr), 코드 구현(→ implement), 코드 리뷰
   Boundary: 커밋 생성과 원격 push까지만 수행한다. PR 생성·머지·리뷰는 범위 밖이다.
 allowed-tools: Bash(git *), Read
+model: sonnet
+effort: xhigh
 ---
 
 # 커밋·푸시

@@ -6,6 +6,8 @@ description: |
   Do NOT use for: 테스트 코드 작성(→ write-test), 테스트 코드 수정(직접 Edit), 빌드 설정 변경
   Boundary: 테스트 실행과 결과 분석까지만 수행한다. 실패한 테스트의 코드 수정은 사용자 확인 후 별도로 진행한다.
 allowed-tools: Bash(./gradlew *), Read, Grep
+model: sonnet
+effort: xhigh
 ---
 
 # 테스트 실행
