@@ -21,6 +21,18 @@ deny() {
   exit 0
 }
 
+# CLAUDE_PROJECT_DIR가 비어있으면 REL 계산과 git -C 대상이 모두 어긋나
+# origin/main 대조가 실패한 뒤 그대로 통과(fail-open)할 수 있다. 보수적으로 차단한다.
+if [ -z "$CLAUDE_PROJECT_DIR" ]; then
+  if [ "$TOOL_NAME" = "Edit" ]; then
+    deny "CLAUDE_PROJECT_DIR가 비어있어 origin/main 기준을 확인할 수 없어 보수적으로 차단합니다."
+  fi
+  if [ "$TOOL_NAME" = "Write" ] && [ -f "$FILE_PATH" ]; then
+    deny "CLAUDE_PROJECT_DIR가 비어있어 origin/main 기준을 확인할 수 없어 보수적으로 차단합니다."
+  fi
+  exit 0
+fi
+
 REL="${FILE_PATH#"$CLAUDE_PROJECT_DIR"/}"
 
 if git -C "$CLAUDE_PROJECT_DIR" rev-parse --verify -q origin/main >/dev/null 2>&1; then

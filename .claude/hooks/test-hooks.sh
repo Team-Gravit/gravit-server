@@ -87,6 +87,17 @@ else
 fi
 assert_case "신규 V파일 Edit 허용" protect-migrations.sh "$(edit_input "$CLAUDE_PROJECT_DIR/src/main/resources/db/migration/V9999__test_never_exists.sql")" 0 "none"
 assert_case "신규 V파일 Write 허용" protect-migrations.sh "$(write_input "$CLAUDE_PROJECT_DIR/src/main/resources/db/migration/V9999__test_never_exists.sql")" 0 "none"
+if [ -n "$EXISTING_MIGRATION" ]; then
+  out=$(printf '%s' "$(edit_input "$CLAUDE_PROJECT_DIR/$EXISTING_MIGRATION")" | (unset CLAUDE_PROJECT_DIR; bash "$HOOKS_DIR/protect-migrations.sh") 2>/dev/null)
+  decision=$(printf '%s' "$out" | jq -r '.hookSpecificOutput.permissionDecision // empty' 2>/dev/null)
+  if [ "$decision" = "deny" ]; then
+    PASS=$((PASS + 1))
+    echo "PASS: CLAUDE_PROJECT_DIR 미설정 시 기존 마이그레이션 Edit 보수적 차단"
+  else
+    FAIL=$((FAIL + 1))
+    echo "FAIL: CLAUDE_PROJECT_DIR 미설정 시 기존 마이그레이션 Edit 보수적 차단 (decision=${decision:-none})"
+  fi
+fi
 
 echo ""
 echo "=== protect-claude-config.sh ==="
