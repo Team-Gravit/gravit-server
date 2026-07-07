@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.ALREADY_CONGRATULATED;
 import static gravit.code.global.exception.domain.CustomErrorCode.CONGRATULATE_LIMIT_EXCEEDED;
@@ -42,5 +45,17 @@ public class CongratulationService {
         } catch (DataIntegrityViolationException e) {
             throw new RestApiException(ALREADY_CONGRATULATED);
         }
+    }
+
+    // 유저가 이미 축하한 피드 id 집합. 피드/알림함 축하 완료 표시의 단일 원천으로 사용된다.
+    @Transactional(readOnly = true)
+    public Set<Long> getCongratulatedFeedIds(
+            long userId,
+            List<Long> feedIds
+    ) {
+        if (feedIds.isEmpty()) {
+            return Set.of();
+        }
+        return new HashSet<>(congratulationRepository.findCongratulatedFeedIds(userId, feedIds));
     }
 }

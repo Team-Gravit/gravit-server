@@ -55,6 +55,9 @@ class AdminInquiryServiceIntegrationTest {
     @Autowired
     private UserFixture userFixture;
 
+    @Autowired
+    private ApplicationEvents events;
+
     private long submitterId;
     private String submitterNickname;
     private String submitterEmail;
@@ -231,7 +234,7 @@ class AdminInquiryServiceIntegrationTest {
         }
 
         @Test
-        void 작성자에게_보낼_InquiryAnsweredEvent를_발행한다(ApplicationEvents events) {
+        void 작성자에게_보낼_InquiryAnsweredEvent를_발행한다() {
             // given
             Inquiry inquiry = savePending(submitterId, "답변 알림 대상 문의");
             InquiryAnswerCreateRequest request = new InquiryAnswerCreateRequest("답변 드립니다.");
@@ -245,6 +248,7 @@ class AdminInquiryServiceIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(published.get(0).inquiryId()).isEqualTo(inquiry.getId());
                 softly.assertThat(published.get(0).userId()).isEqualTo(submitterId);
+                softly.assertThat(published.get(0).title()).isEqualTo(inquiry.getTitle());
             });
         }
 

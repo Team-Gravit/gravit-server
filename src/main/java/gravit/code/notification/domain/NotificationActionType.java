@@ -12,7 +12,6 @@ public enum NotificationActionType {
     GO_TO_NOTICE("공지사항 바로가기"),       // targetId = noticeId
     GO_TO_INQUIRY("문의 답변 보기"),         // targetId = inquiryId
     FOLLOW_BACK("맞팔로우"),               // targetId = 상대 userId
-    UNFOLLOW("팔로우 취소"),               // targetId = 상대 userId (이미 맞팔로우한 경우)
     CONGRATULATE("축하하기");              // targetId = feedId
 
     private final String label;

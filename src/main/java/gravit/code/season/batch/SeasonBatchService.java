@@ -1,6 +1,5 @@
 package gravit.code.season.batch;
 
-import gravit.code.global.event.SeasonRolledOverEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.season.calendar.SeasonCalendar;
@@ -11,7 +10,6 @@ import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
@@ -32,7 +30,6 @@ public class SeasonBatchService {
     private final UserLeagueHistoryRepository historyRepository;
     private final UserLeagueRepository userLeagueRepository;
     private final SeasonClosedCache seasonClosedCache;
-    private final ApplicationEventPublisher publisher;
     private final Clock clock;
 
     @Retryable(
@@ -67,7 +64,7 @@ public class SeasonBatchService {
         // 전 시즌 id 캐싱
         seasonClosedCache.setLastClosedSeasonId(currentSeason.getId());
 
-        // 3.8 시즌 종료 + 새 시즌 시작 알림: 커밋 이후 AFTER_COMMIT 리스너에서 전체 발송
-        publisher.publishEvent(new SeasonRolledOverEvent(nextSeason.getSeasonKey()));
+        // 3.8 시즌 종료 + 새 시즌 시작 알림은 새벽 푸시 회피를 위해
+        // 다음날 오전 9시 스케줄(NotificationScheduler)에서 ACTIVE 시즌 시작일을 감지해 발송한다.
     }
 }

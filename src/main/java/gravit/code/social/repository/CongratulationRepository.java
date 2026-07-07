@@ -31,5 +31,14 @@ public interface CongratulationRepository extends JpaRepository<Congratulation, 
             @Param("startOfDay") LocalDateTime startOfDay
     );
 
+    @Query("""
+            SELECT c.feedId FROM Congratulation c
+            WHERE c.userId = :userId AND c.feedId IN :feedIds
+            """)
+    List<Long> findCongratulatedFeedIds(
+            @Param("userId") long userId,
+            @Param("feedIds") List<Long> feedIds
+    );
+
     boolean existsByUserIdAndFeedId(long userId, long feedId);
 }

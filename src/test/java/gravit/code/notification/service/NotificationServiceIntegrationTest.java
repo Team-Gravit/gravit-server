@@ -41,7 +41,7 @@ class NotificationServiceIntegrationTest {
             userRepository.delete(deleted); // soft delete (deleted_at 설정)
 
             // when
-            notificationService.notifyAllUsers(NotificationType.NOTICE, "[공지] 점검 안내", 99L);
+            notificationService.notifyAllUsers(NotificationType.NOTICE, "[공지] 점검 안내", null, 99L);
 
             // then
             List<Notification> notifications = notificationRepository.findAll();
@@ -59,10 +59,27 @@ class NotificationServiceIntegrationTest {
         @Test
         void 활성_유저가_없으면_아무것도_적재하지_않는다() {
             // when
-            notificationService.notifyAllUsers(NotificationType.NOTICE, "[공지] 점검 안내", 1L);
+            notificationService.notifyAllUsers(NotificationType.NOTICE, "[공지] 점검 안내", null, 1L);
 
             // then
             assertThat(notificationRepository.findAll()).isEmpty();
+        }
+
+        @Test
+        void 서브텍스트가_함께_적재된다() {
+            // given
+            userRepository.save(User.create("a@test.com", "p1", "유저1", "h1", 1, Role.USER));
+
+            // when - 헤드라인 + 서브텍스트
+            notificationService.notifyAllUsers(NotificationType.NOTICE, "새로운 공지사항이 있어요", "정기 점검 안내", 99L);
+
+            // then
+            assertThat(notificationRepository.findAll())
+                    .singleElement()
+                    .satisfies(n -> {
+                        assertThat(n.getMessage()).isEqualTo("새로운 공지사항이 있어요");
+                        assertThat(n.getSubText()).isEqualTo("정기 점검 안내");
+                    });
         }
     }
 

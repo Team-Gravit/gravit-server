@@ -34,6 +34,10 @@ public class Notification extends BaseEntity {
     @Column(name = "message", nullable = false)
     private String message;
 
+    // 헤드라인(message) 하위 보조 문구. 없으면 NULL.
+    @Column(name = "sub_text")
+    private String subText;
+
     @Column(name = "target_id")
     private Long targetId;
 
@@ -45,11 +49,13 @@ public class Notification extends BaseEntity {
             long userId,
             NotificationType type,
             String message,
+            String subText,
             Long targetId
     ) {
         this.userId = userId;
         this.type = type;
         this.message = message;
+        this.subText = subText;
         this.targetId = targetId;
         this.read = false;
     }
@@ -58,12 +64,14 @@ public class Notification extends BaseEntity {
             long userId,
             NotificationType type,
             String message,
+            String subText,
             Long targetId
     ) {
         return Notification.builder()
                 .userId(userId)
                 .type(type)
                 .message(message)
+                .subText(subText)
                 .targetId(targetId)
                 .build();
     }
@@ -71,8 +79,17 @@ public class Notification extends BaseEntity {
     public static Notification create(
             long userId,
             NotificationType type,
+            String message,
+            Long targetId
+    ) {
+        return create(userId, type, message, null, targetId);
+    }
+
+    public static Notification create(
+            long userId,
+            NotificationType type,
             String message
     ) {
-        return create(userId, type, message, null);
+        return create(userId, type, message, null, null);
     }
 }

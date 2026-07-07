@@ -19,9 +19,9 @@ public class FcmTokenCommandService {
             RegisterFcmTokenRequest request
     ) {
         FcmToken fcmToken = fcmTokenRepository.findByDeviceId(request.deviceId())
-                .orElseGet(() -> FcmToken.create(userId, request.deviceId(), request.fcmToken()));
+                .orElseGet(() -> FcmToken.create(userId, request.deviceId(), request.fcmToken(), request.platform()));
 
-        fcmToken.updateOwnerAndToken(userId, request.fcmToken());
+        fcmToken.updateOwnerAndToken(userId, request.fcmToken(), request.platform());
 
         fcmTokenRepository.save(fcmToken);
     }

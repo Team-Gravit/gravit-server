@@ -1,6 +1,5 @@
 package gravit.code.social.dto.response;
 
-import gravit.code.global.util.TimeAgoFormatter;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.dto.internal.SocialFeedProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,15 +28,26 @@ public record SocialFeedResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String timeAgo,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "이 피드를 이미 축하했는지 여부. true면 '축하 완료' 상태로 노출한다",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        boolean congratulated,
+
+        @Schema(
+                description = "지금 축하 가능한지 여부. congratulated=true(완료)이거나 해당 유저 대상 하루 3회 소진 시 false",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         boolean canCongratulate,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         LocalDateTime createdAt
 ) {
-    public static SocialFeedResponse from(
+    public static SocialFeedResponse of(
             SocialFeedProjection projection,
-            boolean canCongratulate
+            boolean congratulated,
+            boolean canCongratulate,
+            String timeAgo
     ) {
         return new SocialFeedResponse(
                 projection.id(),
@@ -46,7 +56,8 @@ public record SocialFeedResponse(
                 projection.actorProfileImgNumber(),
                 projection.actorHandle(),
                 generateMessage(projection.eventType(), projection.eventValue()),
-                TimeAgoFormatter.format(projection.createdAt()),
+                timeAgo,
+                congratulated,
                 canCongratulate,
                 projection.createdAt()
         );

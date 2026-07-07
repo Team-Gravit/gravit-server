@@ -107,18 +107,18 @@ class UserFeedServiceIntegrationTest {
     class CongratullateFeed {
 
         @Test
-        void 피드가_축하되고_숨겨진다() {
+        void 피드가_축하되고_숨겨지지_않는다() {
             // given
             UserFeed userFeed = userFeedFixture.기본_유저피드(1L, 999L);
 
             // when
             userFeedService.congratulateFeed(1L, 999L);
 
-            // then
+            // then — 축하한 피드는 '완료' 상태로 목록에 남아야 하므로 숨김 처리되지 않는다
             UserFeed updated = userFeedRepository.findById(userFeed.getId()).orElseThrow();
             assertSoftly(softly -> {
                 softly.assertThat(updated.getCongratulatedAt()).isNotNull();
-                softly.assertThat(updated.isHidden()).isTrue();
+                softly.assertThat(updated.isHidden()).isFalse();
             });
         }
 
