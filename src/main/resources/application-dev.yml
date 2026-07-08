@@ -135,6 +135,11 @@ management:
   metrics:
     tags:
       application: gravit-dev
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 100ms,200ms,500ms,1s
 
 app:
   version: 1.0.0
