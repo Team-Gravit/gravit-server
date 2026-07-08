@@ -132,6 +132,9 @@ management:
     web:
       exposure:
         include: health, prometheus
+  metrics:
+    tags:
+      application: gravit-dev
 
 app:
   version: 1.0.0
