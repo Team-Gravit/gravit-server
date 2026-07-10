@@ -16,7 +16,7 @@ effort: xhigh
 '어떻게(구현)'은 본 스킬에서 담당하지 않는다.
 
 작업은 기능 구현(feat), 수정(fix), 리펙토링(refactor), 긴급 수정(hotfix), 문서화(docs),
-테스트 관련(test), CI/CD(cicd), 기타(chore)로 분류되며 작업 종류를 먼저 판별한 뒤, 그에 맞는
+테스트 관련(test), CI/CD(cicd), 기타(chore), 분석(analysis)로 분류되며 작업 종류를 먼저 판별한 뒤, 그에 맞는
 템플릿, 라벨, 브랜치 접두사를 사용한다.
 
 ## Phase 1: 작업 구체화 (대화)
@@ -29,7 +29,7 @@ effort: xhigh
    - 왜(배경, 문제 상황)
    - 제약사항(있는 경우에)
 3. 아래 다섯 요소가 확정되면 다음 Phase로 이동하라
-   - 종류: feat / fix / refactor / hotfix / docs / test / cicd 중 하나
+   - 종류: feat / fix / refactor / hotfix / docs / test / cicd / analysis 중 하나
    - 제목: 작업을 한 줄로 표현하는 명사형
    - 설명: 이 작업이 왜 필요한지 1~3문장
    - 작업 항목: 체크리스트로 쪼갠 하위 작업 목록
