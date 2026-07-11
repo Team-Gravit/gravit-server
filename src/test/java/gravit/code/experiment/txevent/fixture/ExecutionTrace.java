@@ -19,7 +19,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * 현재 스레드에 바인딩된 {@code EntityManager} 인스턴스가 같으면 같은 트랜잭션(=같은 커넥션)에 참여한 것이다.
  * <p>
  * {@code actualTransactionActive}(Spring의 인식)와 {@code hibernateTransactionInProgress}(Hibernate의 인식)를
- * 나란히 찍는 이유는, <b>두 층의 인식이 어긋나는 순간이 존재</b>하기 때문이다.
+ * 나란히 찍는 이유는, <b>두 프레임워크가 트랜잭션 상태를 다르게 판단하는 구간이 존재</b>하기 때문이다.
  * Spring은 트랜잭션이 살아있다고 보고하는데 Hibernate는 이미 끝났다고 보는 창이 AFTER_COMMIT 콜백 구간이다.
  * 그 창에서 {@code persist()}는 identity insert를 지연시키고 auto-flush도 건너뛴다.
  */

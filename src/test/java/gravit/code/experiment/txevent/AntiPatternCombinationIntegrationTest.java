@@ -95,12 +95,12 @@ class AntiPatternCombinationIntegrationTest {
                 // 그래서 identity insert가 지연되고 auto-flush도 없다 → INSERT 미발행
                 softly.assertThat(traceRecorder.flag(LISTENER_WRITE_VISIBLE_IN_SAME_TX)).isFalse();
 
-                // 롤백이 아니라 ActionQueue에서 증발. 예외조차 없다
+                // 롤백이 아니라 ActionQueue에 담긴 채 폐기된다. 예외조차 없다
                 softly.assertThat(experimentRecordRepository.existsByTag(ORIGIN_TAG)).isTrue();
                 softly.assertThat(experimentRecordRepository.existsByTag(LISTENER_TAG)).isFalse();
                 softly.assertThat(traceRecorder.error(LISTENER)).isEmpty();
 
-                // 새 트랜잭션이 아니라 죽은 원본에 올라탔다
+                // 새 트랜잭션이 아니라, 이미 커밋이 끝난 원본 트랜잭션에 참여했다
                 softly.assertThat(listener.entityManagerId()).isEqualTo(origin.entityManagerId());
                 softly.assertThat(listener.threadName()).isEqualTo(origin.threadName());
 
@@ -128,7 +128,7 @@ class AntiPatternCombinationIntegrationTest {
                 softly.assertThat(listenerEntry.synchronizationActive()).isFalse();
 
                 // 그런데 Spring은 트랜잭션이 아직 살아있다고 보고한다. cleanupAfterCompletion이 뒤에 실행되기 때문이다.
-                // 이 어긋난 창이 바로 REQUIRED가 올라타는 "죽은 트랜잭션"이다.
+                // REQUIRED는 이 구간에서 "기존 트랜잭션이 있다"고 판단해 참여한다.
                 softly.assertThat(listenerEntry.actualTransactionActive()).isTrue();
                 softly.assertThat(listenerEntry.transactionName()).isEqualTo(origin.transactionName());
                 softly.assertThat(listenerEntry.entityManagerId()).isEqualTo(origin.entityManagerId());

@@ -11,10 +11,10 @@ import static gravit.code.experiment.txevent.fixture.TraceRecorder.LISTENER_WRIT
  * <p>
  * Spring 6.1의 {@code RestrictedTransactionalEventListenerFactory}는 BEFORE_COMMIT이 아닌 리스너 메서드에
  * REQUIRES_NEW/NOT_SUPPORTED가 아닌 {@code @Transactional}이 붙으면 컨텍스트 기동을 거부한다.
- * 그러나 그 가드는 <b>리스너의 어노테이션만</b> 검사할 뿐, 리스너가 무엇을 호출하는지는 보지 못한다.
+ * 그러나 이 검증은 <b>리스너에 붙은 어노테이션만</b> 볼 뿐, 리스너가 무엇을 호출하는지는 보지 않는다.
  * <p>
  * 프로덕션 리스너들이 실제로 이 모양이다 (예: {@code LearningEventListener} → {@code LearningCommandService}).
- * 따라서 안티패턴 ④는 가드를 통과한 채로 그대로 재현된다.
+ * 따라서 안티패턴 ④는 이 검증을 통과한 채로 그대로 재현된다.
  */
 @RequiredArgsConstructor
 public class ExperimentRecordWriter {

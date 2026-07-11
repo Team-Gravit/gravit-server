@@ -94,7 +94,7 @@ public interface ExperimentEvent {
 }
 ```
 
-### 4. 관찰 하니스
+### 4. 관찰용 fixture
 
 `ExecutionTrace` — 실행 시점 스냅샷. **`getCurrentTransactionName()`이 조합을 가르는 핵심 신호**다. 원본 트랜잭션에 참여하면 발행자 메서드의 FQN이, 신규 트랜잭션이면 리스너 메서드의 FQN이 담긴다.
 
@@ -279,11 +279,11 @@ public class ExperimentFixtureConfig {
 
 | `@Nested` | 핵심 assert |
 | --- | --- |
-| ④ AFTER_COMMIT + 동기 + REQUIRED | `publish()` 예외 없음 / **원본 행 존재 + 리스너 행 부재** (조용한 유실) / `listener.actualTransactionActive() == true` 이면서 `listener.transactionName() == origin.transactionName()` → **이미 커밋된 원본 트랜잭션에 참여했다는 직접 증거** |
+| ④ AFTER_COMMIT + 동기 + REQUIRED | `publish()` 예외 없음 / **원본 행 존재 + 리스너 행 부재** (예외 없이 쓰기 유실) / `listener.actualTransactionActive() == true` 이면서 `listener.transactionName() == origin.transactionName()` → **이미 커밋된 원본 트랜잭션에 참여했다는 직접 증거** |
 | ⑤ BEFORE_COMMIT + 비동기 + REQUIRES_NEW (정상) | 스레드 다름 / `transactionName` 다름 / `flag("originVisibleToListener") == false` → **"커밋 전 실행"이 무의미함** |
 | ⑤ (리스너 예외) | `publish()` 예외 없음 / **원본 행 생존** → ①과 대조되어 **"원본 개입" 보장이 사라졌음** |
 
-> ④는 DB·드라이버 거동에 따라 "조용한 유실"이 아니라 예외로 나타날 수도 있다. 계획 단계에서 결과를 단정하지 말고, **먼저 실행해 실제 거동을 관찰한 뒤 그 거동을 assert로 고정**하고 분석에 기록한다. 어느 쪽이든 "리스너 행이 남지 않는다"는 결론은 동일하므로, 행 부재를 1차 단언으로 두고 예외 발생 여부는 `recorder.error("listener")`로 부수 기록한다.
+> ④는 DB·드라이버 거동에 따라 예외 없는 쓰기 유실이 아니라 예외로 나타날 수도 있다. 계획 단계에서 결과를 단정하지 말고, **먼저 실행해 실제 거동을 관찰한 뒤 그 거동을 assert로 고정**하고 분석에 기록한다. 어느 쪽이든 "리스너 행이 남지 않는다"는 결론은 동일하므로, 행 부재를 1차 단언으로 두고 예외 발생 여부는 `recorder.error("listener")`로 부수 기록한다.
 
 ### 9. CI 제외 — `build.gradle`
 
@@ -339,7 +339,7 @@ ERROR o.s.t.s.TransactionSynchronizationUtils : TransactionSynchronization.after
 java.lang.IllegalStateException: listener failed
 ```
 
-근거 (spring-tx 6.0.13 바이트코드 확인):
+근거 (spring-tx 6.2.16 바이트코드 확인):
 
 1. `TransactionalApplicationListenerSynchronization`이 구현하는 메서드는 `beforeCommit(boolean)`과 `afterCompletion(int)` 둘뿐이다. **`afterCommit()`은 구현하지 않는다.**
    따라서 `@TransactionalEventListener(AFTER_COMMIT)`은 `afterCommit()`이 아니라 `afterCompletion(STATUS_COMMITTED)` 경로로 실행된다.
@@ -357,7 +357,7 @@ java.lang.IllegalStateException: listener failed
 또한 이 발견으로 **안티패턴 ④의 판별 지표를 재검토해야 한다.** `triggerAfterCompletion`은 `invokeAfterCompletion` 호출 직전에 `TransactionSynchronizationManager.clearSynchronization()`을 부른다. 따라서 AFTER_COMMIT 리스너 실행 시점에는 동기화가 이미 해제되어 있어, ④(`REQUIRED`)에서도 `isNewSynchronization()`이 참이 되어 `transactionName`이 리스너 메서드명으로 갱신될 가능성이 높다.
 계획서 §8의 "④는 `transactionName`이 원본과 같다"는 지표는 ④ 구현 시 **실측으로 재확인**하고, 어긋나면 다른 판별 지표(예: 리스너가 쓴 행의 유실 여부, `EntityManager` 동일성)로 교체한다.
 
-### 관측 결과 ④ — Spring이 이 안티패턴의 "순진한 형태"는 아예 막는다 (그러나 실전 형태는 못 막는다)
+### 관측 결과 ④ — Spring은 리스너 메서드에 직접 붙인 경우만 막는다 (호출하는 메서드까지는 못 막는다)
 
 리스너 메서드에 `@TransactionalEventListener(AFTER_COMMIT)` + `@Transactional(propagation = REQUIRED)`를 붙이면 **컨텍스트가 기동조차 하지 않는다.**
 
@@ -384,16 +384,16 @@ if (adapter.getTransactionPhase() != TransactionPhase.BEFORE_COMMIT) {
 
 읽어낼 것:
 
-1. **BEFORE_COMMIT은 가드에서 통째로 제외된다.** 그래서 조합 ①(BEFORE_COMMIT + REQUIRED)은 정상 기동한다. Spring이 ①을 정당한 조합으로 인정한다는 뜻이다.
+1. **BEFORE_COMMIT은 이 검증 대상에서 제외된다.** 그래서 조합 ①(BEFORE_COMMIT + REQUIRED)은 정상 기동한다. Spring이 ①을 정당한 조합으로 인정한다는 뜻이다.
 2. AFTER_COMMIT / AFTER_ROLLBACK / AFTER_COMPLETION에서 `@Transactional`을 쓰려면 `REQUIRES_NEW` 아니면 `NOT_SUPPORTED`여야 한다. 즉 **권장 조합 ②③은 Spring이 강제하는 유일한 선택지**다.
-3. **그러나 가드는 리스너 메서드·클래스의 어노테이션만 검사한다.** 리스너가 *무엇을 호출하는지*는 보지 못한다.
-   `@TransactionalEventListener(AFTER_COMMIT)` (무 `@Transactional`) → `@Transactional(REQUIRED)` 서비스 호출은 가드를 그냥 통과하며, 안티패턴 ④가 그대로 성립한다.
-   **이 레포의 프로덕션 리스너들이 정확히 이 모양이다** (`LearningEventListener` → `LearningCommandService`). 현재는 전부 BEFORE_COMMIT이라 안전하지만, phase만 AFTER_COMMIT으로 바꾸면 컴파일도 기동도 정상인 채로 쓰기가 유실된다.
-   `SimpleJpaRepository`의 메서드들도 `@Transactional`이므로, 리스너에서 리포지토리를 직접 호출하기만 해도 같은 일이 벌어진다.
+3. **그러나 이 검증은 리스너 메서드·클래스에 붙은 어노테이션만 본다.** 리스너가 *무엇을 호출하는지*는 보지 않는다.
+   `@TransactionalEventListener(AFTER_COMMIT)` (`@Transactional` 없음) → `@Transactional(REQUIRED)` 서비스 호출은 검증을 그대로 통과하며, 안티패턴 ④가 성립한다.
+   **이 레포의 프로덕션 리스너들이 정확히 이 형태다** (`LearningEventListener` → `LearningCommandService`). 현재는 전부 BEFORE_COMMIT이라 안전하지만, phase만 AFTER_COMMIT으로 바꾸면 컴파일도 기동도 정상인 채로 쓰기가 유실된다.
+   `SimpleJpaRepository`의 메서드에도 `@Transactional`이 붙어 있으므로, 리스너에서 리포지토리를 직접 호출하기만 해도 같은 일이 벌어진다.
 
 따라서 ④의 재현은 `@Transactional(REQUIRED)`를 리스너가 호출하는 `ExperimentRecordWriter`에 두는 방식으로 구성했다. 이게 실전에서 실제로 마주치는 형태다.
 
-부수적으로, 리스너 진입 시점(`listener-entry`)의 스레드 상태가 "죽은 트랜잭션"을 직접 보여준다.
+부수적으로, 리스너 진입 시점(`listener-entry`)의 스레드 상태가 "이미 커밋이 끝났는데도 남아 있는 원본 트랜잭션"을 직접 보여준다.
 `triggerAfterCompletion`이 `invokeAfterCompletion` 직전에 `clearSynchronization()`을 부르지만 `cleanupAfterCompletion`은 그 뒤에 실행되므로,
 
 - `isSynchronizationActive()` → **false** (동기화는 이미 해제)
@@ -401,7 +401,7 @@ if (adapter.getTransactionPhase() != TransactionPhase.BEFORE_COMMIT) {
 - `getCurrentTransactionName()` → 원본 그대로 (`clearSynchronization`은 이름을 지우지 않는다)
 - `EntityManagerHolder` → 여전히 바인딩됨
 
-이 어긋난 창이 REQUIRED가 올라타는 지점이다.
+REQUIRED는 바로 이 구간에서 "기존 트랜잭션이 있다"고 판단해 참여한다.
 
 ### 관측 결과 ④-b — 유실의 실제 기전: INSERT는 롤백된 게 아니라 **발행조차 되지 않는다**
 
@@ -410,9 +410,9 @@ if (adapter.getTransactionPhase() != TransactionPhase.BEFORE_COMMIT) {
 **예측**: 같은 커넥션이니 커밋 전이어도 자기가 쓴 행은 보일 것이다(`true`). → INSERT는 DB에 도달했고 커넥션 반납 시 롤백됐다.
 **실측**: **`false`.** 자기 커넥션에서조차 안 보인다. INSERT가 DB에 도달한 적이 없다.
 
-근본 원인은 **Spring과 Hibernate의 인식이 어긋나는 것**이다. AFTER_COMMIT 콜백 구간에서:
+근본 원인은 **Spring과 Hibernate가 트랜잭션 상태를 다르게 판단하는 것**이다. AFTER_COMMIT 콜백 구간에서:
 
-| 층 | 판단 |
+| | 판단 |
 | --- | --- |
 | Spring `TransactionSynchronizationManager.isActualTransactionActive()` | **true** (그래서 REQUIRED가 참여한다) |
 | Hibernate `SharedSessionContractImplementor.isTransactionInProgress()` | **false** (원본 `EntityTransaction`은 이미 commit됨) |
@@ -424,9 +424,9 @@ Hibernate가 트랜잭션이 없다고 보면 두 가지가 연쇄한다 (hibern
 2. `SessionImpl.autoFlushIfRequired`는 첫 줄이 `if (!isTransactionInProgress()) return false;` 다.
    → 이어지는 `existsByTag` 조회가 auto-flush를 유발하지 못해, 큐에 든 INSERT가 실행되지 않는다.
 
-그리고 참여(non-new) 트랜잭션이라 두 번째 커밋도 flush도 없다. 결국 `EntityManager`가 닫히며 `ActionQueue`째로 증발한다.
+그리고 참여(non-new) 트랜잭션이라 두 번째 커밋도 flush도 없다. 결국 `EntityManager`가 닫히면서 `ActionQueue`에 담긴 INSERT째로 사라진다.
 
-**세 지표가 함께 "조용한 유실"을 정의한다**
+**세 지표가 함께 "예외 없는 쓰기 유실"을 정의한다**
 
 - `listenerWriteVisibleInSameTx` → **false** (INSERT가 발행조차 되지 않았다)
 - 바깥 트랜잭션의 `existsByTag` → **false** (당연히 없다)
@@ -434,7 +434,7 @@ Hibernate가 트랜잭션이 없다고 보면 두 가지가 연쇄한다 (hibern
 
 `catch (Exception)`이 `write()`의 예외까지 잡으므로, error가 비어있다는 것은 프레임워크가 아무것도 던지지 않았다는 뜻이다.
 
-> **이것이 "죽은 트랜잭션"의 정확한 의미다.** 커넥션이 살아있어 쓰기가 실행됐다가 롤백되는 게 아니라, Hibernate 세션이 이미 트랜잭션 종료 상태라 **쓰기 명령이 메모리 큐에서 나가지도 못하고 폐기**된다. 롤백 로그조차 남지 않는다.
+> **유실의 정확한 의미는 이렇다.** 커넥션이 살아있어 쓰기가 실행됐다가 롤백되는 게 아니다. Hibernate 세션이 이미 트랜잭션 종료 상태라 **쓰기 명령이 메모리 큐에서 나가지도 못하고 폐기**된다. 롤백 로그조차 남지 않는다.
 
 ## Deviation Log
 
@@ -465,9 +465,9 @@ Hibernate가 트랜잭션이 없다고 보면 두 가지가 연쇄한다 (hibern
 - `RecommendedCombinationIntegrationTest`: ①에 `entityManagerId` 동일, ②③에 상이 단언 추가 — 이유: ④의 "동일"이 무엇과 대조되는지 없으면 증거가 되지 못한다.
 - `AntiPatternCombinationIntegrationTest`: ④는 예외를 던지지 않는 시나리오만 둔다 — 이유: 안티패턴의 핵심은 "정상 경로인데도 쓰기가 사라진다"이며, 예외 시나리오는 어차피 `invokeAfterCompletion`이 삼켜 ②와 구분되지 않는다.
 - **`fixture/ExperimentRecordWriter.java` 신규 추가, ④ 리스너에서 `@Transactional` 제거** — 이유: **계획대로 짜면 컨텍스트가 기동하지 않는다.** `RestrictedTransactionalEventListenerFactory`가 AFTER_COMMIT 리스너의 non-REQUIRES_NEW `@Transactional`을 거부한다. 위 "관측 결과 ④" 참조. REQUIRED를 리스너가 호출하는 서비스로 옮겨 프로덕션과 같은 형태로 재현한다.
-- `fixture/TraceRecorder.java`: `LISTENER_ENTRY` 라벨 추가 — 이유: `@Transactional` 진입 전 스레드 상태를 찍어야 "동기화는 해제됐는데 트랜잭션은 살아있다"는 죽은 트랜잭션 창이 드러난다.
+- `fixture/TraceRecorder.java`: `LISTENER_ENTRY` 라벨 추가 — 이유: `@Transactional` 진입 전 스레드 상태를 찍어야 "동기화는 해제됐는데 트랜잭션은 살아있다고 보고되는" 구간이 드러난다.
 - `AntiPatternCombinationIntegrationTest`: `리스너_진입_시점의_스레드에는_커밋이_끝난_원본_트랜잭션이_그대로_남아있다()` 테스트 추가 — 이유: 위 창을 직접 단언한다.
-- `fixture/ExecutionTrace.java`: `hibernateTransactionInProgress` 필드 추가 (`em.unwrap(SharedSessionContractImplementor.class).isTransactionInProgress()`) — 이유: **`listenerWriteVisibleInSameTx`가 예측(true)과 달리 false로 나왔다.** 그 원인이 "Spring은 트랜잭션이 살아있다 하고 Hibernate는 끝났다 한다"는 층간 불일치임을 드러내는 단일 설명 변수다. ①②③에서는 `true`, ④에서만 `false`. 위 "관측 결과 ④-b" 참조.
+- `fixture/ExecutionTrace.java`: `hibernateTransactionInProgress` 필드 추가 (`em.unwrap(SharedSessionContractImplementor.class).isTransactionInProgress()`) — 이유: **`listenerWriteVisibleInSameTx`가 예측(true)과 달리 false로 나왔다.** 그 원인이 "Spring은 트랜잭션이 살아있다고 보고, Hibernate는 끝났다고 본다"는 상태 불일치임을 드러내는 단일 설명 변수다. ①②③에서는 `true`, ④에서만 `false`. 위 "관측 결과 ④-b" 참조.
 - `AntiPatternCombinationIntegrationTest`: 테스트명을 `리스너의_INSERT가_DB에_도달하고도_...` → `리스너의_쓰기가_INSERT조차_발행되지_못한_채_예외_하나_없이_사라진다` 로 변경 — 이유: 실측이 기전을 뒤집었다.
 
 ### 조합 ⑤ (BEFORE_COMMIT + 비동기 + REQUIRES_NEW, 안티패턴)
@@ -476,7 +476,7 @@ Hibernate가 트랜잭션이 없다고 보면 두 가지가 연쇄한다 (hibern
   `@Order`가 실제로 콜백 순서를 지배함을 확인했다: `ApplicationListenerMethodAdapter.resolveOrder(Method)`가 메서드의 `@Order`를 읽고, `TransactionSynchronizationManager.getSynchronizations()`가 `OrderComparator.sort()`로 정렬해 반환한다.
 - 게이트 타임아웃을 계획서의 2초 → **5초**로 상향 — 이유: 타임아웃이 먼저 끝나면 원본이 커밋되어 `originVisibleToListener`가 true로 뒤집히는 위양성(flaky)이 난다. 넉넉히 잡아도 정상 경로에서는 즉시 통과한다.
 - `AntiPatternCombinationIntegrationTest.setUp()`에 `experimentGate.reset()` 추가 — 이유: 래치가 열린 채로 다음 테스트에 넘어가면 게이트가 즉시 통과되어 관찰 창이 닫힌다.
-- ⑤는 `@Transactional(REQUIRES_NEW)`를 리스너 메서드에 직접 붙여도 된다 — `RestrictedTransactionalEventListenerFactory`의 가드는 BEFORE_COMMIT을 건너뛰고, REQUIRES_NEW는 애초에 허용 목록이다. **Spring은 ⑤를 막지 못한다.**
+- ⑤는 `@Transactional(REQUIRES_NEW)`를 리스너 메서드에 직접 붙여도 된다 — `RestrictedTransactionalEventListenerFactory`의 검증은 BEFORE_COMMIT을 건너뛰고, REQUIRES_NEW는 애초에 허용 목록이다. **Spring은 ⑤를 막지 못한다.**
 - `TraceRecorder.GATE_HELD_UNTIL_LISTENER_READ` flag 추가, `holdOriginUncommitted`가 `awaitListenerRead`의 반환값을 기록 — 이유: 실험의 **전제 자체를 검증되지 않은 채로 두고 있었다.** 게이트가 신호가 아니라 타임아웃으로 풀리면 원본이 먼저 커밋되어 `originVisibleToListener`가 true로 뒤집힐 수 있다. 두 테스트 모두 이 flag를 `isTrue()`로 먼저 단언한다.
 
 > **⑤의 시간 순서는 `await`가 아니라 래치가 만든다.**
