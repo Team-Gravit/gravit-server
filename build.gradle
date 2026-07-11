@@ -110,5 +110,25 @@ tasks.named('bootJar') {
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags 'experiment'
+    }
+}
+
+tasks.register('experimentTest', Test) {
+    group = 'verification'
+    description = '트랜잭션 이벤트 리스너 조합 실증 테스트 (CI 기본 실행 제외)'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform {
+        includeTags 'experiment'
+    }
+
+    shouldRunAfter tasks.named('test')
+    testLogging {
+        showStandardStreams = true
+        events 'passed', 'failed', 'skipped'
+    }
 }
