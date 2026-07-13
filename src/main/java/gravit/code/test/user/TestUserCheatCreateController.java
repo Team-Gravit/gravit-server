@@ -9,7 +9,7 @@ import gravit.code.auth.token.JwtProvider;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.repository.FriendRepository;
 import gravit.code.global.event.NoticeCreatedEvent;
-import gravit.code.test.user.docs.UserCheatCreateControllerDocs;
+import gravit.code.test.user.docs.TestUserCheatCreateControllerDocs;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
@@ -38,7 +38,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
-public class UserCheatCreateController implements UserCheatCreateControllerDocs {
+public class TestUserCheatCreateController implements TestUserCheatCreateControllerDocs {
 
     private final AuthTokenProvider authTokenProvider;
     private final JwtProvider jwtProvider;

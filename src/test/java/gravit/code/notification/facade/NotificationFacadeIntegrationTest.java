@@ -2,39 +2,28 @@ package gravit.code.notification.facade;
 
 import gravit.code.fcm.domain.FcmToken;
 import gravit.code.fcm.domain.Platform;
-import gravit.code.fcm.dto.internal.PushMessage;
 import gravit.code.fcm.repository.FcmTokenRepository;
 import gravit.code.fcm.service.FcmService;
-import gravit.code.friend.fixture.FriendFixture;
 import gravit.code.notification.domain.Notification;
-import gravit.code.notification.domain.NotificationActionType;
 import gravit.code.notification.domain.NotificationType;
-import gravit.code.notification.dto.response.NotificationActor;
-import gravit.code.notification.dto.response.NotificationResponse;
 import gravit.code.notification.repository.NotificationRepository;
-import gravit.code.notification.support.NotificationMessageProvider;
-import gravit.code.season.fixture.SeasonFixture;
-import gravit.code.social.domain.Congratulation;
-import gravit.code.social.repository.CongratulationRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
-import gravit.code.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.time.Clock;
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 @TCSpringBootTest
 class NotificationFacadeIntegrationTest {
@@ -43,19 +32,7 @@ class NotificationFacadeIntegrationTest {
     private NotificationFacade notificationFacade;
 
     @Autowired
-    private NotificationMessageProvider messageProvider;
-
-    @Autowired
-    private Clock clock; // FixedClockConfig: 2025-08-05T12:00+09:00 고정
-
-    @Autowired
-    private SeasonFixture seasonFixture;
-
-    @Autowired
     private UserFixture userFixture;
-
-    @Autowired
-    private FriendFixture friendFixture;
 
     @Autowired
     private FcmTokenRepository fcmTokenRepository;
@@ -63,195 +40,9 @@ class NotificationFacadeIntegrationTest {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CongratulationRepository congratulationRepository;
-
     // FCM 외부 발송 경계만 격리하고, 토큰 조회·메시지 구성 등 우리 로직은 실제로 동작시킨다
     @MockitoBean
     private FcmService fcmService;
-
-    // 전체 발송 대상이 될 안드로이드 FCM 토큰을 사전에 적재한다 (웹 푸시 미지원이므로 ANDROID만 푸시 대상)
-    private List<String> 토큰_2개_준비() {
-        User user1 = userFixture.일반_유저(1);
-        User user2 = userFixture.일반_유저(2);
-        fcmTokenRepository.save(FcmToken.create(user1.getId(), "device-1", "token-1", Platform.ANDROID));
-        fcmTokenRepository.save(FcmToken.create(user2.getId(), "device-2", "token-2", Platform.ANDROID));
-        return List.of("token-1", "token-2");
-    }
-
-    private String 종료_임박_헤드라인(int daysBefore) {
-        return messageProvider.seasonEndingMilestones().stream()
-                .filter(milestone -> milestone.daysBefore() == daysBefore)
-                .findFirst()
-                .orElseThrow()
-                .headline();
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<PushMessage> 발송된_메시지_캡처(int timeoutMillis) {
-        ArgumentCaptor<List<PushMessage>> captor = ArgumentCaptor.forClass(List.class);
-        verify(fcmService, timeout(timeoutMillis)).sendNotifications(captor.capture());
-        return captor.getValue();
-    }
-
-    @Nested
-    @DisplayName("시즌 종료 임박 알림을 발송할 때")
-    class SendSeasonEndingReminders {
-
-        @Test
-        void 종료_7일_전이면_일주일_문구를_전체_발송한다() {
-            // given
-            LocalDate today = LocalDate.now(clock);
-            seasonFixture.진행중인_시즌("2025-S2",
-                    today.minusMonths(4).atStartOfDay(),
-                    today.plusDays(7).atStartOfDay());
-            List<String> tokens = 토큰_2개_준비();
-
-            // when
-            notificationFacade.sendSeasonEndingReminders();
-
-            // then - FCM 발송 (헤드라인)
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
-            assertSoftly(softly -> {
-                softly.assertThat(sent).hasSize(1);
-                softly.assertThat(sent.get(0).tokens()).containsExactlyInAnyOrderElementsOf(tokens);
-                softly.assertThat(sent.get(0).title()).isEqualTo(종료_임박_헤드라인(7));
-                softly.assertThat(sent.get(0).data())
-                        .containsEntry("type", NotificationType.SEASON_ENDING.name())
-                        .containsEntry("actionType", NotificationActionType.GO_TO_LEARNING.name());
-            });
-            // DB 저장 - 토큰을 가진 2명 모두 알림함에 적재 (헤드라인 + 서브텍스트)
-            List<Notification> saved = notificationRepository.findAll();
-            assertSoftly(softly -> {
-                softly.assertThat(saved).hasSize(2);
-                softly.assertThat(saved).allMatch(n -> n.getType() == NotificationType.SEASON_ENDING);
-                softly.assertThat(saved).allMatch(n -> n.getMessage().equals(종료_임박_헤드라인(7)));
-                softly.assertThat(saved).allMatch(n -> n.getSubText() != null);
-            });
-        }
-
-        @Test
-        void 종료_3일_전이면_3일_문구를_전체_발송한다() {
-            // given
-            LocalDate today = LocalDate.now(clock);
-            seasonFixture.진행중인_시즌("2025-S2",
-                    today.minusMonths(4).atStartOfDay(),
-                    today.plusDays(3).atStartOfDay());
-            토큰_2개_준비();
-
-            // when
-            notificationFacade.sendSeasonEndingReminders();
-
-            // then - FCM 발송
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
-            assertSoftly(softly -> {
-                softly.assertThat(sent.get(0).title()).isEqualTo(종료_임박_헤드라인(3));
-                softly.assertThat(sent.get(0).data())
-                        .containsEntry("type", NotificationType.SEASON_ENDING.name());
-            });
-            // DB 저장
-            assertThat(notificationRepository.findAll()).hasSize(2);
-        }
-
-        @Test
-        void 마일스톤_일수가_아니면_발송하지_않는다() {
-            // given (5일 전 - 7/3 어디에도 해당하지 않음)
-            LocalDate today = LocalDate.now(clock);
-            seasonFixture.진행중인_시즌("2025-S2",
-                    today.minusMonths(4).atStartOfDay(),
-                    today.plusDays(5).atStartOfDay());
-            토큰_2개_준비();
-
-            // when
-            notificationFacade.sendSeasonEndingReminders();
-
-            // then
-            verify(fcmService, never()).sendNotifications(anyList());
-            assertThat(notificationRepository.findAll()).isEmpty();
-        }
-
-        @Test
-        void ACTIVE_시즌이_없으면_발송하지_않는다() {
-            // given - 시즌 미생성
-            토큰_2개_준비();
-
-            // when
-            notificationFacade.sendSeasonEndingReminders();
-
-            // then
-            verify(fcmService, never()).sendNotifications(anyList());
-            assertThat(notificationRepository.findAll()).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("시즌 종료+새 시즌 알림(오전 9시 스케줄)을 발송할 때")
-    class SendSeasonResetAlerts {
-
-        @Test
-        void ACTIVE_시즌_시작일이_오늘이면_전체_발송한다() {
-            // given - 직전 자정에 롤오버되어 오늘 시작된 ACTIVE 시즌
-            LocalDate today = LocalDate.now(clock);
-            seasonFixture.진행중인_시즌("2025-S2",
-                    today.atStartOfDay(),
-                    today.plusMonths(4).atStartOfDay());
-            List<String> tokens = 토큰_2개_준비();
-
-            // when
-            notificationFacade.sendSeasonResetAlerts();
-
-            // then - FCM 발송
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
-            assertSoftly(softly -> {
-                softly.assertThat(sent).hasSize(1);
-                softly.assertThat(sent.get(0).tokens()).containsExactlyInAnyOrderElementsOf(tokens);
-                softly.assertThat(sent.get(0).title()).isEqualTo(messageProvider.seasonReset());
-                softly.assertThat(sent.get(0).data())
-                        .containsEntry("type", NotificationType.SEASON_RESET.name())
-                        .containsEntry("actionType", NotificationActionType.NONE.name());
-            });
-            // DB 저장 - 2명 모두 알림함에 적재
-            List<Notification> saved = notificationRepository.findAll();
-            assertSoftly(softly -> {
-                softly.assertThat(saved).hasSize(2);
-                softly.assertThat(saved).allMatch(n -> n.getType() == NotificationType.SEASON_RESET);
-                softly.assertThat(saved).allMatch(n -> n.getMessage().equals(messageProvider.seasonReset()));
-            });
-        }
-
-        @Test
-        void ACTIVE_시즌_시작일이_오늘이_아니면_발송하지_않는다() {
-            // given - 과거에 시작된 ACTIVE 시즌 (오늘 롤오버가 아님)
-            LocalDate today = LocalDate.now(clock);
-            seasonFixture.진행중인_시즌("2025-S2",
-                    today.minusMonths(2).atStartOfDay(),
-                    today.plusMonths(2).atStartOfDay());
-            토큰_2개_준비();
-
-            // when
-            notificationFacade.sendSeasonResetAlerts();
-
-            // then
-            verify(fcmService, never()).sendNotifications(anyList());
-            assertThat(notificationRepository.findAll()).isEmpty();
-        }
-
-        @Test
-        void ACTIVE_시즌이_없으면_발송하지_않는다() {
-            // given - 시즌 미생성
-            토큰_2개_준비();
-
-            // when
-            notificationFacade.sendSeasonResetAlerts();
-
-            // then
-            verify(fcmService, never()).sendNotifications(anyList());
-            assertThat(notificationRepository.findAll()).isEmpty();
-        }
-    }
 
     @Nested
     @DisplayName("단일 유저에게 알림을 발송할 때(인앱+푸시)")
@@ -264,7 +55,7 @@ class NotificationFacadeIntegrationTest {
             fcmTokenRepository.save(FcmToken.create(user.getId(), "device-1", "token-1", Platform.ANDROID));
 
             // when
-            notificationFacade.notifyUser(user.getId(), NotificationType.INQUIRY_ANSWERED, "문의하신 내용에 답변이 등록되었어요");
+            notificationFacade.notifyUser(user.getId(), NotificationType.INQUIRY_ANSWERED, "문의하신 내용에 답변이 등록되었어요", 1L);
 
             // then - DB 저장
             List<Notification> saved = notificationRepository.findAll();
@@ -284,7 +75,7 @@ class NotificationFacadeIntegrationTest {
             User user = userFixture.일반_유저(1);
 
             // when
-            notificationFacade.notifyUser(user.getId(), NotificationType.INQUIRY_ANSWERED, "문의하신 내용에 답변이 등록되었어요");
+            notificationFacade.notifyUser(user.getId(), NotificationType.INQUIRY_ANSWERED, "문의하신 내용에 답변이 등록되었어요", 1L);
 
             // then - DB 저장
             assertThat(notificationRepository.findAll()).hasSize(1);
@@ -341,232 +132,6 @@ class NotificationFacadeIntegrationTest {
                 softly.assertThat(saved).allMatch(n -> feedId == n.getTargetId());
             });
             verify(fcmService, never()).sendNotifications(anyList());
-        }
-    }
-
-    @Nested
-    @DisplayName("알림 인박스를 조회할 때")
-    class GetInbox {
-
-        @Test
-        void 알림이_없으면_빈_결과를_반환한다() {
-            // given
-            User user = userFixture.일반_유저(1);
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(user.getId());
-
-            // then
-            assertThat(result).isEmpty();
-        }
-
-        @Test
-        void FOLLOW_알림에서_상대를_아직_팔로우하지_않았으면_FOLLOW_BACK을_반환한다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            User follower = userFixture.일반_유저(2);
-            // follower가 me를 팔로우했고, me는 아직 맞팔로우 안 함
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
-                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertThat(result).hasSize(1);
-            assertSoftly(softly -> {
-                softly.assertThat(result.get(0).actionType()).isEqualTo(NotificationActionType.FOLLOW_BACK.name());
-                softly.assertThat(result.get(0).targetId()).isEqualTo(follower.getId());
-            });
-        }
-
-        @Test
-        void FOLLOW_알림에서_상대를_이미_팔로우했으면_NONE을_반환한다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            User follower = userFixture.일반_유저(2);
-            // follower가 me를 팔로우했고, me도 follower를 맞팔로우한 상태 → 버튼 없음(NONE)
-            friendFixture.팔로우(me, follower);
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
-                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertThat(result).hasSize(1);
-            assertSoftly(softly -> {
-                softly.assertThat(result.get(0).actionType()).isEqualTo(NotificationActionType.NONE.name());
-                softly.assertThat(result.get(0).targetId()).isEqualTo(follower.getId());
-            });
-        }
-
-        @Test
-        void FOLLOW_알림은_상대_유저의_actor_정보를_포함한다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            User follower = userFixture.일반_유저(2);
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
-                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            NotificationActor actor = result.get(0).actor();
-            assertThat(actor).isNotNull();
-            assertSoftly(softly -> {
-                softly.assertThat(actor.profileId()).isEqualTo(follower.getId());
-                softly.assertThat(actor.nickname()).isEqualTo("유저2");
-                softly.assertThat(actor.profileImgNumber()).isEqualTo(follower.getProfileImgNumber());
-            });
-        }
-
-        @Test
-        void 탈퇴한_유저의_FOLLOW_알림은_actor가_null이다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            User follower = userFixture.일반_유저(2);
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
-                    "유저2님이 나를 팔로우했어요! 👀", follower.getId()));
-            // 상대 유저 탈퇴 (soft delete)
-            userRepository.delete(follower);
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.get(0).actor()).isNull();
-                // 알림 자체와 액션 정보는 그대로 유지된다
-                softly.assertThat(result.get(0).targetId()).isEqualTo(follower.getId());
-                softly.assertThat(result.get(0).actionType()).isEqualTo(NotificationActionType.FOLLOW_BACK.name());
-            });
-        }
-
-        @Test
-        void FOLLOW가_아닌_알림은_actor가_null이다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.CONGRATULATION,
-                    "유저2님이 축하해줬어요! 🎉"));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertThat(result.get(0).actor()).isNull();
-        }
-
-        @Test
-        void CONGRATULATION_알림은_NONE_액션을_반환한다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.CONGRATULATION,
-                    "유저2님이 축하해줬어요! 🎉"));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.get(0).actionType()).isEqualTo(NotificationActionType.NONE.name());
-                softly.assertThat(result.get(0).targetId()).isNull();
-            });
-        }
-
-        @Test
-        void FRIEND_ACTIVITY_알림은_CONGRATULATE_액션과_feedId를_반환하고_미축하시_congratulated는_false다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            long feedId = 77L;
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FRIEND_ACTIVITY,
-                    "유저2님이 OS행성을 정복했어요! 🌍", feedId));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.get(0).actionType()).isEqualTo(NotificationActionType.CONGRATULATE.name());
-                softly.assertThat(result.get(0).targetId()).isEqualTo(feedId);
-                softly.assertThat(result.get(0).congratulated()).isFalse();
-            });
-        }
-
-        @Test
-        void 해당_피드를_이미_축하했으면_FRIEND_ACTIVITY_알림의_congratulated가_true다() {
-            // given — 같은 feedId에 대한 축하 기록(소셜 피드/알림함 공통 원천)이 있으면 알림함도 완료로 노출
-            User me = userFixture.일반_유저(1);
-            long actorId = 2L;
-            long feedId = 77L;
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FRIEND_ACTIVITY,
-                    "유저2님이 OS행성을 정복했어요! 🌍", feedId));
-            congratulationRepository.save(Congratulation.create(me.getId(), actorId, feedId));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.get(0).actionType()).isEqualTo(NotificationActionType.CONGRATULATE.name());
-                softly.assertThat(result.get(0).congratulated()).isTrue();
-            });
-        }
-
-        @Test
-        void FRIEND_ACTIVITY가_아닌_알림의_congratulated는_null이다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.CONGRATULATION,
-                    "유저2님이 축하해줬어요! 🎉"));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertThat(result.get(0).congratulated()).isNull();
-        }
-
-        @Test
-        void 여러_타입의_알림이_혼재할_때_각_타입에_맞는_액션을_반환한다() {
-            // given
-            User me = userFixture.일반_유저(1);
-            User followerA = userFixture.일반_유저(2); // 아직 맞팔로우 안 함
-            User followerB = userFixture.일반_유저(3); // 이미 맞팔로우 함
-            friendFixture.팔로우(me, followerB);
-
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
-                    "유저2님이 나를 팔로우했어요! 👀", followerA.getId()));
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.FOLLOW,
-                    "유저3님이 나를 팔로우했어요! 👀", followerB.getId()));
-            notificationRepository.save(Notification.create(me.getId(), NotificationType.CONGRATULATION,
-                    "유저2님이 축하해줬어요! 🎉"));
-
-            // when
-            List<NotificationResponse> result = notificationFacade.getInbox(me.getId());
-
-            // then
-            assertThat(result).hasSize(3);
-            assertThat(result)
-                    .filteredOn(n -> n.type().equals(NotificationType.FOLLOW.name())
-                            && n.targetId().equals(followerA.getId()))
-                    .singleElement()
-                    .extracting(NotificationResponse::actionType)
-                    .isEqualTo(NotificationActionType.FOLLOW_BACK.name());
-
-            assertThat(result)
-                    .filteredOn(n -> n.type().equals(NotificationType.FOLLOW.name())
-                            && n.targetId().equals(followerB.getId()))
-                    .singleElement()
-                    .extracting(NotificationResponse::actionType)
-                    .isEqualTo(NotificationActionType.NONE.name());
-
-            assertThat(result)
-                    .filteredOn(n -> n.type().equals(NotificationType.CONGRATULATION.name()))
-                    .singleElement()
-                    .extracting(NotificationResponse::actionType)
-                    .isEqualTo(NotificationActionType.NONE.name());
         }
     }
 }

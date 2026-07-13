@@ -1,6 +1,6 @@
 package gravit.code.test.season;
 
-import gravit.code.test.season.docs.SeasonCleanControllerDocs;
+import gravit.code.test.season.docs.TestSeasonCleanControllerDocs;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -20,7 +20,7 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/test")
-public class SeasonCleanController implements SeasonCleanControllerDocs {
+public class TestSeasonCleanController implements TestSeasonCleanControllerDocs {
     @PersistenceContext
     private EntityManager em;
 
