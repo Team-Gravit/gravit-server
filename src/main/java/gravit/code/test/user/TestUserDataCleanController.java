@@ -1,6 +1,6 @@
 package gravit.code.test.user;
 
-import gravit.code.test.user.docs.UserDataCleanControllerDocs;
+import gravit.code.test.user.docs.TestUserDataCleanControllerDocs;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/test")
-public class UserDataCleanController implements UserDataCleanControllerDocs {
+public class TestUserDataCleanController implements TestUserDataCleanControllerDocs {
 
     @PersistenceContext
     private EntityManager em;

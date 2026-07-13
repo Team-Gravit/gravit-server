@@ -15,7 +15,7 @@ public class NotificationFacade {
     private final NotificationService notificationService;
     private final NotificationPushSender notificationPushSender;
 
-    // 인앱 알림함에만 적재 (푸시 미발송) — 3.9 팔로우 / 3.10 축하하기 / 3.11 친구 활동
+    // 인앱 알림함에만 적재 (푸시 미발송) — 팔로우 / 축하하기 / 친구 활동
     public void notifyUserInApp(
             long userId,
             NotificationType type,

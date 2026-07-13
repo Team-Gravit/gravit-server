@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Test User Cheat API", description = "[QA 전용] 유저 생성·로그인·팔로우 관계·이벤트 발행 등 테스트 상태를 임의로 세팅하는 API")
-public interface UserCheatCreateControllerDocs {
+public interface TestUserCheatCreateControllerDocs {
 
     @Operation(
             summary = "[테스트] 치트 유저 생성",

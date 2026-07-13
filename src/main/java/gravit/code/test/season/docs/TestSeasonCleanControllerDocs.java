@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Tag(name = "Test Season Clean API", description = "[QA 전용] 시즌/리그 상태를 초기 시즌(id=1) 기준으로 리셋하는 테스트 API")
-public interface SeasonCleanControllerDocs {
+public interface TestSeasonCleanControllerDocs {
 
     @Operation(
             summary = "[테스트] 시즌/리그 초기화",

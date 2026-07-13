@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Test User Clean API", description = "[QA 전용] 이메일로 식별된 유저와 연관 데이터를 전부 삭제하는 테스트 API")
-public interface UserDataCleanControllerDocs {
+public interface TestUserDataCleanControllerDocs {
 
     @Operation(
             summary = "[테스트] 유저 및 연관 데이터 삭제",

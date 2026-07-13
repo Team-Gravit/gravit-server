@@ -15,7 +15,7 @@ import java.util.List;
 // 실제 발송과 동일하게 인앱 알림함에 적재하고, 해당 타입이 푸시를 쓰는 경우 FCM 푸시도 함께 발송한다.
 @Facade
 @RequiredArgsConstructor
-public class NotificationQaFacade {
+public class TestNotificationQaFacade {
 
     private final NotificationService notificationService;
     private final NotificationMessageProvider messageProvider;

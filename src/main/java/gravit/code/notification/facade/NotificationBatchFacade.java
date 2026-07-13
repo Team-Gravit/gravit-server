@@ -33,9 +33,8 @@ public class NotificationBatchFacade {
     private final SeasonService seasonService;
     private final Clock clock;
 
-    // 3.1 연속학습 끊길 위기: 인앱 알림함 적재(개인화 헤드라인 + 서브텍스트) + 안드로이드 푸시
+    // 연속학습 끊길 위기: 인앱 알림함 적재(개인화 헤드라인 + 서브텍스트) + 안드로이드 푸시
     public void sendConsecutiveLearningWarnings() {
-
         List<ConsecutiveAtRiskUser> targets = learningQueryService.getConsecutiveAtRiskUsers();
 
         if (targets.isEmpty()) {
@@ -58,9 +57,8 @@ public class NotificationBatchFacade {
         notificationPushSender.pushEach(messageByUserId, NotificationType.CONSECUTIVE_LEARNING_WARNING.toPushData());
     }
 
-    // 3.2 오늘 학습 미완료: 유저별 랜덤 문구를 한 번만 뽑아 인앱·푸시에 동일하게 사용
+    // 오늘 학습 미완료: 유저별 랜덤 문구를 한 번만 뽑아 인앱·푸시에 동일하게 사용
     public void sendDailyIncompleteReminders() {
-
         List<Long> targetUserIds = learningQueryService.getDailyIncompleteUserIds();
 
         if (targetUserIds.isEmpty()) {
@@ -71,13 +69,11 @@ public class NotificationBatchFacade {
                 .collect(Collectors.toMap(userId -> userId, userId -> messageProvider.randomDailyIncomplete()));
 
         notificationService.notifyEach(NotificationType.DAILY_INCOMPLETE, messageByUserId, null, null);
-
         notificationPushSender.pushEach(messageByUserId, NotificationType.DAILY_INCOMPLETE.toPushData());
     }
 
-    // 3.3 장기 미접속: 마일스톤 단위로 인앱 알림함 적재 + 안드로이드 푸시
+    // 장기 미접속: 마일스톤 단위로 인앱 알림함 적재 + 안드로이드 푸시
     public void sendInactivityReminders() {
-
         Map<String, String> data = NotificationType.INACTIVITY.toPushData();
 
         for (InactivityMilestone milestone : messageProvider.inactivityMilestones()) {
@@ -92,14 +88,8 @@ public class NotificationBatchFacade {
         }
     }
 
-    // 3.13 새 콘텐츠: 인앱 알림함에만 적재(인앱 only, 푸시 미발송). targetId = 새 레슨 unitId(딥링크용)
-    public void sendNewContentAlerts(long unitId) {
-        notificationService.notifyAllUsers(NotificationType.NEW_CONTENT, messageProvider.newContent(), null, unitId);
-    }
-
-    // 3.7 시즌 종료 임박: ACTIVE 시즌의 종료일까지 남은 일수가 마일스톤(7일/3일)과 일치하면 전체 발송(인앱 + 푸시)
+    // 시즌 종료 임박: ACTIVE 시즌의 종료일까지 남은 일수가 마일스톤(7일/3일)과 일치하면 전체 발송(인앱 + 푸시)
     public void sendSeasonEndingReminders() {
-
         Optional<LocalDateTime> endsAt = seasonService.getActiveSeasonEndsAt();
 
         if (endsAt.isEmpty()) {
@@ -117,10 +107,9 @@ public class NotificationBatchFacade {
                 });
     }
 
-    // 3.8 시즌 종료 + 새 시즌 시작: 자정 롤오버 직후 새벽 푸시를 피하기 위해 다음날(=롤오버 당일) 오전 9시 스케줄에서 발송.
+    // 시즌 종료 + 새 시즌 시작: 자정 롤오버 직후 새벽 푸시를 피하기 위해 다음날(=롤오버 당일) 오전 9시 스케줄에서 발송.
     // ACTIVE 시즌이 오늘 시작됐는지(=직전 자정에 롤오버됨)로 발송 여부를 판정한다. (소프트 리셋 결과는 알림에 포함하지 않음)
     public void sendSeasonResetAlerts() {
-
         boolean rolledOverToday = seasonService.getActiveSeasonStartsAt()
                 .map(startsAt -> startsAt.toLocalDate().isEqual(LocalDate.now(clock)))
                 .orElse(false);
@@ -132,5 +121,10 @@ public class NotificationBatchFacade {
         String message = messageProvider.seasonReset();
         notificationService.notifyAllUsers(NotificationType.SEASON_RESET, message, null, null);
         notificationPushSender.broadcastToAll(NotificationType.SEASON_RESET.toPushData(), message);
+    }
+
+    // 새 콘텐츠: 인앱 알림함에만 적재(인앱 only, 푸시 미발송). targetId = 새 레슨 unitId(딥링크용)
+    public void sendNewContentAlerts(long unitId) {
+        notificationService.notifyAllUsers(NotificationType.NEW_CONTENT, messageProvider.newContent(), null, unitId);
     }
 }

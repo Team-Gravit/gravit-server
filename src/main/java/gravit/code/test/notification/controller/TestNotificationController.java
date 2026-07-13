@@ -4,7 +4,7 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.facade.SocialFacade;
 import gravit.code.test.notification.controller.docs.TestNotificationControllerDocs;
-import gravit.code.test.notification.facade.NotificationQaFacade;
+import gravit.code.test.notification.facade.TestNotificationQaFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/test/notifications")
 public class TestNotificationController implements TestNotificationControllerDocs {
 
-    private final NotificationQaFacade notificationQaFacade;
+    private final TestNotificationQaFacade notificationQaFacade;
     private final SocialFacade socialFacade;
 
     @PostMapping("/consecutive-learning-warning")
