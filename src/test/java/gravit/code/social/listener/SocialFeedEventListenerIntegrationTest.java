@@ -4,9 +4,11 @@ import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.LevelUpFeedEvent;
 import gravit.code.global.event.TierPromotionFeedEvent;
+import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.mission.service.MissionService;
 import gravit.code.social.domain.FeedEventType;
-import gravit.code.social.facade.SocialFacade;
+import gravit.code.social.infrastructure.SocialFeedLevelUpRetryTarget;
+import gravit.code.social.infrastructure.SocialFeedTierPromotionRetryTarget;
 import gravit.code.social.repository.SocialFeedRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.userLeague.service.UserLeaguePointService;
@@ -16,16 +18,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 @TCSpringBootTest
 class SocialFeedEventListenerIntegrationTest {
@@ -33,8 +36,14 @@ class SocialFeedEventListenerIntegrationTest {
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    @MockitoSpyBean
-    private SocialFacade socialFacade;
+    @MockitoBean
+    private RetryEventPublisher retryEventPublisher;
+
+    @Autowired
+    private SocialFeedLevelUpRetryTarget levelUpRetryTarget;
+
+    @Autowired
+    private SocialFeedTierPromotionRetryTarget tierPromotionRetryTarget;
 
     @Autowired
     private SocialFeedRepository socialFeedRepository;
@@ -56,7 +65,7 @@ class SocialFeedEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 마일스톤_연속_학습일이면_피드가_저장된다() {
+        void 마일스톤_연속_학습일이면_재시도_큐에_적재된다() {
             // given — 7일 연속 학습
             LessonCompletedEvent event = new LessonCompletedEvent(1L, 1L, 1L, 10, 80, 120, 6, 7);
 
@@ -66,12 +75,15 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            verify(socialFacade, timeout(3000)).publishFeed(1L, FeedEventType.STREAK_DAYS, "7");
+            verify(retryEventPublisher, timeout(3000)).publish("social-feed-streak-retry", Map.of(
+                    "userId", "1",
+                    "days", "7"
+            ));
         }
 
         @Test
         @Transactional
-        void 마일스톤이_아닌_연속_학습일이면_피드가_저장되지_않는다() {
+        void 마일스톤이_아닌_연속_학습일이면_큐에_적재되지_않는다() {
             // given — 5일 (마일스톤 아님)
             LessonCompletedEvent event = new LessonCompletedEvent(1L, 1L, 1L, 10, 80, 120, 4, 5);
 
@@ -81,7 +93,7 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then — 500ms 대기 후 호출이 없음을 확인
-            verify(socialFacade, after(500).never()).publishFeed(anyLong(), any(), any());
+            verify(retryEventPublisher, after(500).never()).publish(eq("social-feed-streak-retry"), any());
         }
     }
 
@@ -91,7 +103,7 @@ class SocialFeedEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 레벨업_이벤트로_피드가_저장된다() {
+        void 레벨업_이벤트가_재시도_큐에_적재된다() {
             // given
             LevelUpFeedEvent event = new LevelUpFeedEvent(1L, 5);
 
@@ -101,25 +113,23 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            verify(socialFacade, timeout(3000)).publishFeed(1L, FeedEventType.LEVEL_UP, "5");
+            verify(retryEventPublisher, timeout(3000)).publish("social-feed-levelup-retry", Map.of(
+                    "userId", "1",
+                    "newLevel", "5"
+            ));
         }
 
         @Test
-        @Transactional
-        void 레벨업_피드가_실제_DB에_저장된다() {
+        void 레벨업_재처리시_피드가_DB에_저장된다() {
             // given
-            LevelUpFeedEvent event = new LevelUpFeedEvent(1L, 5);
+            Map<String, String> fields = Map.of("userId", "1", "newLevel", "5");
 
             // when
-            publisher.publishEvent(event);
-            TestTransaction.flagForCommit();
-            TestTransaction.end();
+            levelUpRetryTarget.reprocess(fields);
 
             // then
-            await().atMost(3, SECONDS).untilAsserted(() ->
-                    assertThat(socialFeedRepository.findAll())
-                            .anyMatch(f -> f.getEventType() == FeedEventType.LEVEL_UP && f.getEventValue().equals("5"))
-            );
+            assertThat(socialFeedRepository.findAll())
+                    .anyMatch(f -> f.getEventType() == FeedEventType.LEVEL_UP && f.getEventValue().equals("5"));
         }
     }
 
@@ -129,7 +139,7 @@ class SocialFeedEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 티어_승급_이벤트로_피드가_저장된다() {
+        void 티어_승급_이벤트가_재시도_큐에_적재된다() {
             // given
             TierPromotionFeedEvent event = new TierPromotionFeedEvent(1L, "골드");
 
@@ -139,25 +149,23 @@ class SocialFeedEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            verify(socialFacade, timeout(3000)).publishFeed(1L, FeedEventType.TIER_PROMOTION, "골드");
+            verify(retryEventPublisher, timeout(3000)).publish("social-feed-tier-retry", Map.of(
+                    "userId", "1",
+                    "tierName", "골드"
+            ));
         }
 
         @Test
-        @Transactional
-        void 티어_승급_피드가_실제_DB에_저장된다() {
+        void 티어_승급_재처리시_피드가_DB에_저장된다() {
             // given
-            TierPromotionFeedEvent event = new TierPromotionFeedEvent(1L, "골드");
+            Map<String, String> fields = Map.of("userId", "1", "tierName", "골드");
 
             // when
-            publisher.publishEvent(event);
-            TestTransaction.flagForCommit();
-            TestTransaction.end();
+            tierPromotionRetryTarget.reprocess(fields);
 
             // then
-            await().atMost(3, SECONDS).untilAsserted(() ->
-                    assertThat(socialFeedRepository.findAll())
-                            .anyMatch(f -> f.getEventType() == FeedEventType.TIER_PROMOTION && f.getEventValue().equals("골드"))
-            );
+            assertThat(socialFeedRepository.findAll())
+                    .anyMatch(f -> f.getEventType() == FeedEventType.TIER_PROMOTION && f.getEventValue().equals("골드"));
         }
     }
 }
