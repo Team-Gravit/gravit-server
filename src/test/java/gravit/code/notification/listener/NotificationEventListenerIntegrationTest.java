@@ -1,15 +1,11 @@
 package gravit.code.notification.listener;
 
 import gravit.code.global.event.FollowedEvent;
+import gravit.code.global.event.InquiryAnsweredEvent;
 import gravit.code.global.event.NoticeCreatedEvent;
-import gravit.code.notification.domain.NotificationType;
-import gravit.code.notification.facade.NotificationFacade;
-import gravit.code.notification.service.NotificationService;
+import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.notification.support.NotificationMessageProvider;
 import gravit.code.support.TCSpringBootTest;
-import gravit.code.user.domain.Role;
-import gravit.code.user.domain.User;
-import gravit.code.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,9 +15,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @TCSpringBootTest
 class NotificationEventListenerIntegrationTest {
@@ -33,13 +30,7 @@ class NotificationEventListenerIntegrationTest {
     private NotificationMessageProvider messageProvider;
 
     @MockitoBean
-    private NotificationService notificationService;
-
-    @MockitoBean
-    private NotificationFacade notificationFacade;
-
-    @MockitoBean
-    private UserService userService;
+    private RetryEventPublisher retryEventPublisher;
 
     @Nested
     @DisplayName("공지 생성 이벤트를 처리할 때")
@@ -47,20 +38,19 @@ class NotificationEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        @DisplayName("헤드라인은 고정, 공지 제목은 서브텍스트로 전체 적재를 위임한다")
-        void 헤드라인_고정_제목_서브텍스트로_위임한다() {
+        @DisplayName("헤드라인은 고정, 공지 제목은 서브텍스트로 재시도 큐에 적재한다")
+        void 헤드라인_고정_제목_서브텍스트로_큐에_적재한다() {
             // when
             publisher.publishEvent(new NoticeCreatedEvent(10L, "정기 점검 안내"));
             TestTransaction.flagForCommit();
             TestTransaction.end();
 
             // then
-            verify(notificationService, timeout(3000)).notifyAllUsers(
-                    NotificationType.NOTICE,
-                    "새로운 공지사항이 있어요",
-                    "정기 점검 안내",
-                    10L
-            );
+            verify(retryEventPublisher, timeout(3000)).publish("notice-created-retry", Map.of(
+                    "headline", messageProvider.noticeHeadline(),
+                    "title", "정기 점검 안내",
+                    "noticeId", "10"
+            ));
         }
     }
 
@@ -70,24 +60,40 @@ class NotificationEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        @DisplayName("인앱 전용(notifyUserInApp)으로 위임하고 푸시는 보내지 않는다")
-        void 인앱_전용으로_위임한다() {
-            // given - 팔로워(2)가 팔로위(1)를 팔로우
-            User follower = User.create("u2@test.com", "p2", "유저2", "h2", 1, Role.USER);
-            when(userService.getUser(2L)).thenReturn(follower);
-
+        @DisplayName("팔로우 재시도 큐에 적재한다")
+        void 팔로우_재시도_큐에_적재한다() {
             // when
             publisher.publishEvent(new FollowedEvent(2L, 1L));
             TestTransaction.flagForCommit();
             TestTransaction.end();
 
-            // then - 인앱 전용 적재로 위임 (notifyUser(푸시 동반) 아님)
-            verify(notificationFacade, timeout(3000)).notifyUserInApp(
-                    1L,
-                    NotificationType.FOLLOW,
-                    messageProvider.followReceived("유저2"),
-                    2L
-            );
+            // then
+            verify(retryEventPublisher, timeout(3000)).publish("followed-retry", Map.of(
+                    "followerId", "2",
+                    "followeeId", "1"
+            ));
+        }
+    }
+
+    @Nested
+    @DisplayName("문의 답변 이벤트를 처리할 때")
+    class HandleInquiryAnswered {
+
+        @Test
+        @Transactional
+        @DisplayName("문의 답변 재시도 큐에 적재한다")
+        void 문의_답변_재시도_큐에_적재한다() {
+            // when
+            publisher.publishEvent(new InquiryAnsweredEvent(100L, 1L, "환불 문의"));
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            verify(retryEventPublisher, timeout(3000)).publish("inquiry-answered-retry", Map.of(
+                    "userId", "1",
+                    "title", "환불 문의",
+                    "inquiryId", "100"
+            ));
         }
     }
 }

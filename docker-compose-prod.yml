@@ -19,6 +19,7 @@ services:
   gravit-redis-prod:
     container_name: gravit-redis-prod
     image: redis:latest
+    command: redis-server --appendonly yes --appendfsync everysec
     ports:
       - "6388:6379"
     volumes:
@@ -34,7 +35,7 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 512M
+          memory: 768M
 
   alloy:
     image: grafana/alloy:latest

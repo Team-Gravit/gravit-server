@@ -7,6 +7,7 @@ import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
 import gravit.code.notification.domain.Notification;
 import gravit.code.notification.domain.NotificationType;
+import gravit.code.notification.infrastructure.FollowedRetryTarget;
 import gravit.code.notification.repository.NotificationRepository;
 import gravit.code.season.domain.Season;
 import gravit.code.season.fixture.SeasonFixture;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.CANNOT_CONGRATULATE_OWN_FEED;
 import static gravit.code.global.exception.domain.CustomErrorCode.CONGRATULATE_LIMIT_EXCEEDED;
@@ -68,6 +70,9 @@ class SocialFacadeIntegrationTest {
     @Autowired
     private SocialFeedRepository socialFeedRepository;
 
+    @Autowired
+    private FollowedRetryTarget followedRetryTarget;
+
     @Nested
     @DisplayName("팔로우할 때")
     class Follow {
@@ -78,8 +83,12 @@ class SocialFacadeIntegrationTest {
             User follower = userFixture.일반_유저(1);
             User followee = userFixture.일반_유저(2);
 
-            // when
+            // when — 팔로우는 재시도 큐에 적재만 하므로, 재처리를 직접 트리거해 알림 생성까지 검증한다
             socialFacade.follow(follower.getId(), followee.getId());
+            followedRetryTarget.reprocess(Map.of(
+                    "followerId", String.valueOf(follower.getId()),
+                    "followeeId", String.valueOf(followee.getId())
+            ));
 
             // then
             List<Notification> notifications = notificationRepository.findAll();
@@ -91,6 +100,22 @@ class SocialFacadeIntegrationTest {
                 softly.assertThat(notifications.get(0).isRead()).isFalse();
                 softly.assertThat(notifications.get(0).getTargetId()).isEqualTo(follower.getId());
             });
+        }
+
+        @Test
+        void 재처리_시점에_팔로워가_존재하지_않으면_알림을_생성하지_않는다() {
+            // given — 재시도 대기 중 팔로워가 탈퇴/삭제된 상황을 재현
+            User followee = userFixture.일반_유저(2);
+            long nonExistentFollowerId = 999L;
+
+            // when
+            followedRetryTarget.reprocess(Map.of(
+                    "followerId", String.valueOf(nonExistentFollowerId),
+                    "followeeId", String.valueOf(followee.getId())
+            ));
+
+            // then
+            assertThat(notificationRepository.findAll()).isEmpty();
         }
     }
 
