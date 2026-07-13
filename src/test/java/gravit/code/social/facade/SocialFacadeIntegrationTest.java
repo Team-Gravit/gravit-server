@@ -101,6 +101,22 @@ class SocialFacadeIntegrationTest {
                 softly.assertThat(notifications.get(0).getTargetId()).isEqualTo(follower.getId());
             });
         }
+
+        @Test
+        void 재처리_시점에_팔로워가_존재하지_않으면_알림을_생성하지_않는다() {
+            // given — 재시도 대기 중 팔로워가 탈퇴/삭제된 상황을 재현
+            User followee = userFixture.일반_유저(2);
+            long nonExistentFollowerId = 999L;
+
+            // when
+            followedRetryTarget.reprocess(Map.of(
+                    "followerId", String.valueOf(nonExistentFollowerId),
+                    "followeeId", String.valueOf(followee.getId())
+            ));
+
+            // then
+            assertThat(notificationRepository.findAll()).isEmpty();
+        }
     }
 
     @Nested

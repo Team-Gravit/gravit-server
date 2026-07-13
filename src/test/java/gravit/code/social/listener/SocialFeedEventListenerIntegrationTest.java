@@ -8,6 +8,7 @@ import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.mission.service.MissionService;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.infrastructure.SocialFeedLevelUpRetryTarget;
+import gravit.code.social.infrastructure.SocialFeedStreakRetryTarget;
 import gravit.code.social.infrastructure.SocialFeedTierPromotionRetryTarget;
 import gravit.code.social.repository.SocialFeedRepository;
 import gravit.code.support.TCSpringBootTest;
@@ -38,6 +39,9 @@ class SocialFeedEventListenerIntegrationTest {
 
     @MockitoBean
     private RetryEventPublisher retryEventPublisher;
+
+    @Autowired
+    private SocialFeedStreakRetryTarget streakRetryTarget;
 
     @Autowired
     private SocialFeedLevelUpRetryTarget levelUpRetryTarget;
@@ -94,6 +98,19 @@ class SocialFeedEventListenerIntegrationTest {
 
             // then — 500ms 대기 후 호출이 없음을 확인
             verify(retryEventPublisher, after(500).never()).publish(eq("social-feed-streak-retry"), any());
+        }
+
+        @Test
+        void 연속_학습일_재처리시_피드가_DB에_저장된다() {
+            // given
+            Map<String, String> fields = Map.of("userId", "1", "days", "7");
+
+            // when
+            streakRetryTarget.reprocess(fields);
+
+            // then
+            assertThat(socialFeedRepository.findAll())
+                    .anyMatch(f -> f.getEventType() == FeedEventType.STREAK_DAYS && f.getEventValue().equals("7"));
         }
     }
 

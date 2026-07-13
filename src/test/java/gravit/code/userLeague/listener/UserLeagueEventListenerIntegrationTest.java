@@ -248,7 +248,7 @@ class UserLeagueEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 유저가_존재하지_않으면_재시도_큐에_적재된다() {
+        void 유저가_존재하지_않으면_재시도_큐에_적재하지_않는다() {
             // given
             long nonExistentUserId = 999L;
 
@@ -258,8 +258,24 @@ class UserLeagueEventListenerIntegrationTest {
             TestTransaction.end();
 
             // then
+            verify(retryEventPublisher, after(500).never()).publish(eq("user-league-create-retry"), any());
+        }
+
+        @Test
+        @Transactional
+        void 매칭되는_리그가_없으면_재시도_큐에_적재된다() {
+            // given — leagueFixture로 리그를 생성하지 않음
+            User user = userFixture.일반_유저(1);
+            seasonFixture.진행중인_시즌("S1");
+
+            // when
+            publisher.publishEvent(new OnboardingCompletedEvent(user.getId()));
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
             verify(retryEventPublisher, timeout(3000)).publish("user-league-create-retry", Map.of(
-                    "userId", String.valueOf(nonExistentUserId)
+                    "userId", String.valueOf(user.getId())
             ));
         }
     }
