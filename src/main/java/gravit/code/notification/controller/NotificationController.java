@@ -3,7 +3,7 @@ package gravit.code.notification.controller;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.notification.controller.docs.NotificationDocs;
 import gravit.code.notification.dto.response.NotificationResponse;
-import gravit.code.notification.facade.NotificationFacade;
+import gravit.code.notification.facade.NotificationInboxFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController implements NotificationDocs {
 
-    private final NotificationFacade notificationFacade;
+    private final NotificationInboxFacade notificationInboxFacade;
 
     @GetMapping
     public ResponseEntity<List<NotificationResponse>> getInbox(
             @AuthenticationPrincipal LoginUser loginUser
     ) {
-        List<NotificationResponse> inbox = notificationFacade.getInbox(loginUser.getId());
+        List<NotificationResponse> inbox = notificationInboxFacade.getInbox(loginUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(inbox);
     }
 }
