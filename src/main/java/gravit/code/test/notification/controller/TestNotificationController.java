@@ -1,10 +1,10 @@
 package gravit.code.test.notification.controller;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.notification.facade.NotificationFacade;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.facade.SocialFacade;
 import gravit.code.test.notification.controller.docs.TestNotificationControllerDocs;
+import gravit.code.test.notification.facade.NotificationQaFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/test/notifications")
 public class TestNotificationController implements TestNotificationControllerDocs {
 
-    private final NotificationFacade notificationFacade;
+    private final NotificationQaFacade notificationQaFacade;
     private final SocialFacade socialFacade;
 
     @PostMapping("/consecutive-learning-warning")
@@ -29,7 +29,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam(defaultValue = "3") int consecutiveDays
     ) {
-        notificationFacade.sendConsecutiveLearningWarningToUser(loginUser.getId(), consecutiveDays);
+        notificationQaFacade.sendConsecutiveLearningWarningToUser(loginUser.getId(), consecutiveDays);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -38,7 +38,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     public ResponseEntity<Long> sendDailyIncomplete(
             @AuthenticationPrincipal LoginUser loginUser
     ) {
-        notificationFacade.sendDailyIncompleteToUser(loginUser.getId());
+        notificationQaFacade.sendDailyIncompleteToUser(loginUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -48,7 +48,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam(defaultValue = "7") int inactiveDays
     ) {
-        notificationFacade.sendInactivityToUser(loginUser.getId(), inactiveDays);
+        notificationQaFacade.sendInactivityToUser(loginUser.getId(), inactiveDays);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -58,7 +58,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam Long unitId
     ) {
-        notificationFacade.sendNewContentToUser(loginUser.getId(), unitId);
+        notificationQaFacade.sendNewContentToUser(loginUser.getId(), unitId);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -68,7 +68,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam(defaultValue = "7") int daysBefore
     ) {
-        notificationFacade.sendSeasonEndingToUser(loginUser.getId(), daysBefore);
+        notificationQaFacade.sendSeasonEndingToUser(loginUser.getId(), daysBefore);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -77,7 +77,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     public ResponseEntity<Long> sendSeasonReset(
             @AuthenticationPrincipal LoginUser loginUser
     ) {
-        notificationFacade.sendSeasonResetToUser(loginUser.getId());
+        notificationQaFacade.sendSeasonResetToUser(loginUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -88,7 +88,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @RequestParam(required = false) Long followerId
     ) {
         long actor = followerId != null ? followerId : loginUser.getId();
-        notificationFacade.sendFollowToUser(loginUser.getId(), actor);
+        notificationQaFacade.sendFollowToUser(loginUser.getId(), actor);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -99,7 +99,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @RequestParam(required = false) Long congratulatorId
     ) {
         long actor = congratulatorId != null ? congratulatorId : loginUser.getId();
-        notificationFacade.sendCongratulationToUser(loginUser.getId(), actor);
+        notificationQaFacade.sendCongratulationToUser(loginUser.getId(), actor);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -126,7 +126,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @RequestParam(defaultValue = "테스트 공지 제목") String title,
             @RequestParam(required = false) Long noticeId
     ) {
-        notificationFacade.sendNoticeToUser(loginUser.getId(), title, noticeId);
+        notificationQaFacade.sendNoticeToUser(loginUser.getId(), title, noticeId);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
@@ -137,7 +137,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
             @RequestParam(defaultValue = "테스트 문의 제목") String title,
             @RequestParam(required = false) Long inquiryId
     ) {
-        notificationFacade.sendInquiryAnsweredToUser(loginUser.getId(), title, inquiryId);
+        notificationQaFacade.sendInquiryAnsweredToUser(loginUser.getId(), title, inquiryId);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
     }
