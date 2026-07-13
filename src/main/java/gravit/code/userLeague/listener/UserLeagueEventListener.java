@@ -62,6 +62,10 @@ public class UserLeagueEventListener {
                 log.warn("유저 리그 이미 존재, 재시도 큐 적재 생략: userId={}", event.userId());
                 return;
             }
+            if (e.getErrorCode() == CustomErrorCode.USER_NOT_FOUND) {
+                log.error("유저 리그 생성 실패(재시도 불가, 확인 필요): userId={}, errorCode={}", event.userId(), e.getErrorCode(), e);
+                return;
+            }
             queueUserLeagueCreateRetry(event.userId(), e);
         } catch (Exception e) {
             queueUserLeagueCreateRetry(event.userId(), e);

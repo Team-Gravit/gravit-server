@@ -30,7 +30,7 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 512M
+          memory: 768M
 
   alloy-dev:
     image: grafana/alloy:latest

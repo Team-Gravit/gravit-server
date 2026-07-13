@@ -36,6 +36,7 @@ public class RedisRetryEventPublisher implements RetryEventPublisher {
             redisTemplate.opsForZSet().add(queueKey, json, System.currentTimeMillis());
         } catch (Exception e) {
             log.error("재시도 큐 적재 실패: queueKey={}", queueKey, e);
+            throw new RuntimeException("재시도 큐 적재 실패: queueKey=" + queueKey, e);
         }
     }
 }

@@ -20,6 +20,7 @@ public class RetryQueueSweeper {
 
     private static final String RETRY_ID_FIELD = "__retryId";
     private static final String ATTEMPT_FIELD = "__attempt";
+    private static final String DEAD_LETTER_KEY_SUFFIX = ":dead-letter";
     private static final long BASE_BACKOFF_MS = 5_000L;
     private static final long MAX_BACKOFF_MS = 300_000L;
     private static final int SWEEP_BATCH_SIZE = 100;
@@ -52,16 +53,30 @@ public class RetryQueueSweeper {
             fields.remove(RETRY_ID_FIELD);
         } catch (Exception e) {
             redisTemplate.opsForZSet().remove(target.queueKey(), json);
+            deadLetter(target, json);
             log.error("재시도 큐 페이로드 파싱 실패, 데드레터 처리: queueKey={}, raw={}", target.queueKey(), json, e);
             return;
         }
 
         try {
             target.reprocess(fields);
+        } catch (Exception e) {
+            removeQuietly(target, json);
+            requeueOrDeadLetter(target, fields, attempt, e);
+            return;
+        }
+
+        removeQuietly(target, json);
+    }
+
+    private void removeQuietly(
+            RetrySweepTarget target,
+            String json
+    ) {
+        try {
             redisTemplate.opsForZSet().remove(target.queueKey(), json);
         } catch (Exception e) {
-            redisTemplate.opsForZSet().remove(target.queueKey(), json);
-            requeueOrDeadLetter(target, fields, attempt, e);
+            log.warn("재시도 큐 항목 제거 실패, 다음 스윕에서 재정리 기대: queueKey={}, raw={}", target.queueKey(), json, e);
         }
     }
 
@@ -73,6 +88,7 @@ public class RetryQueueSweeper {
     ) {
         if (attempt + 1 >= target.maxAttempts()) {
             log.error("재시도 한도 초과, 데드레터 처리: queueKey={}, fields={}", target.queueKey(), fields, cause);
+            deadLetterFields(target, fields);
             return;
         }
 
@@ -85,6 +101,28 @@ public class RetryQueueSweeper {
             redisTemplate.opsForZSet().add(target.queueKey(), requeued, System.currentTimeMillis() + backoffMs);
         } catch (Exception e) {
             log.error("재시도 큐 재적재 실패, 유실: queueKey={}, fields={}", target.queueKey(), fields, e);
+        }
+    }
+
+    private void deadLetterFields(
+            RetrySweepTarget target,
+            Map<String, String> fields
+    ) {
+        try {
+            deadLetter(target, objectMapper.writeValueAsString(fields));
+        } catch (Exception e) {
+            log.error("데드레터 적재 실패, 유실: queueKey={}, fields={}", target.queueKey(), fields, e);
+        }
+    }
+
+    private void deadLetter(
+            RetrySweepTarget target,
+            String rawJson
+    ) {
+        try {
+            redisTemplate.opsForList().leftPush(target.queueKey() + DEAD_LETTER_KEY_SUFFIX, rawJson);
+        } catch (Exception e) {
+            log.error("데드레터 적재 실패, 유실: queueKey={}, raw={}", target.queueKey(), rawJson, e);
         }
     }
 }
