@@ -2,7 +2,6 @@ package gravit.code.dailyLearningRecord.service;
 
 import gravit.code.dailyLearningRecord.domain.DailyLearningRecord;
 import gravit.code.dailyLearningRecord.dto.response.DailySolvedCountResponse;
-import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningRecordResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
 import gravit.code.dailyLearningRecord.repository.DailyLearningRecordRepository;
 import gravit.code.support.TCSpringBootTest;
@@ -16,6 +15,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -39,11 +39,11 @@ class DailyLearningRecordServiceIntegrationTest {
     }
 
     @Nested
-    @DisplayName("주간 학습 기록을 조회할 때")
-    class GetWeeklyLearningRecordResponse {
+    @DisplayName("주간 학습 요일을 조회할 때")
+    class GetWeeklySolvedDays {
 
         @Test
-        void 모든_요일에_학습_기록이_있으면_모두_true를_반환한다() {
+        void 모든_요일에_학습_기록이_있으면_모든_요일을_반환한다() {
             // given
             long userId = 1L;
             LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
@@ -52,22 +52,22 @@ class DailyLearningRecordServiceIntegrationTest {
             }
 
             // when
-            WeeklyLearningRecordResponse result = dailyLearningRecordService.getWeeklyLearningRecord(userId);
+            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
 
             // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.MONDAY()).isTrue();
-                softly.assertThat(result.TUESDAY()).isTrue();
-                softly.assertThat(result.WEDNESDAY()).isTrue();
-                softly.assertThat(result.THURSDAY()).isTrue();
-                softly.assertThat(result.FRIDAY()).isTrue();
-                softly.assertThat(result.SATURDAY()).isTrue();
-                softly.assertThat(result.SUNDAY()).isTrue();
-            });
+            assertThat(result).containsExactlyInAnyOrder(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.FRIDAY,
+                    DayOfWeek.SATURDAY,
+                    DayOfWeek.SUNDAY
+            );
         }
 
         @Test
-        void 월요일과_수요일만_학습했다면_해당_요일만_true를_반환한다() {
+        void 월요일과_수요일만_학습했다면_해당_요일만_반환한다() {
             // given
             long userId = 1L;
             LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
@@ -75,38 +75,22 @@ class DailyLearningRecordServiceIntegrationTest {
             dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, monday.plusDays(2)));
 
             // when
-            WeeklyLearningRecordResponse result = dailyLearningRecordService.getWeeklyLearningRecord(userId);
+            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
 
             // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.MONDAY()).isTrue();
-                softly.assertThat(result.TUESDAY()).isFalse();
-                softly.assertThat(result.WEDNESDAY()).isTrue();
-                softly.assertThat(result.THURSDAY()).isFalse();
-                softly.assertThat(result.FRIDAY()).isFalse();
-                softly.assertThat(result.SATURDAY()).isFalse();
-                softly.assertThat(result.SUNDAY()).isFalse();
-            });
+            assertThat(result).containsExactlyInAnyOrder(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY);
         }
 
         @Test
-        void 학습_기록이_없으면_모두_false를_반환한다() {
+        void 학습_기록이_없으면_빈_결과를_반환한다() {
             // given
             long userId = 1L;
 
             // when
-            WeeklyLearningRecordResponse result = dailyLearningRecordService.getWeeklyLearningRecord(userId);
+            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
 
             // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.MONDAY()).isFalse();
-                softly.assertThat(result.TUESDAY()).isFalse();
-                softly.assertThat(result.WEDNESDAY()).isFalse();
-                softly.assertThat(result.THURSDAY()).isFalse();
-                softly.assertThat(result.FRIDAY()).isFalse();
-                softly.assertThat(result.SATURDAY()).isFalse();
-                softly.assertThat(result.SUNDAY()).isFalse();
-            });
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -119,18 +103,10 @@ class DailyLearningRecordServiceIntegrationTest {
             dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, nextMonday));
 
             // when
-            WeeklyLearningRecordResponse result = dailyLearningRecordService.getWeeklyLearningRecord(userId);
+            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
 
             // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.MONDAY()).isFalse();
-                softly.assertThat(result.TUESDAY()).isFalse();
-                softly.assertThat(result.WEDNESDAY()).isFalse();
-                softly.assertThat(result.THURSDAY()).isFalse();
-                softly.assertThat(result.FRIDAY()).isFalse();
-                softly.assertThat(result.SATURDAY()).isFalse();
-                softly.assertThat(result.SUNDAY()).isFalse();
-            });
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -142,18 +118,10 @@ class DailyLearningRecordServiceIntegrationTest {
             dailyLearningRecordRepository.save(DailyLearningRecord.create(otherUserId, monday));
 
             // when
-            WeeklyLearningRecordResponse result = dailyLearningRecordService.getWeeklyLearningRecord(userId);
+            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
 
             // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.MONDAY()).isFalse();
-                softly.assertThat(result.TUESDAY()).isFalse();
-                softly.assertThat(result.WEDNESDAY()).isFalse();
-                softly.assertThat(result.THURSDAY()).isFalse();
-                softly.assertThat(result.FRIDAY()).isFalse();
-                softly.assertThat(result.SATURDAY()).isFalse();
-                softly.assertThat(result.SUNDAY()).isFalse();
-            });
+            assertThat(result).isEmpty();
         }
     }
 
