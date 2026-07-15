@@ -122,10 +122,20 @@ public interface MainPageControllerDocs {
     })
     ResponseEntity<List<RecommendedUnitResponse>> getUnits(@AuthenticationPrincipal LoginUser loginUser);
 
-    @Operation(summary = "메인페이지 주간 학습 기록 조회", description = "메인페이지 주간 학습 기록을 조회합니다<br>" +
+    @Operation(summary = "메인페이지 주간 학습 기록 조회", description = "메인페이지 주간 학습 기록(연속 학습일, 요일별 학습 여부)을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 메인페이지 주간 학습 기록 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "🚨 학습 정보 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "학습 정보 조회 실패",
+                                            value = "{\"error\" : \"LEARNING_4041\", \"message\" : \"학습 정보 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {

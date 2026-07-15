@@ -10,9 +10,6 @@ import java.util.List;
 @Builder(access = AccessLevel.PRIVATE)
 public record LearningDetailResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        int consecutiveSolvedDays,
-
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         long recentSolvedChapterId,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -25,14 +22,12 @@ public record LearningDetailResponse(
         List<UnitProgressSummaryResponse> units
 ) {
     public static LearningDetailResponse of(
-            int consecutiveSolvedDays,
             long recentSolvedChapterId,
             String recentSolvedChapterTitle,
             double recentSolvedChapterProgressRate,
             List<UnitProgressSummaryResponse> units
     ){
         return LearningDetailResponse.builder()
-                .consecutiveSolvedDays(consecutiveSolvedDays)
                 .recentSolvedChapterId(recentSolvedChapterId)
                 .recentSolvedChapterTitle(recentSolvedChapterTitle)
                 .recentSolvedChapterProgressRate(recentSolvedChapterProgressRate)

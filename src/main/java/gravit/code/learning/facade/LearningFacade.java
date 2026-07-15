@@ -53,7 +53,6 @@ public class LearningFacade {
         double chapterProgressRate = learningProgressRateService.getChapterProgress(chapterId, userId);
 
         return LearningDetailResponse.of(
-                learning.getConsecutiveSolvedDays(),
                 recentSolvedChapter.getId(),
                 recentSolvedChapter.getTitle(),
                 chapterProgressRate,

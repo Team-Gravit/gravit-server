@@ -2,7 +2,6 @@ package gravit.code.dailyLearningRecord.service;
 
 import gravit.code.dailyLearningRecord.domain.DailyLearningRecord;
 import gravit.code.dailyLearningRecord.dto.response.DailySolvedCountResponse;
-import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningRecordResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
 import gravit.code.dailyLearningRecord.repository.DailyLearningRecordRepository;
 import gravit.code.global.consts.TimeZoneConst;
@@ -25,24 +24,14 @@ public class DailyLearningRecordService {
     private final DailyLearningRecordRepository dailyLearningRecordRepository;
 
     @Transactional(readOnly = true)
-    public WeeklyLearningRecordResponse getWeeklyLearningRecord(long userId) {
+    public Set<DayOfWeek> getWeeklySolvedDays(long userId) {
         LocalDate today = LocalDate.now(TimeZoneConst.KST);
         LocalDate monday = today.with(DayOfWeek.MONDAY);
         LocalDate sunday = today.with(DayOfWeek.SUNDAY);
 
-        Set<DayOfWeek> solvedDays = dailyLearningRecordRepository.findSolvedDatesByUserIdAndDateRange(userId, monday, sunday).stream()
+        return dailyLearningRecordRepository.findSolvedDatesByUserIdAndDateRange(userId, monday, sunday).stream()
                 .map(LocalDate::getDayOfWeek)
                 .collect(Collectors.toUnmodifiableSet());
-
-        return new WeeklyLearningRecordResponse(
-                solvedDays.contains(DayOfWeek.MONDAY),
-                solvedDays.contains(DayOfWeek.TUESDAY),
-                solvedDays.contains(DayOfWeek.WEDNESDAY),
-                solvedDays.contains(DayOfWeek.THURSDAY),
-                solvedDays.contains(DayOfWeek.FRIDAY),
-                solvedDays.contains(DayOfWeek.SATURDAY),
-                solvedDays.contains(DayOfWeek.SUNDAY)
-        );
     }
 
     @Transactional(readOnly = true)
