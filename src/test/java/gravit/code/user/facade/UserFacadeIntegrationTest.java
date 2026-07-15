@@ -158,7 +158,7 @@ class UserFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.learningDetailResponse().consecutiveSolvedDays()).isZero();
+                softly.assertThat(result.weeklyLearningRecordResponse().consecutiveSolvedDays()).isZero();
                 softly.assertThat(result.learningDetailResponse().recentSolvedChapterProgressRate()).isZero();
                 softly.assertThat(result.weeklyLearningRecordResponse().MONDAY()).isFalse();
                 softly.assertThat(result.recommendedUnitResponses()).hasSize(2);

@@ -25,7 +25,9 @@ import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Set;
 
 @Facade
 @RequiredArgsConstructor
@@ -69,7 +71,9 @@ public class UserFacade {
 
         List<RecommendedUnitResponse> recommendedUnitResponses = unitQueryService.getRecommendedUnits(userId);
 
-        WeeklyLearningRecordResponse weeklyLearningRecordResponse = dailyLearningRecordService.getWeeklyLearningRecord(userId);
+        Set<DayOfWeek> solvedDays = dailyLearningRecordService.getWeeklySolvedDays(userId);
+        WeeklyLearningRecordResponse weeklyLearningRecordResponse =
+                WeeklyLearningRecordResponse.of(learning.getConsecutiveSolvedDays(), solvedDays);
 
         MissionDetailResponse missionDetailResponse = missionService.getMissionDetail(userId);
 
@@ -114,7 +118,6 @@ public class UserFacade {
         double chapterProgressRate = learningProgressRateService.getChapterProgress(chapterId, userId);
 
         return LearningDetailResponse.of(
-                learning.getConsecutiveSolvedDays(),
                 recentSolvedChapter.getId(),
                 recentSolvedChapter.getTitle(),
                 chapterProgressRate,

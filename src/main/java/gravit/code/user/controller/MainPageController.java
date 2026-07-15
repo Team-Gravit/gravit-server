@@ -2,7 +2,7 @@ package gravit.code.user.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningRecordResponse;
-import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
+import gravit.code.dailyLearningRecord.facade.DailyLearningRecordFacade;
 import gravit.code.league.dto.response.LeagueDetailResponse;
 import gravit.code.learning.dto.response.LearningDetailResponse;
 import gravit.code.learning.facade.LearningFacade;
@@ -33,7 +33,7 @@ public class MainPageController implements MainPageControllerDocs {
     private final LearningFacade learningFacade;
     private final UserLeagueService userLeagueService;
     private final UnitQueryService unitQueryService;
-    private final DailyLearningRecordService dailyLearningRecordService;
+    private final DailyLearningRecordFacade dailyLearningRecordFacade;
     private final MissionService missionService;
 
     @GetMapping("/profile")
@@ -58,7 +58,7 @@ public class MainPageController implements MainPageControllerDocs {
 
     @GetMapping("/weekly-record")
     public ResponseEntity<WeeklyLearningRecordResponse> getWeeklyRecord(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(dailyLearningRecordService.getWeeklyLearningRecord(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(dailyLearningRecordFacade.getWeeklyLearningRecord(loginUser.getId()));
     }
 
     @GetMapping("/mission")

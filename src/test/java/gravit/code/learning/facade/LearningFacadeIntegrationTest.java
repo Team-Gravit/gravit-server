@@ -69,7 +69,6 @@ class LearningFacadeIntegrationTest {
 
             Learning learning = Learning.create(user.getId());
             ReflectionTestUtils.setField(learning, "recentSolvedChapterId", chapter.getId());
-            ReflectionTestUtils.setField(learning, "consecutiveSolvedDays", 5);
             learningRepository.save(learning);
 
             // when
@@ -77,7 +76,6 @@ class LearningFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.consecutiveSolvedDays()).isEqualTo(5);
                 softly.assertThat(result.recentSolvedChapterId()).isEqualTo(chapter.getId());
                 softly.assertThat(result.recentSolvedChapterTitle()).isEqualTo("운영체제");
                 softly.assertThat(result.units()).hasSize(2);
@@ -101,7 +99,6 @@ class LearningFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result.consecutiveSolvedDays()).isZero();
                 softly.assertThat(result.recentSolvedChapterProgressRate()).isZero();
                 softly.assertThat(result.recentSolvedChapterId()).isEqualTo(chapter.getId());
                 softly.assertThat(result.units()).hasSize(2);
