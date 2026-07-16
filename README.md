@@ -85,4 +85,4 @@ gravit/code
 
 | <img src="https://avatars.githubusercontent.com/u/146558936?v=4" width="130" height="130"> | <img src="https://avatars.githubusercontent.com/u/115551339?v=4" width="130" height="130"> | <img src="https://avatars.githubusercontent.com/u/155729481?v=4" width="130" height="130"> |
 | :---: | :---: | :---: |
-| [xunxxoie](https://github.com/xunxxoie) | [sukangpunch](https://github.com/sukangpunch) | [Jungseokhwan](https://github.com/Jungseokhwan) |
+| [xunssoie](https://github.com/xunssoie) | [sukangpunch](https://github.com/sukangpunch) | [Jungseokhwan](https://github.com/Jungseokhwan) |
