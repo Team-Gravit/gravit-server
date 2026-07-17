@@ -130,6 +130,7 @@ firebase:
 
 springdoc:
   server-url: https://grav-it.inuappcenter.kr
+  paths-to-exclude: /api/v1/admin/**
 
 management:
   endpoints:
