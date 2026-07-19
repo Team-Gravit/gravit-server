@@ -46,6 +46,7 @@ postgres_data_local
 redis_data_local
 logs
 grafana_data
+pgadmin_data_local
 
 ### Firebase ###
 /src/main/resources/firebase/firebase_service_key.json
@@ -57,3 +58,8 @@ grafana_data
 
 ### 로컬 작업 메모 (커밋 제외) ###
 /.claude/resources/code-cleanup-todo.md
+
+### 로컬 개인 데이터 ###
+benchmark
+docs
+.claude/skills/grill-me
