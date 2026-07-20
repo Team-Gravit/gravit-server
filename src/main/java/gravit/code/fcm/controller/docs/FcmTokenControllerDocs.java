@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -91,6 +92,7 @@ public interface FcmTokenControllerDocs {
     ResponseEntity<FcmTokenExistsResponse> checkFcmTokenExist(
             @AuthenticationPrincipal LoginUser loginUser,
             @Parameter(description = "클라이언트 디바이스 식별자", example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890", required = true)
+            @NotBlank(message = "디바이스 아이디가 비어있습니다.")
             @RequestParam("deviceId") String deviceId
     );
 }
