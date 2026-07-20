@@ -8,8 +8,6 @@ import gravit.code.learning.facade.LearningFacade;
 import gravit.code.user.controller.docs.MyPageControllerDocs;
 import gravit.code.user.dto.response.MyPageBannerResponse;
 import gravit.code.user.facade.UserFacade;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +45,7 @@ public class MyPageController implements MyPageControllerDocs {
     @GetMapping("/learning/history")
     public ResponseEntity<LearningHistoryResponse> getMyPageLearningHistory(
             @AuthenticationPrincipal LoginUser loginUser,
-            @RequestParam("year") @Min(2025) @Max(2099)int year
+            @RequestParam("year") int year
     ){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getMyPageLearningHistory(loginUser.getId(), year));
     }
