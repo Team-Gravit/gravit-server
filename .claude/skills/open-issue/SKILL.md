@@ -1,10 +1,10 @@
 ---
 name: open-issue
 description: |
-  작업을 대화로 구체화한 뒤 종류에 맞는 GitHub 이슈를 열고, 연결된 작업 브랜치를 생성·체크아웃한다.
+  작업을 대화로 구체화한 뒤 종류에 맞는 GitHub 이슈를 열고, 연결된 작업 브랜치를 생성하고 체크아웃한다.
   Trigger: "이슈 열어줘", "이거 작업 시작하자", "새 작업 시작하자", "기능/버그/리팩토링 이슈 만들어줘"
   Do NOT use for: 작업 계획 수립(→ write-plan), 구현(→ implement), 이미 열린 이슈에 브랜치만 파는 경우(직접 git)
-  Boundary: 이슈 생성과 브랜치 생성·체크아웃까지만 수행한다. 작업 계획과 구현은 이 스킬 범위 밖이다.
+  Boundary: 이슈 생성과 브랜치 생성, 체크아웃까지만 수행한다. 작업 계획과 구현은 이 스킬 범위 밖이다.
 allowed-tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: xhigh
@@ -30,18 +30,20 @@ effort: xhigh
    - 제약사항(있는 경우에)
 3. 아래 다섯 요소가 확정되면 다음 Phase로 이동하라
    - 종류: feat / fix / refactor / hotfix / docs / test / cicd / analysis 중 하나
-   - 제목: 작업을 한 줄로 표현하는 명사형
+   - 제목: 작업을 한 줄로 표현하는 명사형.
+     `.claude/spec/git-convention.md`의 제목 규칙을 따른다 — 40자 이내, 클래스명 나열과 괄호 중첩 금지,
+     대상을 나열하지 말고 무엇을 해결하는지를 남긴다.
    - 설명: 이 작업이 왜 필요한지 1~3문장
    - 작업 항목: 체크리스트로 쪼갠 하위 작업 목록
    - 연관 도메인
 
-> 다음 Phase 조건: 종류·제목·설명·작업 항목·연관 도메인이 사용자와 함께 확정되었을 때
+> 다음 Phase 조건: 종류, 제목, 설명, 작업 항목, 연관 도메인이 사용자와 함께 확정되었을 때
 
 > Skip 조건: 없음 (필수 Phase)
 
 ## Phase 2: 이슈 본문 작성
 
-1. 종류별 title 접두사·이슈 라벨·브랜치 접두사는 `.claude/spec/git-convention.md`의 커밋 타입 표를 참조하라 (접두사 `{종류}:`, 브랜치 `{종류}/`, 라벨은 표의 이슈 라벨).
+1. 종류별 title 접두사, 이슈 라벨, 브랜치 접두사는 `.claude/spec/git-convention.md`의 커밋 타입 표를 참조하라 (접두사 `{종류}:`, 브랜치 `{종류}/`, 라벨은 표의 이슈 라벨).
    이슈 본문 템플릿은 다음을 쓴다:
    - `.github/ISSUE_TEMPLATE/{종류}-issue-template.md`가 있으면 Read해서 본문 구조를 그대로 따른다.
    - 전용 템플릿이 없는 종류(test, cicd, chore)는 `feat-issue-template.md`의 본문 구조를 재사용한다.
@@ -49,7 +51,8 @@ effort: xhigh
    - 1. Issue Description: 설명
    - 2. Issue Task: 작업 항목을 `- [ ] {작업명}` 체크리스트로
    - 3. Related Domain: 해당 도메인만 `- [x]`, 나머지는 `- [ ]` 유지
-3. 본문을 스크래치 파일에 저장해두면 `gh` 전달이 안전하다 (`--body-file`로 넘김).
+3. 제목과 본문 모두 `.claude/spec/git-convention.md`의 표기 규칙을 따른다 (가운데점 대신 콤마).
+4. 본문을 스크래치 파일에 저장해두면 `gh` 전달이 안전하다 (`--body-file`로 넘김).
 
 > 다음 Phase 조건: template 규격에 맞는 본문과 라벨이 준비되었을 때
 
@@ -57,17 +60,19 @@ effort: xhigh
 
 ## Phase 3: 이슈 생성
 
-1. 아래 명령으로 이슈를 생성하라 (title 접두사·라벨은 `.claude/spec/git-convention.md`의 커밋 타입 표를 참조하라):
+1. 아래 명령으로 이슈를 생성하라 (title 접두사와 라벨은 `.claude/spec/git-convention.md`의 커밋 타입 표를 참조하라):
    ```bash
-   gh issue create --title "{접두}: {제목}" --body-file {본문파일} --label "{라벨}"
+   gh issue create --title "{접두}: {제목}" --body-file {본문파일} --label "{라벨}" --assignee @me
    ```
+   - 담당자는 항상 호출자 본인(`@me`)이다. 이슈 템플릿 frontmatter에는 담당자를 고정하지 않는다
+     (웹 UI로 이슈를 여는 다른 팀원에게 잘못 배정된다).
 2. 출력된 이슈 URL에서 이슈 번호를 파싱하라 (다음 Phase에서 브랜치명에 사용).
 
 > 다음 Phase 조건: 이슈가 생성되고 번호를 확보했을 때
 
 > Skip 조건: 없음 (필수 Phase)
 
-## Phase 4: 브랜치 생성·체크아웃
+## Phase 4: 브랜치 생성, 체크아웃
 
 1. 브랜치 컨벤션(`.claude/spec/git-convention.md`)을 따른다:
    `{종류}/{이슈번호}-{slug}` - 종류는 Phase 1에서 정한 타입, slug은 영문 kebab-case 간단 설명.
