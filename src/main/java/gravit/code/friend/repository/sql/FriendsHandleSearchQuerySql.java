@@ -5,9 +5,8 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FriendsHandleSearchQuerySql {
 
-    // --- Search: contains 포함 버전 ---
     public static final String SELECT_USER_WITH_CONTAINS_BY_HANDLE = """
-            WITH p AS (
+            WITH p AS NOT MATERIALIZED (
               SELECT :me::bigint AS me,
               :q::text AS q,
               :q_prefix::text AS q_prefix,
@@ -36,7 +35,8 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
-                ORDER BY handle, id
+                -- ~<~ 유지 필수: ASC로 바꾸면 접두 인덱스를 못 타고 전체 스캔이 된다
+                ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u
             ),
@@ -63,7 +63,8 @@ public class FriendsHandleSearchQuerySql {
                   AND handle LIKE p.q_contains
                   AND handle <> p.q
                   AND handle NOT LIKE p.q_prefix
-                LIMIT GREATEST(1, (SELECT need FROM need_contains)) * 3
+                ORDER BY handle, id
+                LIMIT (SELECT need FROM need_contains) * 3
               ) u
             ),
             contains AS MATERIALIZED (
@@ -94,9 +95,8 @@ public class FriendsHandleSearchQuerySql {
             LIMIT (SELECT lim FROM p) OFFSET (SELECT off FROM p)
             """;
 
-    // --- Search: contains 없는 버전 ---
     public static final String SELECT_USER_NO_CONTAINS_BY_HANDLE = """
-            WITH p AS (
+            WITH p AS NOT MATERIALIZED (
               SELECT :me::bigint AS me,
               :q::text AS q,
               :q_prefix::text AS q_prefix,
@@ -124,7 +124,8 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
-                ORDER BY handle, id
+                -- ~<~ 유지 필수: ASC로 바꾸면 접두 인덱스를 못 타고 전체 스캔이 된다
+                ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u
             ),

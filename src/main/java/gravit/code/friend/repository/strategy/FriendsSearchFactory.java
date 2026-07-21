@@ -13,13 +13,6 @@ import java.util.List;
 public class FriendsSearchFactory {
     private final List<FriendsSearchStrategy> strategies;
 
-    public FriendsSearchStrategy resolve(String queryText) {
-        return strategies.stream()
-                .filter(s -> s.supports(queryText))
-                .findFirst()
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.FRIEND_QUERY_STRATEGY_TYPE_INVALID));
-    }
-
     public SearchPlanDto buildPlan(
             long requesterId,
             String raw,
@@ -27,5 +20,12 @@ public class FriendsSearchFactory {
             int size
     ) {
         return resolve(raw).buildPlan(requesterId, raw, page, size);
+    }
+
+    private FriendsSearchStrategy resolve(String queryText) {
+        return strategies.stream()
+                .filter(s -> s.supports(queryText))
+                .findFirst()
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.FRIEND_QUERY_STRATEGY_TYPE_INVALID));
     }
 }
