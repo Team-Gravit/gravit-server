@@ -31,7 +31,7 @@ effort: xhigh
 3. 아래 다섯 요소가 확정되면 다음 Phase로 이동하라
    - 종류: feat / fix / refactor / hotfix / docs / test / cicd / analysis 중 하나
    - 제목: 작업을 한 줄로 표현하는 명사형.
-     `.claude/spec/git-convention.md`의 제목 규칙을 따른다 — 40자 이내, 클래스명 나열과 괄호 중첩 금지,
+     `.claude/spec/git-convention.md`의 제목 규칙을 따른다 - 40자 이내, 클래스명 나열과 괄호 중첩 금지,
      대상을 나열하지 말고 무엇을 해결하는지를 남긴다.
    - 설명: 이 작업이 왜 필요한지 1~3문장
    - 작업 항목: 체크리스트로 쪼갠 하위 작업 목록
@@ -51,7 +51,7 @@ effort: xhigh
    - 1. Issue Description: 설명
    - 2. Issue Task: 작업 항목을 `- [ ] {작업명}` 체크리스트로
    - 3. Related Domain: 해당 도메인만 `- [x]`, 나머지는 `- [ ]` 유지
-3. 제목과 본문 모두 `.claude/spec/git-convention.md`의 표기 규칙을 따른다 (가운데점 대신 콤마).
+3. 제목과 본문 모두 `.claude/spec/git-convention.md`의 표기 규칙을 따른다 (가운데점 대신 콤마, 긴 대시 대신 짧은 대시).
 4. 본문을 스크래치 파일에 저장해두면 `gh` 전달이 안전하다 (`--body-file`로 넘김).
 
 > 다음 Phase 조건: template 규격에 맞는 본문과 라벨이 준비되었을 때
