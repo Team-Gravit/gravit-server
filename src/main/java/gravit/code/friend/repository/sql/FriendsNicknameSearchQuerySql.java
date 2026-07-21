@@ -21,6 +21,7 @@ public class FriendsNicknameSearchQuerySql {
             FROM users
             WHERE id <> p.me
               AND deleted_at IS NULL
+              -- COLLATE "C" 유지 필수: 빼면 인덱스를 못 타고 Seq Scan이 된다
               AND lower(nickname) COLLATE "C" = p.q
             ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
@@ -109,6 +110,7 @@ public class FriendsNicknameSearchQuerySql {
             FROM users
             WHERE id <> p.me
               AND deleted_at IS NULL
+              -- COLLATE "C" 유지 필수: 빼면 인덱스를 못 타고 Seq Scan이 된다
               AND lower(nickname) COLLATE "C" = p.q
             ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off

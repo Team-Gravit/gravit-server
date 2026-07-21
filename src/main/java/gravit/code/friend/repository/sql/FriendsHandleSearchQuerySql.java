@@ -35,6 +35,7 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
+                -- ~<~ 유지 필수: ASC로 바꾸면 접두 인덱스를 못 타고 전체 스캔이 된다
                 ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u
@@ -123,6 +124,7 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
+                -- ~<~ 유지 필수: ASC로 바꾸면 접두 인덱스를 못 타고 전체 스캔이 된다
                 ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u
