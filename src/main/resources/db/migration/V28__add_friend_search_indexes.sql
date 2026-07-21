@@ -1,52 +1,28 @@
 -- V28__add_friend_search_indexes.sql
 -- 친구 검색(닉네임) 및 is_following 조인 성능 개선용 인덱스.
--- 근거: docs/friend-search-strategy.md "DB Access Patterns 기반 개선안" 섹션.
--- 각 인덱스는 EXPLAIN (ANALYZE, BUFFERS)로 적용 전후를 실측해 확정했다.
+-- 설계 근거와 실측치: docs/retrospective-friend-search.md
 
--- trigram 확장은 V2에서 이미 활성화되어 있으나, 순서 독립성을 위해 방어적으로 재확인한다.
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
--- 1) is_following 조인 인덱스
---    friends 테이블에는 현재 PK(id)만 있어, LEFT JOIN friends (follower_id=me AND followee_id=s.id)가
---    인덱스를 못 타고 매 후보 행마다 랜덤 액세스를 유발한다.
---    선행 컬럼 follower_id에 상수(me)가 걸리므로 Seek + 좁은 Range가 되고,
---    "팔로우 여부" 존재 확인만 필요하므로 별도 INCLUDE 없이 Index-Only 프로브가 된다.
---    (팔로잉 목록 조회 findByFollowerId 경로도 함께 이득)
+-- 1) is_following 조인용. friends에 PK만 있어 LEFT JOIN이 매 후보 행마다 랜덤 액세스를 유발했다.
+--    선행 컬럼에 상수(me)가 걸려 좁은 range seek이 되고, 존재 확인만 필요해 INCLUDE가 없어도 Index-Only가 된다.
 CREATE INDEX IF NOT EXISTS ix_friends_follower_followee
     ON friends (follower_id, followee_id);
 
--- 2) 닉네임 정확/접두 검색용 커버링(표현식) 부분 인덱스
---    SQL이 lower(nickname)으로 비교/정렬하므로 반드시 lower() 표현식 인덱스여야 한다.
---    COLLATE "C"로 LIKE 'x%' 접두 검색이 로케일과 무관하게 인덱스를 타게 한다.
---      - text_pattern_ops가 아니라 COLLATE "C"인 이유: pattern_ops 인덱스가 만드는 정렬 pathkey는
---        ~<~ 연산자 패밀리라, 표준 연산자(<)를 쓰는 ORDER BY와 매칭되지 않는다.
---        COLLATE "C"를 붙여도 마찬가지다(기본 text_ops 패밀리라 여전히 불일치).
---        그 결과 pattern_ops 인덱스로는 정렬 조기종료가 불가능하고 매칭 전건 스캔 + Sort가 강제된다.
---        기본 연산자 클래스 + COLLATE "C"는 바이트 순서를 그대로 유지하면서 ORDER BY와도 매칭된다.
---        (실측 20만행/매칭 12409건: pattern_ops 12409행 스캔 → COLLATE "C" 21행, 201 → 4 buffers)
---      - LIKE 'x%'는 COLLATE를 명시하지 않아도 된다. 인덱스가 C 콜레이션이면 플래너가
---        >= / < 범위를 스스로 도출한다.
---      - 반면 동등 비교(=)는 반드시 lower(nickname) COLLATE "C" = ... 로 명시해야 한다.
---        콜레이션이 어긋나면 Index Cond로 승격되지 않고 Seq Scan으로 떨어진다.
---        (실측 20만행: 명시 없이 27.9ms/1667 buffers → 명시 시 0.16ms/4 buffers)
---    INCLUDE에는 SELECT가 반환하는 컬럼(id, profile_img_number, nickname, handle)을 모두 담는다.
---      - 인덱스 키는 lower(nickname)이므로 원본 nickname은 파생되지 않는다 → nickname을 반드시 포함해야
---        heap 방문 없는 Index-Only Scan이 된다. (벤치 실측: 미포함 시 Bitmap Heap Scan로 폴백)
---    WHERE deleted_at IS NULL 부분 인덱스로 검색 대상만 인덱싱 → 크기 축소 + 필터가 인덱스에 반영.
---    (Index-Only Scan 실효는 autovacuum의 가시성 맵 최신화에 의존한다)
+-- 2) 닉네임 정확/접두 검색용 커버링 부분 인덱스.
+--    COLLATE "C": text_pattern_ops를 쓰면 정렬 pathkey가 ~<~ 패밀리라 ORDER BY와 매칭되지 않아
+--                 조기 종료가 불가능하다. 기본 연산자 클래스 + C 콜레이션이라야 둘 다 만족한다.
+--                 이 인덱스를 쓰는 쿼리는 ORDER BY와 = 비교에 COLLATE "C"를 명시해야 한다.
+--                 (LIKE 'x%'는 플래너가 범위를 도출해주므로 불필요)
+--    INCLUDE: 키가 lower(nickname)이라 원본 nickname이 파생되지 않는다. SELECT 반환 컬럼을 모두
+--             담아야 heap 방문이 사라진다. 하나라도 빠지면 Bitmap Heap Scan으로 폴백한다.
 CREATE INDEX IF NOT EXISTS ix_users_nickname_lower_cover
     ON users (lower(nickname) COLLATE "C")
     INCLUDE (id, profile_img_number, nickname, handle)
     WHERE deleted_at IS NULL;
 
--- 3) 닉네임 부분 검색('%x%')용 trigram GIN
---    ILIKE '%x%'를 위한 인덱스. 선택도에 따라 GIN과 2)의 커버링 btree로 계획이 갈리며,
---    실측(한글 닉네임 20만행, contains 버킷 LIMIT 60) 결과 양쪽 다 플래너 선택이 옳았다.
---      - 고선택도(매칭 1~205건): GIN 선택, 0.02~0.19ms. GIN을 빼면 26ms(Seq Scan)로 악화
---        → 이 인덱스가 값을 하는 구간이다.
---      - 저선택도(매칭 1만건): 2)의 커버링 btree로 정렬 조기종료, 0.4~2.7ms.
---        GIN을 강제하면 31ms로 12배 악화된다. GIN은 정렬을 제공하지 못해 매칭 전건을
---        모은 뒤 정렬해야 하기 때문이며, 이 구간은 GIN이 답이 아니다.
---    한글 1글자도 패딩 trigram 2개가 생성되어 색인 자체는 가능하나 선택도가 낮아 실익은 없다.
+-- 3) 닉네임 부분 검색('%x%')용 trigram GIN.
+--    선택도가 높을 때만 이 인덱스가 이기고, 낮을 때는 2)의 커버링 btree 조기 종료가 이긴다.
+--    플래너가 두 구간을 알아서 가른다.
 CREATE INDEX IF NOT EXISTS gin_users_nickname_trgm
     ON users USING gin (nickname gin_trgm_ops);

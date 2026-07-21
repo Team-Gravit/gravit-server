@@ -2,13 +2,29 @@ package gravit.code.friend.repository.sql;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * 핸들 검색 쿼리. exact → prefix → contains 순으로 페이지를 채운다.
+ *
+ * <p>아래 규칙은 성능·정확성에 직결되므로 수정 시 반드시 유지해야 한다.
+ * 배경과 실측치는 {@code docs/retrospective-friend-search.md} 참고.
+ *
+ * <ul>
+ *   <li><b>ORDER BY handle USING ~&lt;~</b> — 접두 인덱스 ix_users_handle_like_with_id가
+ *       varchar_pattern_ops다. 정렬 연산자를 맞춰야 Sort 노드 없이 LIMIT 건수만 읽고 멈춘다.
+ *       기본 ORDER BY handle이면 옵티마이저가 유니크 인덱스를 골라 전체를 훑고,
+ *       COLLATE "C"로도 패밀리가 달라 매칭되지 않는다.
+ *       handle은 [0-9a-f]뿐이라 ~&lt;~ 순서와 기본 순서가 같아 결과는 불변이다.</li>
+ *   <li><b>NOT MATERIALIZED</b> — p가 여러 버킷에서 참조되어 materialize되면 LIKE 패턴이
+ *       불투명한 값이 되어 접두 인덱스를 못 탄다.</li>
+ *   <li><b>contains의 LIMIT need*3</b> — need=0(앞 버킷이 페이지를 채움)이면 LIMIT 0으로
+ *       스캔 자체를 건너뛴다. GREATEST(1, need)로 바꾸면 불필요한 전체 스캔이 생긴다.</li>
+ * </ul>
+ */
 @UtilityClass
 public class FriendsHandleSearchQuerySql {
 
     // --- Search: contains 포함 버전 ---
     public static final String SELECT_USER_WITH_CONTAINS_BY_HANDLE = """
-            -- NOT MATERIALIZED: p가 여러 버킷에서 참조되어 자동 materialize되면 LIKE 패턴(q_prefix)이
-            -- 불투명한 런타임 값이 되어 접두 인덱스(varchar_pattern_ops)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
             WITH p AS NOT MATERIALIZED (
               SELECT :me::bigint AS me,
               :q::text AS q,
@@ -38,14 +54,6 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
-                -- USING ~<~: 접두 검색 인덱스(ix_users_handle_like_with_id = varchar_pattern_ops, id)의
-                -- 정렬 연산자와 정확히 일치시켜 접두 인덱스 하나로 seek+정렬을 모두 처리한다(Sort 노드 없음).
-                --   - 기본 ORDER BY handle이면 옵티마이저가 정렬을 맞추려 users_handle_key(유니크)를 골라
-                --     LIKE seek 없이 전체 스캔한다(실측 20만행: 125,681행 스캔, 126,109 buffers).
-                --   - COLLATE "C"로는 부족하다. pattern_ops 인덱스의 정렬 pathkey는 ~<~ 패밀리인데
-                --     COLLATE "C"는 기본 text_ops 패밀리라 여전히 불일치 → 매칭 전건 읽고 Sort(642 buffers).
-                --   - USING ~<~는 pathkey가 맞아떨어져 LIMIT 건수만 읽고 멈춘다(23 buffers).
-                -- handle은 [0-9a-f]뿐이라 ~<~ 순서 == 기본 순서 → 결과 불변, 최종 표시는 바깥 ORDER BY가 담당.
                 ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u
@@ -73,12 +81,7 @@ public class FriendsHandleSearchQuerySql {
                   AND handle LIKE p.q_contains
                   AND handle <> p.q
                   AND handle NOT LIKE p.q_prefix
-                -- 결정성: 정렬 없이 뽑으면 페이지 넘김 시 후보 집합이 달라져 중복/누락 가능.
-                -- 최종 표시 순서(handle, id)로 뽑아 페이지 간 후보를 고정한다.
-                -- (contains는 개선4로 exact+prefix 미충족 시=매칭 적은 경우에만 실행 → 정렬 비용 무시 가능)
                 ORDER BY handle, id
-                -- need*3 (0 허용): exact+prefix가 이미 페이지를 채우면 need=0 → LIMIT 0 → contains 스캔 스킵.
-                -- (기존 GREATEST(1,need)*3은 불필요할 때도 최소 1건을 찾으려 테이블 전체를 헛스캔했다)
                 LIMIT (SELECT need FROM need_contains) * 3
               ) u
             ),
@@ -112,8 +115,6 @@ public class FriendsHandleSearchQuerySql {
 
     // --- Search: contains 없는 버전 ---
     public static final String SELECT_USER_NO_CONTAINS_BY_HANDLE = """
-            -- NOT MATERIALIZED: p가 여러 버킷에서 참조되어 자동 materialize되면 LIKE 패턴(q_prefix)이
-            -- 불투명한 런타임 값이 되어 접두 인덱스(varchar_pattern_ops)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
             WITH p AS NOT MATERIALIZED (
               SELECT :me::bigint AS me,
               :q::text AS q,
@@ -142,14 +143,6 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
-                -- USING ~<~: 접두 검색 인덱스(ix_users_handle_like_with_id = varchar_pattern_ops, id)의
-                -- 정렬 연산자와 정확히 일치시켜 접두 인덱스 하나로 seek+정렬을 모두 처리한다(Sort 노드 없음).
-                --   - 기본 ORDER BY handle이면 옵티마이저가 정렬을 맞추려 users_handle_key(유니크)를 골라
-                --     LIKE seek 없이 전체 스캔한다(실측 20만행: 125,681행 스캔, 126,109 buffers).
-                --   - COLLATE "C"로는 부족하다. pattern_ops 인덱스의 정렬 pathkey는 ~<~ 패밀리인데
-                --     COLLATE "C"는 기본 text_ops 패밀리라 여전히 불일치 → 매칭 전건 읽고 Sort(642 buffers).
-                --   - USING ~<~는 pathkey가 맞아떨어져 LIMIT 건수만 읽고 멈춘다(23 buffers).
-                -- handle은 [0-9a-f]뿐이라 ~<~ 순서 == 기본 순서 → 결과 불변, 최종 표시는 바깥 ORDER BY가 담당.
                 ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u

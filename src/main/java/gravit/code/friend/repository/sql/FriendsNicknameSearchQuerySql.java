@@ -2,13 +2,29 @@ package gravit.code.friend.repository.sql;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * 닉네임 검색 쿼리. exact → prefix → contains 순으로 페이지를 채운다.
+ *
+ * <p>아래 규칙은 성능·정확성에 직결되므로 수정 시 반드시 유지해야 한다.
+ * 배경과 실측치는 {@code docs/retrospective-friend-search.md} 참고.
+ *
+ * <ul>
+ *   <li><b>COLLATE "C"</b> — 인덱스 ix_users_nickname_lower_cover가 C 콜레이션이다.
+ *       ORDER BY와 = 비교의 콜레이션이 어긋나면 조기 종료에 실패하거나 Seq Scan으로 떨어진다.
+ *       (LIKE는 플래너가 범위를 도출해주므로 예외)</li>
+ *   <li><b>정렬키 통일</b> — 각 버킷이 LIMIT으로 후보를 자르므로, 바깥 표시 정렬키가 다르면
+ *       후보에 못 든 행이 통째로 누락된다. 모든 ORDER BY가 같은 기준이어야 한다.</li>
+ *   <li><b>NOT MATERIALIZED</b> — p가 여러 버킷에서 참조되어 materialize되면 LIKE 패턴이
+ *       불투명한 값이 되어 접두 인덱스를 못 탄다.</li>
+ *   <li><b>contains의 LIMIT need*3</b> — need=0(앞 버킷이 페이지를 채움)이면 LIMIT 0으로
+ *       스캔 자체를 건너뛴다. GREATEST(1, need)로 바꾸면 불필요한 전체 스캔이 생긴다.</li>
+ * </ul>
+ */
 @UtilityClass
 public class FriendsNicknameSearchQuerySql {
 
     // --- Search: contains 포함 (exact/prefix: lower()+LIKE, contains: ILIKE) ---
     public static final String SELECT_USER_WITH_CONTAINS_BY_NICKNAME = """
-        -- NOT MATERIALIZED: p가 여러 버킷에서 참조되어 자동 materialize되면 LIKE 패턴(q_prefix)이
-        -- 불투명한 런타임 값이 되어 접두 인덱스(ix_users_nickname_lower_cover)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
         WITH p AS NOT MATERIALIZED (
           SELECT :me::bigint AS me,
                  :q::text AS q,
@@ -24,10 +40,7 @@ public class FriendsNicknameSearchQuerySql {
             FROM users
             WHERE id <> p.me
               AND deleted_at IS NULL
-            -- COLLATE "C" 필수: 인덱스가 C 콜레이션이라 동등 비교의 콜레이션이 다르면 Index Cond로
-            -- 승격되지 못하고 Seq Scan으로 떨어진다. (LIKE와 달리 = 는 플래너가 보정해주지 않는다)
               AND lower(nickname) COLLATE "C" = p.q
-            -- exact 버킷도 표시 정렬키와 동일하게 맞춘다(lower가 모두 같아 실질 정렬은 id).
             ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
@@ -41,10 +54,6 @@ public class FriendsNicknameSearchQuerySql {
               AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
-            -- 정렬키를 인덱스(ix_users_nickname_lower_cover = lower(nickname) COLLATE "C")와 정확히 일치시킨다.
-            -- 표현식(lower)과 콜레이션(C)이 모두 맞아야 인덱스 정렬을 그대로 써서 LIMIT 건수만 읽고 멈춘다.
-            -- 둘 중 하나라도 어긋나면 Sort 노드가 붙어 매칭 전건을 읽는다.
-            -- 최종 표시 순서는 바깥 ORDER BY s.nickname이 담당하므로 결과 순서는 불변.
             ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
@@ -72,12 +81,7 @@ public class FriendsNicknameSearchQuerySql {
               AND nickname ILIKE p.q_contains
               AND lower(nickname) <> p.q
               AND lower(nickname) NOT LIKE p.q_prefix
-            -- 결정성: 정렬 없이 뽑으면 페이지 넘김 시 후보 집합이 달라져 중복/누락 가능.
-            -- 최종 표시 순서(lower(nickname) COLLATE "C", id)로 뽑아 페이지 간 후보를 고정한다.
-            -- (contains는 개선4로 exact+prefix 미충족 시=매칭 적은 경우에만 실행 → 정렬 비용 무시 가능)
             ORDER BY lower(nickname) COLLATE "C", id
-            -- need*3 (0 허용): exact+prefix가 이미 페이지를 채우면 need=0 → LIMIT 0 → contains 스캔 스킵.
-            -- (기존 GREATEST(1,need)*3은 불필요할 때도 최소 1건을 찾으려 테이블 전체를 헛스캔했다)
             LIMIT (SELECT need FROM need_contains) * 3
           ) u
         ),
@@ -105,19 +109,12 @@ public class FriendsNicknameSearchQuerySql {
         LEFT JOIN friends f
           ON f.follower_id = (SELECT me FROM p)
          AND f.followee_id = s.id
-        -- 표시 순서를 후보 선정 정렬키(lower(nickname) COLLATE "C")와 동일하게 맞춘다.
-        -- 각 버킷이 C 순서로 LIMIT을 잘라 후보를 고르므로, 표시를 다른 콜레이션으로 하면
-        -- "표시 순서상 앞서지만 C 순서로는 뒤라 후보에 못 든" 행이 통째로 누락된다.
-        -- (실측: 한글/ASCII가 섞인 '김%' 검색에서 1페이지 20건이 표시순 정답과 0건 일치)
-        -- 순수 한글 구간에서 C 순서는 가나다 순과 일치하고, ASCII가 한글보다 앞서는 차이만 남는다.
         ORDER BY s.w DESC, lower(s.nickname) COLLATE "C" ASC, s.id ASC
         LIMIT (SELECT lim FROM p) OFFSET (SELECT off FROM p)
         """;
 
     // --- Search: contains 없는 버전 (exact/prefix만) ---
     public static final String SELECT_USER_NO_CONTAINS_BY_NICKNAME = """
-        -- NOT MATERIALIZED: p가 여러 버킷에서 참조되어 자동 materialize되면 LIKE 패턴(q_prefix)이
-        -- 불투명한 런타임 값이 되어 접두 인덱스(ix_users_nickname_lower_cover)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
         WITH p AS NOT MATERIALIZED (
           SELECT :me::bigint AS me,
                  :q::text AS q,
@@ -132,10 +129,7 @@ public class FriendsNicknameSearchQuerySql {
             FROM users
             WHERE id <> p.me
               AND deleted_at IS NULL
-            -- COLLATE "C" 필수: 인덱스가 C 콜레이션이라 동등 비교의 콜레이션이 다르면 Index Cond로
-            -- 승격되지 못하고 Seq Scan으로 떨어진다. (LIKE와 달리 = 는 플래너가 보정해주지 않는다)
               AND lower(nickname) COLLATE "C" = p.q
-            -- exact 버킷도 표시 정렬키와 동일하게 맞춘다(lower가 모두 같아 실질 정렬은 id).
             ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
@@ -149,9 +143,6 @@ public class FriendsNicknameSearchQuerySql {
               AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
-            -- 정렬키를 인덱스(ix_users_nickname_lower_cover = lower(nickname) COLLATE "C")와 정확히 일치시켜
-            -- 인덱스 정렬을 그대로 쓰고 LIMIT 건수만 읽고 멈춘다.
-            -- 최종 표시 순서는 바깥 ORDER BY s.nickname이 담당하므로 결과 순서는 불변.
             ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
@@ -180,11 +171,6 @@ public class FriendsNicknameSearchQuerySql {
         LEFT JOIN friends f
           ON f.follower_id = (SELECT me FROM p)
          AND f.followee_id = s.id
-        -- 표시 순서를 후보 선정 정렬키(lower(nickname) COLLATE "C")와 동일하게 맞춘다.
-        -- 각 버킷이 C 순서로 LIMIT을 잘라 후보를 고르므로, 표시를 다른 콜레이션으로 하면
-        -- "표시 순서상 앞서지만 C 순서로는 뒤라 후보에 못 든" 행이 통째로 누락된다.
-        -- (실측: 한글/ASCII가 섞인 '김%' 검색에서 1페이지 20건이 표시순 정답과 0건 일치)
-        -- 순수 한글 구간에서 C 순서는 가나다 순과 일치하고, ASCII가 한글보다 앞서는 차이만 남는다.
         ORDER BY s.w DESC, lower(s.nickname) COLLATE "C" ASC, s.id ASC
         LIMIT (SELECT lim FROM p) OFFSET (SELECT off FROM p)
         """;
