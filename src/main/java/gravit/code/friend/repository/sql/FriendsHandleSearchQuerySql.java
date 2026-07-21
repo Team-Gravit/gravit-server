@@ -38,12 +38,15 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
-                -- COLLATE "C": 접두 검색 인덱스(ix_users_handle_like_with_id = varchar_pattern_ops, C 순서)와
-                -- 정렬 규칙을 일치시킨다. 기본 ORDER BY handle(콜레이션 순서)이면 옵티마이저가 정렬을 맞추려
-                -- users_handle_key(유니크)를 골라 LIKE seek 없이 전체 스캔한다(계획 변동, 수만 페이지).
-                -- 정렬키를 C로 맞추면 접두 인덱스 하나로 seek+정렬을 모두 처리한다.
-                -- handle은 [0-9a-f]뿐이라 C 순서 == 기본 순서 → 결과 불변, 최종 표시는 바깥 ORDER BY가 담당.
-                ORDER BY handle COLLATE "C", id
+                -- USING ~<~: 접두 검색 인덱스(ix_users_handle_like_with_id = varchar_pattern_ops, id)의
+                -- 정렬 연산자와 정확히 일치시켜 접두 인덱스 하나로 seek+정렬을 모두 처리한다(Sort 노드 없음).
+                --   - 기본 ORDER BY handle이면 옵티마이저가 정렬을 맞추려 users_handle_key(유니크)를 골라
+                --     LIKE seek 없이 전체 스캔한다(실측 20만행: 125,681행 스캔, 126,109 buffers).
+                --   - COLLATE "C"로는 부족하다. pattern_ops 인덱스의 정렬 pathkey는 ~<~ 패밀리인데
+                --     COLLATE "C"는 기본 text_ops 패밀리라 여전히 불일치 → 매칭 전건 읽고 Sort(642 buffers).
+                --   - USING ~<~는 pathkey가 맞아떨어져 LIMIT 건수만 읽고 멈춘다(23 buffers).
+                -- handle은 [0-9a-f]뿐이라 ~<~ 순서 == 기본 순서 → 결과 불변, 최종 표시는 바깥 ORDER BY가 담당.
+                ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u
             ),
@@ -139,12 +142,15 @@ public class FriendsHandleSearchQuerySql {
                   AND deleted_at IS NULL
                   AND handle LIKE p.q_prefix
                   AND handle <> p.q
-                -- COLLATE "C": 접두 검색 인덱스(ix_users_handle_like_with_id = varchar_pattern_ops, C 순서)와
-                -- 정렬 규칙을 일치시킨다. 기본 ORDER BY handle(콜레이션 순서)이면 옵티마이저가 정렬을 맞추려
-                -- users_handle_key(유니크)를 골라 LIKE seek 없이 전체 스캔한다(계획 변동, 수만 페이지).
-                -- 정렬키를 C로 맞추면 접두 인덱스 하나로 seek+정렬을 모두 처리한다.
-                -- handle은 [0-9a-f]뿐이라 C 순서 == 기본 순서 → 결과 불변, 최종 표시는 바깥 ORDER BY가 담당.
-                ORDER BY handle COLLATE "C", id
+                -- USING ~<~: 접두 검색 인덱스(ix_users_handle_like_with_id = varchar_pattern_ops, id)의
+                -- 정렬 연산자와 정확히 일치시켜 접두 인덱스 하나로 seek+정렬을 모두 처리한다(Sort 노드 없음).
+                --   - 기본 ORDER BY handle이면 옵티마이저가 정렬을 맞추려 users_handle_key(유니크)를 골라
+                --     LIKE seek 없이 전체 스캔한다(실측 20만행: 125,681행 스캔, 126,109 buffers).
+                --   - COLLATE "C"로는 부족하다. pattern_ops 인덱스의 정렬 pathkey는 ~<~ 패밀리인데
+                --     COLLATE "C"는 기본 text_ops 패밀리라 여전히 불일치 → 매칭 전건 읽고 Sort(642 buffers).
+                --   - USING ~<~는 pathkey가 맞아떨어져 LIMIT 건수만 읽고 멈춘다(23 buffers).
+                -- handle은 [0-9a-f]뿐이라 ~<~ 순서 == 기본 순서 → 결과 불변, 최종 표시는 바깥 ORDER BY가 담당.
+                ORDER BY handle USING ~<~, id
                 LIMIT p.lim + p.off
               ) u
             ),

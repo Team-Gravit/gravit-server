@@ -8,7 +8,7 @@ public class FriendsNicknameSearchQuerySql {
     // --- Search: contains 포함 (exact/prefix: lower()+LIKE, contains: ILIKE) ---
     public static final String SELECT_USER_WITH_CONTAINS_BY_NICKNAME = """
         -- NOT MATERIALIZED: p가 여러 버킷에서 참조되어 자동 materialize되면 LIKE 패턴(q_prefix)이
-        -- 불투명한 런타임 값이 되어 접두 인덱스(text_pattern_ops)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
+        -- 불투명한 런타임 값이 되어 접두 인덱스(ix_users_nickname_lower_cover)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
         WITH p AS NOT MATERIALIZED (
           SELECT :me::bigint AS me,
                  :q::text AS q,
@@ -38,10 +38,11 @@ public class FriendsNicknameSearchQuerySql {
               AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
-            -- 정렬키를 인덱스(lower(nickname) text_pattern_ops)와 일치시켜 Index-Only Scan 조기종료 유도.
-            -- (ORDER BY nickname(원본)이면 인덱스 정렬과 불일치 → 매칭 전건 heap 읽고 정렬 → Bitmap Heap Scan)
+            -- 정렬키를 인덱스(ix_users_nickname_lower_cover = lower(nickname) COLLATE "C")와 정확히 일치시킨다.
+            -- 표현식(lower)과 콜레이션(C)이 모두 맞아야 인덱스 정렬을 그대로 써서 LIMIT 건수만 읽고 멈춘다.
+            -- 둘 중 하나라도 어긋나면 Sort 노드가 붙어 매칭 전건을 읽는다.
             -- 최종 표시 순서는 바깥 ORDER BY s.nickname이 담당하므로 결과 순서는 불변.
-            ORDER BY lower(nickname), id
+            ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
         ),
@@ -108,7 +109,7 @@ public class FriendsNicknameSearchQuerySql {
     // --- Search: contains 없는 버전 (exact/prefix만) ---
     public static final String SELECT_USER_NO_CONTAINS_BY_NICKNAME = """
         -- NOT MATERIALIZED: p가 여러 버킷에서 참조되어 자동 materialize되면 LIKE 패턴(q_prefix)이
-        -- 불투명한 런타임 값이 되어 접두 인덱스(text_pattern_ops)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
+        -- 불투명한 런타임 값이 되어 접두 인덱스(ix_users_nickname_lower_cover)를 못 탄다. 인라인 강제로 인덱스 사용 유지.
         WITH p AS NOT MATERIALIZED (
           SELECT :me::bigint AS me,
                  :q::text AS q,
@@ -137,9 +138,10 @@ public class FriendsNicknameSearchQuerySql {
               AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
-            -- 정렬키를 인덱스(lower(nickname) text_pattern_ops)와 일치시켜 Index-Only Scan 조기종료 유도.
+            -- 정렬키를 인덱스(ix_users_nickname_lower_cover = lower(nickname) COLLATE "C")와 정확히 일치시켜
+            -- 인덱스 정렬을 그대로 쓰고 LIMIT 건수만 읽고 멈춘다.
             -- 최종 표시 순서는 바깥 ORDER BY s.nickname이 담당하므로 결과 순서는 불변.
-            ORDER BY lower(nickname), id
+            ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
         ),
