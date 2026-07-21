@@ -34,7 +34,7 @@ Problem과 Solution만 읽어도 "무엇이 왜 문제였고, 어떤 방법을 �
 
 1. `.github/PULL_REQUEST_TEMPLATE.md`를 Read로 읽어 섹션 구조(`PR Summary`, `Problem`, `Solution`, `Related Issue`)를 그대로 따르라.
    - 템플릿의 HTML 주석(`<!-- ... -->`)은 작성 가이드다. 본문에 포함하지 마라.
-   - 제목 아래 `---`과 섹션 사이 `<br>`은 렌더링 장식이다. 지우지 말고 그대로 유지하라.
+   - 섹션 제목은 `##`, 섹션 사이의 `<br>`은 렌더링 장식이다. 지우거나 바꾸지 말고 그대로 유지하라.
 2. `.claude/spec/git-convention.md`를 Read로 읽어 커밋 메시지 형식, 제목 규칙, 표기 규칙을 확인하라.
 3. PR 제목은 `{type}: {설명}(#{이슈번호})` 형식으로, git-convention.md의 제목 규칙을 따른다.
    - (지양) `refactor: 알림/소셜피드/유저리그 리스너 Redis 재시도 큐 기반으로 전환`
@@ -52,13 +52,13 @@ Problem과 Solution만 읽어도 "무엇이 왜 문제였고, 어떤 방법을 �
    문제가 하나면 번호를 붙이지 말고 문단으로만 써라.
 
    ```
-   ### Problem
+   ## Problem
    **문제 1 - 커밋 이후 처리 실패 유실**
    ...
    **문제 2 - 유저리그 생성 시 매 호출 예외 발생**
    ...
 
-   ### Solution
+   ## Solution
    **해결 1 - 이벤트 적재와 처리 분리**
    ...
    **해결 2 - 전파 속성을 `REQUIRES_NEW`로 변경**
