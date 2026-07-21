@@ -1,4 +1,4 @@
--- V27__add_friend_search_indexes.sql
+-- V28__add_friend_search_indexes.sql
 -- 친구 검색(닉네임) 및 is_following 조인 성능 개선용 인덱스.
 -- 근거: docs/friend-search-strategy.md "DB Access Patterns 기반 개선안" 섹션.
 -- 주의: 이 파일은 초안이다. 반드시 EXPLAIN (ANALYZE, BUFFERS)로 적용 전후를 실측한 뒤 확정한다.
