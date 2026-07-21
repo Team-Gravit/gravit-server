@@ -17,6 +17,18 @@ public record ProblemSubmissionRequest(
                 example = "true"
         )
         @NotNull(message = "최초 정/오답 여부가 비어있습니다.")
-        Boolean isCorrect
+        Boolean isCorrect,
+
+        @Schema(
+                description = "선택한 보기 아이디 (객관식)",
+                example = "12"
+        )
+        Long selectedOptionId,
+
+        @Schema(
+                description = "제출한 답안 내용 (주관식)",
+                example = "프로세스는 실행 중인 프로그램이다"
+        )
+        String submittedContent
 ) {
 }

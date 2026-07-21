@@ -136,7 +136,7 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     @Query("""
         SELECT new gravit.code.learning.dto.internal.WeakLessonStatDto(
             l.id, u.title, c.title,
-            (SELECT COUNT(ps.id)
+            (SELECT COUNT(DISTINCT ps.problemId)
              FROM ProblemSubmission ps
              WHERE ps.userId = :userId
                AND ps.isCorrect = false
@@ -149,7 +149,7 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
         JOIN Chapter c ON c.id = u.chapterId
         WHERE ls.userId = :userId
         ORDER BY
-            (1.0 * (SELECT COUNT(ps.id)
+            (1.0 * (SELECT COUNT(DISTINCT ps.problemId)
                     FROM ProblemSubmission ps
                     WHERE ps.userId = :userId
                       AND ps.isCorrect = false

@@ -48,7 +48,6 @@ public class LessonFacade {
 
     private final ApplicationEventPublisher publisher;
 
-
     @Transactional(readOnly = true)
     public LessonDetailResponse getAllLessonInUnit(
             long userId,
@@ -80,7 +79,7 @@ public class LessonFacade {
 
         // 레슨 풀이 결과, 문제 풀이 결과 저장
         lessonSubmissionCommandService.saveLessonSubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
-        problemSubmissionCommandService.saveProblemSubmissions(userId, request.problemSubmissionRequests(), isFirstTry);
+        problemSubmissionCommandService.saveProblemSubmissions(userId, request.problemSubmissionRequests());
 
         // 응답 데이터 조회
         UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());

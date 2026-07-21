@@ -5,22 +5,22 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class ProblemSubmissionFixture {
 
-    public static ProblemSubmission 정답_제출(
+    public static ProblemSubmission 객관식_제출(
             long problemId,
-            long userId
+            long userId,
+            boolean isCorrect,
+            long selectedOptionId
     ) {
-        ProblemSubmission submission = ProblemSubmission.create(true, problemId, userId);
-        ReflectionTestUtils.setField(submission, "id", 1L);
-        return submission;
+        return ProblemSubmission.create(isCorrect, problemId, userId, selectedOptionId, null);
     }
 
-    public static ProblemSubmission 오답_제출(
+    public static ProblemSubmission 주관식_제출(
             long problemId,
-            long userId
+            long userId,
+            boolean isCorrect,
+            String submittedContent
     ) {
-        ProblemSubmission submission = ProblemSubmission.create(false, problemId, userId);
-        ReflectionTestUtils.setField(submission, "id", 2L);
-        return submission;
+        return ProblemSubmission.create(isCorrect, problemId, userId, null, submittedContent);
     }
 
     public static ProblemSubmission 저장된_문제_제출(
@@ -29,7 +29,7 @@ public class ProblemSubmissionFixture {
             long problemId,
             long userId
     ) {
-        ProblemSubmission submission = ProblemSubmission.create(isCorrect, problemId, userId);
+        ProblemSubmission submission = ProblemSubmission.create(isCorrect, problemId, userId, null, null);
         ReflectionTestUtils.setField(submission, "id", id);
         return submission;
     }
