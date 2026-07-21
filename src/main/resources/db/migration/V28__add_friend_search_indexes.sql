@@ -24,8 +24,11 @@ CREATE INDEX IF NOT EXISTS ix_friends_follower_followee
 --        그 결과 pattern_ops 인덱스로는 정렬 조기종료가 불가능하고 매칭 전건 스캔 + Sort가 강제된다.
 --        기본 연산자 클래스 + COLLATE "C"는 바이트 순서를 그대로 유지하면서 ORDER BY와도 매칭된다.
 --        (실측 20만행/매칭 12409건: pattern_ops 12409행 스캔 → COLLATE "C" 21행, 201 → 4 buffers)
---      - WHERE 절은 COLLATE를 명시하지 않아도 된다. 인덱스가 C 콜레이션이면 플래너가
---        LIKE 'x%'에서 >= / < 범위를 스스로 도출한다.
+--      - LIKE 'x%'는 COLLATE를 명시하지 않아도 된다. 인덱스가 C 콜레이션이면 플래너가
+--        >= / < 범위를 스스로 도출한다.
+--      - 반면 동등 비교(=)는 반드시 lower(nickname) COLLATE "C" = ... 로 명시해야 한다.
+--        콜레이션이 어긋나면 Index Cond로 승격되지 않고 Seq Scan으로 떨어진다.
+--        (실측 20만행: 명시 없이 27.9ms/1667 buffers → 명시 시 0.16ms/4 buffers)
 --    INCLUDE에는 SELECT가 반환하는 컬럼(id, profile_img_number, nickname, handle)을 모두 담는다.
 --      - 인덱스 키는 lower(nickname)이므로 원본 nickname은 파생되지 않는다 → nickname을 반드시 포함해야
 --        heap 방문 없는 Index-Only Scan이 된다. (벤치 실측: 미포함 시 Bitmap Heap Scan로 폴백)
