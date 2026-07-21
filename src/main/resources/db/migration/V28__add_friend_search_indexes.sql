@@ -40,7 +40,13 @@ CREATE INDEX IF NOT EXISTS ix_users_nickname_lower_cover
     WHERE deleted_at IS NULL;
 
 -- 3) 닉네임 부분 검색('%x%')용 trigram GIN
---    ILIKE '%x%'를 위한 인덱스. 단, 흔한 한글 음절 등 저선택도 검색어에서는
---    옵티마이저가 여전히 스캔을 택할 수 있다(=근본 해결 아님). 실측으로 효과 범위를 확인한다.
+--    ILIKE '%x%'를 위한 인덱스. 선택도에 따라 GIN과 2)의 커버링 btree로 계획이 갈리며,
+--    실측(한글 닉네임 20만행, contains 버킷 LIMIT 60) 결과 양쪽 다 플래너 선택이 옳았다.
+--      - 고선택도(매칭 1~205건): GIN 선택, 0.02~0.19ms. GIN을 빼면 26ms(Seq Scan)로 악화
+--        → 이 인덱스가 값을 하는 구간이다.
+--      - 저선택도(매칭 1만건): 2)의 커버링 btree로 정렬 조기종료, 0.4~2.7ms.
+--        GIN을 강제하면 31ms로 12배 악화된다. GIN은 정렬을 제공하지 못해 매칭 전건을
+--        모은 뒤 정렬해야 하기 때문이며, 이 구간은 GIN이 답이 아니다.
+--    한글 1글자도 패딩 trigram 2개가 생성되어 색인 자체는 가능하나 선택도가 낮아 실익은 없다.
 CREATE INDEX IF NOT EXISTS gin_users_nickname_trgm
     ON users USING gin (nickname gin_trgm_ops);
