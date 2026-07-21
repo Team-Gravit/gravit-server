@@ -138,7 +138,7 @@ class LessonFacadeUnitTest {
             long userId = 1L;
             LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 120, 80);
             List<ProblemSubmissionRequest> problemRequests = List.of(
-                    new ProblemSubmissionRequest(1L, true)
+                    new ProblemSubmissionRequest(1L, true, null, "LIFO")
             );
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
@@ -167,7 +167,7 @@ class LessonFacadeUnitTest {
             long userId = 1L;
             LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 90, 85);
             List<ProblemSubmissionRequest> problemRequests = List.of(
-                    new ProblemSubmissionRequest(1L, true)
+                    new ProblemSubmissionRequest(1L, true, null, "LIFO")
             );
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 

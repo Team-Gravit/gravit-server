@@ -402,11 +402,12 @@ class LessonSubmissionQueryServiceIntegrationTest {
             lessonSubmissionRepository.save(LessonSubmission.create(60, 20, lessonLow.getId(), userId));
             lessonSubmissionRepository.save(LessonSubmission.create(60, 90, lessonHigh.getId(), userId));
 
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP1.getId(), userId));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, highP1.getId(), userId));
+            // lowP2는 세 번 틀렸지만 취약도는 "틀린 적 있는 문제 수" 기준이라 1로 집계된다
+            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP1.getId(), userId, null, "오답1"));
+            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId, null, "오답2"));
+            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId, null, "오답3"));
+            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId, null, "오답4"));
+            problemSubmissionRepository.save(ProblemSubmission.create(false, highP1.getId(), userId, null, "오답5"));
 
             // when
             List<WeakConceptResponse> result = lessonSubmissionQueryService.getWeakConcepts(userId);
@@ -415,8 +416,8 @@ class LessonSubmissionQueryServiceIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(result).hasSize(2);
                 softly.assertThat(result.get(0).rank()).isEqualTo(1);
-                softly.assertThat(result.get(0).wrongAnswerCount()).isEqualTo(4);
-                softly.assertThat(result.get(0).wrongAnswerRate()).isEqualTo(80);
+                softly.assertThat(result.get(0).wrongAnswerCount()).isEqualTo(2);
+                softly.assertThat(result.get(0).wrongAnswerRate()).isEqualTo(40);
                 softly.assertThat(result.get(1).rank()).isEqualTo(2);
                 softly.assertThat(result.get(1).wrongAnswerCount()).isEqualTo(1);
                 softly.assertThat(result.get(1).wrongAnswerRate()).isEqualTo(10);
