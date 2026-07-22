@@ -16,6 +16,8 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
     Optional<Mission> findByUserId(long userId);
 
+    boolean existsByUserId(long userId);
+
     @Lock(LockModeType.OPTIMISTIC)
     Page<Mission> findAll(Pageable pageable);
 

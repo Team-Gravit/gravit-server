@@ -16,6 +16,8 @@ public interface LearningRepository extends JpaRepository<Learning,Long> {
 
     Optional<Learning> findByUserId(long userId);
 
+    boolean existsByUserId(long userId);
+
     @Lock(LockModeType.OPTIMISTIC)
     List<Learning> findAll();
 

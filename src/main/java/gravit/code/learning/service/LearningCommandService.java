@@ -31,6 +31,10 @@ public class LearningCommandService {
 
     @Transactional
     public void createLearning(long userId){
+        if (learningRepository.existsByUserId(userId)) {
+            throw new RestApiException(CustomErrorCode.LEARNING_CONFLICT);
+        }
+
         Learning learning = Learning.create(userId);
         learningRepository.save(learning);
     }

@@ -116,6 +116,10 @@ public class MissionService {
 
     @Transactional
     public void createMission(long userId) {
+        if (missionRepository.existsByUserId(userId)) {
+            throw new RestApiException(CustomErrorCode.MISSION_CONFLICT);
+        }
+
         Mission mission = Mission.create(
                 RandomMissionGenerator.getRandomMissionType(),
                 userId

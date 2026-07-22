@@ -46,6 +46,7 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Learning
     LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "LEARNING_4041", "학습 정보 조회에 실패하였습니다."),
+    LEARNING_CONFLICT(HttpStatus.CONFLICT, "LEARNING_4091", "이미 학습 정보가 존재합니다."),
 
     // Chapter
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),
@@ -83,6 +84,7 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Mission
     MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION_4041", "사용자의 미션 조회에 실패하였습니다."),
+    MISSION_CONFLICT(HttpStatus.CONFLICT, "MISSION_4091", "이미 미션이 존재합니다."),
 
     // Social
     USER_FEED_NOT_FOUND(HttpStatus.NOT_FOUND, "SOCIAL_4041", "피드를 찾을 수 없습니다."),
