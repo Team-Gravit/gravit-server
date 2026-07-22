@@ -20,28 +20,17 @@ public class LessonSubmissionCommandService {
     @Transactional
     public void saveLessonSubmission(
         long userId,
-        LessonSubmissionSaveRequest request,
-        boolean isFirstTry
+        LessonSubmissionSaveRequest request
     ) {
         if(!lessonRepository.existsById(request.lessonId()))
             throw new RestApiException(CustomErrorCode.LESSON_NOT_FOUND);
 
-        LessonSubmission lessonSubmission;
-        if(isFirstTry){
-            lessonSubmission = LessonSubmission.create(
-                    request.learningTime(),
-                    request.accuracy(),
-                    request.lessonId(),
-                    userId
-            );
-        }else{
-            lessonSubmission = lessonSubmissionRepository.findByLessonIdAndUserId(request.lessonId(), userId)
-                    .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND));
-
-            lessonSubmission.updateLearningTime(request.learningTime());
-            lessonSubmission.updateAccuracy(request.accuracy());
-            lessonSubmission.updateTryCount();
-        }
+        LessonSubmission lessonSubmission = LessonSubmission.create(
+                request.learningTime(),
+                request.accuracy(),
+                request.lessonId(),
+                userId
+        );
 
         lessonSubmissionRepository.save(lessonSubmission);
     }

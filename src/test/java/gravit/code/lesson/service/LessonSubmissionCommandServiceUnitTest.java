@@ -13,11 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
 import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
-import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND;
-import static gravit.code.lesson.fixture.LessonSubmissionFixture.기본_레슨_제출;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -46,30 +42,24 @@ class LessonSubmissionCommandServiceUnitTest {
             when(lessonRepository.existsById(1L)).thenReturn(true);
 
             // when
-            lessonSubmissionCommandService.saveLessonSubmission(userId, request, true);
+            lessonSubmissionCommandService.saveLessonSubmission(userId, request);
 
             // then
             verify(lessonSubmissionRepository).save(any(LessonSubmission.class));
-            verify(lessonSubmissionRepository, never()).findByLessonIdAndUserId(anyLong(), anyLong());
         }
 
         @Test
-        void 재풀이면_기존_기록을_업데이트한다() {
+        void 재풀이면_새_행을_저장한다() {
             // given
             long userId = 1L;
             LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 90, 85);
-            LessonSubmission existing = 기본_레슨_제출(1L, userId);
-
             when(lessonRepository.existsById(1L)).thenReturn(true);
-            when(lessonSubmissionRepository.findByLessonIdAndUserId(1L, userId))
-                    .thenReturn(Optional.of(existing));
 
             // when
-            lessonSubmissionCommandService.saveLessonSubmission(userId, request, false);
+            lessonSubmissionCommandService.saveLessonSubmission(userId, request);
 
             // then
-            verify(lessonSubmissionRepository).findByLessonIdAndUserId(1L, userId);
-            verify(lessonSubmissionRepository).save(existing);
+            verify(lessonSubmissionRepository).save(any(LessonSubmission.class));
         }
 
         @Test
@@ -80,26 +70,10 @@ class LessonSubmissionCommandServiceUnitTest {
             when(lessonRepository.existsById(999L)).thenReturn(false);
 
             // when & then
-            assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request, true))
+            assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(LESSON_NOT_FOUND);
-        }
-
-        @Test
-        void 재풀이인데_기존_기록이_없으면_예외를_던진다() {
-            // given
-            long userId = 1L;
-            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 120, 80);
-            when(lessonRepository.existsById(1L)).thenReturn(true);
-            when(lessonSubmissionRepository.findByLessonIdAndUserId(1L, userId))
-                    .thenReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request, false))
-                    .isInstanceOf(RestApiException.class)
-                    .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(LESSON_SUBMISSION_NOT_FOUND);
         }
     }
 }
