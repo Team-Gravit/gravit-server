@@ -64,7 +64,8 @@ public interface WrongAnsweredNoteControllerDocs {
             @PathVariable("unitId") Long unitId
     );
 
-    @Operation(summary = "오답노트 삭제", description = "특정 문제의 오답노트를 삭제합니다.<br>" +
+    @Operation(summary = "오답노트 삭제", description = "특정 문제를 오답노트에서 내립니다.<br>" +
+            "기록은 남으며, 해당 문제를 다시 틀리면 오답노트로 복귀합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "✅ 오답노트 삭제 성공")
