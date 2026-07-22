@@ -21,6 +21,7 @@ public class WrongAnsweredNoteService {
             long problemId
     ) {
         WrongAnsweredNote wrongAnsweredNote = wrongAnsweredNoteRepository.findByProblemIdAndUserId(problemId, userId)
+                .map(WrongAnsweredNote::markWrong)
                 .orElseGet(() -> WrongAnsweredNote.create(problemId, userId));
 
         wrongAnsweredNoteRepository.save(wrongAnsweredNote);
@@ -35,11 +36,12 @@ public class WrongAnsweredNoteService {
     }
 
     @Transactional
-    public void deleteWrongAnsweredProblem(
+    public void resolveWrongAnsweredNote(
             long userId,
             long problemId
     ) {
-        wrongAnsweredNoteRepository.deleteByProblemIdAndUserId(problemId, userId);
+        wrongAnsweredNoteRepository.findByProblemIdAndUserId(problemId, userId)
+                .ifPresent(WrongAnsweredNote::resolve);
     }
 
     @Transactional(readOnly = true)
