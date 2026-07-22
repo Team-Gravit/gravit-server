@@ -58,7 +58,6 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Lesson
     LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4041", "레슨 조회에 실패하였습니다."),
-    LESSON_SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "LESSON_4042", "레슨 풀이 제출 이력 조회에 실패하였습니다."),
     INVALID_ACCURACY(HttpStatus.BAD_REQUEST,"LESSON_4001", "유효하지 않은 정확도입니다."),
 
     // Problem

@@ -138,7 +138,7 @@ class LearningProgressRateServiceUnitTest {
             // given
             long userId = 1L;
 
-            when(lessonSubmissionRepository.countByUserId(userId)).thenReturn(0L);
+            when(lessonSubmissionRepository.countDistinctLessonByUserId(userId)).thenReturn(0L);
 
             // when
             int result = learningProgressRateService.getPlanetConquestRate(userId);
@@ -152,7 +152,7 @@ class LearningProgressRateServiceUnitTest {
             // given
             long userId = 1L;
 
-            when(lessonSubmissionRepository.countByUserId(userId)).thenReturn(1L);
+            when(lessonSubmissionRepository.countDistinctLessonByUserId(userId)).thenReturn(1L);
             when(lessonRepository.count()).thenReturn(3L);
 
             // when
@@ -167,7 +167,7 @@ class LearningProgressRateServiceUnitTest {
             // given
             long userId = 1L;
 
-            when(lessonSubmissionRepository.countByUserId(userId)).thenReturn(3L);
+            when(lessonSubmissionRepository.countDistinctLessonByUserId(userId)).thenReturn(3L);
             when(lessonRepository.count()).thenReturn(3L);
 
             // when

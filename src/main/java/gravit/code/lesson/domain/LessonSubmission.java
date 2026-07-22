@@ -28,9 +28,6 @@ public class LessonSubmission extends BaseEntity {
     @Column(name = "learning_time", nullable = false)
     private int learningTime;
 
-    @Column(name = "try_count", nullable = false)
-    private int tryCount;
-
     @Column(name = "accuracy", nullable = false)
     private int accuracy;
 
@@ -49,7 +46,6 @@ public class LessonSubmission extends BaseEntity {
     ) {
         validateAccuracy(accuracy);
         this.learningTime = learningTime;
-        this.tryCount = 1;
         this.accuracy = accuracy;
         this.lessonId = lessonId;
         this.userId = userId;
@@ -67,19 +63,6 @@ public class LessonSubmission extends BaseEntity {
                 .lessonId(lessonId)
                 .userId(userId)
                 .build();
-    }
-
-    public void updateLearningTime(int learningTime){
-        this.learningTime = learningTime;
-    }
-
-    public void updateAccuracy(int accuracy){
-        validateAccuracy(accuracy);
-        this.accuracy = accuracy;
-    }
-
-    public void updateTryCount() {
-        this.tryCount++;
     }
 
     private static void validateAccuracy(int accuracy) {
