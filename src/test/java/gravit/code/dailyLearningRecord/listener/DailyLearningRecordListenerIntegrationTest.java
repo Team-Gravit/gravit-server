@@ -2,6 +2,7 @@ package gravit.code.dailyLearningRecord.listener;
 
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.global.event.LessonCompletedEvent;
+import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.mission.service.MissionService;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.userLeague.service.UserLeaguePointService;
@@ -15,9 +16,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
-import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 @TCSpringBootTest
@@ -26,12 +32,13 @@ class DailyLearningRecordListenerIntegrationTest {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    @MockitoBean
+    private RetryEventPublisher retryEventPublisher;
+
     @MockitoSpyBean
     private DailyLearningRecordService dailyLearningRecordService;
 
-    // 같은 LessonCompletedEvent를 BEFORE_COMMIT으로 구독하는 다른 리스너의 의존성을 격리한다.
-    // - UserLeagueEventListener: try-catch 없음 → 예외 전파로 트랜잭션 롤백
-    // - MissionEventListener: try-catch 있지만 내부 @Transactional이 본 트랜잭션을 rollback-only로 마크
+    // 동일 LessonCompletedEvent를 AFTER_COMMIT으로 구독하는 다른 리스너의 실제 의존성 실행을 격리한다.
     @MockitoBean
     private UserLeaguePointService userLeaguePointService;
 
@@ -44,9 +51,11 @@ class DailyLearningRecordListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 트랜잭션_커밋_후_비동기로_서비스의_일일_학습_기록_처리_메서드가_호출된다() {
+        void 트랜잭션_커밋_후_서비스의_일일_학습_기록_처리_메서드를_호출하고_큐에_적재하지_않는다() {
             // given
             long userId = 1L;
+            doNothing().when(dailyLearningRecordService).handleDailyLearningRecord(userId);
+
             LessonCompletedEvent event = new LessonCompletedEvent(userId, 10L, 100L, 20, 80, 120, 0, 1);
 
             // when
@@ -55,9 +64,28 @@ class DailyLearningRecordListenerIntegrationTest {
             TestTransaction.end();
 
             // then
-            await().atMost(2, TimeUnit.SECONDS).untilAsserted(() ->
-                    verify(dailyLearningRecordService).handleDailyLearningRecord(userId)
-            );
+            verify(dailyLearningRecordService, timeout(2000)).handleDailyLearningRecord(userId);
+            verify(retryEventPublisher, never()).publish(eq("daily-learning-record-retry"), any());
+        }
+
+        @Test
+        @Transactional
+        void 일시적_오류가_발생하면_재시도_큐에_적재된다() {
+            // given
+            long userId = 1L;
+            doThrow(new RuntimeException("DB 커넥션 실패")).when(dailyLearningRecordService).handleDailyLearningRecord(userId);
+
+            LessonCompletedEvent event = new LessonCompletedEvent(userId, 10L, 100L, 20, 80, 120, 0, 1);
+
+            // when
+            publisher.publishEvent(event);
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            verify(retryEventPublisher, timeout(3000)).publish("daily-learning-record-retry", Map.of(
+                    "userId", String.valueOf(userId)
+            ));
         }
     }
 }
