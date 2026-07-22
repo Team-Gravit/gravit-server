@@ -1,5 +1,6 @@
 package gravit.code.user.dto.response;
 
+import gravit.code.user.domain.Level;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +16,7 @@ public record UserLevelResponse(
         int currentLevel,
 
         @Schema(
-                description = "다음 레벨",
+                description = "다음 레벨 (최고 레벨이면 현재 레벨과 동일)",
                 example = "4",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
@@ -34,7 +35,7 @@ public record UserLevelResponse(
     ){
         return UserLevelResponse.builder()
                 .currentLevel(level)
-                .nextLevel(level+1)
+                .nextLevel(Level.fromLevel(level).next().getLevel())
                 .xp(xp)
                 .build();
     }
