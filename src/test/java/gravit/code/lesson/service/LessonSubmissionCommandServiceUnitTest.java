@@ -52,14 +52,16 @@ class LessonSubmissionCommandServiceUnitTest {
         void 재풀이면_새_행을_저장한다() {
             // given
             long userId = 1L;
-            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 90, 85);
+            LessonSubmissionSaveRequest firstRequest = new LessonSubmissionSaveRequest(1L, 120, 80);
+            LessonSubmissionSaveRequest retryRequest = new LessonSubmissionSaveRequest(1L, 90, 85);
             when(lessonRepository.existsById(1L)).thenReturn(true);
 
             // when
-            lessonSubmissionCommandService.saveLessonSubmission(userId, request);
+            lessonSubmissionCommandService.saveLessonSubmission(userId, firstRequest);
+            lessonSubmissionCommandService.saveLessonSubmission(userId, retryRequest);
 
             // then
-            verify(lessonSubmissionRepository).save(any(LessonSubmission.class));
+            verify(lessonSubmissionRepository, times(2)).save(any(LessonSubmission.class));
         }
 
         @Test
