@@ -1,4 +1,4 @@
--- V28__convert_lesson_submission_to_history.sql
+-- V29__convert_lesson_submission_to_history.sql
 -- 레슨 제출을 유저+레슨당 1행 덮어쓰기에서 제출마다 새 행을 쌓는 이력 구조로 전환
 
 -- 시도 횟수는 엔티티 필드 대신 행 개수로 센다
