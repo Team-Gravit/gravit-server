@@ -119,8 +119,10 @@ private double calculateLevelRate(int xp) {
 
 정상 경로로는 도달할 수 없다(`level`은 `updateXp` -> `updateLevel`로만 갱신되어 항상 1~10). 도달한다면 QA 데이터 초기화, 어드민 도구, 직접 SQL 등으로 데이터가 깨진 경우이며, 깨진 데이터를 조용히 감추기보다 드러내는 편이 낫다고 판단해 이 변경을 수용한다.
 
-## 범위 밖 (별도 이슈 후보)
-- `UserLevelResponse.create`가 `nextLevel = level + 1`로 계산해, 최고 레벨 10에서 존재하지 않는 11을 응답한다. 이번 리팩토링과 맞닿아 있지만 응답 스펙 변경이라 여기서 다루지 않는다.
+## 추가 반영 (당초 범위 밖이었으나 이번 작업에 포함)
+- `UserLevelResponse.create`가 `nextLevel = level + 1`로 계산해, 최고 레벨 10에서 존재하지 않는 11을 응답하고 있었다. 레슨 제출 완료 응답에 실려 나가는 값이라 유저에게 그대로 노출된다.
+- 상한 판단이 `Level`로 모인 김에 같이 고친다. `Level.next()`를 추가해 최고 레벨이면 자기 자신을 반환하게 하고, `UserLevelResponse.create`가 이를 사용한다. 상한이 다시 DTO에 하드코딩되지 않도록 구간표와 같은 출처를 쓰는 것이 핵심이다.
+- 응답 필드 타입과 필수 여부는 그대로다(`int nextLevel`, REQUIRED). 최고 레벨에서 11 대신 10이 나가는 값 변경만 있다.
 
 ## 결정 필요 (Decisions needed)
 - [x] `Level` enum이 구간을 선언하는 방식 -> **A) `(level, startXp)`만 선언하고 끝 XP는 다음 상수에서 파생.** 경계값이 코드 전체에 한 번만 등장해 시작과 끝이 어긋날 여지가 원천 차단되고, 최고 레벨은 다음 상수가 없다는 사실로 `isMax()`가 자연히 결정된다. (이슈 본문의 `(level, startXp, endXp)` 표현에서 한 단계 더 줄인 형태)
