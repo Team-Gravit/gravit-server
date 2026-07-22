@@ -51,6 +51,10 @@ public enum Level {
         return ordinal() == VALUES.length - 1;
     }
 
+    public Level next() {
+        return isMax() ? this : VALUES[ordinal() + 1];
+    }
+
     public int getEndXp() {
         if (isMax()) {
             throw new IllegalStateException("최고 레벨은 상한 XP가 없습니다: " + this.level);
