@@ -88,6 +88,26 @@ class LevelTest {
     }
 
     @Nested
+    @DisplayName("다음 레벨을 구할 때")
+    class Next {
+
+        @Test
+        void 바로_다음_레벨을_반환한다() {
+            // given & when & then
+            assertSoftly(softly -> {
+                softly.assertThat(Level.LEVEL_1.next()).isEqualTo(Level.LEVEL_2);
+                softly.assertThat(Level.LEVEL_9.next()).isEqualTo(Level.LEVEL_10);
+            });
+        }
+
+        @Test
+        void 최고_레벨은_자기_자신을_반환한다() {
+            // given & when & then
+            assertThat(Level.LEVEL_10.next()).isEqualTo(Level.LEVEL_10);
+        }
+    }
+
+    @Nested
     @DisplayName("구간 끝 XP를 구할 때")
     class GetEndXp {
 
