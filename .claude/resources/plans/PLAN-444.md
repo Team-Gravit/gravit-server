@@ -107,3 +107,4 @@
 - `RetrySweepTarget` 구현체 5종은 별도 단위 테스트 없이 리스너 통합 테스트 + `RetryQueueSweeper` 기존 테스트로 간접 검증 (기존 컨벤션과 동일)
 
 ## Deviation Log
+- `LearningEventListener`/`MissionEventListener`/`DailyLearningRecordListener`: 로깅 애노테이션을 `@Log4j2` → `@Slf4j`로 변경 — 이유: #434에서 도입한 재시도 인프라 리스너(`UserLeagueEventListener`/`SocialFeedEventListener`)가 모두 `@Slf4j`를 쓰므로 컨벤션 일치.
