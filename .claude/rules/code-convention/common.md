@@ -46,13 +46,10 @@ public ReturnType methodName(
 특히 Facade·Service처럼 여러 단계를 조합하는 메서드는 한 단계를 처리하고 한 줄 띄운다.
 
 ```java
-// 한 도메인/단계 처리
 UnitSummaryResponse unit = unitQueryService.getUnitSummaryByUnitId(unitId);
 
-// 다음 도메인/단계 처리
 List<ProblemDetailResponse> problems = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);
 
-// 응답 조립
 return BookmarkedProblemResponse.of(unit, problems);
 ```
 
@@ -62,3 +59,9 @@ return BookmarkedProblemResponse.of(unit, problems);
 - 클래스는 PascalCase로 작성하라 (`ChapterQueryService`, `BookmarkFacade`)
 - 메서드는 camelCase + CRUD 동사를 사용하라 (`findById`, `addBookmark`, `deleteBookmark`)
 - API 경로는 kebab-case 복수형으로 작성하라 (`/api/v1/chapters`, `/api/v1/bookmarks`)
+
+## 주석
+
+- 메인 코드에 설명 주석을 달지 마라. 설명이 필요하다고 느끼면 주석 대신 이름과 구조로 드러내라
+- 유지하는 예외: `CustomErrorCode`의 카테고리 그룹 주석(`// User`, `// Auth`)처럼 나열을 구획하는 용도의 주석
+- 배경과 정책 설명이 필요하면 주석이 아니라 `.claude/spec/service-policy/`의 해당 도메인 파일에 남겨라
