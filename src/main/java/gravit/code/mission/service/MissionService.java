@@ -59,7 +59,7 @@ public class MissionService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLessonMission(
             long userId,
             long lessonId,
@@ -114,7 +114,7 @@ public class MissionService {
         awardMissionXp(followMissionDto.userId(), mission.getMissionType().getAwardXp());
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createMission(long userId) {
         if (missionRepository.existsByUserId(userId)) {
             throw new RestApiException(CustomErrorCode.MISSION_CONFLICT);
