@@ -65,7 +65,7 @@ effort: xhigh
 Phase 구성:
 
 **Phase 1: 대상 PR 확정**
-- `$ARGUMENTS`에 PR 번호가 있으면 그것을, 없으면 `gh pr view --json number,title,headRefName --jq` 로 현재 브랜치의 PR을 쓴다
+- `$ARGUMENTS`에 PR 번호가 있으면 그것을, 없으면 `gh pr view --json number,title,headRefName`으로 현재 브랜치의 PR을 쓴다
 - PR이 없으면 "PR이 없습니다. 먼저 `open-pr`를 실행하세요"로 중단
 
 **Phase 2: 피드백 수집**
