@@ -4,11 +4,12 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import gravit.code.mission.domain.Mission;
-import gravit.code.mission.domain.MissionType;
+import gravit.code.mission.domain.UserMission;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.dto.response.MissionDetailResponse;
-import gravit.code.mission.dto.response.MissionSummaryResponse;
+import gravit.code.mission.fixture.MissionFixture;
 import gravit.code.mission.repository.MissionRepository;
+import gravit.code.mission.repository.UserMissionRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
@@ -18,12 +19,21 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Clock;
+import java.time.LocalDate;
+
 import static gravit.code.global.exception.domain.CustomErrorCode.MISSION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
 class MissionServiceIntegrationTest {
+
+    private static final long NON_EXISTENT_USER_ID = 999L;
+    private static final int ACCURACY_PERFECT = 100;
+    private static final int ACCURACY_NOT_PERFECT = 80;
+    private static final int LEARNING_TIME = 120;
 
     @Autowired
     private MissionService missionService;
@@ -32,94 +42,130 @@ class MissionServiceIntegrationTest {
     private MissionRepository missionRepository;
 
     @Autowired
+    private UserMissionRepository userMissionRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private LessonSubmissionRepository lessonSubmissionRepository;
 
-    private User createAndSaveUser() {
-        return userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 1, Role.USER));
+    @Autowired
+    private Clock clock;
+
+    // 미션 배정 대상은 온보딩을 마친 유저다. 대부분의 테스트가 이 상태를 전제한다
+    private User createUser(String suffix) {
+        return createUser(suffix, Role.USER, true);
+    }
+
+    private User createUser(
+            String suffix,
+            Role role,
+            boolean onboarded
+    ) {
+        User user = User.create(
+                "test" + suffix + "@test.com",
+                "provider_" + suffix,
+                "테스터" + suffix,
+                "handle" + suffix,
+                1,
+                role
+        );
+
+        if (onboarded)
+            user.completeOnboarding();
+
+        return userRepository.save(user);
+    }
+
+    private LocalDate today() {
+        return LocalDate.now(clock);
+    }
+
+    private void 레슨을_제출한다(
+            long userId,
+            long lessonId,
+            int learningTime,
+            int accuracy
+    ) {
+        lessonSubmissionRepository.save(LessonSubmission.create(learningTime, accuracy, lessonId, userId));
+    }
+
+    private UserMission 배정된_미션(long userId) {
+        return userMissionRepository.findAssignedMission(userId, today()).orElseThrow().userMission();
+    }
+
+    private int 유저_경험치(long userId) {
+        return userRepository.findById(userId).orElseThrow().getLevel().getXp();
     }
 
     @Nested
-    @DisplayName("미션 요약을 조회할 때")
-    class GetMissionSummaryResponse {
+    @DisplayName("미션 상세를 조회할 때")
+    class GetMissionDetail {
 
         @Test
-        void 미션이_존재하면_요약을_반환한다() {
+        void 오늘자_배정이_있으면_해당_미션의_상세를_반환한다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_3개());
+            userMissionRepository.save(MissionFixture.진행중_미션(user.getId(), mission.getId(), today(), 1));
 
             // when
-            MissionSummaryResponse result = missionService.getMissionSummary(user.getId());
+            MissionDetailResponse result = missionService.getMissionDetail(user.getId());
 
             // then
-            assertThat(result.missionType()).isEqualTo(MissionType.COMPLETE_LESSON_ONE);
-            assertThat(result.isCompleted()).isFalse();
+            assertSoftly(softly -> {
+                softly.assertThat(result.missionType()).isEqualTo("COMPLETE_LESSONS_THREE");
+                softly.assertThat(result.missionDescription()).isEqualTo("레슨 3개 완료하기");
+                softly.assertThat(result.awardXp()).isEqualTo(20);
+                softly.assertThat(result.progressRate()).isEqualTo(33.3);
+                softly.assertThat(result.isCompleted()).isFalse();
+            });
         }
 
         @Test
-        void 미션이_존재하지_않으면_예외가_발생한다() {
+        void 오늘자_배정이_없으면_그_자리에서_배정되어_진행도_0인_미션을_반환한다() {
             // given
-            long nonExistentUserId = 999L;
+            User user = createUser("1");
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            MissionDetailResponse result = missionService.getMissionDetail(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.missionType()).isEqualTo("COMPLETE_LESSON_ONE");
+                softly.assertThat(result.progressRate()).isZero();
+                softly.assertThat(result.isCompleted()).isFalse();
+                softly.assertThat(userMissionRepository.count()).isEqualTo(1);
+            });
+        }
+
+        @Test
+        void 두_번_조회해도_배정은_하나만_생긴다() {
+            // given
+            User user = createUser("1");
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            missionService.getMissionDetail(user.getId());
+            missionService.getMissionDetail(user.getId());
+
+            // then
+            assertThat(userMissionRepository.count()).isEqualTo(1);
+        }
+
+        @Test
+        void 활성_미션_정의가_없으면_예외가_발생한다() {
+            // given
+            User user = createUser("1");
+            missionRepository.save(MissionFixture.비활성_미션정의());
 
             // when & then
-            assertThatThrownBy(() -> missionService.getMissionSummary(nonExistentUserId))
+            assertThatThrownBy(() -> missionService.getMissionDetail(user.getId()))
                     .isInstanceOf(RestApiException.class)
-                    .extracting("errorCode")
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(MISSION_NOT_FOUND);
-        }
-    }
-
-    @Nested
-    @DisplayName("미션을 생성할 때")
-    class CreateMission {
-
-        @Test
-        void 미션을_생성하고_저장한다() {
-            // given
-            User user = createAndSaveUser();
-
-            // when
-            missionService.createMission(user.getId());
-
-            // then
-            assertThat(missionRepository.findByUserId(user.getId())).isPresent();
-        }
-    }
-
-    @Nested
-    @DisplayName("미션을 재배정할 때")
-    class ReassignMission {
-
-        @Test
-        void 미션이_있으면_모두_재배정된다() {
-            // given
-            User user1 = userRepository.save(User.create("a@test.com", "provider_a", "유저1", "handle_a", 1, Role.USER));
-            User user2 = userRepository.save(User.create("b@test.com", "provider_b", "유저2", "handle_b", 1, Role.USER));
-            Mission mission1 = missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user1.getId()));
-            Mission mission2 = missionRepository.save(Mission.create(MissionType.PERFECT_LESSON_ONE, user2.getId()));
-
-            // when
-            missionService.reassignMission();
-
-            // then
-            Mission updated1 = missionRepository.findByUserId(user1.getId()).get();
-            Mission updated2 = missionRepository.findByUserId(user2.getId()).get();
-            assertThat(updated1.isCompleted()).isFalse();
-            assertThat(updated1.getProgressRate()).isEqualTo(0.0);
-            assertThat(updated2.isCompleted()).isFalse();
-            assertThat(updated2.getProgressRate()).isEqualTo(0.0);
-        }
-
-        @Test
-        void 미션이_없으면_아무것도_하지_않는다() {
-            // given (no missions saved)
-
-            // when & then (no exception)
-            missionService.reassignMission();
-            assertThat(missionRepository.count()).isEqualTo(0);
         }
     }
 
@@ -128,119 +174,151 @@ class MissionServiceIntegrationTest {
     class HandleLessonMission {
 
         @Test
-        void 미션이_존재하지_않으면_예외가_발생한다() {
-            // given
-            long nonExistentUserId = 999L;
-
-            // when & then
-            assertThatThrownBy(() -> missionService.handleLessonMission(nonExistentUserId, 1L, 120, 80))
+        void 오늘자_배정이_없으면_예외가_발생한다() {
+            // given & when & then
+            assertThatThrownBy(() -> missionService.handleLessonMission(
+                    NON_EXISTENT_USER_ID, 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT))
                     .isInstanceOf(RestApiException.class)
-                    .extracting("errorCode")
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(MISSION_NOT_FOUND);
         }
 
         @Test
-        void 이미_완료된_미션이면_진행도가_변경되지_않는다() {
+        void 재풀이면_진행도가_오르지_않는다() {
             // given
-            User user = createAndSaveUser();
-            Mission mission = missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
-            // 미션을 완료 상태로 만들기
-            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, 1L, user.getId()));
-            missionService.handleLessonMission(user.getId(), 1L, 120, 80);
-            double completedProgressRate = missionRepository.findByUserId(user.getId()).get().getProgressRate();
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_3개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
 
-            // 두 번째 호출 (이미 완료 상태)
+            long lessonId = 1L;
+            레슨을_제출한다(user.getId(), lessonId, LEARNING_TIME, ACCURACY_NOT_PERFECT);
+            레슨을_제출한다(user.getId(), lessonId, LEARNING_TIME, ACCURACY_NOT_PERFECT);
+
             // when
-            missionService.handleLessonMission(user.getId(), 2L, 120, 80);
+            missionService.handleLessonMission(user.getId(), lessonId, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.isCompleted()).isTrue();
-            assertThat(result.getProgressRate()).isEqualTo(completedProgressRate);
+            assertThat(배정된_미션(user.getId()).getProgressCount()).isZero();
         }
 
         @Test
-        void 재풀이면_진행도가_변경되지_않는다() {
+        void 레슨_완료_미션은_제출마다_진행도가_1씩_누적된다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
-            long lessonId = 1L;
-            // 이미 한 번 제출한 기록 2개 저장 (tryCount > 1 의미: 두 번째 제출)
-            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lessonId, user.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lessonId, user.getId()));
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_3개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+
+            레슨을_제출한다(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
+            레슨을_제출한다(user.getId(), 2L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // when
-            missionService.handleLessonMission(user.getId(), lessonId, 120, 80);
+            missionService.handleLessonMission(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
+            missionService.handleLessonMission(user.getId(), 2L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.getProgressRate()).isEqualTo(0.0);
+            UserMission result = 배정된_미션(user.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(result.getProgressCount()).isEqualTo(2);
+                softly.assertThat(result.isCompleted()).isFalse();
+                softly.assertThat(유저_경험치(user.getId())).isZero();
+            });
         }
 
         @Test
-        void COMPLETE_LESSON_ONE_미션이면_완료된다() {
+        void 목표에_도달하면_완료_시각이_기록되고_경험치가_지급된다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
-            long lessonId = 1L;
-            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lessonId, user.getId()));
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+
+            레슨을_제출한다(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // when
-            missionService.handleLessonMission(user.getId(), lessonId, 120, 80);
+            missionService.handleLessonMission(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.isCompleted()).isTrue();
-            assertThat(result.getProgressRate()).isEqualTo(100.0);
+            UserMission result = 배정된_미션(user.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(result.getProgressCount()).isEqualTo(1);
+                softly.assertThat(result.isCompleted()).isTrue();
+                softly.assertThat(result.getCompletedAt()).isNotNull();
+                softly.assertThat(유저_경험치(user.getId())).isEqualTo(10);
+            });
         }
 
         @Test
-        void PERFECT_LESSON_ONE_미션에서_정답율이_100이_아니면_진행도가_업데이트되지_않는다() {
+        void 완료된_뒤_추가_제출은_경험치를_중복_지급하지_않는다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.PERFECT_LESSON_ONE, user.getId()));
-            long lessonId = 1L;
-            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lessonId, user.getId()));
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+
+            레슨을_제출한다(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
+            missionService.handleLessonMission(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
+
+            레슨을_제출한다(user.getId(), 2L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // when
-            missionService.handleLessonMission(user.getId(), lessonId, 120, 80);
+            missionService.handleLessonMission(user.getId(), 2L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.getProgressRate()).isEqualTo(0.0);
+            assertSoftly(softly -> {
+                softly.assertThat(배정된_미션(user.getId()).getProgressCount()).isEqualTo(1);
+                softly.assertThat(유저_경험치(user.getId())).isEqualTo(10);
+            });
         }
 
         @Test
-        void PERFECT_LESSON_ONE_미션에서_정답율_100이면_완료된다() {
+        void 정답율이_100이_아니면_정답율_미션의_진행도가_오르지_않는다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.PERFECT_LESSON_ONE, user.getId()));
-            long lessonId = 1L;
-            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lessonId, user.getId()));
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_정답율_100_레슨_1개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+
+            레슨을_제출한다(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // when
-            missionService.handleLessonMission(user.getId(), lessonId, 120, 100);
+            missionService.handleLessonMission(user.getId(), 1L, LEARNING_TIME, ACCURACY_NOT_PERFECT);
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.isCompleted()).isTrue();
-            assertThat(result.getProgressRate()).isEqualTo(100.0);
+            assertThat(배정된_미션(user.getId()).getProgressCount()).isZero();
         }
 
         @Test
-        void LEARNING_MINUTES_미션이면_학습시간으로_진행도가_업데이트된다() {
+        void 정답율이_100이면_정답율_미션이_완료된다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.LEARNING_MINUTES_FIVE, user.getId()));
-            long lessonId = 1L;
-            lessonSubmissionRepository.save(LessonSubmission.create(300, 80, lessonId, user.getId()));
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_정답율_100_레슨_1개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+
+            레슨을_제출한다(user.getId(), 1L, LEARNING_TIME, ACCURACY_PERFECT);
 
             // when
-            missionService.handleLessonMission(user.getId(), lessonId, 300, 80); // 5분
+            missionService.handleLessonMission(user.getId(), 1L, LEARNING_TIME, ACCURACY_PERFECT);
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.getProgressRate()).isGreaterThan(0.0);
+            UserMission result = 배정된_미션(user.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(result.isCompleted()).isTrue();
+                softly.assertThat(유저_경험치(user.getId())).isEqualTo(30);
+            });
+        }
+
+        @Test
+        void 학습_시간_미션은_1회_제출당_상한까지만_반영된다() {
+            // given
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_학습_15분());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+
+            int overCapLearningTime = 400;
+            레슨을_제출한다(user.getId(), 1L, overCapLearningTime, ACCURACY_NOT_PERFECT);
+
+            // when
+            missionService.handleLessonMission(user.getId(), 1L, overCapLearningTime, ACCURACY_NOT_PERFECT);
+
+            // then
+            assertThat(배정된_미션(user.getId()).getProgressCount()).isEqualTo(300);
         }
     }
 
@@ -249,97 +327,238 @@ class MissionServiceIntegrationTest {
     class HandleFollowMission {
 
         @Test
-        void 미션이_존재하지_않으면_예외가_발생한다() {
+        void 오늘자_배정이_없으면_예외가_발생한다() {
             // given
-            FollowMissionEvent event = new FollowMissionEvent(999L);
+            FollowMissionEvent event = new FollowMissionEvent(NON_EXISTENT_USER_ID);
 
             // when & then
             assertThatThrownBy(() -> missionService.handleFollowMission(event))
                     .isInstanceOf(RestApiException.class)
-                    .extracting("errorCode")
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(MISSION_NOT_FOUND);
         }
 
         @Test
-        void 이미_완료된_미션이면_진행도가_변경되지_않는다() {
+        void 팔로우_미션이면_완료되고_경험치가_지급된다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.FOLLOW_NEW_FRIEND, user.getId()));
-            // 완료 상태로 만들기
-            missionService.handleFollowMission(new FollowMissionEvent(user.getId()));
-            double completedProgressRate = missionRepository.findByUserId(user.getId()).get().getProgressRate();
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_팔로우());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
 
-            // when (두 번째 호출)
+            // when
             missionService.handleFollowMission(new FollowMissionEvent(user.getId()));
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.getProgressRate()).isEqualTo(completedProgressRate);
+            UserMission result = 배정된_미션(user.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(result.getProgressCount()).isEqualTo(1);
+                softly.assertThat(result.isCompleted()).isTrue();
+                softly.assertThat(유저_경험치(user.getId())).isEqualTo(40);
+            });
         }
 
         @Test
-        void FOLLOW_NEW_FRIEND가_아닌_미션_타입이면_처리를_종료한다() {
+        void 팔로우_미션이_아니면_진행도가_변하지_않는다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
-            FollowMissionEvent event = new FollowMissionEvent(user.getId());
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
 
             // when
-            missionService.handleFollowMission(event);
+            missionService.handleFollowMission(new FollowMissionEvent(user.getId()));
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.getProgressRate()).isEqualTo(0.0);
+            assertSoftly(softly -> {
+                softly.assertThat(배정된_미션(user.getId()).getProgressCount()).isZero();
+                softly.assertThat(유저_경험치(user.getId())).isZero();
+            });
         }
 
         @Test
-        void FOLLOW_NEW_FRIEND_미션이면_완료된다() {
+        void 이미_완료된_미션이면_경험치가_중복_지급되지_않는다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.FOLLOW_NEW_FRIEND, user.getId()));
-            FollowMissionEvent event = new FollowMissionEvent(user.getId());
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_팔로우());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+            missionService.handleFollowMission(new FollowMissionEvent(user.getId()));
 
             // when
-            missionService.handleFollowMission(event);
+            missionService.handleFollowMission(new FollowMissionEvent(user.getId()));
 
             // then
-            Mission result = missionRepository.findByUserId(user.getId()).get();
-            assertThat(result.isCompleted()).isTrue();
-            assertThat(result.getProgressRate()).isEqualTo(100.0);
+            assertSoftly(softly -> {
+                softly.assertThat(배정된_미션(user.getId()).getProgressCount()).isEqualTo(1);
+                softly.assertThat(유저_경험치(user.getId())).isEqualTo(40);
+            });
         }
     }
 
     @Nested
-    @DisplayName("미션 상세를 조회할 때")
-    class GetMissionDetailResponse {
+    @DisplayName("온보딩으로 미션을 배정할 때")
+    class CreateMission {
 
         @Test
-        void 미션이_존재하면_상세를_반환한다() {
+        void 오늘자_미션이_배정된다() {
             // given
-            User user = createAndSaveUser();
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
+            User user = createUser("1");
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
 
             // when
-            MissionDetailResponse result = missionService.getMissionDetail(user.getId());
+            missionService.createMission(user.getId());
 
             // then
-            assertThat(result.missionType()).isEqualTo(MissionType.COMPLETE_LESSON_ONE.name());
-            assertThat(result.missionDescription()).isEqualTo(MissionType.COMPLETE_LESSON_ONE.getDescription());
-            assertThat(result.awardXp()).isEqualTo(MissionType.COMPLETE_LESSON_ONE.getAwardXp());
-            assertThat(result.progressRate()).isEqualTo(0.0);
-            assertThat(result.isCompleted()).isFalse();
+            assertThat(userMissionRepository.findAssignedMission(user.getId(), today())).isPresent();
         }
 
         @Test
-        void 미션이_존재하지_않으면_예외가_발생한다() {
+        void 이미_배정돼_있으면_중복_삽입되지_않는다() {
             // given
-            long nonExistentUserId = 999L;
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
 
-            // when & then
-            assertThatThrownBy(() -> missionService.getMissionDetail(nonExistentUserId))
-                    .isInstanceOf(RestApiException.class)
-                    .extracting("errorCode")
-                    .isEqualTo(MISSION_NOT_FOUND);
+            // when
+            missionService.createMission(user.getId());
+
+            // then
+            assertThat(userMissionRepository.count()).isEqualTo(1);
+        }
+    }
+
+    @Nested
+    @DisplayName("자정 배정을 청크 단위로 수행할 때")
+    class AssignChunk {
+
+        @Test
+        void 청크_크기만큼_배정하고_마지막_유저_id를_반환한다() {
+            // given
+            User user1 = createUser("1");
+            User user2 = createUser("2");
+            createUser("3");
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            long lastUserId = missionService.assignChunk(today(), 0L, 2);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(lastUserId).isEqualTo(user2.getId());
+                softly.assertThat(userMissionRepository.count()).isEqualTo(2);
+                softly.assertThat(userMissionRepository.findAssignedMission(user1.getId(), today())).isPresent();
+            });
+        }
+
+        @Test
+        void 다음_청크는_이전_청크_이후의_유저를_배정한다() {
+            // given
+            createUser("1");
+            User user2 = createUser("2");
+            User user3 = createUser("3");
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            long lastUserId = missionService.assignChunk(today(), user2.getId(), 2);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(lastUserId).isEqualTo(user3.getId());
+                softly.assertThat(userMissionRepository.count()).isEqualTo(1);
+                softly.assertThat(userMissionRepository.findAssignedMission(user3.getId(), today())).isPresent();
+            });
+        }
+
+        @Test
+        void 대상_유저가_없으면_마지막_유저_id를_그대로_반환한다() {
+            // given
+            User user = createUser("1");
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            long lastUserId = missionService.assignChunk(today(), user.getId(), 10);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(lastUserId).isEqualTo(user.getId());
+                softly.assertThat(userMissionRepository.count()).isZero();
+            });
+        }
+
+        @Test
+        void 재실행해도_중복_삽입되지_않는다() {
+            // given
+            createUser("1");
+            createUser("2");
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            missionService.assignChunk(today(), 0L, 10);
+
+            // when
+            missionService.assignChunk(today(), 0L, 10);
+
+            // then
+            assertThat(userMissionRepository.count()).isEqualTo(2);
+        }
+
+        @Test
+        void 온보딩하지_않은_유저는_배정_대상에서_제외된다() {
+            // given
+            User onboardedUser = createUser("1");
+            User notOnboardedUser = createUser("2", Role.USER, false);
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            missionService.assignChunk(today(), 0L, 10);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(userMissionRepository.count()).isEqualTo(1);
+                softly.assertThat(userMissionRepository.findAssignedMission(onboardedUser.getId(), today())).isPresent();
+                softly.assertThat(userMissionRepository.findAssignedMission(notOnboardedUser.getId(), today())).isEmpty();
+            });
+        }
+
+        @Test
+        void 관리자도_배정_대상에_포함된다() {
+            // given
+            User admin = createUser("1", Role.ADMIN, true);
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            missionService.assignChunk(today(), 0L, 10);
+
+            // then
+            assertThat(userMissionRepository.findAssignedMission(admin.getId(), today())).isPresent();
+        }
+
+        @Test
+        void 탈퇴한_유저는_배정_대상에서_제외된다() {
+            // given
+            User user = createUser("1");
+            userRepository.delete(user);
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            missionService.assignChunk(today(), 0L, 10);
+
+            // then
+            assertThat(userMissionRepository.count()).isZero();
+        }
+
+        @Test
+        void 어제_배정이_있어도_오늘_배정이_새_행으로_쌓인다() {
+            // given
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            userMissionRepository.save(
+                    MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today().minusDays(1)));
+
+            // when
+            missionService.assignChunk(today(), 0L, 10);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(userMissionRepository.count()).isEqualTo(2);
+                softly.assertThat(userMissionRepository.findAssignedMission(user.getId(), today())).isPresent();
+            });
         }
     }
 }

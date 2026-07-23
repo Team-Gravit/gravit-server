@@ -78,7 +78,7 @@ public class TestUserDataCleanController implements TestUserDataCleanControllerD
         exec("DELETE FROM user_league WHERE user_id = :id", userId);
 
         // 5. 미션/리포트
-        exec("DELETE FROM mission WHERE user_id = :id", userId);
+        exec("DELETE FROM user_mission WHERE user_id = :id", userId);
         exec("DELETE FROM report WHERE user_id = :id", userId);
 
         // 6. 문의 (inquiry_answer 가 inquiry 를 참조 → 답변부터 제거)

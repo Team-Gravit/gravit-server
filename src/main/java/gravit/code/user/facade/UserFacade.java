@@ -59,7 +59,7 @@ public class UserFacade {
      * @deprecated 위젯별 API(GET /api/v1/main-pages/*)로 분리됨(#415). 후속 릴리스에서 제거 예정.
      */
     @Deprecated(forRemoval = true)
-    @Transactional(readOnly = true)
+    @Transactional
     public MainPageResponse getMainPage(long userId) {
         User user = userService.getUser(userId);
         Learning learning = learningQueryService.getLearning(userId);

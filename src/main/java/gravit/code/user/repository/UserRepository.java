@@ -4,6 +4,7 @@ import gravit.code.user.domain.User;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.repository.custom.UserDeletionRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -71,4 +72,17 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDeletionR
         WHERE u.id IN :ids
     """)
     List<UserSummaryResponse> findSummariesByIds(@Param("ids") Set<Long> ids);
+
+    // 온보딩을 마친 유저만 미션 배정 대상이다. 관리자도 포함하고, 탈퇴 유저는 @SQLRestriction이 걸러낸다
+    // 키셋 페이징. OFFSET은 배정 중 유저가 늘거나 줄면 건너뛰기가 생긴다
+    @Query("""
+        SELECT u.id
+        FROM User u
+        WHERE u.id > :lastId AND u.isOnboarded = true
+        ORDER BY u.id
+    """)
+    List<Long> findOnboardedIdsAfter(
+            @Param("lastId") long lastId,
+            Pageable pageable
+    );
 }
