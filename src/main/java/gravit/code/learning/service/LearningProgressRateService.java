@@ -51,7 +51,7 @@ public class LearningProgressRateService {
     public int getPlanetConquestRate(
             long userId
     ) {
-        long solvedLesson = lessonSubmissionRepository.countByUserId(userId);
+        long solvedLesson = lessonSubmissionRepository.countDistinctLessonByUserId(userId);
 
         if(solvedLesson == 0) {
             return 0;

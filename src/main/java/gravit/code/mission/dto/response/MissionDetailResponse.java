@@ -2,6 +2,7 @@ package gravit.code.mission.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.mission.domain.Mission;
+import gravit.code.mission.domain.UserMission;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,13 +25,16 @@ public record MissionDetailResponse(
         @JsonProperty("isCompleted")
         boolean isCompleted
 ) {
-    public static MissionDetailResponse from(Mission mission) {
+    public static MissionDetailResponse of(
+            Mission mission,
+            UserMission userMission
+    ) {
         return MissionDetailResponse.builder()
-                .missionType(mission.getMissionType().name())
-                .missionDescription(mission.getMissionType().getDescription())
-                .awardXp(mission.getMissionType().getAwardXp())
-                .progressRate(mission.getProgressRate())
-                .isCompleted(mission.isCompleted())
+                .missionType(mission.getCode())
+                .missionDescription(mission.getTitle())
+                .awardXp(mission.getAwardXp())
+                .progressRate(mission.calculateProgressRate(userMission.getProgressCount()))
+                .isCompleted(userMission.isCompleted())
                 .build();
     }
 }

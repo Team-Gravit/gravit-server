@@ -14,8 +14,9 @@ import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import gravit.code.mission.domain.Mission;
-import gravit.code.mission.domain.MissionType;
+import gravit.code.mission.fixture.MissionFixture;
 import gravit.code.mission.repository.MissionRepository;
+import gravit.code.mission.repository.UserMissionRepository;
 import gravit.code.season.domain.Season;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.support.TCSpringBootTest;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -86,6 +88,12 @@ class UserFacadeIntegrationTest {
     @Autowired
     private MissionRepository missionRepository;
 
+    @Autowired
+    private UserMissionRepository userMissionRepository;
+
+    @Autowired
+    private Clock clock;
+
     @Nested
     @DisplayName("메인 페이지를 조회할 때")
     class GetMainPage {
@@ -114,7 +122,9 @@ class UserFacadeIntegrationTest {
             LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
             dailyLearningRecordRepository.save(DailyLearningRecord.create(user.getId(), monday));
 
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            userMissionRepository.save(
+                    MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), LocalDate.now(clock)));
 
             // when
             MainPageResponse result = userFacade.getMainPage(user.getId());
@@ -151,7 +161,9 @@ class UserFacadeIntegrationTest {
 
             learningRepository.save(Learning.create(user.getId()));
 
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, user.getId()));
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
+            userMissionRepository.save(
+                    MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), LocalDate.now(clock)));
 
             // when
             MainPageResponse result = userFacade.getMainPage(user.getId());
@@ -162,6 +174,35 @@ class UserFacadeIntegrationTest {
                 softly.assertThat(result.learningDetailResponse().recentSolvedChapterProgressRate()).isZero();
                 softly.assertThat(result.weeklyLearningRecordResponse().MONDAY()).isFalse();
                 softly.assertThat(result.recommendedUnitResponses()).hasSize(2);
+            });
+        }
+
+        @Test
+        void 오늘자_미션_배정이_없어도_조회_시점에_배정되어_반환한다() {
+            // given
+            User user = userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 1, Role.USER));
+
+            League league = leagueRepository.save(League.create("Bronze", 100, 0, 1));
+            Season season = seasonRepository.save(Season.active("2026-W18", LocalDateTime.now(KST), LocalDateTime.now(KST).plusWeeks(1)));
+            userLeagueRepository.save(UserLeague.create(user, season, league));
+
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId()));
+
+            learningRepository.save(Learning.create(user.getId()));
+
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
+
+            // when
+            MainPageResponse result = userFacade.getMainPage(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.missionDetailResponse().missionType()).isEqualTo("COMPLETE_LESSON_ONE");
+                softly.assertThat(result.missionDetailResponse().progressRate()).isZero();
+                softly.assertThat(userMissionRepository.findAssignedMission(user.getId(), LocalDate.now(clock)))
+                        .isPresent();
             });
         }
 

@@ -1,5 +1,6 @@
 package gravit.code.mission.domain;
 
+import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,7 +8,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,115 +16,119 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Mission {
+public class Mission extends BaseEntity {
+
+    private static final int PERFECT_ACCURACY = 100;
+    private static final double MAX_RATE = 100.0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "code", nullable = false, unique = true)
+    private String code;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "description")
+    private String description;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "mission_type",  nullable = false)
-    private MissionType missionType;
+    @Column(name = "target_type", nullable = false)
+    private MissionTargetType targetType;
 
-    @Column(name = "progress_rate", nullable = false)
-    private double progressRate;
+    @Column(name = "target_value", nullable = false)
+    private int targetValue;
 
-    @Column(name = "is_completed", nullable = false)
-    private boolean isCompleted;
+    @Column(name = "max_progress_per_event")
+    private Integer maxProgressPerEvent;
 
-    @Column(name = "user_id", nullable = false, unique = true)
-    private long userId;
+    @Column(name = "award_xp", nullable = false)
+    private int awardXp;
 
-    @Version
-    private long version;
+    @Column(name = "weight", nullable = false)
+    private int weight;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private MissionStatus status;
 
     @Builder(access = AccessLevel.PRIVATE)
     private Mission(
-            MissionType missionType,
-            long userId
+            String code,
+            String title,
+            MissionTargetType targetType,
+            int targetValue,
+            Integer maxProgressPerEvent,
+            int awardXp,
+            int weight,
+            MissionStatus status
     ) {
-        this.missionType = missionType;
-        this.progressRate = 0.0;
-        this.isCompleted = false;
-        this.userId = userId;
-        this.version = 0L;
+        this.code = code;
+        this.title = title;
+        this.targetType = targetType;
+        this.targetValue = targetValue;
+        this.maxProgressPerEvent = maxProgressPerEvent;
+        this.awardXp = awardXp;
+        this.weight = weight;
+        this.status = status;
     }
 
     public static Mission create(
-            MissionType missionType,
-            long userId
+            String code,
+            String title,
+            MissionTargetType targetType,
+            int targetValue,
+            Integer maxProgressPerEvent,
+            int awardXp,
+            int weight,
+            MissionStatus status
     ) {
         return Mission.builder()
-                .missionType(missionType)
-                .userId(userId)
+                .code(code)
+                .title(title)
+                .targetType(targetType)
+                .targetValue(targetValue)
+                .maxProgressPerEvent(maxProgressPerEvent)
+                .awardXp(awardXp)
+                .weight(weight)
+                .status(status)
                 .build();
     }
 
-    // 진행도를 통한 미션 완료 확인
-    public void checkAndUpdateCompletionStatus() {
-        if (this.progressRate >= 100.0) {
-            this.isCompleted = true;
-        }
-    }
-
-    // 레슨 x개 완료하기 관련
-    public void updateCompleteLessonProgress() {
-        double incrementValue = calculateCompleteLessonIncrement();
-        this.progressRate = Math.min(this.progressRate + incrementValue, 100.0);
-    }
-
-    private double calculateCompleteLessonIncrement() {
-        return switch (this.missionType.name()) {
-            case "COMPLETE_LESSON_ONE" -> 100.0;
-            case "COMPLETE_LESSONS_TWO" -> 50.0;
-            case "COMPLETE_LESSONS_THREE" -> 33.4;
-            default -> 0.0;
+    // 레슨 완료 이벤트가 이 미션의 progress_count를 얼마나 올리는가. 해당 없으면 0
+    public int calculateLessonIncrement(
+            int accuracy,
+            int learningTime
+    ) {
+        int rawProgress = switch (this.targetType) {
+            case COMPLETE_LESSON -> 1;
+            case PERFECT_LESSON -> accuracy == PERFECT_ACCURACY ? 1 : 0;
+            case LEARNING_SECONDS -> learningTime;
+            case FOLLOW_FRIEND -> 0;
         };
+
+        return capPerEvent(rawProgress);
     }
 
-    // 정답율 100% 레슨 x개 완료하기 관련
-    public void updatePerfectLessonProgress() {
-        double incrementValue = calculatePerfectLessonIncrement();
-        this.progressRate = Math.min(this.progressRate + incrementValue, 100.0);
+    public int calculateFollowIncrement() {
+        return this.targetType == MissionTargetType.FOLLOW_FRIEND ? 1 : 0;
     }
 
-    private double calculatePerfectLessonIncrement() {
-        return switch (this.missionType.name()) {
-            case "PERFECT_LESSON_ONE" -> 100.0;
-            case "PERFECT_LESSONS_TWO" -> 50.0;
-            case "PERFECT_LESSONS_THREE" -> 33.4;
-            default -> 0.0;
-        };
+    public boolean isAchieved(int progressCount) {
+        return progressCount >= this.targetValue;
     }
 
-    // 학습 x분 완료하기 관련
-    public void updateLearningMinutesProgress(int learningTime) {
-        // 학습 시간 상한 5분으로 설정
-        learningTime = Math.min(learningTime, 300);
-
-        double targetMinutes = getTargetLearningMinutes();
-        double studyTimeMinutes = learningTime / 60.0;
-        double incrementValue = (studyTimeMinutes / targetMinutes) * 100.0;
-
-        this.progressRate = Math.min(this.progressRate + incrementValue, 100.0);
+    public double calculateProgressRate(int progressCount) {
+        double rate = Math.min((double) progressCount / this.targetValue * MAX_RATE, MAX_RATE);
+        return Math.round(rate * 10) / 10.0;
     }
 
-    private double getTargetLearningMinutes() {
-        return switch (this.missionType.name()) {
-            case "LEARNING_MINUTES_FIVE" -> 5.0;
-            case "LEARNING_MINUTES_TEN" -> 10.0;
-            case "LEARNING_MINUTES_FIFTEEN" -> 14.0;
-            default -> 1.0;
-        };
-    }
+    private int capPerEvent(int rawProgress) {
+        if (this.maxProgressPerEvent == null)
+            return rawProgress;
 
-    // 유저 팔로우하기 관련
-    public void updateFollowProgress(){
-        this.progressRate = 100.0;
-    }
-
-    public void reassignMission(){
-        this.missionType = RandomMissionGenerator.getRandomMissionType();
-        this.progressRate = 0.0;
-        this.isCompleted = false;
+        return Math.min(rawProgress, this.maxProgressPerEvent);
     }
 }

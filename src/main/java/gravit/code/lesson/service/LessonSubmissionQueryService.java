@@ -23,6 +23,8 @@ public class LessonSubmissionQueryService {
 
     private static final int TOP_CHAPTERS_LIMIT = 3;
     private static final int WEAK_LESSONS_LIMIT = 7;
+    private static final int SECONDS_PER_HOUR = 60 * 60;
+    private static final double LEARNING_HOURS_ROUNDING_SCALE = 10.0;
 
     private final LessonSubmissionRepository lessonSubmissionRepository;
 
@@ -44,14 +46,16 @@ public class LessonSubmissionQueryService {
 
     @Transactional(readOnly = true)
     public int getCompletedLessonCount(long userId) {
-        return Math.toIntExact(lessonSubmissionRepository.countByUserId(userId));
+        return Math.toIntExact(lessonSubmissionRepository.countDistinctLessonByUserId(userId));
     }
 
     @Transactional(readOnly = true)
     public double getTotalLearningHours(long userId) {
         int learningSeconds = lessonSubmissionRepository.getTotalLearningTime(userId);
 
-        return (double) learningSeconds / (60 * 60);
+        double learningHours = (double) learningSeconds / SECONDS_PER_HOUR;
+
+        return Math.round(learningHours * LEARNING_HOURS_ROUNDING_SCALE) / LEARNING_HOURS_ROUNDING_SCALE;
     }
 
     @Transactional(readOnly = true)

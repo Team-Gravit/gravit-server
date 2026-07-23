@@ -78,7 +78,7 @@ class WrongAnsweredNoteServiceIntegrationTest {
         }
 
         @Test
-        void 이미_오답_노트가_있으면_중복_생성하지_않는다() {
+        void 이미_오답_노트가_있으면_중복_생성하지_않고_오답_횟수를_누적한다() {
             // given
             long userId = 1L;
             wrongAnsweredNoteRepository.save(WrongAnsweredNote.create(problem.getId(), userId));
@@ -87,10 +87,33 @@ class WrongAnsweredNoteServiceIntegrationTest {
             wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problem.getId());
 
             // then
-            long count = wrongAnsweredNoteRepository.findAll().stream()
+            List<WrongAnsweredNote> notes = wrongAnsweredNoteRepository.findAll().stream()
                     .filter(w -> w.getProblemId() == problem.getId() && w.getUserId() == userId)
-                    .count();
-            assertThat(count).isEqualTo(1);
+                    .toList();
+
+            assertSoftly(softly -> {
+                softly.assertThat(notes).hasSize(1);
+                softly.assertThat(notes.get(0).getWrongCount()).isEqualTo(2);
+            });
+        }
+
+        @Test
+        void 극복된_문제를_다시_틀리면_오답노트에_복귀한다() {
+            // given
+            long userId = 1L;
+            wrongAnsweredNoteRepository.save(WrongAnsweredNote.create(problem.getId(), userId));
+            wrongAnsweredNoteService.resolveWrongAnsweredNote(userId, problem.getId());
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problem.getId());
+
+            // then
+            List<ProblemDetailResponse> result = wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unit.getId());
+
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).id()).isEqualTo(problem.getId());
+            });
         }
     }
 
@@ -143,20 +166,39 @@ class WrongAnsweredNoteServiceIntegrationTest {
     }
 
     @Nested
-    @DisplayName("오답 문제를 삭제할 때")
-    class DeleteWrongAnsweredProblem {
+    @DisplayName("오답 문제를 오답노트에서 내릴 때")
+    class ResolveWrongAnsweredNote {
 
         @Test
-        void 오답_노트에서_삭제에_성공한다() {
+        void 행은_남고_극복_시각만_기록된다() {
             // given
             long userId = 1L;
             wrongAnsweredNoteRepository.save(WrongAnsweredNote.create(problem.getId(), userId));
 
             // when
-            wrongAnsweredNoteService.deleteWrongAnsweredProblem(userId, problem.getId());
+            wrongAnsweredNoteService.resolveWrongAnsweredNote(userId, problem.getId());
 
             // then
-            assertThat(wrongAnsweredNoteRepository.findByProblemIdAndUserId(problem.getId(), userId)).isEmpty();
+            assertThat(wrongAnsweredNoteRepository.findByProblemIdAndUserId(problem.getId(), userId))
+                    .isPresent()
+                    .get()
+                    .satisfies(note -> assertSoftly(softly -> {
+                        softly.assertThat(note.isResolved()).isTrue();
+                        softly.assertThat(note.getWrongCount()).isEqualTo(1);
+                    }));
+        }
+
+        @Test
+        void 극복된_문제는_오답_문제_목록에서_빠진다() {
+            // given
+            long userId = 1L;
+            wrongAnsweredNoteRepository.save(WrongAnsweredNote.create(problem.getId(), userId));
+
+            // when
+            wrongAnsweredNoteService.resolveWrongAnsweredNote(userId, problem.getId());
+
+            // then
+            assertThat(wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unit.getId())).isEmpty();
         }
     }
 
@@ -181,6 +223,20 @@ class WrongAnsweredNoteServiceIntegrationTest {
         void 오답이_없으면_false를_반환한다() {
             // given
             long userId = 1L;
+
+            // when
+            boolean result = wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unit.getId());
+
+            // then
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void 극복된_오답만_있으면_false를_반환한다() {
+            // given
+            long userId = 1L;
+            wrongAnsweredNoteRepository.save(WrongAnsweredNote.create(problem.getId(), userId));
+            wrongAnsweredNoteService.resolveWrongAnsweredNote(userId, problem.getId());
 
             // when
             boolean result = wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unit.getId());

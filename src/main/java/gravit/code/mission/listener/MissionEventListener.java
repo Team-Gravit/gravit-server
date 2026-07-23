@@ -85,12 +85,6 @@ public class MissionEventListener {
     public void createMission(OnboardingCompletedEvent event){
         try {
             missionService.createMission(event.userId());
-        } catch (RestApiException e) {
-            if (e.getErrorCode() == CustomErrorCode.MISSION_CONFLICT) {
-                log.warn("미션 이미 존재, 재시도 큐 적재 생략: userId={}", event.userId());
-                return;
-            }
-            queueMissionCreateRetry(event.userId(), e);
         } catch (Exception e) {
             queueMissionCreateRetry(event.userId(), e);
         }

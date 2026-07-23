@@ -1,16 +1,12 @@
 package gravit.code.mission.infrastructure;
 
 import gravit.code.global.event.retry.RetrySweepTarget;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.service.MissionService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MissionCreateRetryTarget implements RetrySweepTarget {
@@ -31,16 +27,9 @@ public class MissionCreateRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        Long userId = Long.valueOf(fields.get("userId"));
+        long userId = Long.parseLong(fields.get("userId"));
 
-        try {
-            missionService.createMission(userId);
-        } catch (RestApiException e) {
-            if (e.getErrorCode() == CustomErrorCode.MISSION_CONFLICT) {
-                log.warn("미션 이미 존재, 재시도 종료: userId={}", userId);
-                return;
-            }
-            throw e;
-        }
+        // assignToday의 insertIfAbsent가 ON CONFLICT DO NOTHING으로 멱등하므로 중복 가드가 필요 없다
+        missionService.createMission(userId);
     }
 }

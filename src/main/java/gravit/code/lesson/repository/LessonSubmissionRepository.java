@@ -3,10 +3,8 @@ package gravit.code.lesson.repository;
 import gravit.code.chapter.dto.internal.ChapterSolvedStatDto;
 import gravit.code.learning.dto.internal.WeakLessonStatDto;
 import gravit.code.lesson.domain.LessonSubmission;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,13 +14,12 @@ import java.util.Optional;
 
 public interface LessonSubmissionRepository extends JpaRepository<LessonSubmission, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<LessonSubmission> findByLessonIdAndUserId(
-            long lessonId,
-            long userId
-    );
-
-    long countByUserId(long userId);
+    @Query("""
+        SELECT COUNT(DISTINCT ls.lessonId)
+        FROM LessonSubmission ls
+        WHERE ls.userId = :userId
+    """)
+    long countDistinctLessonByUserId(@Param("userId") long userId);
 
     @Query("""
         SELECT COUNT(DISTINCT l.id)
@@ -65,7 +62,7 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     @Query(value = """
             SELECT CAST(CEIL(CUME_DIST() OVER (ORDER BY solved_count DESC) * 100) AS INTEGER)
             FROM (
-                SELECT u.id AS user_id, COUNT(ls.id) AS solved_count
+                SELECT u.id AS user_id, COUNT(DISTINCT ls.lesson_id) AS solved_count
                 FROM users u
                 LEFT JOIN lesson_submission ls ON ls.user_id = u.id
                 WHERE u.deleted_at IS NULL
@@ -90,9 +87,9 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     int getAverageAccuracy(@Param("userId") long userId);
 
     @Query(value = """
-        SELECT CAST(EXTRACT(HOUR FROM updated_at) AS INTEGER) AS hour
+        SELECT CAST(EXTRACT(HOUR FROM created_at) AS INTEGER) AS hour
         FROM lesson_submission
-        WHERE user_id = :userId AND updated_at IS NOT NULL
+        WHERE user_id = :userId AND created_at IS NOT NULL
         GROUP BY hour
         ORDER BY COUNT(*) DESC, hour ASC
         LIMIT 1
@@ -101,15 +98,15 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
 
     @Query("""
         SELECT new gravit.code.chapter.dto.internal.ChapterSolvedStatDto(
-            c.id, c.title, COUNT(l.id)
+            c.id, c.title, COUNT(DISTINCT l.id)
         )
         FROM LessonSubmission ls
         JOIN Lesson l ON l.id = ls.lessonId
         JOIN Unit u ON u.id = l.unitId
         JOIN Chapter c ON c.id = u.chapterId
         WHERE ls.userId = :userId
-          AND ls.updatedAt >= :weekStart
-          AND ls.updatedAt < :nextWeekStart
+          AND ls.createdAt >= :weekStart
+          AND ls.createdAt < :nextWeekStart
         GROUP BY c.id, c.title
         ORDER BY COUNT(DISTINCT l.id) DESC, c.id ASC
     """)
@@ -121,11 +118,11 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     );
 
     @Query("""
-        SELECT COUNT(ls.id)
+        SELECT COUNT(DISTINCT ls.lessonId)
         FROM LessonSubmission ls
         WHERE ls.userId = :userId
-          AND ls.updatedAt >= :weekStart
-          AND ls.updatedAt < :nextWeekStart
+          AND ls.createdAt >= :weekStart
+          AND ls.createdAt < :nextWeekStart
     """)
     long countSolvedLessonsByUserIdInWeek(
             @Param("userId") long userId,
@@ -143,11 +140,13 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
                AND ps.problemId IN (SELECT p.id FROM Problem p WHERE p.lessonId = l.id)),
             (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id)
         )
-        FROM LessonSubmission ls
-        JOIN Lesson l ON l.id = ls.lessonId
+        FROM Lesson l
         JOIN Unit u ON u.id = l.unitId
         JOIN Chapter c ON c.id = u.chapterId
-        WHERE ls.userId = :userId
+        WHERE EXISTS (
+            SELECT 1 FROM LessonSubmission ls
+            WHERE ls.lessonId = l.id AND ls.userId = :userId
+        )
         ORDER BY
             (1.0 * (SELECT COUNT(DISTINCT ps.problemId)
                     FROM ProblemSubmission ps

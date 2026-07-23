@@ -71,6 +71,24 @@ class LessonSubmissionQueryServiceIntegrationTest {
         }
 
         @Test
+        void 같은_레슨을_여러_번_제출하면_제출한_횟수를_반환한다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 60, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), userId));
+
+            // when
+            int result = lessonSubmissionQueryService.getLessonSubmissionTryCount(userId, lesson.getId());
+
+            // then
+            assertThat(result).isEqualTo(3);
+        }
+
+        @Test
         void 제출_기록이_없으면_0을_반환한다() {
             // given
             long userId = 1L;
@@ -145,6 +163,24 @@ class LessonSubmissionQueryServiceIntegrationTest {
         }
 
         @Test
+        void 같은_레슨을_여러_번_제출해도_1개로_집계된다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 60, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), userId));
+
+            // when
+            int result = lessonSubmissionQueryService.getCompletedLessonCount(userId);
+
+            // then
+            assertThat(result).isEqualTo(1);
+        }
+
+        @Test
         void 제출_기록이_없으면_0을_반환한다() {
             // given
             long userId = 1L;
@@ -197,6 +233,40 @@ class LessonSubmissionQueryServiceIntegrationTest {
         }
 
         @Test
+        void 같은_레슨을_재시도하면_시도마다_학습_시간이_합산된다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            lessonSubmissionRepository.save(LessonSubmission.create(3600, 80, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(1800, 90, lesson.getId(), userId));
+
+            // when
+            double result = lessonSubmissionQueryService.getTotalLearningHours(userId);
+
+            // then
+            assertThat(result).isEqualTo(1.5);
+        }
+
+        @Test
+        void 딱_떨어지지_않으면_소수점_첫째자리로_반올림하여_반환한다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            // 4600초 = 1.2777...시간 → 1.3
+            lessonSubmissionRepository.save(LessonSubmission.create(4600, 80, lesson.getId(), userId));
+
+            // when
+            double result = lessonSubmissionQueryService.getTotalLearningHours(userId);
+
+            // then
+            assertThat(result).isEqualTo(1.3);
+        }
+
+        @Test
         void 학습_기록이_없으면_0을_반환한다() {
             // given
             long userId = 1L;
@@ -246,6 +316,23 @@ class LessonSubmissionQueryServiceIntegrationTest {
 
             // then
             assertThat(result).isEqualTo(90);
+        }
+
+        @Test
+        void 같은_레슨을_재시도하면_시도마다_평균에_반영된다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 40, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), userId));
+
+            // when
+            int result = lessonSubmissionQueryService.getAverageAccuracy(userId);
+
+            // then
+            assertThat(result).isEqualTo(70);
         }
 
         @Test
@@ -346,6 +433,33 @@ class LessonSubmissionQueryServiceIntegrationTest {
         }
 
         @Test
+        void 같은_레슨을_여러_번_제출해도_풀이_수가_부풀지_않는다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "linked list", chapter.getId()));
+            Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
+
+            // lesson1은 3번 제출했지만 푼 레슨은 lesson1, lesson2 두 개다
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 40, lesson1.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 70, lesson1.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 90, lesson1.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 80, lesson2.getId(), userId));
+
+            // when
+            List<TopChapterResponse> result = lessonSubmissionQueryService.getTopChapters(userId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).chapterTitle()).isEqualTo("자료구조");
+                softly.assertThat(result.get(0).solvedLessonCount()).isEqualTo(2);
+                softly.assertThat(result.get(0).ratio()).isEqualTo(100);
+            });
+        }
+
+        @Test
         void 풀이_기록이_없으면_빈_리스트를_반환한다() {
             // given
             long userId = 1L;
@@ -421,6 +535,33 @@ class LessonSubmissionQueryServiceIntegrationTest {
                 softly.assertThat(result.get(1).rank()).isEqualTo(2);
                 softly.assertThat(result.get(1).wrongAnswerCount()).isEqualTo(1);
                 softly.assertThat(result.get(1).wrongAnswerRate()).isEqualTo(10);
+            });
+        }
+
+        @Test
+        void 같은_레슨을_재제출해도_레슨이_중복되지_않는다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "linked list", chapter.getId()));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문1", "내용1", lesson.getId()));
+
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 20, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 50, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 90, lesson.getId(), userId));
+
+            problemSubmissionRepository.save(ProblemSubmission.create(false, problem.getId(), userId, null, "오답1"));
+
+            // when
+            List<WeakConceptResponse> result = lessonSubmissionQueryService.getWeakConcepts(userId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).rank()).isEqualTo(1);
+                softly.assertThat(result.get(0).wrongAnswerCount()).isEqualTo(1);
+                softly.assertThat(result.get(0).wrongAnswerRate()).isEqualTo(100);
             });
         }
 

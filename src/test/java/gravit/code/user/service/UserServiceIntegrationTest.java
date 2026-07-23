@@ -5,6 +5,8 @@ import gravit.code.league.fixture.LeagueFixture;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
+import gravit.code.mission.fixture.MissionFixture;
+import gravit.code.mission.repository.MissionRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
@@ -41,6 +43,9 @@ class UserServiceIntegrationTest {
 
     @Autowired
     private LeagueFixture leagueFixture;
+
+    @Autowired
+    private MissionRepository missionRepository;
 
     @Nested
     @DisplayName("유저를 아이디로 조회할 때")
@@ -83,6 +88,7 @@ class UserServiceIntegrationTest {
         void 정상_요청이면_온보딩에_성공한다() {
             // given
             leagueFixture.브론즈_3(); // OnboardingCompletedEvent 리스너가 리그 초기화 시 필요
+            missionRepository.save(MissionFixture.미션정의_레슨_1개()); // 같은 리스너가 미션 배정 시 활성 정의를 요구
             User user = userFixture.일반_유저(1);
             OnboardingRequest request = new OnboardingRequest("새닉네임", 3);
 
@@ -114,6 +120,7 @@ class UserServiceIntegrationTest {
         void 이미_온보딩된_유저이면_예외를_던진다() {
             // given
             leagueFixture.브론즈_3(); // OnboardingCompletedEvent 리스너가 리그 초기화 시 필요
+            missionRepository.save(MissionFixture.미션정의_레슨_1개()); // 같은 리스너가 미션 배정 시 활성 정의를 요구
             User user = userFixture.일반_유저(1);
             userService.onboarding(user.getId(), new OnboardingRequest("닉네임", 1));
 

@@ -5,10 +5,10 @@ import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.learning.service.LearningCommandService;
-import gravit.code.mission.domain.Mission;
-import gravit.code.mission.domain.MissionType;
 import gravit.code.mission.dto.event.FollowMissionEvent;
+import gravit.code.mission.fixture.MissionFixture;
 import gravit.code.mission.repository.MissionRepository;
+import gravit.code.mission.repository.UserMissionRepository;
 import gravit.code.mission.service.MissionService;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.userLeague.service.UserLeaguePointService;
@@ -23,6 +23,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +45,12 @@ class MissionEventListenerIntegrationTest {
 
     @Autowired
     private MissionRepository missionRepository;
+
+    @Autowired
+    private UserMissionRepository userMissionRepository;
+
+    @Autowired
+    private Clock clock;
 
     @MockitoBean
     private RetryEventPublisher retryEventPublisher;
@@ -191,9 +199,10 @@ class MissionEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 미션을_별도_트랜잭션에서_실제로_커밋하고_큐에_적재하지_않는다() {
+        void 오늘자_미션을_별도_트랜잭션에서_실제로_배정하고_큐에_적재하지_않는다() {
             // given
             long userId = 1L;
+            missionRepository.save(MissionFixture.미션정의_레슨_1개());
 
             // when
             publisher.publishEvent(new OnboardingCompletedEvent(userId));
@@ -202,24 +211,8 @@ class MissionEventListenerIntegrationTest {
 
             // then
             verify(missionService, timeout(2000)).createMission(userId);
-            assertThat(missionRepository.findByUserId(userId)).isPresent();
+            assertThat(userMissionRepository.findAssignedMission(userId, LocalDate.now(clock))).isPresent();
             verify(retryEventPublisher, never()).publish(eq("mission-create-retry"), any());
-        }
-
-        @Test
-        @Transactional
-        void 이미_미션이_존재하면_재시도_큐에_적재하지_않는다() {
-            // given
-            long userId = 1L;
-            missionRepository.save(Mission.create(MissionType.COMPLETE_LESSON_ONE, userId));
-
-            // when
-            publisher.publishEvent(new OnboardingCompletedEvent(userId));
-            TestTransaction.flagForCommit();
-            TestTransaction.end();
-
-            // then
-            verify(retryEventPublisher, after(500).never()).publish(eq("mission-create-retry"), any());
         }
 
         @Test
