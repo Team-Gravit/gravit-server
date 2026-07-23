@@ -20,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.after;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -57,10 +57,9 @@ class LearningEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 학습_정보_생성_서비스를_호출하고_큐에_적재하지_않는다() {
+        void 학습_정보를_별도_트랜잭션에서_실제로_커밋하고_큐에_적재하지_않는다() {
             // given
             long userId = 1L;
-            doNothing().when(learningCommandService).createLearning(userId);
 
             // when
             publisher.publishEvent(new OnboardingCompletedEvent(userId));
@@ -69,6 +68,7 @@ class LearningEventListenerIntegrationTest {
 
             // then
             verify(learningCommandService, timeout(2000)).createLearning(userId);
+            assertThat(learningRepository.findByUserId(userId)).isPresent();
             verify(retryEventPublisher, never()).publish(eq("learning-create-retry"), any());
         }
 

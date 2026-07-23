@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.after;
@@ -190,10 +191,9 @@ class MissionEventListenerIntegrationTest {
 
         @Test
         @Transactional
-        void 미션_생성_서비스를_호출하고_큐에_적재하지_않는다() {
+        void 미션을_별도_트랜잭션에서_실제로_커밋하고_큐에_적재하지_않는다() {
             // given
             long userId = 1L;
-            doNothing().when(missionService).createMission(userId);
 
             // when
             publisher.publishEvent(new OnboardingCompletedEvent(userId));
@@ -202,6 +202,7 @@ class MissionEventListenerIntegrationTest {
 
             // then
             verify(missionService, timeout(2000)).createMission(userId);
+            assertThat(missionRepository.findByUserId(userId)).isPresent();
             verify(retryEventPublisher, never()).publish(eq("mission-create-retry"), any());
         }
 
