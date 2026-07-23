@@ -18,7 +18,7 @@ public class UserCleanDeletionSql {
      * 3. 공지사항 (notice)
      * 4. 학습 관련 (learning, lesson_submission, problem_submission, bookmark, wrong_answered_note, daily_learning_record)
      * 5. 리그/시즌 (user_league_history, user_league)
-     * 6. 미션/리포트 (mission, report)
+     * 6. 미션/리포트 (user_mission, report)
      * 7. 문의 (inquiry_answer → inquiry)
      * 8. 사용자 (users)
      *
@@ -75,8 +75,8 @@ public class UserCleanDeletionSql {
               d_ul AS (
                 DELETE FROM user_league WHERE user_id = :id
               ),
-              d_mission AS (
-                DELETE FROM mission WHERE user_id = :id
+              d_user_mission AS (
+                DELETE FROM user_mission WHERE user_id = :id
               ),
               d_report AS (
                 DELETE FROM report WHERE user_id = :id
