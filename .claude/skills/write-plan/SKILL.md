@@ -49,6 +49,9 @@ effort: xhigh
 
 1. 손댈 레이어·타입에 맞는 코드 컨벤션을 `.claude/rules/code-convention/`에서 Read로 읽어라 (공통 `common.md`, 그리고 domain / dto / controller / facade / service / repository 중 해당하는 것).
 2. DB 변경이 필요하면 `.claude/rules/migration.md`를 Read로 읽어라.
+3. `.claude/spec/service-policy/`에서 대상 도메인 파일만 Read로 읽어라 (어느 파일인지는 같은 디렉토리의 `README.md` 목록에서 찾는다).
+   - 기존 정책과 어긋나는 구현을 계획하지 마라. 어긋나야 한다면 그것이 정책 변경임을 계획서에 드러내라.
+   - 이번 작업이 정책을 바꾸거나 새 정책을 만들면, 계획서 "영향 범위 - 수정 파일"에 해당 정책 파일을 넣어라.
 
 > 다음 Phase 조건: 관련 컨벤션 파일을 모두 읽었을 때
 
