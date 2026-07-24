@@ -1,0 +1,34 @@
+# 부하 테스트 측정 전용 프로파일 (로컬).
+# application.yml을 베이스로 두고, 측정값을 왜곡하는 설정만 덮어쓴다.
+# 실행: ./gradlew bootRun --args='--spring.profiles.active=perf'
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+      pool-name: gravit-perf-pool
+
+logging:
+  level:
+    API_PERF: WARN
+    org.hibernate.SQL: OFF
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  metrics:
+    tags:
+      application: gravit-perf
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 100ms,200ms,500ms,1s
