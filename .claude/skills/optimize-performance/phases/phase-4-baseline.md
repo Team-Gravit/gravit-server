@@ -17,21 +17,29 @@
    ```bash
    # 새 터미널이면 먼저: export PERF_DIR=.claude/resources/perf/{이슈번호}
 
-   # 1) 워밍업 (JIT, 커넥션 풀). 이 실행의 결과는 쓰지 않는다.
+   # 1) 토큰 발급 (통계 리셋 전에 끝낸다)
+   seq {USER_ID_START} {USER_ID_START + USER_COUNT - 1} \
+     | while read -r id; do
+         curl -s -X POST "localhost:8080/api/v1/test/users/login?userId=$id" | jq -r '.accessToken // empty'
+       done \
+     | jq -R -s 'split("\n") | map(select(length > 0))' > $PERF_DIR/tokens.json
+
+   # 2) 워밍업 (JIT, 커넥션 풀). 이 실행의 결과는 쓰지 않는다.
    k6 run -e PHASE=warmup $PERF_DIR/test-script.js
 
-   # 2) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다
-   redis-cli -h localhost -p 6379 FLUSHALL
+   # 3) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다
+   #    {캐시 제어 수단}은 record.md 측정 환경에 적어둔 값을 그대로 쓴다
+   {캐시 제어 수단} -n 0 FLUSHDB
 
-   # 3) 쿼리 통계 리셋
+   # 4) 쿼리 통계 리셋
    psql -h localhost -p 5433 -U postgres -d mydb -c "SELECT pg_stat_statements_reset();"
 
-   # 4) 측정 부하
+   # 5) 측정 부하
    k6 run -e PHASE=measure \
      -e SUMMARY_OUT=$PERF_DIR/k6-test-summary-0.json \
      $PERF_DIR/test-script.js
 
-   # 5) 쿼리 통계 수집 (total_exec_time 기준 정렬)
+   # 6) 쿼리 통계 수집 (total_exec_time 기준 정렬)
    psql -h localhost -p 5433 -U postgres -d mydb -c "
    SELECT calls, round(mean_exec_time::numeric,2) AS mean_ms,
           round(total_exec_time::numeric,2) AS total_ms, left(query,120) AS query
@@ -58,8 +66,7 @@
    - `checks_rate`가 1이 아니면 `checks[]`에서 어떤 항목이 깨졌는지 먼저 확인한다. 데이터 검증 check가 깨진 측정은 진단에 쓰지 마라.
 
 3. 요청당 쿼리 수를 계산한다.
-   - 분모는 요약의 `requests - USER_COUNT`다. `setup()`의 로그인 요청을 뺀 값이다.
-   - 쿼리 통계에는 `setup()`이 만든 사용자 단건 조회가 `USER_COUNT`건 섞여 있다. 해당 쿼리를 목록에서 식별해 `calls`에서 `USER_COUNT`를 뺀 뒤 판단한다.
+   - 분모는 요약의 `requests`다. 측정 프로세스는 대상 API만 호출한다.
    - `mean_exec_time`이 아니라 `total_exec_time`으로 판단한다.
    - 요청당 호출 횟수를 Phase 1의 예상 쿼리 목록과 대조한다.
 
@@ -76,6 +83,7 @@
 5. 판정과 근거를 `.claude/resources/perf/{이슈번호}/record.md`의 **기준선**에 남긴다. 근거에는 관측된 수치를 쓴다.
 
 ### 출력
+- `.claude/resources/perf/{이슈번호}/tokens.json` 생성
 - `.claude/resources/perf/{이슈번호}/k6-test-summary-0.json` 생성
 - `.claude/resources/perf/{이슈번호}/query-stats-0.txt` 생성
 - `.claude/resources/perf/{이슈번호}/record.md`의 **기준선** 표와 쿼리 통계, 진단이 채워짐

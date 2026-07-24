@@ -34,14 +34,22 @@
    # 새 터미널이면 먼저: export PERF_DIR=.claude/resources/perf/{이슈번호}
 
    # 버퍼 캐시를 채우는 1회. 이 출력은 쓰지 않는다.
-   psql -h localhost -p 5433 -U postgres -d mydb -c "
-   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};" > /dev/null
+   psql -h localhost -p 5433 -U postgres -d mydb > /dev/null <<'SQL'
+   BEGIN;
+   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};
+   ROLLBACK;
+   SQL
 
    # 기록용 2회차
-   psql -h localhost -p 5433 -U postgres -d mydb -c "
-   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};" \
-   | tee -a $PERF_DIR/query-plan-{n-1}.txt
+   psql -h localhost -p 5433 -U postgres -d mydb <<'SQL' | tee -a $PERF_DIR/query-plan-{n-1}.txt
+   BEGIN;
+   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};
+   ROLLBACK;
+   SQL
    ```
+
+   `EXPLAIN ANALYZE`는 대상 쿼리를 실제로 실행한다. `BEGIN`과 `ROLLBACK`을 빼지 마라.
+   시퀀스 증가와 트리거의 외부 호출은 롤백되지 않는다. 대상 쿼리가 쓰기면 그 사실을 호출자에게 알린다.
 
    파일을 Read로 읽는다. 터미널 출력을 붙여넣게 하지 마라.
 

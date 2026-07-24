@@ -58,7 +58,9 @@
 
 5. 확인 결과를 `.claude/resources/perf/{이슈번호}/record.md`의 **측정 환경**에 기록한다.
    - 커넥션 풀 크기는 `application-perf.yml`의 `maximum-pool-size`를 Read로 읽어 적는다.
-   - 캐시 제어 수단(`redis-cli` / `docker exec`)도 반드시 적는다. Phase 4와 8이 이 명령을 그대로 쓴다.
+   - 캐시 제어 수단을 실행 가능한 형태로 적는다.
+     `redis-cli -h localhost -p 6379` 또는 `docker exec gravit-redis-local redis-cli` 중 5)에서 통한 쪽이다.
+     Phase 4와 8이 이 문자열 뒤에 `-n 0 FLUSHDB`를 붙여 쓴다.
 
 ### 출력
 - `.claude/resources/perf/{이슈번호}/record.md`의 측정 환경에 프로파일, 커넥션 풀 크기, 캐시 제어 수단이 기록

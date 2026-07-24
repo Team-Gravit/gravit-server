@@ -39,6 +39,7 @@ Read와 Write의 대상 경로에는 셸 변수가 통하지 않는다. 전체 �
 |---|---|---|
 | `record.md` | 1 | `template/PERF-template.md` |
 | `test-script.js` | 3 | `template/k6-script-template.js` |
+| `tokens.json` | 4, 8 | - |
 | `seeds.sql` | 3 (시드가 필요한 경우만) | `template/seeds-template.sql` |
 | `k6-test-summary-{n}.json` | 4, 8 | - |
 | `query-stats-{n}.txt` | 4, 8 | - |

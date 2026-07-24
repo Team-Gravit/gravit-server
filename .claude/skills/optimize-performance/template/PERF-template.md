@@ -39,8 +39,8 @@
 | 데이터 규모 | {대상 테이블별 행 수} |
 | 카디널리티 | {컬럼별 서로 다른 값의 개수} |
 | 부하 조건 | VU {n}, duration {t} |
-| 캐시 상태 | cold (measure 직전 FLUSHALL) / warm |
-| 캐시 제어 수단 | `redis-cli` / `docker exec gravit-redis-local redis-cli` |
+| 캐시 상태 | cold (measure 직전 FLUSHDB) / warm |
+| 캐시 제어 수단 | `redis-cli -h localhost -p 6379` / `docker exec gravit-redis-local redis-cli` |
 | 시드 SQL | `seeds.sql` / 미사용 |
 
 ## 기준선 (Baseline)
@@ -103,6 +103,8 @@
 
 {기법별 추가 캡처 - 캐싱이면 반복 호출 비율과 무효화 경로, 로직이면 호출 스택, 풀이면 획득 대기 시간}
 
+> 캐싱 사이클이 아니면 개선 후 지표의 캐시 행은 `-`로 둔다.
+
 ### 적용 내용
 
 - {수정한 파일과 변경 요지}
@@ -119,6 +121,7 @@
 | | 대상 쿼리 total_ms | | | |
 | | 검사 행 / 반환 행 | | | |
 | | 스캔 방식 | | | |
+| | 캐시 hit / miss, 적중률 | | | |
 
 ### 판정
 
@@ -140,5 +143,6 @@
 | 하드웨어 독립 | 요청당 쿼리 수 | | | |
 | | 검사 행 / 반환 행 | | | |
 | | 스캔 방식 | | | |
+| | 캐시 hit / miss, 적중률 | | | |
 
 적용한 기법: {사이클 순서대로}

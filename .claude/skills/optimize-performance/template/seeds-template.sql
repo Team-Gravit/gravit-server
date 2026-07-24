@@ -8,7 +8,10 @@
 -- 1. Phase 1의 쿼리 목록에 나온 테이블만 채운다. 그 외 테이블은 건드리지 않는다.
 -- 2. generate_series 기반 대량 INSERT로 작성한다. 행 단위 반복 INSERT로 작성하지 않는다.
 -- 3. FK 의존 순서대로 블록을 배치한다. 부모 테이블이 먼저다.
--- 4. 재실행해도 중복이 쌓이지 않게 작성한다. ON CONFLICT DO NOTHING 또는 삽입 범위를 고정한 조건을 쓴다.
+-- 4. 재실행해도 중복이 쌓이지 않게 작성한다.
+--    유니크 제약이 있으면 ON CONFLICT DO NOTHING, 생성 PK만 있으면 NOT EXISTS로 막는다.
+--    생성 PK만 있는 테이블에 ON CONFLICT DO NOTHING을 쓰면 충돌이 나지 않아 매번 누적된다.
+--    부모를 SELECT하는 문에는 항상 삽입 범위 조건을 건다.
 -- 5. id를 명시 삽입했으면 시퀀스를 보정한다.
 -- 6. 마지막에 ANALYZE를 돌린다.
 -- 7. userId 범위(시작값, 건수)를 k6 스크립트의 USER_ID_START, USER_COUNT와 일치시킨다.
@@ -29,13 +32,16 @@ SELECT i,
 FROM generate_series({시작값}, {시작값 + 건수 - 1}) AS i
 ON CONFLICT (id) DO NOTHING;
 
--- 2) {자식 테이블}: 부모당 {n}건
+-- 2) {자식 테이블}: 부모당 {n}건 (생성 PK만 있는 경우)
 INSERT INTO {자식테이블} ({FK컬럼}, {컬럼들})
 SELECT p.id,
        {컬럼식}
 FROM {부모테이블} p
 CROSS JOIN generate_series(1, {n}) AS j
-ON CONFLICT DO NOTHING;
+WHERE p.id BETWEEN {시작값} AND {시작값 + 건수 - 1}
+  AND NOT EXISTS (
+      SELECT 1 FROM {자식테이블} c WHERE c.{FK컬럼} = p.id
+  );
 
 -- 시퀀스 보정 (id를 명시 삽입한 테이블마다)
 SELECT setval(pg_get_serial_sequence('{테이블}', 'id'),

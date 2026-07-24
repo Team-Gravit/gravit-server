@@ -18,21 +18,28 @@
    ```bash
    # 새 터미널이면 먼저: export PERF_DIR=.claude/resources/perf/{이슈번호}
 
-   # 1) 워밍업. 이 실행의 결과는 쓰지 않는다.
+   # 1) 토큰 발급 (통계 리셋 전에 끝낸다)
+   seq {USER_ID_START} {USER_ID_START + USER_COUNT - 1} \
+     | while read -r id; do
+         curl -s -X POST "localhost:8080/api/v1/test/users/login?userId=$id" | jq -r '.accessToken // empty'
+       done \
+     | jq -R -s 'split("\n") | map(select(length > 0))' > $PERF_DIR/tokens.json
+
+   # 2) 워밍업. 이 실행의 결과는 쓰지 않는다.
    k6 run -e PHASE=warmup $PERF_DIR/test-script.js
 
-   # 2) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다 (Phase 4와 같아야 한다)
-   redis-cli -h localhost -p 6379 FLUSHALL
+   # 3) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다 (Phase 4와 같아야 한다)
+   {캐시 제어 수단} -n 0 FLUSHDB
 
-   # 3) 쿼리 통계 리셋
+   # 4) 쿼리 통계 리셋
    psql -h localhost -p 5433 -U postgres -d mydb -c "SELECT pg_stat_statements_reset();"
 
-   # 4) 측정 부하 (Phase 3의 스크립트를 그대로 쓴다)
+   # 5) 측정 부하 (Phase 3의 스크립트를 그대로 쓴다)
    k6 run -e PHASE=measure \
      -e SUMMARY_OUT=$PERF_DIR/k6-test-summary-{n}.json \
      $PERF_DIR/test-script.js
 
-   # 5) 쿼리 통계 수집
+   # 6) 쿼리 통계 수집
    psql -h localhost -p 5433 -U postgres -d mydb -c "
    SELECT calls, round(mean_exec_time::numeric,2) AS mean_ms,
           round(total_exec_time::numeric,2) AS total_ms, left(query,120) AS query
@@ -41,17 +48,23 @@
    ORDER BY total_exec_time DESC LIMIT 20;" \
    | tee $PERF_DIR/query-stats-{n}.txt
 
-   # 6) 개선 후 실행계획 (Phase 6과 같은 쿼리, 같은 파라미터 값)
-   psql -h localhost -p 5433 -U postgres -d mydb -c "
-   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};" > /dev/null
+   # 7) 개선 후 실행계획 (Phase 6과 같은 쿼리, 같은 파라미터 값)
+   psql -h localhost -p 5433 -U postgres -d mydb > /dev/null <<'SQL'
+   BEGIN;
+   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};
+   ROLLBACK;
+   SQL
 
-   psql -h localhost -p 5433 -U postgres -d mydb -c "
-   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};" \
-   | tee -a $PERF_DIR/query-plan-{n}.txt
+   psql -h localhost -p 5433 -U postgres -d mydb <<'SQL' | tee -a $PERF_DIR/query-plan-{n}.txt
+   BEGIN;
+   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};
+   ROLLBACK;
+   SQL
    ```
 
    - `{n}`에는 이번 사이클 적용 후의 상태 번호를 넣는다. 앞선 상태의 파일을 덮어쓰지 마라.
    - EXPLAIN에는 Phase 6 **실행계획**에 적어둔 파라미터 값을 그대로 쓴다. 값을 바꾸면 계획이 비교 불가가 된다.
+   - Phase 6과 마찬가지로 `BEGIN`과 `ROLLBACK`을 빼지 마라.
    - 쓰기 부하가 포함된 시나리오면 1차 측정이 데이터를 불려놓았을 수 있다. 데이터 규모를 다시 확인한다.
    - 조건이 달라졌으면 그 사실을 기록에 명시하고, 비교 가능한 범위를 좁혀서 해석한다.
 
@@ -65,7 +78,7 @@
 
    최초 상태와의 누적 변화가 필요하면 `-0` 파일을 함께 읽는다.
 
-   - 요청당 쿼리 수의 분모는 Phase 4와 같다. 요약의 `requests - USER_COUNT`.
+   - 요청당 쿼리 수의 분모는 Phase 4와 같다. 요약의 `requests`.
    - `checks_rate`가 Phase 4보다 떨어졌으면 응답 내용이 달라진 것이다. 수치 비교보다 이 사실을 먼저 보고한다.
 
 3. 전후를 비교해 기록한다. **두 축을 모두 남긴다.**
