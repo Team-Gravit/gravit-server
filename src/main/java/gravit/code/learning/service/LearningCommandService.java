@@ -7,6 +7,7 @@ import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.repository.LearningRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,8 +30,12 @@ public class LearningCommandService {
         learningRepository.saveAll(learnings);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createLearning(long userId){
+        if (learningRepository.existsByUserId(userId)) {
+            throw new RestApiException(CustomErrorCode.LEARNING_CONFLICT);
+        }
+
         Learning learning = Learning.create(userId);
         learningRepository.save(learning);
     }

@@ -36,6 +36,11 @@ public interface UserMissionRepository extends JpaRepository<UserMission, Long> 
             @Param("userIds") List<Long> userIds
     );
 
+    boolean existsByUserIdAndAssignedDate(
+            long userId,
+            LocalDate assignedDate
+    );
+
     // 이미 있으면 예외 없이 0을 반환한다. 중복 배정 판정을 DB에 맡겨 호출부에 try-catch가 생기지 않게 한다
     // flushAutomatically: BEFORE_COMMIT 리스너 안에서 실행될 때 외부 트랜잭션의 미flush 변경이
     // clearAutomatically에 쓸려가지 않도록 명시한다

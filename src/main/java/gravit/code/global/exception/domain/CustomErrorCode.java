@@ -46,6 +46,7 @@ public enum CustomErrorCode implements ErrorCode {
 
     // Learning
     LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "LEARNING_4041", "학습 정보 조회에 실패하였습니다."),
+    LEARNING_CONFLICT(HttpStatus.CONFLICT, "LEARNING_4091", "이미 학습 정보가 존재합니다."),
 
     // Chapter
     CHAPTER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),

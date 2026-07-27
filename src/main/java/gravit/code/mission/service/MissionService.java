@@ -56,7 +56,9 @@ public class MissionService {
         return MissionDetailResponse.of(assigned.mission(), assigned.userMission());
     }
 
-    @Transactional
+    // MissionEventListener가 AFTER_COMMIT에서 호출하므로 원본 트랜잭션에 참여해 진행 갱신이
+    // 커밋되지 않는 것을 막기 위해 REQUIRES_NEW로 격리한다
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLessonMission(
             long userId,
             long lessonId,
@@ -100,8 +102,9 @@ public class MissionService {
         completeIfAchieved(userMission, mission);
     }
 
-    // 온보딩 시 오늘자 UserMission 배정. MissionEventListener가 호출하므로 이름을 유지한다
-    @Transactional
+    // 온보딩 시 오늘자 UserMission 배정. MissionEventListener가 AFTER_COMMIT에서 호출하므로
+    // 이름을 유지하고, 원본 트랜잭션에 참여해 배정이 커밋되지 않는 것을 막기 위해 REQUIRES_NEW로 격리한다
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createMission(long userId) {
         assignToday(userId, LocalDate.now(clock));
     }
@@ -147,9 +150,15 @@ public class MissionService {
             long userId,
             LocalDate assignedDate
     ) {
+        // 이미 배정이 있으면 미션 선택을 건너뛴다. 재시도로 중복 진입했을 때
+        // 활성 미션이 사라진 사이 pick()이 MISSION_NOT_FOUND를 던지는 것을 막는다
+        if (userMissionRepository.existsByUserIdAndAssignedDate(userId, assignedDate))
+            return;
+
         List<Mission> activeMissions = missionRepository.findAllByStatus(MissionStatus.ACTIVE);
         Mission picked = weightedMissionPicker.pick(activeMissions);
 
+        // 확인과 삽입 사이의 동시 삽입은 ON CONFLICT DO NOTHING이 흡수한다
         userMissionRepository.insertIfAbsent(
                 userId,
                 picked.getId(),
