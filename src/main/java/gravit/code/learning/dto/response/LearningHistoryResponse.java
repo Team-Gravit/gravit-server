@@ -13,15 +13,20 @@ public record LearningHistoryResponse(
         List<DailySolvedCountResponse> dailySolvedCounts,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        int peakLearningHour
+        int peakLearningHour,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        List<Integer> years
 ) {
     public static LearningHistoryResponse of(
             List<DailySolvedCountResponse> dailySolvedCounts,
-            int peakLearningHour
+            int peakLearningHour,
+            List<Integer> years
     ) {
         return LearningHistoryResponse.builder()
                 .dailySolvedCounts(dailySolvedCounts)
                 .peakLearningHour(peakLearningHour)
+                .years(years)
                 .build();
     }
 }
