@@ -10,7 +10,6 @@ import gravit.code.learning.domain.Learning;
 import gravit.code.learning.dto.response.LearningDetailResponse;
 import gravit.code.learning.dto.response.LearningHistoryResponse;
 import gravit.code.learning.dto.response.LearningSummaryResponse;
-import gravit.code.learning.dto.response.MyPageSummaryResponse;
 import gravit.code.learning.service.LearningProgressRateService;
 import gravit.code.learning.service.LearningQueryService;
 import gravit.code.lesson.service.LessonQueryService;
@@ -57,33 +56,7 @@ public class LearningFacade {
     }
 
     @Transactional(readOnly = true)
-    public MyPageSummaryResponse getMyPageSummary(long userId) {
-        int currentYear = LocalDate.now(TimeZoneConst.KST).getYear();
-        int signUpYear = userService.getUser(userId).getCreatedAt().getYear();
-
-        LearningSummaryResponse learningSummary = getLearningSummary(userId);
-        LearningHistoryResponse learningHistory = getLearningHistory(userId, currentYear);
-
-        List<Integer> availableYears = IntStream.rangeClosed(signUpYear, currentYear)
-                .boxed()
-                .toList();
-
-        return MyPageSummaryResponse.of(
-                learningSummary,
-                learningHistory,
-                availableYears
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public LearningHistoryResponse getMyPageLearningHistory(
-            long userId,
-            int year
-    ) {
-        return getLearningHistory(userId, year);
-    }
-
-    private LearningSummaryResponse getLearningSummary(long userId) {
+    public LearningSummaryResponse getMyPageSummary(long userId) {
         int rankPercentile = learningProgressRateService.getLearningRankPercentile(userId);
         int completedLessonCount = lessonSubmissionQueryService.getCompletedLessonCount(userId);
         int totalLessonCount = lessonQueryService.getTotalLessonCount();
@@ -99,16 +72,24 @@ public class LearningFacade {
         );
     }
 
-    private LearningHistoryResponse getLearningHistory(
+    @Transactional(readOnly = true)
+    public LearningHistoryResponse getMyPageLearningHistory(
             long userId,
             int year
     ) {
         List<DailySolvedCountResponse> dailySolvedCountResponses = dailyLearningRecordService.getDailySolvedCounts(userId, year);
         int peakLearningHour = lessonSubmissionQueryService.getPeakLearningHour(userId);
 
+        int currentYear = LocalDate.now(TimeZoneConst.KST).getYear();
+        int signUpYear = userService.getUser(userId).getCreatedAt().getYear();
+        List<Integer> availableYears = IntStream.rangeClosed(signUpYear, currentYear)
+                .boxed()
+                .toList();
+
         return LearningHistoryResponse.of(
                 dailySolvedCountResponses,
-                peakLearningHour
+                peakLearningHour,
+                availableYears
         );
     }
 }

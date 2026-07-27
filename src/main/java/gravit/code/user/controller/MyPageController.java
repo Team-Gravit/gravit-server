@@ -5,7 +5,7 @@ import gravit.code.chapter.dto.response.TopChapterResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.learning.dto.response.LearningHistoryResponse;
-import gravit.code.learning.dto.response.MyPageSummaryResponse;
+import gravit.code.learning.dto.response.LearningSummaryResponse;
 import gravit.code.learning.dto.response.WeakConceptResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
@@ -41,8 +41,8 @@ public class MyPageController implements MyPageControllerDocs {
         return ResponseEntity.status(HttpStatus.OK).body(userFacade.getMyPageBanner(loginUser.getId()));
     }
 
-    @GetMapping("/summaries")
-    public ResponseEntity<MyPageSummaryResponse> getMyPageSummary(@AuthenticationPrincipal LoginUser loginUser){
+    @GetMapping("/learning/summaries")
+    public ResponseEntity<LearningSummaryResponse> getMyPageSummary(@AuthenticationPrincipal LoginUser loginUser){
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getMyPageSummary(loginUser.getId()));
     }
 
