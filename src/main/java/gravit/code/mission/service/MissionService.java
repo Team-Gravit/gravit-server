@@ -56,7 +56,9 @@ public class MissionService {
         return MissionDetailResponse.of(assigned.mission(), assigned.userMission());
     }
 
-    @Transactional
+    // MissionEventListener가 AFTER_COMMIT에서 호출하므로 원본 트랜잭션에 참여해 진행 갱신이
+    // 커밋되지 않는 것을 막기 위해 REQUIRES_NEW로 격리한다
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLessonMission(
             long userId,
             long lessonId,

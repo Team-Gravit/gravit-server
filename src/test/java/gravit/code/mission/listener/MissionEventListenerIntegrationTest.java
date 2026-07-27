@@ -5,6 +5,10 @@ import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.learning.service.LearningCommandService;
+import gravit.code.lesson.domain.LessonSubmission;
+import gravit.code.lesson.repository.LessonSubmissionRepository;
+import gravit.code.mission.domain.Mission;
+import gravit.code.mission.domain.UserMission;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.mission.fixture.MissionFixture;
 import gravit.code.mission.repository.MissionRepository;
@@ -50,6 +54,9 @@ class MissionEventListenerIntegrationTest {
     private UserMissionRepository userMissionRepository;
 
     @Autowired
+    private LessonSubmissionRepository lessonSubmissionRepository;
+
+    @Autowired
     private Clock clock;
 
     @MockitoBean
@@ -92,6 +99,34 @@ class MissionEventListenerIntegrationTest {
 
             // then
             verify(missionService, timeout(2000)).handleLessonMission(userId, lessonId, 120, 80);
+            verify(retryEventPublisher, never()).publish(eq("mission-lesson-retry"), any());
+        }
+
+        @Test
+        @Transactional
+        void 레슨_미션_진행도를_별도_트랜잭션에서_실제로_커밋한다() {
+            // given
+            long userId = 1L;
+            long lessonId = 10L;
+            Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_3개());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(userId, mission.getId(), LocalDate.now(clock)));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lessonId, userId));
+
+            LessonCompletedEvent event = new LessonCompletedEvent(userId, lessonId, 100L, 20, 80, 120, 0, 1);
+
+            // when
+            publisher.publishEvent(event);
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            verify(missionService, timeout(2000)).handleLessonMission(userId, lessonId, 120, 80);
+
+            // REQUIRES_NEW가 아니면 AFTER_COMMIT 후속 쓰기가 커밋되지 않아 진행도가 0으로 유실된다
+            UserMission committed = userMissionRepository.findAssignedMission(userId, LocalDate.now(clock))
+                    .orElseThrow()
+                    .userMission();
+            assertThat(committed.getProgressCount()).isEqualTo(1);
             verify(retryEventPublisher, never()).publish(eq("mission-lesson-retry"), any());
         }
 
