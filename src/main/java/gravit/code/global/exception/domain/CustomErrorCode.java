@@ -31,6 +31,7 @@ public enum CustomErrorCode implements ErrorCode {
     ISSUER_NOT_MATCHING(HttpStatus.BAD_REQUEST, "AUTH_4007", "IdToken 의 Issuer 가 매칭되지 않습니다."),
     AUDIENCE_IS_EMPTY(HttpStatus.BAD_REQUEST, "AUTH_4008", "IdToken 의 audience 가 비어있습니다."),
     AUDIENCE_NOT_MATCHING(HttpStatus.BAD_REQUEST,"AUTH_4009", "IdToken 의 audience 가 매칭되지 않습니다."),
+    OAUTH_USER_INFO_INVALID(HttpStatus.BAD_REQUEST, "AUTH_4010", "OAuth 제공자로부터 유효한 사용자 정보를 받지 못했습니다."),
 
     // HandleGenerator
     HANDLE_CONFLICT_TEN_TIMES(HttpStatus.CONFLICT, "H_G_4091", "중복으로 인해 유효한 handle 을 찾지 못했습니다."),

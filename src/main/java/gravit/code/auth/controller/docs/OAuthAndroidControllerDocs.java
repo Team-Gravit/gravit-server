@@ -1,7 +1,7 @@
 package gravit.code.auth.controller.docs;
 
+import gravit.code.auth.dto.oauth.android.AccessTokenRequest;
 import gravit.code.auth.dto.oauth.android.IdTokenRequest;
-import gravit.code.auth.dto.oauth.android.NaverAndroidUserInfoRequest;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -104,10 +104,42 @@ public interface OAuthAndroidControllerDocs {
     );
 
     @Operation(summary = "네이버 OAuth 회원가입/로그인 처리",
-            description = "Android에서 전달한 네이버 사용자 정보를 기반으로 회원가입/로그인 처리를 합니다. <br>"
-                    + "네이버는 IdToken 방식을 지원하지 않기 때문에 Android에서 직접 사용자 정보(providerId, email, nickname)를 전달합니다.")
+            description = "Android에서 전달한 네이버 AccessToken 으로 회원가입/로그인 처리를 합니다. <br>"
+                    + "네이버는 IdToken 방식을 지원하지 않기 때문에, Android 가 네이버 SDK로 발급받은 AccessToken 을 전달하면 "
+                    + "서버가 네이버에 사용자 정보를 조회해 검증합니다. <br>"
+                    + "AccessToken 을 body에 담아서 사용합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 네이버 OAuth 회원가입/로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "🚨 유효하지 않은 OAuth AccessToken",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유효하지 않은 OAuth AccessToken",
+                                            value = "{\"error\" : \"AUTH4003\", \"message\" : \"유효하지 않은 OAuth AccessToken\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "🚨 사용자 정보 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "사용자 정보 조회 실패",
+                                            value = "{\"error\" : \"AUTH_4010\", \"message\" : \"OAuth 제공자로부터 유효한 사용자 정보를 받지 못했습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "502", description = "🚨 OAuth 서버 통신 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "OAuth 서버 통신 실패",
+                                            value = "{\"error\" : \"AUTH_502\", \"message\" : \"OAuth 인증 서버와의 통신에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -121,6 +153,6 @@ public interface OAuthAndroidControllerDocs {
     })
     @PostMapping("/naver")
     ResponseEntity<LoginResponse> oauthNaverLogin(
-            @RequestBody NaverAndroidUserInfoRequest request
+            @RequestBody AccessTokenRequest request
     );
 }
