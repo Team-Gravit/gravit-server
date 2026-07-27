@@ -1,10 +1,12 @@
 package gravit.code.user.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.chapter.dto.response.TopChapterResponse;
+import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.learning.dto.response.LearningHistoryResponse;
-import gravit.code.learning.dto.response.MyPageLearningResponse;
 import gravit.code.learning.dto.response.MyPageSummaryResponse;
+import gravit.code.learning.dto.response.WeakConceptResponse;
 import gravit.code.user.dto.response.MyPageBannerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,6 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Tag(name = "MyPage API", description = "마이페이지 관련 API")
 public interface MyPageControllerDocs {
@@ -98,10 +102,10 @@ public interface MyPageControllerDocs {
     })
     ResponseEntity<MyPageSummaryResponse> getMyPageSummary(@AuthenticationPrincipal LoginUser loginUser);
 
-    @Operation(summary = "마이페이지 학습 정보 조회", description = "마이페이지 주간 리포트, TOP 챕터, 취약 개념을 한 번에 조회합니다<br>" +
+    @Operation(summary = "마이페이지 취약 개념 조회", description = "오답률이 높은 유닛 상위 7개를 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "✅ 마이페이지 학습 정보 조회 성공"),
+            @ApiResponse(responseCode = "200", description = "✅ 마이페이지 취약 개념 조회 성공"),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -113,7 +117,41 @@ public interface MyPageControllerDocs {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<MyPageLearningResponse> getMyPageLearning(@AuthenticationPrincipal LoginUser loginUser);
+    ResponseEntity<List<WeakConceptResponse>> getMyPageWeakConcepts(@AuthenticationPrincipal LoginUser loginUser);
+
+    @Operation(summary = "마이페이지 주간 리포트 조회", description = "이번 주 요일별 학습량과 직전 3주 대비 증감을 조회합니다<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 마이페이지 주간 리포트 조회 성공"),
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외 발생",
+                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    ResponseEntity<WeeklyLearningReportResponse> getMyPageWeeklyReport(@AuthenticationPrincipal LoginUser loginUser);
+
+    @Operation(summary = "마이페이지 이번주 최다 학습 챕터 조회", description = "이번 주에 가장 많이 푼 챕터 상위 3개를 조회합니다<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 마이페이지 이번주 최다 학습 챕터 조회 성공"),
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "예기치 못한 예외 발생",
+                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    ResponseEntity<List<TopChapterResponse>> getMyPageTopChapters(@AuthenticationPrincipal LoginUser loginUser);
 
     @Operation(summary = "마이페이지 학습 이력 조회", description = "지정한 연도의 일별 풀이 수와 피크 학습 시간을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")

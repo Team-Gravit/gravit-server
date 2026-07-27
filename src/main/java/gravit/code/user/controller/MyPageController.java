@@ -1,10 +1,14 @@
 package gravit.code.user.controller;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.chapter.dto.response.TopChapterResponse;
+import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
+import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.learning.dto.response.LearningHistoryResponse;
-import gravit.code.learning.dto.response.MyPageLearningResponse;
 import gravit.code.learning.dto.response.MyPageSummaryResponse;
+import gravit.code.learning.dto.response.WeakConceptResponse;
 import gravit.code.learning.facade.LearningFacade;
+import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.user.controller.docs.MyPageControllerDocs;
 import gravit.code.user.dto.response.MyPageBannerResponse;
 import gravit.code.user.facade.UserFacade;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +32,9 @@ public class MyPageController implements MyPageControllerDocs {
 
     private final UserFacade userFacade;
     private final LearningFacade learningFacade;
+
+    private final DailyLearningRecordService dailyLearningRecordService;
+    private final LessonSubmissionQueryService lessonSubmissionQueryService;
 
     @GetMapping("/banners")
     public ResponseEntity<MyPageBannerResponse> getMyPageBanner(@AuthenticationPrincipal LoginUser loginUser) {
@@ -37,9 +46,19 @@ public class MyPageController implements MyPageControllerDocs {
         return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getMyPageSummary(loginUser.getId()));
     }
 
-    @GetMapping("/learning")
-    public ResponseEntity<MyPageLearningResponse> getMyPageLearning(@AuthenticationPrincipal LoginUser loginUser){
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getMyPageLearning(loginUser.getId()));
+    @GetMapping("/learning/weak-concepts")
+    public ResponseEntity<List<WeakConceptResponse>> getMyPageWeakConcepts(@AuthenticationPrincipal LoginUser loginUser){
+        return ResponseEntity.status(HttpStatus.OK).body(lessonSubmissionQueryService.getWeakConcepts(loginUser.getId()));
+    }
+
+    @GetMapping("/learning/weekly-report")
+    public ResponseEntity<WeeklyLearningReportResponse> getMyPageWeeklyReport(@AuthenticationPrincipal LoginUser loginUser){
+        return ResponseEntity.status(HttpStatus.OK).body(dailyLearningRecordService.getWeeklyLearningReport(loginUser.getId()));
+    }
+
+    @GetMapping("/learning/top-chapters")
+    public ResponseEntity<List<TopChapterResponse>> getMyPageTopChapters(@AuthenticationPrincipal LoginUser loginUser){
+        return ResponseEntity.status(HttpStatus.OK).body(lessonSubmissionQueryService.getTopChapters(loginUser.getId()));
     }
 
     @GetMapping("/learning/history")
