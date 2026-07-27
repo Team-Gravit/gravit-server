@@ -24,6 +24,7 @@ import java.time.LocalDate;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.MISSION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -421,6 +422,19 @@ class MissionServiceIntegrationTest {
             missionService.createMission(user.getId());
 
             // then
+            assertThat(userMissionRepository.count()).isEqualTo(1);
+        }
+
+        @Test
+        void 이미_배정된_유저의_재시도는_활성_미션이_없어도_예외가_발생하지_않는다() {
+            // given: 배정만 남고 활성 미션 정의가 사라진 중복 재시도 상황
+            User user = createUser("1");
+            Mission mission = missionRepository.save(MissionFixture.비활성_미션정의());
+            userMissionRepository.save(MissionFixture.오늘_배정된_미션(user.getId(), mission.getId(), today()));
+
+            // when & then
+            assertThatCode(() -> missionService.createMission(user.getId()))
+                    .doesNotThrowAnyException();
             assertThat(userMissionRepository.count()).isEqualTo(1);
         }
     }

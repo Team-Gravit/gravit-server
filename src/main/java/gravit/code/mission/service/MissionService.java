@@ -150,9 +150,15 @@ public class MissionService {
             long userId,
             LocalDate assignedDate
     ) {
+        // 이미 배정이 있으면 미션 선택을 건너뛴다. 재시도로 중복 진입했을 때
+        // 활성 미션이 사라진 사이 pick()이 MISSION_NOT_FOUND를 던지는 것을 막는다
+        if (userMissionRepository.existsByUserIdAndAssignedDate(userId, assignedDate))
+            return;
+
         List<Mission> activeMissions = missionRepository.findAllByStatus(MissionStatus.ACTIVE);
         Mission picked = weightedMissionPicker.pick(activeMissions);
 
+        // 확인과 삽입 사이의 동시 삽입은 ON CONFLICT DO NOTHING이 흡수한다
         userMissionRepository.insertIfAbsent(
                 userId,
                 picked.getId(),
