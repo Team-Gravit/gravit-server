@@ -1,0 +1,95 @@
+BEGIN
+=== [1] countSolvedLessonsByUserIdInWeek ===
+                                                                                               QUERY PLAN                                                                                                
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=10471.51..10471.52 rows=1 width=8) (actual time=37.411..41.442 rows=1 loops=1)
+   Output: count(DISTINCT lesson_id)
+   Buffers: shared hit=6194
+   ->  Gather  (cost=1000.00..10471.40 rows=45 width=8) (actual time=2.461..41.143 rows=30 loops=1)
+         Output: lesson_id
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=6186
+         ->  Parallel Seq Scan on public.lesson_submission ls1_0  (cost=0.00..9466.90 rows=19 width=8) (actual time=1.877..27.772 rows=10 loops=3)
+               Output: lesson_id
+               Filter: ((ls1_0.created_at >= '2026-07-27 00:00:00'::timestamp without time zone) AND (ls1_0.created_at < '2026-08-03 00:00:00'::timestamp without time zone) AND (ls1_0.user_id = 1500))
+               Rows Removed by Filter: 99990
+               Buffers: shared hit=6186
+               Worker 0:  actual time=3.999..23.491 rows=7 loops=1
+                 Buffers: shared hit=1890
+               Worker 1:  actual time=0.034..23.687 rows=7 loops=1
+                 Buffers: shared hit=1880
+ Query Identifier: -2993255473442879340
+ Planning:
+   Buffers: shared hit=77
+ Planning Time: 2.349 ms
+ Execution Time: 41.696 ms
+(22 rows)
+
+=== [2] findTopChaptersByUserIdInWeek ===
+                                                                                                              QUERY PLAN                                                                                                               
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=10562.94..10562.94 rows=3 width=31) (actual time=13.155..14.547 rows=3 loops=1)
+   Output: c1_0.id, c1_0.title, (count(DISTINCT l1_0.id))
+   Buffers: shared hit=6250
+   ->  Sort  (cost=10562.94..10562.95 rows=5 width=31) (actual time=13.154..14.545 rows=3 loops=1)
+         Output: c1_0.id, c1_0.title, (count(DISTINCT l1_0.id))
+         Sort Key: (count(DISTINCT l1_0.id)) DESC, c1_0.id
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=6250
+         ->  GroupAggregate  (cost=1000.28..10562.88 rows=5 width=31) (actual time=12.828..14.476 rows=5 loops=1)
+               Output: c1_0.id, c1_0.title, count(DISTINCT l1_0.id)
+               Group Key: c1_0.id
+               Buffers: shared hit=6250
+               ->  Nested Loop  (cost=1000.28..10562.60 rows=45 width=31) (actual time=12.717..14.431 rows=30 loops=1)
+                     Output: c1_0.id, c1_0.title, l1_0.id
+                     Join Filter: (l1_0.unit_id = u1_0.id)
+                     Rows Removed by Join Filter: 1920
+                     Buffers: shared hit=6250
+                     ->  Nested Loop  (cost=0.13..19.90 rows=65 width=31) (actual time=0.051..0.125 rows=65 loops=1)
+                           Output: u1_0.id, c1_0.id, c1_0.title
+                           Join Filter: (u1_0.chapter_id = c1_0.id)
+                           Rows Removed by Join Filter: 260
+                           Buffers: shared hit=4
+                           ->  Index Scan using chapter_pkey on public.chapter c1_0  (cost=0.13..12.21 rows=5 width=23) (actual time=0.022..0.025 rows=5 loops=1)
+                                 Output: c1_0.id, c1_0.description, c1_0.title
+                                 Buffers: shared hit=2
+                           ->  Materialize  (cost=0.00..2.98 rows=65 width=16) (actual time=0.005..0.013 rows=65 loops=5)
+                                 Output: u1_0.id, u1_0.chapter_id
+                                 Buffers: shared hit=2
+                                 ->  Seq Scan on public.unit u1_0  (cost=0.00..2.65 rows=65 width=16) (actual time=0.017..0.031 rows=65 loops=1)
+                                       Output: u1_0.id, u1_0.chapter_id
+                                       Buffers: shared hit=2
+                     ->  Materialize  (cost=1000.14..10498.94 rows=45 width=16) (actual time=0.012..0.217 rows=30 loops=65)
+                           Output: l1_0.id, l1_0.unit_id
+                           Buffers: shared hit=6246
+                           ->  Nested Loop  (cost=1000.14..10498.72 rows=45 width=16) (actual time=0.737..14.019 rows=30 loops=1)
+                                 Output: l1_0.id, l1_0.unit_id
+                                 Inner Unique: true
+                                 Buffers: shared hit=6246
+                                 ->  Gather  (cost=1000.00..10471.40 rows=45 width=8) (actual time=0.659..13.825 rows=30 loops=1)
+                                       Output: ls1_0.lesson_id
+                                       Workers Planned: 2
+                                       Workers Launched: 2
+                                       Buffers: shared hit=6186
+                                       ->  Parallel Seq Scan on public.lesson_submission ls1_0  (cost=0.00..9466.90 rows=19 width=8) (actual time=4.170..8.331 rows=10 loops=3)
+                                             Output: ls1_0.lesson_id
+                                             Filter: ((ls1_0.created_at >= '2026-07-27 00:00:00'::timestamp without time zone) AND (ls1_0.created_at < '2026-08-03 00:00:00'::timestamp without time zone) AND (ls1_0.user_id = 1500))
+                                             Rows Removed by Filter: 99990
+                                             Buffers: shared hit=6186
+                                             Worker 0:  actual time=6.342..6.540 rows=2 loops=1
+                                               Buffers: shared hit=1357
+                                             Worker 1:  actual time=5.902..6.477 rows=5 loops=1
+                                               Buffers: shared hit=1497
+                                 ->  Index Scan using lesson_pkey on public.lesson l1_0  (cost=0.14..0.61 rows=1 width=16) (actual time=0.006..0.006 rows=1 loops=30)
+                                       Output: l1_0.id, l1_0.title, l1_0.unit_id
+                                       Index Cond: (l1_0.id = ls1_0.lesson_id)
+                                       Buffers: shared hit=60
+ Query Identifier: 9113153431669919828
+ Planning:
+   Buffers: shared hit=168
+ Planning Time: 2.375 ms
+ Execution Time: 14.664 ms
+(61 rows)
+
+ROLLBACK

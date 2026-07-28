@@ -109,6 +109,15 @@ tasks.named('bootJar') {
     dependsOn 'flywayCi'
 }
 
+tasks.named('bootRun') {
+    // bootRun 기본값(optimizedLaunch)은 -XX:TieredStopAtLevel=1로 C1까지만 컴파일한다.
+    // 기동은 빨라지지만 정상 상태 처리량이 낮게 나오므로, perf 프로파일 측정에서는 끈다.
+    def perfProfileRun = gradle.startParameter.taskRequests*.args.flatten()
+            .any { it.toString().contains('spring.profiles.active=perf') }
+
+    optimizedLaunch = !perfProfileRun
+}
+
 tasks.named('test') {
     useJUnitPlatform {
         excludeTags 'experiment'

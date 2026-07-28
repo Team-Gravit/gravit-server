@@ -18,6 +18,8 @@ logging:
   level:
     API_PERF: WARN
     org.hibernate.SQL: OFF
+    org.hibernate.orm.jdbc.bind: OFF
+    org.hibernate.orm.jdbc.extract: OFF
 
 management:
   endpoints:

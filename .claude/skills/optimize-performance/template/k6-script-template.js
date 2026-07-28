@@ -1,24 +1,26 @@
 // 부하 테스트 스크립트 템플릿.
-// {…} 자리를 채워 .claude/resources/perf/{이슈번호}/test-script.js 로 저장한다.
+// {…} 자리를 채워 .claude/resources/perf/{이슈번호}/{슬러그}/test-script.js 로 저장한다.
 //
 // 실행: 토큰 발급, warmup, measure를 각각 따로 돌린다. 통계 리셋은 토큰 발급이 끝난 뒤에 한다.
 //
 //   (토큰 발급 - Phase 4, 8의 명령 블록 참조. $PERF_DIR/tokens.json 생성)
-//   k6 run -e PHASE=warmup $PERF_DIR/test-script.js
+//   k6 run -e PHASE=warmup $TARGET_DIR/test-script.js
 //   psql ... -c "SELECT pg_stat_statements_reset();"
-//   k6 run -e PHASE=measure -e SUMMARY_OUT=$PERF_DIR/k6-test-summary-{n}.json \
-//     $PERF_DIR/test-script.js
+//   k6 run -e PHASE=measure -e SUMMARY_OUT=$TARGET_DIR/k6-test-summary-{n}.json \
+//     $TARGET_DIR/test-script.js
 //
 // {n}은 상태 번호다. 0 = 아무것도 적용하지 않은 원본(Phase 4), n = 사이클 n 적용 후(Phase 8).
 // 실행은 호출자가 한다. 스킬은 명령어만 제시한다.
 //
 // ── 작성 규칙 ──────────────────────────────────────────────
 // 1. 이 파일을 복사해 고친다. 빈 파일에서 새로 쓰지 않는다.
-// 2. 고치는 자리는 default 함수의 요청 한 줄과 check의 세 번째 항목, VU와 duration뿐이다.
-//    그 외 구조는 아래 3~10 규칙 안에서만 손댄다.
+// 2. 고치는 자리는 상단 상수 블록(TARGET, ENDPOINT, CONDITION, USER_ID_START, USER_COUNT),
+//    default 함수의 요청 한 줄, check의 세 번째 항목, VU와 duration뿐이다.
+//    그 외 구조는 아래 3~11 규칙 안에서만 손댄다.
 // 3. PHASE 분기를 유지한다. 두 시나리오를 한 프로세스에서 같이 돌리지 않는다.
-// 4. 토큰은 init 컨텍스트에서 tokens.json으로 읽는다. setup()에서 로그인을 호출하지 마라.
+// 4. 토큰은 init 컨텍스트에서 이슈 디렉토리의 tokens.json으로 읽는다. setup()에서 로그인을 호출하지 마라.
 //    측정 프로세스가 인증 요청을 보내면 그 SQL과 응답시간이 측정값에 섞인다.
+//    tokens.json은 이슈 전체가 공유한다. `../tokens.json` 경로를 대상 디렉토리 안쪽으로 바꾸지 마라.
 // 5. 토큰 수가 USER_COUNT와 다르면 중단한다. 일부만 발급된 채로 측정하지 마라.
 // 6. VU마다 다른 토큰을 쓰는 구조를 유지한다. 전 VU가 같은 토큰을 쓰게 고치지 않는다.
 // 7. 응답시간 임계를 thresholds에 넣지 않는다. 판정은 스킬이 전후 비교로 한다.
@@ -29,6 +31,9 @@
 // 9. VU와 duration은 Phase 3에서 호출자와 확정한 값으로, USER_ID_START와 USER_COUNT는
 //    seeds.sql로 실제 만든 userId 범위와 일치시킨다. 기본값을 그대로 두지 않는다.
 // 10. handleSummary가 내보내는 필드를 빼지 않는다. Phase 4와 8이 이 필드명을 그대로 참조한다.
+//     숫자를 반올림하거나 자릿수를 줄이지 마라. 요약 파일에는 k6가 준 값이 그대로 들어간다.
+// 11. TARGET에는 대상 디렉토리 슬러그를, ENDPOINT에는 경로를, CONDITION에는 Phase 3-B에서
+//     확정한 부하 조건과 캐시 상태를 적는다. 요약 파일만 보고 어떤 측정인지 알 수 있어야 한다.
 //
 // measure 실행의 요청은 전부 대상 API다. 요청당 쿼리 수의 분모는 요약의 `requests`를 그대로 쓴다.
 //
@@ -49,7 +54,19 @@ const USER_ID_START = Number(__ENV.USER_ID_START || 1);
 const USER_COUNT = Number(__ENV.USER_COUNT || 50);
 const PHASE = __ENV.PHASE || 'measure';
 
-const tokens = JSON.parse(open('./tokens.json'));
+// 이 측정이 무엇이었는지 요약 파일만 보고 알 수 있게 한다.
+const TARGET = '{슬러그}';
+const ENDPOINT = '{HTTP} {경로}';
+const CONDITION = {
+    vus: {VU},
+    duration: '{duration}',
+    cache: '{cold | warm}',
+    user_id_start: USER_ID_START,
+    user_count: USER_COUNT,
+};
+
+// tokens.json은 이슈 디렉토리에 있다(대상 간 공유).
+const tokens = JSON.parse(open('../tokens.json'));
 
 if (tokens.length !== USER_COUNT) {
     throw new Error(
@@ -109,6 +126,9 @@ export function handleSummary(data) {
 
     const summary = {
         phase: PHASE,
+        target: TARGET,
+        endpoint: ENDPOINT,
+        condition: CONDITION,
         requests: val('http_reqs', 'count'),
         rps: val('http_reqs', 'rate'),
         failed_rate: val('http_req_failed', 'rate'),
@@ -123,9 +143,10 @@ export function handleSummary(data) {
         bytes_received: val('data_received', 'count'),
     };
 
+    // 아래 반올림은 터미널 한 줄 출력에만 쓴다. summary 객체의 값은 손대지 않는다.
     const num = (x, d) => (typeof x === 'number' ? x.toFixed(d) : '-');
     const line = [
-        `[${PHASE}]`,
+        `[${PHASE}] ${TARGET}`,
         `요청 ${summary.requests}건`,
         `p95 ${num(summary.duration_ms.p95, 1)}ms`,
         `p99 ${num(summary.duration_ms.p99, 1)}ms`,

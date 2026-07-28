@@ -3,8 +3,6 @@ package gravit.code.lesson.service;
 import gravit.code.chapter.dto.internal.ChapterSolvedStatDto;
 import gravit.code.chapter.dto.response.TopChapterResponse;
 import gravit.code.global.consts.TimeZoneConst;
-import gravit.code.learning.dto.internal.WeakLessonStatDto;
-import gravit.code.learning.dto.response.WeakConceptResponse;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +20,6 @@ import java.util.List;
 public class LessonSubmissionQueryService {
 
     private static final int TOP_CHAPTERS_LIMIT = 3;
-    private static final int WEAK_LESSONS_LIMIT = 7;
     private static final int SECONDS_PER_HOUR = 60 * 60;
     private static final double LEARNING_HOURS_ROUNDING_SCALE = 10.0;
 
@@ -87,23 +84,6 @@ public class LessonSubmissionQueryService {
         for(int i = 0; i < chapterSolvedStats.size(); i++) {
             response.add(TopChapterResponse.of(
                     i + 1, chapterSolvedStats.get(i), weeklySolvedTotal
-            ));
-        }
-
-        return response;
-    }
-
-    @Transactional(readOnly = true)
-    public List<WeakConceptResponse> getWeakConcepts(long userId) {
-        List<WeakLessonStatDto> weakLessonStats = lessonSubmissionRepository.findWeakLessonsByUserId(
-                userId, PageRequest.of(0, WEAK_LESSONS_LIMIT)
-        );
-
-        List<WeakConceptResponse> response = new ArrayList<>();
-
-        for(int i = 0; i < weakLessonStats.size(); i++) {
-            response.add(WeakConceptResponse.of(
-                    i + 1, weakLessonStats.get(i)
             ));
         }
 

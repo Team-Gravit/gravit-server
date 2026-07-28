@@ -2,6 +2,9 @@
 
 > 이슈: #{이슈번호}
 > 브랜치: {브랜치명}
+> 대상 디렉토리: `.claude/resources/perf/{이슈번호}/{슬러그}/`
+
+이 파일은 대상 엔드포인트 하나만 다룬다. 같은 이슈의 다른 엔드포인트는 각자의 디렉토리에 각자의 `record.md`를 가진다.
 
 ## 진행 상태
 
@@ -41,7 +44,8 @@
 | 부하 조건 | VU {n}, duration {t} |
 | 캐시 상태 | cold (measure 직전 FLUSHDB) / warm |
 | 캐시 제어 수단 | `redis-cli -h localhost -p 6379` / `docker exec gravit-redis-local redis-cli` |
-| 시드 SQL | `seeds.sql` / 미사용 |
+| 시드 SQL | `../seeds.sql` (이슈 공용) / 미사용 |
+| 시드 모듈과 변수 | {`\i` 로 부른 모듈과 확정한 변수값} |
 
 ## 기준선 (Baseline)
 
@@ -56,16 +60,17 @@
 
 ### 쿼리 통계 (total_exec_time 상위)
 
-> 원본: `query-stats-0.txt` / k6 요약 원본: `k6-test-summary-0.json`
+> 전체: `query-stats-summary-0.txt` / k6 요약: `k6-test-summary-0.json`
 > 여기에는 진단 근거로 쓴 행만 옮긴다. 전체를 복사하지 않는다.
 
-| calls | mean_ms | total_ms | query |
-|---|---|---|---|
+| 요청당 | mean_ms | total_ms | 비중 | 출처 |
+|---|---|---|---|---|
 
 ### 진단
 
-- 병목 성격: {Phase 4 진단 표의 판정}
+- 병목 성격: {Phase 4에서 확정한 판정}
 - 근거: {관측된 수치}
+- 예상 쿼리 목록과 어긋난 지점: {있으면 무엇이 어떻게 어긋났는지, 없으면 `없음`}
 
 ---
 

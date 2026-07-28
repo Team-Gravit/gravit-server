@@ -1,0 +1,163 @@
+근ㄷBEGIN
+                                                                                                                                                                       QUERY PLAN                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=32293.80..32293.82 rows=7 width=83) (actual time=469.315..472.550 rows=7 loops=1)
+   Output: u1_0.id, u1_0.title, c1_0.title, (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END)), (count(DISTINCT ps1_0.problem_id)), (((1.0 * (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END))::numeric) / (count(DISTINCT ps1_0.problem_id))::numeric))
+   Buffers: shared hit=16428 read=3916
+   ->  Sort  (cost=32293.80..32294.07 rows=108 width=83) (actual time=469.314..472.548 rows=7 loops=1)
+         Output: u1_0.id, u1_0.title, c1_0.title, (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END)), (count(DISTINCT ps1_0.problem_id)), (((1.0 * (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END))::numeric) / (count(DISTINCT ps1_0.problem_id))::numeric))
+         Sort Key: (((1.0 * (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END))::numeric) / (count(DISTINCT ps1_0.problem_id))::numeric)) DESC, (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END)) DESC, u1_0.id
+         Sort Method: quicksort  Memory: 26kB
+         Buffers: shared hit=16428 read=3916
+         ->  GroupAggregate  (cost=32093.45..32291.74 rows=108 width=83) (actual time=468.024..472.493 rows=9 loops=1)
+               Output: u1_0.id, u1_0.title, c1_0.title, count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END), count(DISTINCT ps1_0.problem_id), ((1.0 * (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END))::numeric) / (count(DISTINCT ps1_0.problem_id))::numeric)
+               Group Key: u1_0.id, c1_0.title
+               Filter: (count(DISTINCT CASE WHEN (NOT ps1_0.is_correct) THEN ps1_0.problem_id ELSE NULL::bigint END) > 0)
+               Rows Removed by Filter: 3
+               Buffers: shared hit=16425 read=3916
+               ->  Gather Merge  (cost=32093.45..32273.85 rows=1275 width=44) (actual time=467.753..471.821 rows=2000 loops=1)
+                     Output: u1_0.id, c1_0.title, u1_0.title, ps1_0.is_correct, ps1_0.problem_id
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=16425 read=3916
+                     ->  Incremental Sort  (cost=31093.43..31126.66 rows=531 width=44) (actual time=458.242..458.665 rows=667 loops=3)
+                           Output: u1_0.id, c1_0.title, u1_0.title, ps1_0.is_correct, ps1_0.problem_id
+                           Sort Key: u1_0.id, c1_0.title
+                           Presorted Key: u1_0.id
+                           Full-sort Groups: 12  Sort Method: quicksort  Average Memory: 29kB  Peak Memory: 29kB
+                           Pre-sorted Groups: 5  Sort Method: quicksort  Average Memory: 30kB  Peak Memory: 30kB
+                           Buffers: shared hit=16425 read=3916
+                           Worker 0:  actual time=454.225..454.614 rows=634 loops=1
+                             Full-sort Groups: 12  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                             Pre-sorted Groups: 2  Sort Method: quicksort  Average Memory: 31kB  Peak Memory: 31kB
+                             Buffers: shared hit=5440 read=1250
+                           Worker 1:  actual time=454.161..454.539 rows=640 loops=1
+                             Full-sort Groups: 11  Sort Method: quicksort  Average Memory: 30kB  Peak Memory: 30kB
+                             Pre-sorted Groups: 1  Sort Method: quicksort  Average Memory: 31kB  Peak Memory: 31kB
+                             Buffers: shared hit=5354 read=1269
+                           ->  Merge Join  (cost=31093.04..31103.66 rows=531 width=44) (actual time=458.084..458.344 rows=667 loops=3)
+                                 Output: u1_0.id, c1_0.title, u1_0.title, ps1_0.is_correct, ps1_0.problem_id
+                                 Merge Cond: (l1_0.unit_id = u1_0.id)
+                                 Buffers: shared hit=16295 read=3916
+                                 Worker 0:  actual time=454.068..454.287 rows=634 loops=1
+                                   Buffers: shared hit=5375 read=1250
+                                 Worker 1:  actual time=453.906..454.161 rows=640 loops=1
+                                   Buffers: shared hit=5289 read=1269
+                                 ->  Sort  (cost=31087.01..31088.33 rows=531 width=17) (actual time=457.707..457.750 rows=667 loops=3)
+                                       Output: ps1_0.is_correct, ps1_0.problem_id, l1_0.unit_id
+                                       Sort Key: l1_0.unit_id
+                                       Sort Method: quicksort  Memory: 70kB
+                                       Buffers: shared hit=16286 read=3916
+                                       Worker 0:  actual time=453.616..453.655 rows=634 loops=1
+                                         Sort Method: quicksort  Memory: 64kB
+                                         Buffers: shared hit=5372 read=1250
+                                       Worker 1:  actual time=453.369..453.412 rows=640 loops=1
+                                         Sort Method: quicksort  Memory: 65kB
+                                         Buffers: shared hit=5286 read=1269
+                                       ->  Hash Join  (cost=146.05..31062.97 rows=531 width=17) (actual time=3.852..457.263 rows=667 loops=3)
+                                             Output: ps1_0.is_correct, ps1_0.problem_id, l1_0.unit_id
+                                             Inner Unique: true
+                                             Hash Cond: (p1_0.lesson_id = l1_0.id)
+                                             Buffers: shared hit=16286 read=3916
+                                             Worker 0:  actual time=2.193..453.164 rows=634 loops=1
+                                               Buffers: shared hit=5372 read=1250
+                                             Worker 1:  actual time=2.286..452.955 rows=640 loops=1
+                                               Buffers: shared hit=5286 read=1269
+                                             ->  Hash Join  (cost=140.12..31055.61 rows=531 width=17) (actual time=3.574..456.698 rows=667 loops=3)
+                                                   Output: ps1_0.is_correct, ps1_0.problem_id, p1_0.lesson_id
+                                                   Inner Unique: true
+                                                   Hash Cond: (ps1_0.problem_id = p1_0.id)
+                                                   Buffers: shared hit=16221 read=3916
+                                                   Worker 0:  actual time=1.872..452.566 rows=634 loops=1
+                                                     Buffers: shared hit=5341 read=1250
+                                                   Worker 1:  actual time=1.938..452.324 rows=640 loops=1
+                                                     Buffers: shared hit=5255 read=1269
+                                                   ->  Parallel Seq Scan on public.problem_submission ps1_0  (cost=0.00..30913.18 rows=878 width=9) (actual time=1.496..454.043 rows=667 loops=3)
+                                                         Output: ps1_0.id, ps1_0.is_correct, ps1_0.problem_id, ps1_0.user_id, ps1_0.created_at, ps1_0.updated_at, ps1_0.selected_option_id, ps1_0.submitted_content
+                                                         Filter: (ps1_0.user_id = 1500)
+                                                         Rows Removed by Filter: 666000
+                                                         Buffers: shared hit=15960 read=3916
+                                                         Worker 0:  actual time=0.153..450.262 rows=634 loops=1
+                                                           Buffers: shared hit=5254 read=1250
+                                                         Worker 1:  actual time=0.204..450.030 rows=640 loops=1
+                                                           Buffers: shared hit=5168 read=1269
+                                                   ->  Hash  (cost=110.61..110.61 rows=2361 width=16) (actual time=2.014..2.015 rows=3900 loops=3)
+                                                         Output: p1_0.id, p1_0.lesson_id
+                                                         Buckets: 4096  Batches: 1  Memory Usage: 215kB
+                                                         Buffers: shared hit=261
+                                                         Worker 0:  actual time=1.653..1.654 rows=3900 loops=1
+                                                           Buffers: shared hit=87
+                                                         Worker 1:  actual time=1.662..1.663 rows=3900 loops=1
+                                                           Buffers: shared hit=87
+                                                         ->  Seq Scan on public.problem p1_0  (cost=0.00..110.61 rows=2361 width=16) (actual time=0.302..1.238 rows=3900 loops=3)
+                                                               Output: p1_0.id, p1_0.lesson_id
+                                                               Buffers: shared hit=261
+                                                               Worker 0:  actual time=0.461..0.958 rows=3900 loops=1
+                                                                 Buffers: shared hit=87
+                                                               Worker 1:  actual time=0.409..0.913 rows=3900 loops=1
+                                                                 Buffers: shared hit=87
+                                             ->  Hash  (cost=4.30..4.30 rows=130 width=16) (actual time=0.189..0.190 rows=130 loops=3)
+                                                   Output: l1_0.id, l1_0.unit_id
+                                                   Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                                                   Buffers: shared hit=9
+                                                   Worker 0:  actual time=0.206..0.206 rows=130 loops=1
+                                                     Buffers: shared hit=3
+                                                   Worker 1:  actual time=0.229..0.230 rows=130 loops=1
+                                                     Buffers: shared hit=3
+                                                   ->  Seq Scan on public.lesson l1_0  (cost=0.00..4.30 rows=130 width=16) (actual time=0.127..0.157 rows=130 loops=3)
+                                                         Output: l1_0.id, l1_0.unit_id
+                                                         Buffers: shared hit=9
+                                                         Worker 0:  actual time=0.161..0.175 rows=130 loops=1
+                                                           Buffers: shared hit=3
+                                                         Worker 1:  actual time=0.173..0.200 rows=130 loops=1
+                                                           Buffers: shared hit=3
+                                 ->  Sort  (cost=6.04..6.20 rows=65 width=35) (actual time=0.368..0.406 rows=711 loops=3)
+                                       Output: u1_0.id, u1_0.title, c1_0.title
+                                       Sort Key: u1_0.id
+                                       Sort Method: quicksort  Memory: 30kB
+                                       Buffers: shared hit=9
+                                       Worker 0:  actual time=0.443..0.479 rows=678 loops=1
+                                         Sort Method: quicksort  Memory: 30kB
+                                         Buffers: shared hit=3
+                                       Worker 1:  actual time=0.527..0.565 rows=684 loops=1
+                                         Sort Method: quicksort  Memory: 30kB
+                                         Buffers: shared hit=3
+                                       ->  Hash Join  (cost=1.11..4.08 rows=65 width=35) (actual time=0.298..0.327 rows=65 loops=3)
+                                             Output: u1_0.id, u1_0.title, c1_0.title
+                                             Inner Unique: true
+                                             Hash Cond: (u1_0.chapter_id = c1_0.id)
+                                             Buffers: shared hit=9
+                                             Worker 0:  actual time=0.386..0.404 rows=65 loops=1
+                                               Buffers: shared hit=3
+                                             Worker 1:  actual time=0.471..0.489 rows=65 loops=1
+                                               Buffers: shared hit=3
+                                             ->  Seq Scan on public.unit u1_0  (cost=0.00..2.65 rows=65 width=28) (actual time=0.166..0.179 rows=65 loops=3)
+                                                   Output: u1_0.id, u1_0.chapter_id, u1_0.description, u1_0.title
+                                                   Buffers: shared hit=6
+                                                   Worker 0:  actual time=0.199..0.204 rows=65 loops=1
+                                                     Buffers: shared hit=2
+                                                   Worker 1:  actual time=0.294..0.299 rows=65 loops=1
+                                                     Buffers: shared hit=2
+                                             ->  Hash  (cost=1.05..1.05 rows=5 width=23) (actual time=0.109..0.110 rows=5 loops=3)
+                                                   Output: c1_0.title, c1_0.id
+                                                   Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                   Buffers: shared hit=3
+                                                   Worker 0:  actual time=0.162..0.162 rows=5 loops=1
+                                                     Buffers: shared hit=1
+                                                   Worker 1:  actual time=0.151..0.152 rows=5 loops=1
+                                                     Buffers: shared hit=1
+                                                   ->  Seq Scan on public.chapter c1_0  (cost=0.00..1.05 rows=5 width=23) (actual time=0.101..0.102 rows=5 loops=3)
+                                                         Output: c1_0.title, c1_0.id
+                                                         Buffers: shared hit=3
+                                                         Worker 0:  actual time=0.153..0.154 rows=5 loops=1
+                                                           Buffers: shared hit=1
+                                                         Worker 1:  actual time=0.138..0.140 rows=5 loops=1
+                                                           Buffers: shared hit=1
+ Query Identifier: 2613503165464332052
+ Planning:
+   Buffers: shared hit=273
+ Planning Time: 16.181 ms
+ Execution Time: 472.901 ms
+(157 rows)
+
+ROLLBACK

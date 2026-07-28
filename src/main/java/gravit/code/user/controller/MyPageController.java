@@ -9,6 +9,7 @@ import gravit.code.learning.dto.response.LearningSummaryResponse;
 import gravit.code.learning.dto.response.WeakConceptResponse;
 import gravit.code.learning.facade.LearningFacade;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
+import gravit.code.problem.service.ProblemSubmissionQueryService;
 import gravit.code.user.controller.docs.MyPageControllerDocs;
 import gravit.code.user.dto.response.MyPageBannerResponse;
 import gravit.code.user.facade.UserFacade;
@@ -35,6 +36,7 @@ public class MyPageController implements MyPageControllerDocs {
 
     private final DailyLearningRecordService dailyLearningRecordService;
     private final LessonSubmissionQueryService lessonSubmissionQueryService;
+    private final ProblemSubmissionQueryService problemSubmissionQueryService;
 
     @GetMapping("/banners")
     public ResponseEntity<MyPageBannerResponse> getMyPageBanner(@AuthenticationPrincipal LoginUser loginUser) {
@@ -48,7 +50,7 @@ public class MyPageController implements MyPageControllerDocs {
 
     @GetMapping("/learning/weak-concepts")
     public ResponseEntity<List<WeakConceptResponse>> getMyPageWeakConcepts(@AuthenticationPrincipal LoginUser loginUser){
-        return ResponseEntity.status(HttpStatus.OK).body(lessonSubmissionQueryService.getWeakConcepts(loginUser.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(problemSubmissionQueryService.getWeakConcepts(loginUser.getId()));
     }
 
     @GetMapping("/learning/weekly-report")

@@ -1,0 +1,36 @@
+# query-stats-summary-1 — weak-concepts
+
+상태: 1 = 사이클 1 적용 후: `problem_submission (user_id, problem_id) INCLUDE (is_correct)` 인덱스 추가
+측정: VU 50 / 1m / 캐시 cold / 요청 38015건
+직전 상태 대비: 요청당 쿼리 수 4 → 4 (변화 없음), 대상 쿼리 mean_ms 563.81 → 4.60, 대상 쿼리 요청당 total_ms 563.81 → 4.60, 대상 쿼리 시간 비중 100.0% → 97.1%, 요청 수 1966 → 38015. 사라진 쿼리와 새로 생긴 쿼리는 없다.
+
+| # | 요청당 | calls | mean_ms | total_ms | 비중 | 행/호출 | 출처 | 하는 일 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 1.00 | 38015 | 4.60 | 174706.22 | 97.1% | 7.0 | `ProblemSubmissionRepository.findWeakUnitsByUserId` | 한 유저의 `problem_submission`을 `problem`, `lesson`, `unit`, `chapter`와 조인해 유닛 단위로 오답 수와 풀이 문제 수를 집계하고 상위 7건을 읽는다 |
+| 2 | 2.00 | 76030 | 0.03 | 2588.97 | 1.4% | 1.0 | `AuthTokenProvider.parseUser` (`JwtAuthFilter:78` `getAuthUser`, `JwtAuthFilter:81` `parseUser`) | 토큰의 subject로 `users` 단건을 읽는다 |
+| 3 | 3.00 | 114045 | 0.01 | 1609.27 | 0.9% | 0.0 | - | 트랜잭션 제어 |
+| 4 | 1.00 | 38015 | 0.03 | 976.82 | 0.5% | 0.0 | `UserRepository.updateLastAccessedAt` (`LastAccessInterceptor.preHandle` → `UserAccessService.updateLastAccessed`) | 오늘 첫 접근이면 `users.last_accessed_at`을 갱신한다 |
+| 5 | 1.00 | 38019 | 0.00 | 38.74 | 0.0% | 0.0 | - | 트랜잭션 제어 |
+| 6 | 0.00 | 4 | 0.03 | 0.13 | 0.0% | 0.0 | `SeasonRepository.findCloseableActiveByNowForUpdate` | 종료 시각이 지난 ACTIVE 시즌을 잠금 조회한다 (스케줄러) |
+| 7 | 0.00 | 8 | 0.00 | 0.01 | 0.0% | 0.0 | - | 트랜잭션 제어 |
+| 8 | 0.00 | 2 | 0.00 | 0.00 | 0.0% | 0.0 | - | 트랜잭션 제어 |
+
+`{n-1}`과 비교할 때: [1]의 쿼리 원문은 `pg_stat_statements`의 상수 정규화 결과가 달라져 `false`, `0`, `1.0`이 `$3`~`$7`로 잡혔다. `Query Identifier`는 `query-plan-0.txt`, `query-plan-1.txt` 모두 2613503165464332052로 같은 문장이다.
+
+## 쿼리 원문
+
+[1] select u1_0.id,u1_0.title,c1_0.title,count(distinct case when ps1_0.is_correct=$3 then ps1_0.problem_id end),count(distinct ps1_0.problem_id) from problem_submission ps1_0 join problem p1_0 on p1_0.id=ps1_0.problem_id join lesson l1_0 on l1_0.id=p1_0.lesson_id join unit u1_0 on u1_0.id=l1_0.unit_id join chapter c1_0 on c1_0.id=u1_0.chapter_id where ps1_0.user_id=$1 group by u1_0.id,u1_0.title,c1_0.title having count(distinct case when ps1_0.is_correct=$4 then ps1_0.problem_id end)>$5 order by (($6*count(distinct case when ps1_0.is_correct=$7 then ps1_0.problem_id end))/count(distinct ps1_0.problem_id)) desc,count(distinct case when ps1_0.is_correct=false then ps1_0.problem_id end) desc,u1_0.id fetch first $2 rows only
+
+[2] select u1_0.id,u1_0.created_at,u1_0.deleted_at,u1_0.email,u1_0.handle,u1_0.is_onboarded,u1_0.last_accessed_at,u1_0.level,u1_0.xp,u1_0.nickname,u1_0.profile_img_number,u1_0.provider_id,u1_0.role,u1_0.status,u1_0.updated_at from users u1_0 where u1_0.id=$1 and (u1_0.deleted_at IS NULL)
+
+[3] BEGIN READ ONLY
+
+[4] update users u1_0 set last_accessed_at=$1 where u1_0.id=$2 and (u1_0.last_accessed_at is null or u1_0.last_accessed_at<$3) and (u1_0.deleted_at IS NULL)
+
+[5] BEGIN
+
+[6] select s1_0.id,s1_0.ends_at,s1_0.season_key,s1_0.starts_at,s1_0.status,s1_0.tz from season s1_0 where s1_0.status='ACTIVE' and s1_0.ends_at<=$1 for no key update
+
+[7] COMMIT
+
+[8] ROLLBACK

@@ -59,6 +59,9 @@ pgadmin_data_local
 ### 로컬 작업 메모 (커밋 제외) ###
 /.claude/resources/code-cleanup-todo.md
 
+### 성능 측정용 토큰 (실 JWT, 커밋 금지) ###
+.claude/resources/perf/**/tokens.json
+
 ### 로컬 개인 데이터 ###
 benchmark
 docs
