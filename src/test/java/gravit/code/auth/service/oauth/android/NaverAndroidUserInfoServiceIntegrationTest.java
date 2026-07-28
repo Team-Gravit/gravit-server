@@ -144,6 +144,66 @@ class NaverAndroidUserInfoServiceIntegrationTest {
         }
 
         @Test
+        @DisplayName("response 에 id 가 없으면 NPE 대신 OAUTH_USER_INFO_INVALID 예외가 발생한다")
+        void 사용자_식별자가_없으면_예외가_발생한다() {
+            // given
+            when(oAuthHttpClientAdapter.getUserInfoWithAccessToken(any(), any()))
+                    .thenReturn(Map.of(
+                            "resultcode", "00",
+                            "response", Map.of(
+                                    "email", "tester@naver.com",
+                                    "name", "테스터"
+                            )
+                    ));
+
+            // when & then
+            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(OAUTH_USER_INFO_INVALID);
+        }
+
+        @Test
+        @DisplayName("동의 항목 미동의로 response 에 email 이 없으면 OAUTH_USER_INFO_INVALID 예외가 발생한다")
+        void 이메일이_없으면_예외가_발생한다() {
+            // given
+            when(oAuthHttpClientAdapter.getUserInfoWithAccessToken(any(), any()))
+                    .thenReturn(Map.of(
+                            "resultcode", "00",
+                            "response", Map.of(
+                                    "id", "naver-provider-id",
+                                    "name", "테스터"
+                            )
+                    ));
+
+            // when & then
+            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(OAUTH_USER_INFO_INVALID);
+        }
+
+        @Test
+        @DisplayName("동의 항목 미동의로 response 에 name 이 없으면 OAUTH_USER_INFO_INVALID 예외가 발생한다")
+        void 이름이_없으면_예외가_발생한다() {
+            // given
+            when(oAuthHttpClientAdapter.getUserInfoWithAccessToken(any(), any()))
+                    .thenReturn(Map.of(
+                            "resultcode", "00",
+                            "response", Map.of(
+                                    "id", "naver-provider-id",
+                                    "email", "tester@naver.com"
+                            )
+                    ));
+
+            // when & then
+            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(OAUTH_USER_INFO_INVALID);
+        }
+
+        @Test
         @DisplayName("제공자가 액세스 토큰을 거부하면 예외가 그대로 전파된다")
         void 제공자가_액세스_토큰을_거부하면_예외가_발생한다() {
             // given
