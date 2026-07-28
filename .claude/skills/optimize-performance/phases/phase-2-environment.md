@@ -56,19 +56,20 @@
    docker exec gravit-redis-local redis-cli ping
    ```
 
-5. 확인 결과를 `.claude/resources/perf/{이슈번호}/record.md`의 **측정 환경**에 기록한다.
+5. 확인 결과를 `.claude/resources/perf/{이슈번호}/{슬러그}/record.md`의 **측정 환경**에 기록한다.
    - 커넥션 풀 크기는 `application-perf.yml`의 `maximum-pool-size`를 Read로 읽어 적는다.
    - 캐시 제어 수단을 실행 가능한 형태로 적는다.
      `redis-cli -h localhost -p 6379` 또는 `docker exec gravit-redis-local redis-cli` 중 5)에서 통한 쪽이다.
      Phase 4와 8이 이 문자열 뒤에 `-n 0 FLUSHDB`를 붙여 쓴다.
 
 ### 출력
-- `.claude/resources/perf/{이슈번호}/record.md`의 측정 환경에 프로파일, 커넥션 풀 크기, 캐시 제어 수단이 기록
-- `.claude/resources/perf/{이슈번호}/record.md`의 진행 상태의 Phase 2가 ✅로 기록
+- `.claude/resources/perf/{이슈번호}/{슬러그}/record.md`의 측정 환경에 프로파일, 커넥션 풀 크기, 캐시 제어 수단이 기록
+- `.claude/resources/perf/{이슈번호}/{슬러그}/record.md`의 진행 상태의 Phase 2가 ✅로 기록
 
 ### 실패 처리
 - 없음
 
 > 다음 Phase 조건: 2번의 다섯 항목이 모두 통과했을 때 → Phase 3
 
-> Skip 조건: 없음 (필수 Phase)
+> Skip 조건: 같은 이슈의 다른 대상에서 이미 통과했고 그 사이에 애플리케이션과 컨테이너를 재기동하지 않았으면,
+> 앞선 대상의 `record.md` **측정 환경**을 그대로 옮겨 적고 건너뛴다. 진행 상태에는 ⏭️로 표기한다.

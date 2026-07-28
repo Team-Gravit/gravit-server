@@ -13,6 +13,7 @@ services:
   postgres:
     image: postgres:15
     container_name: gravit-postgres-local
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all
     ports:
       - "5433:5432"
     environment:
