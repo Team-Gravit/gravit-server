@@ -47,6 +47,7 @@ CS(Computer Science) 학습 보조 서비스 백엔드. IT 취준생이 CS 핵�
 `.claude/spec/` — 스킬·작업에서 필요할 때만 참조 (자동 로드 아님)
 
 - Git 작업 (커밋, 브랜치, PR) → `git-convention.md`
+- 시크릿 운영 (환경별 네이밍, 발급, 교체) → `secret-convention.md`
 - 테스트 작성 규칙 → `test-convention.md`
 - API 문서 작성 규칙 → `api-docs-convention.md`
 - 서비스 정책 (도메인별 비즈니스 규칙) → `service-policy/` (도메인별 파일, 목록은 `service-policy/README.md`)

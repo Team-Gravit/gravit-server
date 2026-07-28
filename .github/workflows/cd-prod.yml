@@ -29,7 +29,7 @@ jobs:
           spring.datasource.url: ${{secrets.POSTGRESQL_URL}}
           spring.datasource.username: ${{secrets.POSTGRESQL_USERNAME}}
           spring.datasource.password: ${{secrets.POSTGRESQL_PASSWORD}}
-          jwt.secret: ${{secrets.JWT_SECRET}}
+          jwt.secret: ${{secrets.PROD_JWT_SECRET}}
 
           spring.flyway.user: ${{secrets.POSTGRESQL_USERNAME}}
           spring.flyway.password: ${{secrets.POSTGRESQL_PASSWORD}}

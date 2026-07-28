@@ -71,6 +71,9 @@ public class OAuthHttpClientAdapter implements OAuthClient {
         } catch (HttpClientErrorException.BadRequest e) {
             log.warn("유효하지 않은 AccessToken 요청 : {}", e.getMessage());
             throw new RestApiException(CustomErrorCode.OAUTH_ACCESS_TOKEN_INVALID);
+        } catch (HttpClientErrorException.Unauthorized e) {
+            log.warn("만료되었거나 유효하지 않은 AccessToken 요청 : {}", e.getMessage());
+            throw new RestApiException(CustomErrorCode.OAUTH_ACCESS_TOKEN_INVALID);
         } catch (RestClientException e) {
             log.error("OAuth 서버 통신 오류", e);
             throw new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR);
