@@ -1,0 +1,52 @@
+{
+  "phase": "measure",
+  "target": "top-chapters",
+  "endpoint": "GET /api/v1/my-pages/learning/top-chapters",
+  "condition": {
+    "vus": 50,
+    "duration": "1m",
+    "cache": "cold",
+    "user_id_start": 1001,
+    "user_count": 1000
+  },
+  "requests": 56802,
+  "rps": 473.3459528921028,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 56802,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 56802,
+      "fails": 0
+    },
+    {
+      "name": "상위 챕터가 실려 있다",
+      "passes": 56802,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 52.525000000000006,
+    "p95": 204.26199999999992,
+    "p99": 602.1914799999989,
+    "max": 2265.046
+  },
+  "waiting_ms": {
+    "med": 52.3725,
+    "p95": 204.15854999999993,
+    "p99": 598.9867999999998,
+    "max": 2264.733
+  },
+  "bytes_received": 34829943,
+  "delta_vs_prev": {
+    "from": "k6-test-summary-0.json",
+    "rps": { "before": 33.043953155652545, "after": 473.3459528921028 },
+    "duration_p95_ms": { "before": 2150.9488, "after": 204.26199999999992 },
+    "duration_p99_ms": { "before": 3078.142259999996, "after": 602.1914799999989 }
+  }
+}
