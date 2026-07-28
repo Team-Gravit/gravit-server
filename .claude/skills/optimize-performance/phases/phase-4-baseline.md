@@ -55,7 +55,7 @@
           round(calls::numeric / $REQS, 2)                               AS per_req,
           round(mean_exec_time::numeric, 2)                              AS mean_ms,
           round(total_exec_time::numeric, 2)                             AS total_ms,
-          round(100 * total_exec_time / sum(total_exec_time) OVER (), 1) AS pct,
+          round((100 * total_exec_time / sum(total_exec_time) OVER ())::numeric, 1) AS pct,
           round(rows::numeric / NULLIF(calls, 0), 1)                     AS rows_per_call,
           query
    FROM pg_stat_statements

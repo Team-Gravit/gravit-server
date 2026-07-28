@@ -49,7 +49,7 @@
           round(calls::numeric / $REQS, 2)                               AS per_req,
           round(mean_exec_time::numeric, 2)                              AS mean_ms,
           round(total_exec_time::numeric, 2)                             AS total_ms,
-          round(100 * total_exec_time / sum(total_exec_time) OVER (), 1) AS pct,
+          round((100 * total_exec_time / sum(total_exec_time) OVER ())::numeric, 1) AS pct,
           round(rows::numeric / NULLIF(calls, 0), 1)                     AS rows_per_call,
           query
    FROM pg_stat_statements
@@ -113,6 +113,7 @@
 
    - **하드웨어 의존 증거**: p95, p99, RPS. 로컬 절대값은 신뢰하지 말고 상대 변화만 쓴다.
    - **하드웨어 독립 증거**: 요청당 쿼리 수, 검사 행 수 대 반환 행 수, 실행계획 변화, 캐시 적중률.
+   - 실행계획을 노드별 표로 제시할 때는 **Phase 6의 칼럼 설명 표를 함께 붙인다.** 표만 던지지 마라.
    - 물을 것: "이 변화가 기법의 효과라고 보십니까, 아니면 측정 편차라고 보십니까?"
    - 개선이 없거나 오히려 나빠졌으면 그대로 제시한다. 수치를 유리하게 해석하지 마라.
 
