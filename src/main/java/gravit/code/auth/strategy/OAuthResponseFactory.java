@@ -1,6 +1,7 @@
 package gravit.code.auth.strategy;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
+import gravit.code.auth.strategy.support.OAuthUserInfoValidator;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,10 @@ public class OAuthResponseFactory {
         OAuthResponseStrategy strategy = strategies.get(registrationId);
         if(Objects.equals(strategy,null))
             throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
-        return strategy.createOAuthUserInfo(attributes);
+
+        OAuthUserInfo userInfo = strategy.createOAuthUserInfo(attributes);
+        OAuthUserInfoValidator.validate(userInfo);
+
+        return userInfo;
     }
 }

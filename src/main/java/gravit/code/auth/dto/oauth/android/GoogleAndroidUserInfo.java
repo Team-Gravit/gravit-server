@@ -4,8 +4,7 @@ import gravit.code.auth.dto.oauth.OAuthUserInfo;
 
 import java.util.Map;
 
-import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.getClaimAsString;
-import static gravit.code.auth.dto.oauth.android.support.AndroidOAuthClaimsExtractor.isBlank;
+import static gravit.code.auth.dto.oauth.support.OAuthAttributeExtractor.getAttributeAsString;
 
 public record GoogleAndroidUserInfo(Map<String, Object> claims) implements OAuthUserInfo {
 
@@ -21,19 +20,16 @@ public record GoogleAndroidUserInfo(Map<String, Object> claims) implements OAuth
 
     @Override
     public String getProviderId() {
-        String providerId = getClaimAsString(claims, CLAIM_SUB);
-        return isBlank(providerId) ? null : providerId;
+        return getAttributeAsString(claims, CLAIM_SUB);
     }
 
     @Override
     public String getEmail() {
-        String email = getClaimAsString(claims, CLAIM_EMAIL);
-        return isBlank(email) ? null : email;
+        return getAttributeAsString(claims, CLAIM_EMAIL);
     }
 
     @Override
     public String getName() {
-        String name = getClaimAsString(claims, CLAIM_NAME);
-        return isBlank(name) ? null : name;
+        return getAttributeAsString(claims, CLAIM_NAME);
     }
 }
