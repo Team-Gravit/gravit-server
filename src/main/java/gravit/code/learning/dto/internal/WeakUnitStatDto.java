@@ -1,10 +1,10 @@
 package gravit.code.learning.dto.internal;
 
-public record WeakLessonStatDto(
-        long lessonId,
+public record WeakUnitStatDto(
+        long unitId,
         String unitTitle,
         String chapterTitle,
         long wrongAnswerCount,
-        long totalProblemCount
+        long solvedProblemCount
 ) {
 }

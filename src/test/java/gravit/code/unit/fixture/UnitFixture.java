@@ -5,6 +5,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class UnitFixture {
 
+    public static Unit 새_유닛(
+            String title,
+            long chapterId
+    ) {
+        return Unit.create(title, title + " 설명", chapterId);
+    }
+
     public static Unit 기본_유닛(long chapterId) {
         Unit unit = Unit.create("프로세스", "프로세스 개념", chapterId);
         ReflectionTestUtils.setField(unit, "id", 1L);

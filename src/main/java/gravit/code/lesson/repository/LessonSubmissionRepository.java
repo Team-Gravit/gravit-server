@@ -1,7 +1,6 @@
 package gravit.code.lesson.repository;
 
 import gravit.code.chapter.dto.internal.ChapterSolvedStatDto;
-import gravit.code.learning.dto.internal.WeakLessonStatDto;
 import gravit.code.lesson.domain.LessonSubmission;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -128,36 +127,5 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
             @Param("userId") long userId,
             @Param("weekStart") LocalDateTime weekStart,
             @Param("nextWeekStart") LocalDateTime nextWeekStart
-    );
-
-    @Query("""
-        SELECT new gravit.code.learning.dto.internal.WeakLessonStatDto(
-            l.id, u.title, c.title,
-            (SELECT COUNT(DISTINCT ps.problemId)
-             FROM ProblemSubmission ps
-             WHERE ps.userId = :userId
-               AND ps.isCorrect = false
-               AND ps.problemId IN (SELECT p.id FROM Problem p WHERE p.lessonId = l.id)),
-            (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id)
-        )
-        FROM Lesson l
-        JOIN Unit u ON u.id = l.unitId
-        JOIN Chapter c ON c.id = u.chapterId
-        WHERE EXISTS (
-            SELECT 1 FROM LessonSubmission ls
-            WHERE ls.lessonId = l.id AND ls.userId = :userId
-        )
-        ORDER BY
-            (1.0 * (SELECT COUNT(DISTINCT ps.problemId)
-                    FROM ProblemSubmission ps
-                    WHERE ps.userId = :userId
-                      AND ps.isCorrect = false
-                      AND ps.problemId IN (SELECT p.id FROM Problem p WHERE p.lessonId = l.id))
-             / NULLIF((SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id), 0)) DESC,
-            l.id ASC
-    """)
-    List<WeakLessonStatDto> findWeakLessonsByUserId(
-            @Param("userId") long userId,
-            Pageable pageable
     );
 }

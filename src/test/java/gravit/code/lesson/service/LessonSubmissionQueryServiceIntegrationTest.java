@@ -3,16 +3,10 @@ package gravit.code.lesson.service;
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.dto.response.TopChapterResponse;
 import gravit.code.chapter.repository.ChapterRepository;
-import gravit.code.learning.dto.response.WeakConceptResponse;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
-import gravit.code.problem.domain.Problem;
-import gravit.code.problem.domain.ProblemSubmission;
-import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.repository.ProblemRepository;
-import gravit.code.problem.repository.ProblemSubmissionRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.unit.domain.Unit;
 import gravit.code.unit.repository.UnitRepository;
@@ -43,12 +37,6 @@ class LessonSubmissionQueryServiceIntegrationTest {
 
     @Autowired
     private LessonSubmissionRepository lessonSubmissionRepository;
-
-    @Autowired
-    private ProblemRepository problemRepository;
-
-    @Autowired
-    private ProblemSubmissionRepository problemSubmissionRepository;
 
     @Nested
     @DisplayName("레슨 제출 횟수를 조회할 때")
@@ -483,113 +471,6 @@ class LessonSubmissionQueryServiceIntegrationTest {
 
             // when
             List<TopChapterResponse> result = lessonSubmissionQueryService.getTopChapters(userId);
-
-            // then
-            assertThat(result).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("취약 개념을 조회할 때")
-    class GetWeakConcepts {
-
-        @Test
-        void 오답률이_높은_순으로_최대_7개의_레슨을_반환한다() {
-            // given
-            long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "linked list", chapter.getId()));
-            Lesson lessonLow = lessonRepository.save(Lesson.create("취약레슨", unit.getId()));
-            Lesson lessonHigh = lessonRepository.save(Lesson.create("강한레슨", unit.getId()));
-
-            Problem lowP1 = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문1", "내용1", lessonLow.getId()));
-            Problem lowP2 = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문2", "내용2", lessonLow.getId()));
-            problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문3", "내용3", lessonLow.getId()));
-            problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문4", "내용4", lessonLow.getId()));
-            problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문5", "내용5", lessonLow.getId()));
-
-            Problem highP1 = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문6", "내용6", lessonHigh.getId()));
-            for (int i = 7; i <= 15; i++) {
-                problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문" + i, "내용" + i, lessonHigh.getId()));
-            }
-
-            lessonSubmissionRepository.save(LessonSubmission.create(60, 20, lessonLow.getId(), userId));
-            lessonSubmissionRepository.save(LessonSubmission.create(60, 90, lessonHigh.getId(), userId));
-
-            // lowP2는 세 번 틀렸지만 취약도는 "틀린 적 있는 문제 수" 기준이라 1로 집계된다
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP1.getId(), userId, null, "오답1"));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId, null, "오답2"));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId, null, "오답3"));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, lowP2.getId(), userId, null, "오답4"));
-            problemSubmissionRepository.save(ProblemSubmission.create(false, highP1.getId(), userId, null, "오답5"));
-
-            // when
-            List<WeakConceptResponse> result = lessonSubmissionQueryService.getWeakConcepts(userId);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(result).hasSize(2);
-                softly.assertThat(result.get(0).rank()).isEqualTo(1);
-                softly.assertThat(result.get(0).wrongAnswerCount()).isEqualTo(2);
-                softly.assertThat(result.get(0).wrongAnswerRate()).isEqualTo(40);
-                softly.assertThat(result.get(1).rank()).isEqualTo(2);
-                softly.assertThat(result.get(1).wrongAnswerCount()).isEqualTo(1);
-                softly.assertThat(result.get(1).wrongAnswerRate()).isEqualTo(10);
-            });
-        }
-
-        @Test
-        void 같은_레슨을_재제출해도_레슨이_중복되지_않는다() {
-            // given
-            long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "linked list", chapter.getId()));
-            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
-            Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문1", "내용1", lesson.getId()));
-
-            lessonSubmissionRepository.save(LessonSubmission.create(60, 20, lesson.getId(), userId));
-            lessonSubmissionRepository.save(LessonSubmission.create(60, 50, lesson.getId(), userId));
-            lessonSubmissionRepository.save(LessonSubmission.create(60, 90, lesson.getId(), userId));
-
-            problemSubmissionRepository.save(ProblemSubmission.create(false, problem.getId(), userId, null, "오답1"));
-
-            // when
-            List<WeakConceptResponse> result = lessonSubmissionQueryService.getWeakConcepts(userId);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(result).hasSize(1);
-                softly.assertThat(result.get(0).rank()).isEqualTo(1);
-                softly.assertThat(result.get(0).wrongAnswerCount()).isEqualTo(1);
-                softly.assertThat(result.get(0).wrongAnswerRate()).isEqualTo(100);
-            });
-        }
-
-        @Test
-        void 풀이_기록이_없으면_빈_리스트를_반환한다() {
-            // given
-            long userId = 1L;
-
-            // when
-            List<WeakConceptResponse> result = lessonSubmissionQueryService.getWeakConcepts(userId);
-
-            // then
-            assertThat(result).isEmpty();
-        }
-
-        @Test
-        void 다른_사용자의_풀이는_집계되지_않는다() {
-            // given
-            long userId = 1L;
-            long otherUserId = 2L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "linked list", chapter.getId()));
-            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
-            problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "지문1", "내용1", lesson.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(60, 20, lesson.getId(), otherUserId));
-
-            // when
-            List<WeakConceptResponse> result = lessonSubmissionQueryService.getWeakConcepts(userId);
 
             // then
             assertThat(result).isEmpty();

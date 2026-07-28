@@ -5,6 +5,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class ChapterFixture {
 
+    public static Chapter 새_챕터(String title) {
+        return Chapter.create(title, title + " 설명");
+    }
+
     public static Chapter 기본_챕터() {
         Chapter chapter = Chapter.create("운영체제", "운영체제 기초 개념");
         ReflectionTestUtils.setField(chapter, "id", 1L);
