@@ -1,0 +1,52 @@
+{
+  "phase": "measure",
+  "target": "weak-concepts",
+  "endpoint": "GET /api/v1/my-pages/learning/weak-concepts",
+  "condition": {
+    "vus": 50,
+    "duration": "1m",
+    "cache": "cold",
+    "user_id_start": 1001,
+    "user_count": 1000
+  },
+  "requests": 38015,
+  "rps": 316.7888023679119,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 38015,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 38015,
+      "fails": 0
+    },
+    {
+      "name": "취약 유닛이 실려 있다",
+      "passes": 38015,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 73.341,
+    "p95": 348.1099,
+    "p99": 786.4780999999994,
+    "max": 2643.771
+  },
+  "waiting_ms": {
+    "med": 73.192,
+    "p95": 347.33789999999993,
+    "p99": 786.2662399999994,
+    "max": 2643.671
+  },
+  "bytes_received": 48890903,
+  "delta_vs_prev": {
+    "from": "k6-test-summary-0.json",
+    "rps": { "before": 16.373709003628573, "after": 316.7888023679119 },
+    "duration_p95_ms": { "before": 3598.58125, "after": 348.1099 },
+    "duration_p99_ms": { "before": 4014.4301499999997, "after": 786.4780999999994 }
+  }
+}
