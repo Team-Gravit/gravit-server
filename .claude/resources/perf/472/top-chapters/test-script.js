@@ -8,6 +8,7 @@
 //   k6 run -e PHASE=measure -e SUMMARY_OUT=$TARGET_DIR/k6-test-summary-{n}.json $TARGET_DIR/test-script.js
 
 import http from 'k6/http';
+import exec from 'k6/execution';
 import { check } from 'k6';
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
@@ -20,8 +21,12 @@ const TARGET = 'top-chapters';
 const ENDPOINT = 'GET /api/v1/my-pages/learning/top-chapters';
 const CONDITION = {
     vus: 50,
-    duration: '1m',
-    cache: 'cold',
+    steady_state_duration: '1m',
+    ramp_up: '30s',
+    ramp_down: '30s',
+    total_duration: '2m',
+    redis_cache: 'cold',
+    db_cache: '제어하지 않음',
     user_id_start: USER_ID_START,
     user_count: USER_COUNT,
 };
@@ -62,8 +67,21 @@ export const options = {
     },
 };
 
+// 비JSON 응답에서 예외를 던지지 않는다. 파싱 실패는 null로 떨어뜨려 check 실패로 드러낸다.
+function parseBody(res) {
+    if (res.status !== 200 || res.body === null || res.body.length <= 2) {
+        return null;
+    }
+    try {
+        return res.json();
+    } catch (e) {
+        return null;
+    }
+}
+
 export default function () {
-    const token = tokens[__VU % tokens.length];
+    // 시나리오 전체의 반복 번호로 고른다. VU 수와 무관하게 토큰 1000개를 균등하게 돈다.
+    const token = tokens[exec.scenario.iterationInTest % tokens.length];
     const params = { headers: { Authorization: `Bearer ${token}` } };
 
     const res = http.get(`${BASE_URL}/api/v1/my-pages/learning/top-chapters`, params);
@@ -72,8 +90,8 @@ export default function () {
         'status is 200': (r) => r.status === 200,
         'body is not empty': (r) => r.body !== null && r.body.length > 2,
         '상위 챕터가 실려 있다': (r) => {
-            const body = r.json();
-            return Array.isArray(body) && body.length > 0 && body[0].solvedLessonCount > 0;
+            const body = parseBody(r);
+            return body !== null && Array.isArray(body) && body.length > 0 && body[0].solvedLessonCount > 0;
         },
     });
 }

@@ -43,10 +43,12 @@
 | 커넥션 풀 크기 | 10 (`application-perf.yml:14`) |
 | 데이터 규모 | `problem_submission` 2,000,000 / `problem` 3,900 / `lesson` 130 / `unit` 65 / `chapter` 5 / `users` 1,000 (id 1001~2000) |
 | 카디널리티 | `ps.user_id` 1,000 (유저당 2,000행) / `ps.problem_id` 전역 3,900, 유저당 700 / 유저당 오답 문제 210개(오답 행 600, 30%) / `GROUP BY` 그룹 12개 중 `HAVING` 통과 9개 → `LIMIT 7`이 7개로 절단 |
-| 부하 조건 | VU 50, duration 1m (ramp-up 30s + 1m + ramp-down 30s). 이슈 내 3개 대상 공통 |
-| 캐시 상태 | cold (measure 직전 FLUSHDB). 현재 실행 경로에 캐시 없음 |
+| 부하 조건 | VU 50. ramp-up 30s + 유지 1m + ramp-down 30s = 총 2m. 이슈 내 3개 대상 공통 |
+| Redis 캐시 상태 | cold (measure 직전 FLUSHDB). 현재 실행 경로에 애플리케이션 캐시 없음 |
+| DB 캐시 상태 | 제어하지 않음. Redis FLUSHDB는 PostgreSQL의 `shared_buffers`와 OS page cache를 비우지 않는다. 개선 전후 모두 같은 조건이므로 델타 비교에는 영향이 없으나, 단일 측정의 절대값은 warm 상태가 섞인 값이다 |
 | 캐시 제어 수단 | `redis-cli -h localhost -p 6379` |
 | DB 접속 | `PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d mydb` |
+| 측정 시점 스크립트 | 저장된 수치는 토큰을 `tokens[__VU % tokens.length]`로 고르던 시절에 낸 값이다. VU가 50이라 1,000개 중 50개만 쓰였다. 리뷰 반영으로 `exec.scenario.iterationInTest` 기반 순회로 바꿨으므로 **현재 `test-script.js`로는 이 수치가 그대로 재현되지 않는다.** 개선 전후가 같은 조건이었으므로 델타 비교와 하드웨어 독립 판정은 유효하다 |
 | 응답시간 히스토그램 | `http_server_requests_seconds_bucket` 146개 노출 |
 | 시드 SQL | `../seeds.sql` (이슈 공용) |
 | 시드 모듈과 변수 | `content.sql`(`content_id_base 900000`, `chapter_count 5`, `units_per_chapter 13`, `lessons_per_unit 2`, `problems_per_lesson 30`) / `user.sql`(`user_start 1001`, `user_count 1000`) / `learning.sql`(`problem_sub_per_user 2000`, `distinct_problems 700`, `wrong_pct 30`, `lesson_sub_per_user 300`, `distinct_lessons 100`, `window_days 180`, `recent_days 7`, `recent_count 100`, `daily_record_days 180`) |
@@ -83,8 +85,9 @@
 - 근거
   - 요청당 1.00회뿐인 `findWeakUnitsByUserId`가 전체 DB 시간의 100.0%를 차지한다. 호출 수는 예상과 일치하므로 N+1이 아니다.
   - 이 쿼리가 점유한 커넥션-시간 1,108,458.43 ms는 측정 구간에 쓸 수 있는 총량(풀 10 × 120,070 ms = 1,200,700 ms)의 92.3%다.
-  - 풀이 허용하는 최대 처리량은 10 ÷ 0.56381s = 17.74 RPS이고 실측 RPS는 16.373709다. Little's Law로 계산한 평균 응답시간 50 ÷ 16.374 = 3053.7 ms가 실측 med 2746.709 ~ p95 3598.58125 구간에 들어온다. 즉 응답시간은 커넥션 대기가 지배한다(p95 기준 대기 3034.77 ms, 84.3%).
-  - `waiting_ms` p95 3598.34075가 `duration_ms` p95 3598.58125와 거의 같아 대기가 전부 서버 내부에서 발생한다.
+  - 풀이 허용하는 최대 처리량은 10 ÷ 0.56381s = 17.74 RPS이고 실측 RPS는 16.373709다. Little's Law로 계산한 평균 응답시간 50 ÷ 16.374 = 3053.7 ms가 실측 med 2746.709 ~ p95 3598.58125 구간에 들어온다.
+  - 응답시간은 커넥션 대기가 지배한다. **커넥션 대기는 k6가 직접 재는 값이 아니라 아래 식으로 유도한 값이다.** `duration_ms` p95 3598.58125 − 대상 쿼리 mean 563.81 = 3034.77 ms(p95의 84.3%). k6의 `waiting_ms`와 혼동하지 마라. `waiting_ms`는 요청을 보낸 뒤 첫 바이트까지의 시간이라 커넥션 대기와 쿼리 실행을 모두 포함한다.
+  - k6가 실제로 보고한 `waiting_ms` p95는 3598.34075이고 `duration_ms` p95 3598.58125와 거의 같다. 응답시간이 전송이 아니라 서버 내부 처리로 채워졌다는 뜻이다.
   - 유저당 `problem_submission` 2,000행을 읽어 7행을 반환한다(`rows_per_call` 7.0).
   - mean 563.81 ms는 동시 10개 실행 중의 값이므로 경합이 섞여 있다. 단독 실행 비용은 Phase 6의 `EXPLAIN (ANALYZE, BUFFERS)`에서 확인한다.
 - 예상 쿼리 목록과 어긋난 지점: `UserRepository.updateLastAccessedAt`(요청당 1.00회)이 목록에 없었다. `LastAccessInterceptor.preHandle` → `UserAccessService.updateLastAccessed` 경로로 인터셉터가 붙인다. 시간 비중은 0.0%(231.43 ms)다.

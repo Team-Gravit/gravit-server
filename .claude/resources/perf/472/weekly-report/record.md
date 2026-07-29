@@ -49,10 +49,12 @@
 | 카디널리티 | `user_id` 1,000 (유저당 181행) / `solved_date` 181일 / `solved_lesson_count` 8 |
 | 조회 구간 실측 | 유저 1500 기준 23행. 구간은 28일(`threeWeeksAgoMonday ~ thisSunday`)이지만 `thisSunday`(2026-08-02)가 미래라 2026-07-06 ~ 2026-07-28의 23일만 걸린다 |
 | 기존 인덱스 | `daily_learning_record_pkey` PRIMARY KEY btree (id) / `ix_daily_learning_record_user_date` btree (user_id, solved_date) / `uk_daily_learning_record_user_date` UNIQUE CONSTRAINT btree (user_id, solved_date) — **(user_id, solved_date) 조합이 중복 생성돼 있다.** 조회에는 하나만 쓰이고 나머지는 INSERT 시 유지 비용만 낸다 |
-| 부하 조건 | VU 50, duration 1m (ramp-up 30s + 1m + ramp-down 30s). 이슈 내 3개 대상 공통 |
-| 캐시 상태 | cold (measure 직전 FLUSHDB). 현재 실행 경로에 캐시 없음 |
+| 부하 조건 | VU 50. ramp-up 30s + 유지 1m + ramp-down 30s = 총 2m. 이슈 내 3개 대상 공통 |
+| Redis 캐시 상태 | cold (measure 직전 FLUSHDB). 현재 실행 경로에 애플리케이션 캐시 없음 |
+| DB 캐시 상태 | 제어하지 않음. Redis FLUSHDB는 PostgreSQL의 `shared_buffers`와 OS page cache를 비우지 않는다. 개선 전후 모두 같은 조건이므로 델타 비교에는 영향이 없으나, 단일 측정의 절대값은 warm 상태가 섞인 값이다 |
 | 캐시 제어 수단 | `redis-cli -h localhost -p 6379` |
 | DB 접속 | `PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d mydb` |
+| 측정 시점 스크립트 | 저장된 수치는 토큰을 `tokens[__VU % tokens.length]`로 고르던 시절에 낸 값이다. VU가 50이라 1,000개 중 50개만 쓰였다. 리뷰 반영으로 `exec.scenario.iterationInTest` 기반 순회로 바꿨으므로 **현재 `test-script.js`로는 이 수치가 그대로 재현되지 않는다.** 개선 전후가 같은 조건이었으므로 델타 비교와 하드웨어 독립 판정은 유효하다 |
 | 시드 SQL | `../seeds.sql` (이슈 공용, `weak-concepts` 대상에서 적재 완료) |
 | 시드 모듈과 변수 | `learning.sql`의 `daily_record_days 180`, `user_start 1001`, `user_count 1000`. 실제 적재는 181일치(측정 준비 중 자정을 넘겨 하루가 더 들어갔다) |
 | 선행 대상의 코드 변경 | `weak-concepts` 사이클 1에서 `V32__add_problem_submission_user_index.sql`이 적용된 상태다. 이 인덱스는 `problem_submission` 대상이라 이번 쿼리(`daily_learning_record`)와 무관하다 |
