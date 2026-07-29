@@ -1,6 +1,6 @@
 package gravit.code.user.service;
 
-import gravit.code.global.consts.RedirectHostConst;
+import gravit.code.global.config.RedirectDestProps;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.config.UserDeleteMailProps;
@@ -22,6 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UserDeletionService {
 
     private final UserDeleteMailProps props;
+    private final RedirectDestProps redirectDestProps;
     private final MailSender mailSender;
     private final UserRepository userRepository;
     private final MailAuthCodeStore mailAuthCodeStore;
@@ -33,7 +34,6 @@ public class UserDeletionService {
     ) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
-        // local, prod 환경별로 다름
         String frontendConfirmUrl = makeDeleteLink(dest);
 
         // 메일 인증 코드 받아오기
@@ -55,13 +55,7 @@ public class UserDeletionService {
     }
 
     private String makeDeleteLink(String dest) {
-        String base = RedirectHostConst.DEST_BASE.get(dest);
-
-        if (base == null || base.isBlank()) {
-            throw new RestApiException(CustomErrorCode.DEST_NOT_VALID);
-        }
-
-        return base + "/user/me/delete/page";
+        return redirectDestProps.resolveBaseUrl(dest) + "/user/me/delete/page";
     }
 
     @Transactional

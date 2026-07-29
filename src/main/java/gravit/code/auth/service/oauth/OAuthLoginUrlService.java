@@ -1,7 +1,7 @@
 package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.Provider;
-import gravit.code.global.consts.RedirectHostConst;
+import gravit.code.global.config.RedirectDestProps;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +17,14 @@ import java.util.Optional;
 public class OAuthLoginUrlService {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
+    private final RedirectDestProps redirectDestProps;
 
     public String generateLoginUrl(
             String provider,
             String dest
     ) {
         String validProvider = getValidProvider(Provider.parse(provider));
-        String baseHost = validateDest(dest);
+        String baseHost = redirectDestProps.resolveBaseUrl(dest);
 
         ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(validProvider);
         String authorizationUri = registration.getProviderDetails().getAuthorizationUri();
@@ -38,16 +39,6 @@ public class OAuthLoginUrlService {
                 .queryParam("redirect_uri", redirectUri)
                 .queryParam("scope",scope)
                 .build().toUriString();
-    }
-
-    private String validateDest(String dest) {
-        String base = RedirectHostConst.DEST_BASE.get(dest);
-
-        if(base == null || base.isBlank()){
-            throw new RestApiException(CustomErrorCode.DEST_NOT_VALID);
-        }
-
-        return base;
     }
 
     private String getValidProvider(Optional<String> provider) {

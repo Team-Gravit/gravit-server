@@ -3,7 +3,7 @@ package gravit.code.auth.service.oauth;
 import gravit.code.auth.domain.Provider;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.strategy.OAuthResponseFactory;
-import gravit.code.global.consts.RedirectHostConst;
+import gravit.code.global.config.RedirectDestProps;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ public class OAuthUserInfoService {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final OAuthResponseFactory oAuthResponseFactory;
     private final OAuthClient oAuthClient;
+    private final RedirectDestProps redirectDestProps;
 
     public OAuthUserInfo getUserInfo(
             String authCode,
@@ -36,7 +37,7 @@ public class OAuthUserInfoService {
             String dest
     ) {
         validateAuthCode(authCode);
-        String baseHost = validateDest(dest);
+        String baseHost = redirectDestProps.resolveBaseUrl(dest);
 
         String validProvider = getValidProvider(Provider.parse(provider));
 
@@ -86,16 +87,6 @@ public class OAuthUserInfoService {
 
         Map<String, Object> tokenResponse = oAuthClient.getAccessTokenResponse(tokenUri, tokenRequest);
         return (String) tokenResponse.get("access_token");
-    }
-
-    private String validateDest(String dest) {
-        String base = RedirectHostConst.DEST_BASE.get(dest);
-
-        if(base == null || base.isBlank()){
-            throw new RestApiException(CustomErrorCode.DEST_NOT_VALID);
-        }
-
-        return base;
     }
 
     private void validateAuthCode(String authCode) {

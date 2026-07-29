@@ -142,7 +142,7 @@ public enum CustomErrorCode implements ErrorCode {
     STAGING_LABEL_ALREADY_COMPLETED(HttpStatus.CONFLICT, "STAGING_4091", "이미 승급 완료된 스테이징 라벨입니다."),
 
     // Dest
-    DEST_NOT_VALID(HttpStatus.BAD_REQUEST, "DEST_4001", "유효하지 않은 Dest 입니다. (local/prod 만 유효합니다.)"),
+    DEST_NOT_VALID(HttpStatus.BAD_REQUEST, "DEST_4001", "유효하지 않은 Dest 입니다."),
 
     // Mail
     INVALID_MAIL_AUTH_CODE(HttpStatus.BAD_REQUEST, "MAIL_4001", "메일 인증 코드가 유효하지 않습니다."),

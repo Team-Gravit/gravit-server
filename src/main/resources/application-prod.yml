@@ -67,37 +67,42 @@ spring:
         registration:
           google:
             client-name: google
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            client-id: ${PROD_GOOGLE_CLIENT_ID}
+            client-secret: ${PROD_GOOGLE_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
             scope: profile, email
 
           kakao:
             client-name: kakao
-            client-id: ${KAKAO_CLIENT_ID}
-            client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: ${KAKAO_REDIRECT_URI}
+            client-id: ${PROD_KAKAO_CLIENT_ID}
+            client-secret: ${PROD_KAKAO_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             scope: profile_nickname, account_email
 
           naver:
             client-name: naver
-            client-id: ${NAVER_CLIENT_ID}
-            client-secret: ${NAVER_CLIENT_SECRET}
-            redirect-uri: ${NAVER_REDIRECT_URI}
+            client-id: ${PROD_NAVER_CLIENT_ID}
+            client-secret: ${PROD_NAVER_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
             scope: name,email
+
+redirect:
+  dests:
+    prod: https://gravit.inuappcenter.kr
+    admin: https://gravit-admin.inuappcenter.kr
 
 oauth:
   android:
     google:
       issuer: https://accounts.google.com
-      client-id: ${GOOGLE_CLIENT_ID}
+      client-id: ${PROD_GOOGLE_ANDROID_CLIENT_ID}
     kakao:
       issuer: https://kauth.kakao.com
-      client-id: ${KAKAO_NATIVE_APP_KEY}
+      client-id: ${PROD_KAKAO_NATIVE_APP_KEY}
 
 jwt:
   secret: ${JWT_SECRET}
