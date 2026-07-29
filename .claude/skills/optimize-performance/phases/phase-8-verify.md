@@ -42,20 +42,26 @@
      $TARGET_DIR/test-script.js
 
    # 6) 쿼리 통계 수집
-   REQS=$(jq -r '.requests' $TARGET_DIR/k6-test-summary-{n}.json)
+   #    수집 단계에서 반올림하지 않는다. 반올림은 대화에서 표로 제시할 때만 한다.
+   #    REQS 가드를 빼지 마라. 요청 0건이면 per_req의 분모가 0이 되어 division by zero로 수집이 중단된다.
+   REQS=$(jq -r '.requests // empty' $TARGET_DIR/k6-test-summary-{n}.json)
 
+   if ! [ "$REQS" -gt 0 ] 2>/dev/null; then
+     echo "요청 수가 '$REQS'다. 측정이 실패했으므로 통계를 수집하지 않는다. 원인을 확인하고 재측정하라."
+   else
    psql -h localhost -p 5433 -U postgres -d mydb -A -F ' | ' -c "
    SELECT calls,
-          round(calls::numeric / $REQS, 2)                               AS per_req,
-          round(mean_exec_time::numeric, 2)                              AS mean_ms,
-          round(total_exec_time::numeric, 2)                             AS total_ms,
-          round((100 * total_exec_time / sum(total_exec_time) OVER ())::numeric, 1) AS pct,
-          round(rows::numeric / NULLIF(calls, 0), 1)                     AS rows_per_call,
+          calls::numeric / $REQS                              AS per_req,
+          mean_exec_time                                      AS mean_ms,
+          total_exec_time                                     AS total_ms,
+          100 * total_exec_time / sum(total_exec_time) OVER () AS pct,
+          rows::numeric / NULLIF(calls, 0)                    AS rows_per_call,
           query
    FROM pg_stat_statements
    WHERE query NOT LIKE '%pg_stat_statements%'
    ORDER BY total_exec_time DESC LIMIT 20;" \
    | tee $TARGET_DIR/query-stats-summary-{n}.txt
+   fi
 
    # 7) 개선 후 실행계획 (Phase 6과 같은 쿼리, 같은 파라미터 값)
    psql -h localhost -p 5433 -U postgres -d mydb > /dev/null <<'SQL'
