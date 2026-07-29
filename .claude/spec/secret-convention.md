@@ -14,6 +14,11 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 - 접두사 없는 이름을 두 워크플로가 함께 참조하고 있다면, 그것은 "환경 간 공유"라는 뜻이다.
   공유해도 되는 값인지 확인하고, 아니면 접두사를 붙여 분리하라
 
+## OAuth 리다이렉트 URI
+
+- provider 콘솔에 등록하는 리다이렉트 URI는 `{application-{profile}.yml의 redirect.dests 값}/login/oauth2/code/{provider}` 형식이다
+- `redirect.dests`에 dest를 추가하면 콘솔에도 대응 URI를 등록해야 한다. 서버 화이트리스트만 늘리면 provider가 `redirect_uri_mismatch`로 거절한다
+
 ## 현재 분리 상태
 
 ### 환경별로 분리된 값
@@ -22,19 +27,25 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 |---|---|---|
 | JWT 서명 키 | `DEV_JWT_SECRET` | `PROD_JWT_SECRET` |
 | DB 접속 URL | `POSTGRESQL_DEV_URL` | `POSTGRESQL_URL` |
+| OAuth 웹 클라이언트 (3사 × ID/시크릿) | `DEV_{GOOGLE,KAKAO,NAVER}_CLIENT_{ID,SECRET}` | `PROD_...` |
+| 안드로이드 키 (구글 audience, 카카오 네이티브) | `DEV_GOOGLE_ANDROID_CLIENT_ID`, `DEV_KAKAO_NATIVE_APP_KEY` | `PROD_...` |
+
+- 안드로이드 키 2종은 이름만 분리되어 있고 값은 dev와 prod가 같다. id_token의 audience라 앱 빌드와 짝을 이루므로 안드로이드 팀 합의 전까지 값을 나누지 않는다
+- 안드로이드 구글 audience는 웹 `*_GOOGLE_CLIENT_ID`와 반드시 다른 이름으로 둔다. 한 시크릿을 공유하면 웹 클라이언트를 새로 발급하는 순간 그 환경의 안드로이드 구글 로그인이 전부 거부된다
 
 ### 아직 분리되지 않은 값
 
-아래는 dev와 prod가 같은 시크릿을 참조한다. 분리는 #467에서 다룬다.
+아래는 dev와 prod가 같은 시크릿을 참조한다.
 
-- OAuth 클라이언트: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `KAKAO_NATIVE_APP_KEY`
 - 어드민 화이트리스트: `ADMIN_BOOTSTRAP_EMAILS`
 - DB 계정: `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`
 - 메일: `STMP_PASSWORD`
 - Firebase: `FIREBASE_SERVICE_ACCOUNT`
 
-`DEV_GOOGLE_REDIRECT_URI`, `GOOGLE_REDIRECT_URI` 등 redirect-uri 계열 6종은 워크플로가 주입하지만
-런타임에서 참조하지 않는다. 실제 redirect_uri는 요청의 `dest` 파라미터로 결정된다. 이 역시 #467 범위다.
+### 삭제된 값
+
+- redirect-uri 계열 6종(`{DEV_,}{GOOGLE,KAKAO,NAVER}_REDIRECT_URI`) — 런타임에서 참조하지 않는다. 실제 redirect_uri는 요청의 `dest`로 결정된다
+- 시크릿 주입 대신 yml에 리터럴 `"{baseUrl}/login/oauth2/code/{registrationId}"`를 남긴다. 값을 비우면 `ClientRegistration.Builder`가 단언에 걸려 부팅되지 않는다
 
 ## JWT 시크릿 교체 절차
 
