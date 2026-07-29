@@ -51,10 +51,12 @@
 | 카디널리티 | `ls.user_id` 1,000 (유저당 300행) / 유저당 서로 다른 레슨 100개 / `created_at` 180일 / 유저당 최근 7일 구간 100행 |
 | 주간 구간 실측 | 유저 1500 기준 30행 / 서로 다른 레슨 30개 / 서로 다른 챕터 5개. 시드가 최근 7일에 100행을 뿌리는데 이번 주는 월, 화 이틀뿐이라 그중 2/7이 걸린다. 레슨 중복 제출이 없어 `COUNT(DISTINCT l.id)`가 단순 `COUNT`와 같은 값을 낸다. 챕터 5개 중 `LIMIT 3`이 2개를 잘라낸다 |
 | 기존 인덱스 | `lesson_submission_pkey` PRIMARY KEY btree (id) **하나뿐**. `user_id`, `created_at` 어디에도 인덱스가 없다 |
-| 부하 조건 | VU 50, duration 1m (ramp-up 30s + 1m + ramp-down 30s). 이슈 내 3개 대상 공통 |
-| 캐시 상태 | cold (measure 직전 FLUSHDB). 현재 실행 경로에 캐시 없음 |
+| 부하 조건 | VU 50. ramp-up 30s + 유지 1m + ramp-down 30s = 총 2m. 이슈 내 3개 대상 공통 |
+| Redis 캐시 상태 | cold (measure 직전 FLUSHDB). 현재 실행 경로에 애플리케이션 캐시 없음 |
+| DB 캐시 상태 | 제어하지 않음. Redis FLUSHDB는 PostgreSQL의 `shared_buffers`와 OS page cache를 비우지 않는다. 개선 전후 모두 같은 조건이므로 델타 비교에는 영향이 없으나, 단일 측정의 절대값은 warm 상태가 섞인 값이다 |
 | 캐시 제어 수단 | `redis-cli -h localhost -p 6379` |
 | DB 접속 | `PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d mydb` |
+| 측정 시점 스크립트 | 저장된 수치는 토큰을 `tokens[__VU % tokens.length]`로 고르던 시절에 낸 값이다. VU가 50이라 1,000개 중 50개만 쓰였다. 리뷰 반영으로 `exec.scenario.iterationInTest` 기반 순회로 바꿨으므로 **현재 `test-script.js`로는 이 수치가 그대로 재현되지 않는다.** 개선 전후가 같은 조건이었으므로 델타 비교와 하드웨어 독립 판정은 유효하다 |
 | 시드 SQL | `../seeds.sql` (이슈 공용, `weak-concepts` 대상에서 적재 완료) |
 | 시드 모듈과 변수 | `learning.sql`의 `lesson_sub_per_user 300`, `distinct_lessons 100`, `recent_days 7`, `recent_count 100`, `window_days 180`, `user_start 1001`, `user_count 1000` |
 | 선행 대상의 코드 변경 | `weak-concepts` 사이클 1의 `V32__add_problem_submission_user_index.sql`이 적용된 상태다. 대상 테이블이 `problem_submission`이라 이번 쿼리(`lesson_submission`)와 무관하다. `weekly-report`는 사이클을 돌지 않아 코드 변경이 없다 |

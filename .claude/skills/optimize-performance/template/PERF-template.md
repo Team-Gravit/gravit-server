@@ -41,8 +41,9 @@
 | 커넥션 풀 크기 | {maximum-pool-size} |
 | 데이터 규모 | {대상 테이블별 행 수} |
 | 카디널리티 | {컬럼별 서로 다른 값의 개수} |
-| 부하 조건 | VU {n}, duration {t} |
-| 캐시 상태 | cold (measure 직전 FLUSHDB) / warm |
+| 부하 조건 | VU {n}, 유지 {t} (ramp-up {t1} + 유지 {t} + ramp-down {t2} = 총 {T}) |
+| Redis 캐시 상태 | cold (measure 직전 FLUSHDB) / warm |
+| DB 캐시 상태 | {제어하지 않음 / 초기화 절차}. Redis FLUSHDB는 PostgreSQL의 `shared_buffers`와 OS page cache를 비우지 않는다. 둘을 묶어 cold라고 적지 마라 |
 | 캐시 제어 수단 | `redis-cli -h localhost -p 6379` / `docker exec gravit-redis-local redis-cli` |
 | 시드 SQL | `../seeds.sql` (이슈 공용) / 미사용 |
 | 시드 모듈과 변수 | {`\i` 로 부른 모듈과 확정한 변수값} |

@@ -48,23 +48,30 @@
      $TARGET_DIR/test-script.js
 
    # 6) 쿼리 통계 수집 (요청 수를 분모로 넘겨 요청당 호출 수까지 뽑는다)
-   REQS=$(jq -r '.requests' $TARGET_DIR/k6-test-summary-0.json)
+   REQS=$(jq -r '.requests // empty' $TARGET_DIR/k6-test-summary-0.json)
 
+   if ! [ "$REQS" -gt 0 ] 2>/dev/null; then
+     echo "요청 수가 '$REQS'다. 측정이 실패했으므로 통계를 수집하지 않는다. 원인을 확인하고 재측정하라."
+   else
    psql -h localhost -p 5433 -U postgres -d mydb -A -F ' | ' -c "
    SELECT calls,
-          round(calls::numeric / $REQS, 2)                               AS per_req,
-          round(mean_exec_time::numeric, 2)                              AS mean_ms,
-          round(total_exec_time::numeric, 2)                             AS total_ms,
-          round((100 * total_exec_time / sum(total_exec_time) OVER ())::numeric, 1) AS pct,
-          round(rows::numeric / NULLIF(calls, 0), 1)                     AS rows_per_call,
+          calls::numeric / $REQS                              AS per_req,
+          mean_exec_time                                      AS mean_ms,
+          total_exec_time                                     AS total_ms,
+          100 * total_exec_time / sum(total_exec_time) OVER () AS pct,
+          rows::numeric / NULLIF(calls, 0)                    AS rows_per_call,
           query
    FROM pg_stat_statements
    WHERE query NOT LIKE '%pg_stat_statements%'
    ORDER BY total_exec_time DESC LIMIT 20;" \
    | tee $TARGET_DIR/query-stats-summary-0.txt
+   fi
    ```
 
    - `-A -F ' | '`를 빼지 마라. 정렬 출력은 쿼리 원문을 잘라 리포지토리 메서드를 식별할 수 없게 만든다.
+   - **수집 단계에서 반올림하지 마라.** `per_req`를 소수 둘째 자리로 자르면 0.005 미만인 쿼리가 `0.00`으로 사라진다.
+     반올림은 대화에서 표로 제시할 때만 한다. 파일에는 psql이 뽑아준 값을 그대로 둔다.
+   - `REQS` 가드를 빼지 마라. 요청 0건이면 `per_req`의 분모가 0이 되어 `division by zero`로 수집이 중단된다.
 
 2. 실행이 끝나면 아래 두 파일을 Read로 읽는다.
 

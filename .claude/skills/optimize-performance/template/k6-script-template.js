@@ -22,18 +22,25 @@
 //    측정 프로세스가 인증 요청을 보내면 그 SQL과 응답시간이 측정값에 섞인다.
 //    tokens.json은 이슈 전체가 공유한다. `../tokens.json` 경로를 대상 디렉토리 안쪽으로 바꾸지 마라.
 // 5. 토큰 수가 USER_COUNT와 다르면 중단한다. 일부만 발급된 채로 측정하지 마라.
-// 6. VU마다 다른 토큰을 쓰는 구조를 유지한다. 전 VU가 같은 토큰을 쓰게 고치지 않는다.
+// 6. 토큰은 `exec.scenario.iterationInTest`로 고른다. 이 값은 시나리오 전체에서 반복마다 1씩 늘어나므로
+//    VU 수와 무관하게 USER_COUNT 전체를 균등하게 돈다.
+//    `__VU`로 고르지 마라. VU가 50개면 토큰도 50개만 쓰여 요약의 user_count와 실제 사용자 수가 어긋난다.
 // 7. 응답시간 임계를 thresholds에 넣지 않는다. 판정은 스킬이 전후 비교로 한다.
 //    summaryTrendStats는 지우지 않는다. 지우면 p(99)가 요약에서 사라진다(k6 기본값에 없다).
 // 8. check에는 실제 데이터가 실렸는지 확인하는 항목을 반드시 하나 넣는다.
-//    리스트 응답이면 `r.json().length > 0`, 객체 응답이면 `r.json('{필드}') !== null`,
-//    페이지 응답이면 `r.json('content').length > 0`.
+//    리스트 응답이면 `body.length > 0`, 객체 응답이면 `body.{필드} !== undefined`,
+//    페이지 응답이면 `body.content.length > 0`.
+//    **`r.json()`은 반드시 try/catch로 감싼다.** 비JSON 응답(502 HTML, 빈 본문)에서 예외가 나면
+//    무엇이 깨졌는지 알 수 없게 된다. 파싱 실패는 명시적인 check 실패로 떨어뜨린다.
 // 9. VU와 duration은 Phase 3에서 호출자와 확정한 값으로, USER_ID_START와 USER_COUNT는
 //    seeds.sql로 실제 만든 userId 범위와 일치시킨다. 기본값을 그대로 두지 않는다.
 // 10. handleSummary가 내보내는 필드를 빼지 않는다. Phase 4와 8이 이 필드명을 그대로 참조한다.
 //     숫자를 반올림하거나 자릿수를 줄이지 마라. 요약 파일에는 k6가 준 값이 그대로 들어간다.
 // 11. TARGET에는 대상 디렉토리 슬러그를, ENDPOINT에는 경로를, CONDITION에는 Phase 3-B에서
 //     확정한 부하 조건과 캐시 상태를 적는다. 요약 파일만 보고 어떤 측정인지 알 수 있어야 한다.
+//     duration은 유지 구간만 적지 말고 ramp 구간과 총 실행시간을 분리해 적는다.
+//     캐시 상태는 Redis와 DB를 분리한다. Redis FLUSHDB는 PostgreSQL의 shared_buffers와
+//     OS page cache를 비우지 않으므로 둘을 묶어 cold라고 적으면 잘못된 정보가 된다.
 //
 // measure 실행의 요청은 전부 대상 API다. 요청당 쿼리 수의 분모는 요약의 `requests`를 그대로 쓴다.
 //
@@ -47,6 +54,7 @@
 // ──────────────────────────────────────────────────────────
 
 import http from 'k6/http';
+import exec from 'k6/execution';
 import { check } from 'k6';
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
@@ -59,8 +67,12 @@ const TARGET = '{슬러그}';
 const ENDPOINT = '{HTTP} {경로}';
 const CONDITION = {
     vus: {VU},
-    duration: '{duration}',
-    cache: '{cold | warm}',
+    steady_state_duration: '{duration}',
+    ramp_up: '30s',
+    ramp_down: '30s',
+    total_duration: '{ramp_up + duration + ramp_down}',
+    redis_cache: '{cold | warm}',
+    db_cache: '{제어하지 않음 | 초기화 절차}',
     user_id_start: USER_ID_START,
     user_count: USER_COUNT,
 };
@@ -101,8 +113,21 @@ export const options = {
     },
 };
 
+// 비JSON 응답에서 예외를 던지지 않는다. 파싱 실패는 null로 떨어뜨려 check 실패로 드러낸다.
+function parseBody(res) {
+    if (res.status !== 200 || res.body === null || res.body.length <= 2) {
+        return null;
+    }
+    try {
+        return res.json();
+    } catch (e) {
+        return null;
+    }
+}
+
 export default function () {
-    const token = tokens[__VU % tokens.length];
+    // 시나리오 전체의 반복 번호로 고른다. VU 수와 무관하게 토큰 USER_COUNT개를 균등하게 돈다.
+    const token = tokens[exec.scenario.iterationInTest % tokens.length];
     const params = { headers: { Authorization: `Bearer ${token}` } };
 
     const res = http.get(`${BASE_URL}{대상 엔드포인트}`, params);
@@ -110,7 +135,10 @@ export default function () {
     check(res, {
         'status is 200': (r) => r.status === 200,
         'body is not empty': (r) => r.body !== null && r.body.length > 2,
-        '{대표 필드}가 실려 있다': (r) => {데이터검증식},
+        '{대표 필드}가 실려 있다': (r) => {
+            const body = parseBody(r);
+            return body !== null && {데이터검증식};
+        },
     });
 }
 
