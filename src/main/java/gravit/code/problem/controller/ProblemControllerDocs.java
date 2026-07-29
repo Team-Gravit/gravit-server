@@ -3,7 +3,7 @@ package gravit.code.problem.controller;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.lesson.dto.response.LessonResponse;
-import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -72,6 +72,6 @@ public interface ProblemControllerDocs {
     @PostMapping("/results")
     ResponseEntity<Void> saveProblemSubmission(
             @AuthenticationPrincipal LoginUser loginUser,
-            @Valid @RequestBody ProblemSubmissionRequest request
+            @Valid @RequestBody ProblemSubmissionSaveRequest request
     );
 }

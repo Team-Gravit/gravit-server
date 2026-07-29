@@ -7,12 +7,14 @@ import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningCommandService;
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.service.LessonQueryService;
 import gravit.code.lesson.service.LessonSubmissionCommandService;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.problem.service.ProblemSubmissionCommandService;
 import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
@@ -74,29 +76,40 @@ public class LessonFacade {
             long userId,
             LearningSubmissionSaveRequest request
     ){
-        // 첫번째 풀이인지 체크
-        boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, request.lessonSubmissionSaveRequest().lessonId());
+        // 레슨, 문제 풀이 추출
+        LessonSubmissionSaveRequest lessonSubmissionSaveRequest = request.lessonSubmissionSaveRequest();
+        List<ProblemSubmissionSaveRequest> problemSubmissionSaveRequests = request.problemSubmissionSaveRequests();
 
-        // 레슨 풀이 결과, 문제 풀이 결과 저장
-        lessonSubmissionCommandService.saveLessonSubmission(userId, request.lessonSubmissionSaveRequest());
-        problemSubmissionCommandService.saveProblemSubmissions(userId, request.problemSubmissionRequests());
+        // 챕터, 유닛, 레슨 아이디 추출
+        LearningIdsDto learningIdsDto = lessonQueryService.getLearningIdsByLessonId(lessonSubmissionSaveRequest.lessonId());
+
+        // 문제 풀이 정합성 검증
+        problemSubmissionCommandService.validateProblemSubmissions(problemSubmissionSaveRequests);
+
+        boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, lessonSubmissionSaveRequest.lessonId());
+
+        // 레슨, 문제 풀이 저장
+        lessonSubmissionCommandService.saveLessonSubmission(userId, lessonSubmissionSaveRequest);
+        List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, problemSubmissionSaveRequests);
+
+        // 틀린 문제에 대해 오답노트 저장
+        wrongAnsweredProblemIds.forEach(problemId -> wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemId));
 
         // 응답 데이터 조회
-        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(lessonSubmissionSaveRequest.lessonId());
         String leagueName = userLeagueService.getUserLeagueName(userId);
-        UserLevelResponse userLevelResponse = userService.updateUserLevelByLessonSubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
-
-        LearningIdsDto learningIdsDto = lessonQueryService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
+        UserLevelResponse userLevelResponse = userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
 
         ConsecutiveSolvedDto consecutiveSolvedDto = learningCommandService.updateLearningStatus(userId, learningIdsDto.chapterId());
+
         if(isFirstTry){
             publisher.publishEvent(new LessonCompletedEvent(
                     userId,
                     learningIdsDto.lessonId(),
                     learningIdsDto.chapterId(),
                     POINT_PER_LESSON,
-                    request.lessonSubmissionSaveRequest().accuracy(),
-                    request.lessonSubmissionSaveRequest().learningTime(),
+                    lessonSubmissionSaveRequest.accuracy(),
+                    lessonSubmissionSaveRequest.learningTime(),
                     consecutiveSolvedDto.before(),
                     consecutiveSolvedDto.after()
             ));
