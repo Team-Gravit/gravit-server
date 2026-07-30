@@ -93,7 +93,7 @@ public class LessonFacade {
         List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, problemSubmissionSaveRequests);
 
         // 틀린 문제에 대해 오답노트 저장
-        wrongAnsweredProblemIds.forEach(problemId -> wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemId));
+        wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, wrongAnsweredProblemIds);
 
         // 응답 데이터 조회
         UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(lessonSubmissionSaveRequest.lessonId());
