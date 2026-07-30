@@ -37,6 +37,16 @@ public interface LessonControllerDocs {
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "🚨 챕터 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "챕터 조회 실패",
+                                            value = "{\"error\" : \"CHAPTER_4041\", \"message\" : \"챕터 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     @GetMapping("/{unitId}")

@@ -79,6 +79,8 @@ class LessonFacadeIntegrationTest {
 
             // then
             assertSoftly(softly -> {
+                softly.assertThat(result.chapterSummary().chapterId()).isEqualTo(chapter.getId());
+                softly.assertThat(result.chapterSummary().title()).isEqualTo("운영체제");
                 softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("프로세스");
                 softly.assertThat(result.lessonSummaries()).hasSize(2);
                 softly.assertThat(result.lessonSummaries().get(0).isSolved()).isTrue();

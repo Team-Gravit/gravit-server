@@ -1,6 +1,8 @@
 package gravit.code.lesson.facade;
 
 import gravit.code.bookmark.service.BookmarkService;
+import gravit.code.chapter.dto.response.ChapterBriefResponse;
+import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.internal.LearningIdsDto;
@@ -55,6 +57,9 @@ class LessonFacadeUnitTest {
     private LessonSubmissionQueryService lessonSubmissionQueryService;
 
     @Mock
+    private ChapterQueryService chapterQueryService;
+
+    @Mock
     private UnitQueryService unitQueryService;
 
     @Mock
@@ -87,11 +92,13 @@ class LessonFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
+            ChapterBriefResponse chapterSummary = new ChapterBriefResponse(10L, "운영체제");
             UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "프로세스", "프로세스 개념");
             List<LessonSummaryResponse> lessons = List.of(
                     new LessonSummaryResponse(1L, "레슨1", 5, true)
             );
 
+            when(chapterQueryService.getChapterBriefByUnitId(unitId)).thenReturn(chapterSummary);
             when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummaryResponse);
             when(lessonQueryService.getAllLessonInUnit(userId, unitId)).thenReturn(lessons);
             when(bookmarkService.checkBookmarkedProblemExists(userId, unitId)).thenReturn(true);
@@ -102,6 +109,8 @@ class LessonFacadeUnitTest {
 
             // then
             assertSoftly(softly -> {
+                softly.assertThat(result.chapterSummary().chapterId()).isEqualTo(10L);
+                softly.assertThat(result.chapterSummary().title()).isEqualTo("운영체제");
                 softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("프로세스");
                 softly.assertThat(result.lessonSummaries()).hasSize(1);
                 softly.assertThat(result.bookmarkAccessible()).isTrue();
@@ -116,6 +125,7 @@ class LessonFacadeUnitTest {
             long unitId = 1L;
             UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "프로세스", "프로세스 개념");
 
+            when(chapterQueryService.getChapterBriefByUnitId(unitId)).thenReturn(new ChapterBriefResponse(10L, "운영체제"));
             when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummaryResponse);
             when(lessonQueryService.getAllLessonInUnit(userId, unitId)).thenReturn(List.of());
             when(bookmarkService.checkBookmarkedProblemExists(userId, unitId)).thenReturn(false);
