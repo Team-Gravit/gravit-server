@@ -11,7 +11,10 @@ spring:
 
   datasource:
     hikari:
-      maximum-pool-size: 10
+      # POST /api/v1/lessons/results 는 AFTER_COMMIT 리스너의 REQUIRES_NEW 때문에
+      # 요청 하나가 커넥션 2개를 동시에 점유한다(바깥 트랜잭션은 보류될 뿐 반납되지 않는다).
+      # 데드락을 피하려면 풀이 동시 요청 수보다 커야 한다. VU 50 기준으로 60을 쓴다.
+      maximum-pool-size: 60
       pool-name: gravit-perf-pool
 
 logging:

@@ -7,6 +7,7 @@ import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -57,12 +58,18 @@ public class DatasourceConfig {
     }
 
     @Bean
-    @Primary
-    public DataSource proxyDataSource(DataSourceProperties props) {
-        DataSource dataSource = props.initializeDataSourceBuilder().build();
+    @ConfigurationProperties("spring.datasource.hikari")
+    public HikariDataSource mainDataSource(DataSourceProperties props) {
+        return props.initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
+    }
 
+    @Bean
+    @Primary
+    public DataSource proxyDataSource(HikariDataSource mainDataSource) {
         return ProxyDataSourceBuilder
-                .create(dataSource)
+                .create(mainDataSource)
                 .listener(queryMetricsListener)
                 .name("main")
                 .build();
