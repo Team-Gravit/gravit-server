@@ -1,9 +1,11 @@
 package gravit.code.problem.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.problem.domain.ProblemSubmission;
 import gravit.code.problem.domain.ProblemType;
+import gravit.code.problem.dto.internal.ProblemSubmissionRow;
 import gravit.code.problem.dto.internal.ProblemTypeDto;
 import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.problem.repository.ProblemRepository;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +26,9 @@ public class ProblemSubmissionCommandService {
 
     private final ProblemSubmissionRepository problemSubmissionRepository;
     private final ProblemRepository problemRepository;
+
+    private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     @Transactional(readOnly = true)
     public void validateProblemSubmissions(List<ProblemSubmissionSaveRequest> requests) {
@@ -39,11 +46,7 @@ public class ProblemSubmissionCommandService {
             long userId,
             List<ProblemSubmissionSaveRequest> requests
     ) {
-        List<ProblemSubmission> problemSubmissions = requests.stream()
-                .map(request -> createProblemSubmission(userId, request))
-                .toList();
-
-        problemSubmissionRepository.saveAll(problemSubmissions);
+        problemSubmissionRepository.insertAll(userId, toPayload(requests), LocalDateTime.now(clock));
 
         return requests.stream()
                 .filter(request -> !request.isCorrect())
@@ -51,17 +54,16 @@ public class ProblemSubmissionCommandService {
                 .toList();
     }
 
-    private ProblemSubmission createProblemSubmission(
-            long userId,
-            ProblemSubmissionSaveRequest request
-    ) {
-        return ProblemSubmission.create(
-                request.isCorrect(),
-                request.problemId(),
-                userId,
-                request.selectedOptionId(),
-                request.submittedContent()
-        );
+    private String toPayload(List<ProblemSubmissionSaveRequest> requests) {
+        List<ProblemSubmissionRow> rows = requests.stream()
+                .map(ProblemSubmissionRow::from)
+                .toList();
+
+        try {
+            return objectMapper.writeValueAsString(rows);
+        } catch (JsonProcessingException e) {
+            throw new RestApiException(CustomErrorCode.PROBLEM_SUBMISSION_SERIALIZE_FAILED);
+        }
     }
 
     private Map<Long, ProblemType> findProblemTypes(List<Long> problemIds) {
