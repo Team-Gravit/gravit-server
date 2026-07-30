@@ -268,8 +268,7 @@ class LessonFacadeUnitTest {
             lessonFacade.saveLessonSubmission(userId, request);
 
             // then
-            verify(wrongAnsweredNoteService).saveWrongAnsweredNote(userId, 1L);
-            verify(wrongAnsweredNoteService).saveWrongAnsweredNote(userId, 2L);
+            verify(wrongAnsweredNoteService).saveWrongAnsweredNotes(userId, List.of(1L, 2L));
         }
 
         @Test
@@ -295,7 +294,7 @@ class LessonFacadeUnitTest {
             lessonFacade.saveLessonSubmission(userId, request);
 
             // then
-            verify(wrongAnsweredNoteService, never()).saveWrongAnsweredNote(anyLong(), anyLong());
+            verify(wrongAnsweredNoteService).saveWrongAnsweredNotes(userId, List.of());
         }
     }
 }
