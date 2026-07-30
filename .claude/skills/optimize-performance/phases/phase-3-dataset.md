@@ -26,6 +26,17 @@
    SELECT relname, n_live_tup FROM pg_stat_user_tables ORDER BY n_live_tup DESC LIMIT 15;"
    ```
 
+   **`n_live_tup`을 행 수로 믿지 마라.** 이 값은 통계 수집기가 증감으로 누적하는 추정치이고,
+   `VACUUM`이나 `ANALYZE`가 돈 적 없는 테이블에서는 **통계 리셋 이후의 변화량만** 담는다.
+   실제로 30만 행인 테이블이 `4445`로, 200만 행인 테이블이 `0`으로 나오는 경우가 있다.
+   목표 규모를 판정할 때는 반드시 실제 카운트로 확인한다.
+
+   ```bash
+   psql -h localhost -p 5433 -U postgres -d mydb -c "
+   SELECT '{테이블}' AS t, count(*) FROM {테이블}
+   UNION ALL SELECT '{테이블2}', count(*) FROM {테이블2};"
+   ```
+
 2. 목표 규모를 호출자와 확정한다.
    - Phase 1에서 확정한 쿼리가 읽는 테이블만을 대상으로 삼는다. 그 외 테이블은 다루지 않는다.
    - 정렬, 집계, 윈도우 함수가 걸린 쿼리가 있다면 해당 테이블의 목표 규모를 개별 수치로 확정한다.
