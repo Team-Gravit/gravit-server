@@ -8,7 +8,7 @@
 - 애플리케이션이 변경된 코드로 재기동
 
 ### 참조 파일
-- `.claude/skills/optimize-performance/template/query-stats-template.txt`
+- `.claude/skills/optimize-performance/template/query-stats-template.md`
 
 ### 절차
 
@@ -30,18 +30,30 @@
    # 2) 워밍업. 이 실행의 결과는 쓰지 않는다.
    k6 run -e PHASE=warmup $TARGET_DIR/test-script.js
 
-   # 3) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다 (Phase 4와 같아야 한다)
+   # 3) 되돌리기 - Phase 4와 같은 절차를 같은 자리에서 실행한다
+   #    쓰기 엔드포인트면 워밍업이 삽입한 행을 지운다
+
+   # 4) dead tuple 회수 + 통계 갱신 - Phase 4와 같아야 한다
+   psql -h localhost -p 5433 -U postgres -d mydb -c "VACUUM ANALYZE;"
+
+   psql -h localhost -p 5433 -U postgres -d mydb -c "
+   SELECT relname, n_dead_tup, last_vacuum, last_analyze
+   FROM pg_stat_user_tables
+   WHERE relname IN ({대상 쿼리가 읽고 쓰는 테이블})
+   ORDER BY relname;"
+
+   # 5) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다 (Phase 4와 같아야 한다)
    {캐시 제어 수단} -n 0 FLUSHDB
 
-   # 4) 쿼리 통계 리셋
+   # 6) 쿼리 통계 리셋
    psql -h localhost -p 5433 -U postgres -d mydb -c "SELECT pg_stat_statements_reset();"
 
-   # 5) 측정 부하 (Phase 3의 스크립트를 그대로 쓴다)
+   # 7) 측정 부하 (Phase 3의 스크립트를 그대로 쓴다)
    k6 run -e PHASE=measure \
      -e SUMMARY_OUT=$TARGET_DIR/k6-test-summary-{n}.json \
      $TARGET_DIR/test-script.js
 
-   # 6) 쿼리 통계 수집
+   # 8) 쿼리 통계 수집
    #    수집 단계에서 반올림하지 않는다. 반올림은 대화에서 표로 제시할 때만 한다.
    #    REQS 가드를 빼지 마라. 요청 0건이면 per_req의 분모가 0이 되어 division by zero로 수집이 중단된다.
    REQS=$(jq -r '.requests // empty' $TARGET_DIR/k6-test-summary-{n}.json)
@@ -60,10 +72,10 @@
    FROM pg_stat_statements
    WHERE query NOT LIKE '%pg_stat_statements%'
    ORDER BY total_exec_time DESC LIMIT 20;" \
-   | tee $TARGET_DIR/query-stats-summary-{n}.txt
+   | tee $TARGET_DIR/query-stats-summary-{n}.md
    fi
 
-   # 7) 개선 후 실행계획 (Phase 6과 같은 쿼리, 같은 파라미터 값)
+   # 9) 개선 후 실행계획 (Phase 6과 같은 쿼리, 같은 파라미터 값)
    psql -h localhost -p 5433 -U postgres -d mydb > /dev/null <<'SQL'
    BEGIN;
    EXPLAIN (ANALYZE, BUFFERS, VERBOSE) {대상 쿼리};
@@ -81,6 +93,8 @@
    - `{n}`에는 이번 사이클 적용 후의 상태 번호를 넣는다. 앞선 상태의 파일을 덮어쓰지 마라.
    - EXPLAIN에는 Phase 6 **실행계획**에 적어둔 파라미터 값을 그대로 쓴다. 값을 바꾸면 계획이 비교 불가가 된다.
    - Phase 6과 마찬가지로 `BEGIN`과 `ROLLBACK`을 빼지 마라.
+   - **되돌리기와 `VACUUM ANALYZE`를 Phase 4와 같은 자리에서 같은 방식으로 실행한다.** 하나라도 어긋나면 전후 비교가 아니라
+     서로 다른 조건의 두 측정을 비교하게 된다. dead tuple이 남은 상태와 회수된 상태는 같은 INSERT의 단가를 2배 이상 벌린다.
    - 쓰기 부하가 포함된 시나리오면 1차 측정이 데이터를 불려놓았을 수 있다. 데이터 규모를 다시 확인한다.
    - 조건이 달라졌으면 그 사실을 기록에 명시하고, 비교 가능한 범위를 좁혀서 해석한다.
 
@@ -89,7 +103,7 @@
    | 산출물 | 개선 후 (이번 사이클) | 개선 전 (비교 대상) |
    |---|---|---|
    | k6 요약 | `k6-test-summary-{n}.json` | `k6-test-summary-{n-1}.json` |
-   | 쿼리 통계 | `query-stats-summary-{n}.txt` | `query-stats-summary-{n-1}.txt` |
+   | 쿼리 통계 | `query-stats-summary-{n}.md` | `query-stats-summary-{n-1}.md` |
    | 실행계획 | `query-plan-{n}.txt` | `query-plan-{n-1}.txt` |
 
    최초 상태와의 누적 변화가 필요하면 `-0` 파일을 함께 읽는다.
@@ -98,7 +112,7 @@
 
 3. 두 산출물을 가공본으로 다시 쓴다.
 
-   - `query-stats-summary-{n}.txt`: `template/query-stats-template.txt`의 작성 규칙을 따라 같은 경로에 덮어쓴다.
+   - `query-stats-summary-{n}.md`: `template/query-stats-template.md`의 작성 규칙을 따라 같은 경로에 덮어쓴다.
      헤더의 **직전 상태 대비** 줄에 `{n-1}` 파일과의 델타를 적는다.
    - `k6-test-summary-{n}.json`: 최상위에 `delta_vs_prev` 객체를 덧붙인다. 다른 필드는 손대지 마라.
 
@@ -141,7 +155,7 @@
 
 ### 출력
 - `.claude/resources/perf/{이슈번호}/{슬러그}/k6-test-summary-{n}.json` 생성 (`delta_vs_prev` 포함)
-- `.claude/resources/perf/{이슈번호}/{슬러그}/query-stats-summary-{n}.txt` 생성 (가공본)
+- `.claude/resources/perf/{이슈번호}/{슬러그}/query-stats-summary-{n}.md` 생성 (가공본)
 - `.claude/resources/perf/{이슈번호}/{슬러그}/query-plan-{n}.txt` 생성 (원본 유지)
 - `record.md`의 사이클 {n} **개선 후 지표**와 **판정**이 채워짐
 - `record.md`의 진행 상태의 사이클 {n} Phase 8이 ✅으로 기록

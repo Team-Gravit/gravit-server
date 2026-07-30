@@ -2,9 +2,8 @@ package gravit.code.problem.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.lesson.dto.response.LessonResponse;
-import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.problem.facade.ProblemFacade;
-import gravit.code.problem.service.ProblemSubmissionCommandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProblemController implements ProblemControllerDocs {
 
     private final ProblemFacade problemFacade;
-    private final ProblemSubmissionCommandService problemSubmissionCommandService;
 
     @GetMapping("/{lessonId}")
     public ResponseEntity<LessonResponse> getAllProblemInLesson(
@@ -36,9 +34,9 @@ public class ProblemController implements ProblemControllerDocs {
     @PostMapping("/results")
     public ResponseEntity<Void> saveProblemSubmission(
             @AuthenticationPrincipal LoginUser loginUser,
-            @Valid @RequestBody ProblemSubmissionRequest request
+            @Valid @RequestBody ProblemSubmissionSaveRequest request
     ){
-        problemSubmissionCommandService.saveProblemSubmission(loginUser.getId(), request);
+        problemFacade.saveProblemSubmission(loginUser.getId(), request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

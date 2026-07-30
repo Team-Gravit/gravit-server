@@ -1,0 +1,72 @@
+{
+  "phase": "measure",
+  "target": "results",
+  "endpoint": "POST /api/v1/lessons/results",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "cold",
+    "db_cache": "제어하지 않음",
+    "user_id_start": 1001,
+    "user_count": 1000,
+    "problems_per_request": 30,
+    "wrong_per_request": 9,
+    "accuracy": 70,
+    "learning_time": 300,
+    "first_try_only": true,
+    "first_try_capacity": 100000
+  },
+  "requests": 6270,
+  "rps": 52.25093746890309,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 6270,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 6270,
+      "fails": 0
+    },
+    {
+      "name": "리그명과 유닛 요약이 실려 있다",
+      "passes": 6270,
+      "fails": 0
+    },
+    {
+      "name": "첫 풀이 조합이 남아 있다",
+      "passes": 6270,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 579.0505,
+    "p95": 1612.9363499999997,
+    "p99": 2564.2289099999994,
+    "max": 3354.432
+  },
+  "waiting_ms": {
+    "med": 578.624,
+    "p95": 1612.4688999999996,
+    "p99": 2564.002949999999,
+    "max": 3353.786
+  },
+  "bytes_received": 3643573,
+  "delta_vs_prev": {
+    "from": "k6-test-summary-0.json",
+    "requests": { "before": 3610, "after": 6270 },
+    "rps": { "before": 30.05442998801386, "after": 52.25093746890309 },
+    "duration_med_ms": { "before": 1005.8735, "after": 579.0505 },
+    "duration_p95_ms": { "before": 3204.7293999999993, "after": 1612.9363499999997 },
+    "duration_p99_ms": { "before": 3644.5262999999995, "after": 2564.2289099999994 },
+    "duration_max_ms": { "before": 4745.542, "after": 3354.432 },
+    "failed_rate": { "before": 0, "after": 0 },
+    "checks_rate": { "before": 1, "after": 1 }
+  }
+}

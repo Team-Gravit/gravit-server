@@ -13,7 +13,7 @@ import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.service.LessonQueryService;
 import gravit.code.lesson.service.LessonSubmissionCommandService;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
-import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.problem.service.ProblemSubmissionCommandService;
 import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -137,8 +138,8 @@ class LessonFacadeUnitTest {
             // given
             long userId = 1L;
             LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 120, 80);
-            List<ProblemSubmissionRequest> problemRequests = List.of(
-                    new ProblemSubmissionRequest(1L, true, null, "LIFO")
+            List<ProblemSubmissionSaveRequest> problemRequests = List.of(
+                    new ProblemSubmissionSaveRequest(1L, true, null, "LIFO")
             );
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
@@ -166,8 +167,8 @@ class LessonFacadeUnitTest {
             // given
             long userId = 1L;
             LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 90, 85);
-            List<ProblemSubmissionRequest> problemRequests = List.of(
-                    new ProblemSubmissionRequest(1L, true, null, "LIFO")
+            List<ProblemSubmissionSaveRequest> problemRequests = List.of(
+                    new ProblemSubmissionSaveRequest(1L, true, null, "LIFO")
             );
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
@@ -185,6 +186,115 @@ class LessonFacadeUnitTest {
             // then
             assertThat(result.leagueName()).isEqualTo("브론즈");
             verify(publisher, never()).publishEvent(any(LessonCompletedEvent.class));
+        }
+
+        @Test
+        void 첫_풀이_판정을_레슨_제출_저장보다_먼저_한다() {
+            // given
+            long userId = 1L;
+            LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 120, 80);
+            List<ProblemSubmissionSaveRequest> problemRequests = List.of(
+                    new ProblemSubmissionSaveRequest(1L, true, null, "LIFO")
+            );
+            LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
+
+            when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
+            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
+            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
+            when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
+                    .thenReturn(UserLevelResponse.create(1, 20));
+            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
+            when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
+
+            // when
+            lessonFacade.saveLessonSubmission(userId, request);
+
+            // then
+            InOrder inOrder = inOrder(lessonSubmissionQueryService, lessonSubmissionCommandService);
+            inOrder.verify(lessonSubmissionQueryService).checkFirstLessonSubmission(userId, 1L);
+            inOrder.verify(lessonSubmissionCommandService).saveLessonSubmission(userId, lessonRequest);
+        }
+
+        @Test
+        void 검증을_레슨_제출_저장보다_먼저_한다() {
+            // given
+            long userId = 1L;
+            LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 120, 80);
+            List<ProblemSubmissionSaveRequest> problemRequests = List.of(
+                    new ProblemSubmissionSaveRequest(1L, true, null, "LIFO")
+            );
+            LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
+
+            when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
+            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
+            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
+            when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
+                    .thenReturn(UserLevelResponse.create(1, 20));
+            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
+            when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
+
+            // when
+            lessonFacade.saveLessonSubmission(userId, request);
+
+            // then
+            InOrder inOrder = inOrder(lessonQueryService, problemSubmissionCommandService, lessonSubmissionCommandService);
+            inOrder.verify(lessonQueryService).getLearningIdsByLessonId(1L);
+            inOrder.verify(problemSubmissionCommandService).validateProblemSubmissions(problemRequests);
+            inOrder.verify(lessonSubmissionCommandService).saveLessonSubmission(userId, lessonRequest);
+            inOrder.verify(problemSubmissionCommandService).saveProblemSubmissions(userId, problemRequests);
+        }
+
+        @Test
+        void 오답으로_돌아온_문제마다_오답_노트를_저장한다() {
+            // given
+            long userId = 1L;
+            LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 120, 80);
+            List<ProblemSubmissionSaveRequest> problemRequests = List.of(
+                    new ProblemSubmissionSaveRequest(1L, false, null, "FIFO"),
+                    new ProblemSubmissionSaveRequest(2L, false, 3L, null)
+            );
+            LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
+
+            when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
+            when(problemSubmissionCommandService.saveProblemSubmissions(userId, problemRequests)).thenReturn(List.of(1L, 2L));
+            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
+            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
+            when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
+                    .thenReturn(UserLevelResponse.create(1, 20));
+            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
+            when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
+
+            // when
+            lessonFacade.saveLessonSubmission(userId, request);
+
+            // then
+            verify(wrongAnsweredNoteService).saveWrongAnsweredNotes(userId, List.of(1L, 2L));
+        }
+
+        @Test
+        void 오답이_없으면_오답_노트를_저장하지_않는다() {
+            // given
+            long userId = 1L;
+            LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(1L, 120, 80);
+            List<ProblemSubmissionSaveRequest> problemRequests = List.of(
+                    new ProblemSubmissionSaveRequest(1L, true, null, "LIFO")
+            );
+            LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
+
+            when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
+            when(problemSubmissionCommandService.saveProblemSubmissions(userId, problemRequests)).thenReturn(List.of());
+            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
+            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
+            when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
+                    .thenReturn(UserLevelResponse.create(1, 20));
+            when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
+            when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
+
+            // when
+            lessonFacade.saveLessonSubmission(userId, request);
+
+            // then
+            verify(wrongAnsweredNoteService).saveWrongAnsweredNotes(userId, List.of());
         }
     }
 }

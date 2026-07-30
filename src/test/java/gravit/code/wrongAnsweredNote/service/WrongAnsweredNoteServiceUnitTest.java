@@ -11,9 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,16 +25,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WrongAnsweredNoteServiceUnitTest {
+
+    private static final Clock FIXED_CLOCK = Clock.fixed(
+            OffsetDateTime.parse("2026-07-29T12:00:00+09:00").toInstant(),
+            ZoneId.of("Asia/Seoul")
+    );
 
     @InjectMocks
     private WrongAnsweredNoteService wrongAnsweredNoteService;
 
     @Mock
     private WrongAnsweredNoteRepository wrongAnsweredNoteRepository;
+
+    @Spy
+    private Clock clock = FIXED_CLOCK;
 
     @Nested
     @DisplayName("오답 노트를 저장할 때")
@@ -89,6 +104,57 @@ class WrongAnsweredNoteServiceUnitTest {
                 softly.assertThat(resolved.isResolved()).isFalse();
                 softly.assertThat(resolved.getWrongCount()).isEqualTo(2);
             });
+        }
+    }
+
+    @Nested
+    @DisplayName("오답 노트를 일괄 저장할 때")
+    class SaveWrongAnsweredNotes {
+
+        @Test
+        void 문제_목록을_배열_리터럴_한_건으로_넘긴다() {
+            // given
+            long userId = 1L;
+            List<Long> problemIds = List.of(1L, 2L, 3L);
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, problemIds);
+
+            // then
+            verify(wrongAnsweredNoteRepository).upsertAll(
+                    userId,
+                    "{1,2,3}",
+                    LocalDateTime.now(FIXED_CLOCK)
+            );
+        }
+
+        @Test
+        void 중복된_문제_아이디는_한_번만_넘긴다() {
+            // given — 한 문장 안에 같은 (user_id, problem_id)가 두 번 들어가면 Postgres가 거부한다
+            long userId = 1L;
+            List<Long> problemIds = List.of(1L, 2L, 1L, 2L, 3L);
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, problemIds);
+
+            // then
+            verify(wrongAnsweredNoteRepository).upsertAll(
+                    eq(userId),
+                    eq("{1,2,3}"),
+                    any(LocalDateTime.class)
+            );
+        }
+
+        @Test
+        void 오답이_없으면_저장을_호출하지_않는다() {
+            // given
+            long userId = 1L;
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, List.of());
+
+            // then
+            verify(wrongAnsweredNoteRepository, never()).upsertAll(anyLong(), anyString(), any());
         }
     }
 

@@ -7,7 +7,7 @@ import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.facade.LessonFacade;
 import gravit.code.lesson.repository.LessonRepository;
-import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.unit.domain.Unit;
 import gravit.code.unit.repository.UnitRepository;
 import gravit.code.user.domain.User;
@@ -73,7 +73,7 @@ public class TestScenarioController implements TestScenarioControllerDocs {
 
     private void submitLesson(Long userId, Long lessonId) {
         // 문제 제출 요청 생성 (모두 정답으로)
-        List<ProblemSubmissionRequest> problemRequests = List.of();
+        List<ProblemSubmissionSaveRequest> problemRequests = List.of();
 
         LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(
                 lessonId,

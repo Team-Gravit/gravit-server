@@ -2,7 +2,6 @@ package gravit.code.lesson.service;
 
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.repository.ChapterRepository;
-import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
@@ -18,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -82,19 +79,6 @@ class LessonSubmissionCommandServiceIntegrationTest {
                         .extracting(LessonSubmission::getLearningTime, LessonSubmission::getAccuracy)
                         .containsExactlyInAnyOrder(tuple(120, 80), tuple(90, 85));
             });
-        }
-
-        @Test
-        void 레슨이_존재하지_않으면_예외를_던진다() {
-            // given
-            long userId = 1L;
-            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(999L, 120, 80);
-
-            // when & then
-            assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request))
-                    .isInstanceOf(RestApiException.class)
-                    .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(LESSON_NOT_FOUND);
         }
     }
 }

@@ -9,7 +9,7 @@
 - `.claude/resources/perf/{이슈번호}/{슬러그}/test-script.js` 존재
 
 ### 참조 파일
-- `.claude/skills/optimize-performance/template/query-stats-template.txt`
+- `.claude/skills/optimize-performance/template/query-stats-template.md`
 
 ### 절차
 
@@ -35,19 +35,31 @@
    # 2) 워밍업 (JIT, 커넥션 풀). 이 실행의 결과는 쓰지 않는다.
    k6 run -e PHASE=warmup $TARGET_DIR/test-script.js
 
-   # 3) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다
+   # 3) 쓰기 엔드포인트면 워밍업이 삽입한 행을 되돌린다 (되돌리기 절차는 대상마다 다르다)
+   #    무엇을 지울지는 Phase 3-B에서 확정한 시작 상태를 따른다
+
+   # 4) dead tuple 회수 + 통계 갱신. 3)의 DELETE가 남긴 dead tuple을 여기서 회수한다
+   psql -h localhost -p 5433 -U postgres -d mydb -c "VACUUM ANALYZE;"
+
+   psql -h localhost -p 5433 -U postgres -d mydb -c "
+   SELECT relname, n_dead_tup, last_vacuum, last_analyze
+   FROM pg_stat_user_tables
+   WHERE relname IN ({대상 쿼리가 읽고 쓰는 테이블})
+   ORDER BY relname;"
+
+   # 5) 캐시 비우기 - Phase 3에서 cold를 택한 경우에만 실행한다
    #    {캐시 제어 수단}은 record.md 측정 환경에 적어둔 값을 그대로 쓴다
    {캐시 제어 수단} -n 0 FLUSHDB
 
-   # 4) 쿼리 통계 리셋
+   # 6) 쿼리 통계 리셋
    psql -h localhost -p 5433 -U postgres -d mydb -c "SELECT pg_stat_statements_reset();"
 
-   # 5) 측정 부하
+   # 7) 측정 부하
    k6 run -e PHASE=measure \
      -e SUMMARY_OUT=$TARGET_DIR/k6-test-summary-0.json \
      $TARGET_DIR/test-script.js
 
-   # 6) 쿼리 통계 수집 (요청 수를 분모로 넘겨 요청당 호출 수까지 뽑는다)
+   # 8) 쿼리 통계 수집 (요청 수를 분모로 넘겨 요청당 호출 수까지 뽑는다)
    REQS=$(jq -r '.requests // empty' $TARGET_DIR/k6-test-summary-0.json)
 
    if ! [ "$REQS" -gt 0 ] 2>/dev/null; then
@@ -64,10 +76,16 @@
    FROM pg_stat_statements
    WHERE query NOT LIKE '%pg_stat_statements%'
    ORDER BY total_exec_time DESC LIMIT 20;" \
-   | tee $TARGET_DIR/query-stats-summary-0.txt
+   | tee $TARGET_DIR/query-stats-summary-0.md
    fi
    ```
 
+   - **`VACUUM ANALYZE`를 빼지 마라.** 쓰기 엔드포인트는 측정마다 행을 삽입하고, 되돌리기 `DELETE`는 dead tuple을 남긴다.
+     회수하지 않으면 다음 측정의 시작 상태가 달라져 Phase 8의 전후 비교가 깨진다.
+     autovacuum은 기본 설정에서 `autovacuum_vacuum_threshold + autovacuum_vacuum_scale_factor × reltuples`
+     (기본값 `50 + 0.2 × reltuples`)를 넘어야 발동하므로, 큰 테이블에서는 dead tuple이 수십만 개 쌓여도 돌지 않는다.
+     읽기 전용 엔드포인트라도 `ANALYZE`가 플래너 통계를 맞춰주므로 그대로 실행한다.
+     DB가 커서 시간이 오래 걸리면 `VACUUM ANALYZE {테이블}`로 대상 테이블만 좁힌다.
    - `-A -F ' | '`를 빼지 마라. 정렬 출력은 쿼리 원문을 잘라 리포지토리 메서드를 식별할 수 없게 만든다.
    - **수집 단계에서 반올림하지 마라.** `per_req`를 소수 둘째 자리로 자르면 0.005 미만인 쿼리가 `0.00`으로 사라진다.
      반올림은 대화에서 표로 제시할 때만 한다. 파일에는 psql이 뽑아준 값을 그대로 둔다.
@@ -78,15 +96,15 @@
    | 산출물 | 파일 |
    |---|---|
    | k6 요약 | `.claude/resources/perf/{이슈번호}/{슬러그}/k6-test-summary-0.json` |
-   | 쿼리 통계 | `.claude/resources/perf/{이슈번호}/{슬러그}/query-stats-summary-0.txt` |
+   | 쿼리 통계 | `.claude/resources/perf/{이슈번호}/{슬러그}/query-stats-summary-0.md` |
 
    - 터미널 출력을 붙여넣게 하지 마라. 파일이 없으면 원인을 확인하고 재실행을 요청한다. 추정으로 채우지 마라.
    - k6 요약에는 스크립트가 선별해 내보낸 값만 있다. 담기지 않은 지표가 필요해지면 재측정해야 한다.
    - `checks_rate`가 1이 아니면 `checks[]`에서 어떤 항목이 깨졌는지 먼저 확인한다.
      데이터 검증 check가 깨진 측정은 진단에 쓰지 마라.
 
-3. `query-stats-summary-0.txt`를 가공본으로 다시 쓴다.
-   `template/query-stats-template.txt`를 Read하고 작성 규칙을 따른다.
+3. `query-stats-summary-0.md`를 가공본으로 다시 쓴다.
+   `template/query-stats-template.md`를 Read하고 작성 규칙을 따른다.
 
    - 1차 출력을 읽어 **같은 경로에 덮어쓴다.** 1차 출력을 따로 보존하지 않는다.
    - 각 쿼리를 어느 코드가 날렸는지 Grep으로 찾아 **출처** 칸을 채운다.
@@ -119,7 +137,7 @@
 ### 출력
 - `.claude/resources/perf/{이슈번호}/tokens.json` 생성
 - `.claude/resources/perf/{이슈번호}/{슬러그}/k6-test-summary-0.json` 생성
-- `.claude/resources/perf/{이슈번호}/{슬러그}/query-stats-summary-0.txt` 생성 (가공본)
+- `.claude/resources/perf/{이슈번호}/{슬러그}/query-stats-summary-0.md` 생성 (가공본)
 - `record.md`의 **기준선** 표와 쿼리 통계, 진단이 채워짐
 - `record.md`의 진행 상태의 Phase 4가 ✅로 기록
 
