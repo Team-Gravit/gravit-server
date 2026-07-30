@@ -1,6 +1,7 @@
 package gravit.code.chapter.repository;
 
 import gravit.code.chapter.domain.Chapter;
+import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,12 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
         WHERE c.id = :chapterId
     """)
     Optional<ChapterSummaryResponse> findChapterSummaryByChapterId(@Param("chapterId") long chapterId);
+
+    @Query("""
+        SELECT new gravit.code.chapter.dto.response.ChapterBriefResponse(c.id, c.title)
+        FROM Chapter c
+        JOIN Unit u ON u.chapterId = c.id
+        WHERE u.id = :unitId
+    """)
+    Optional<ChapterBriefResponse> findChapterBriefByUnitId(@Param("unitId") long unitId);
 }

@@ -1,6 +1,7 @@
 package gravit.code.chapter.service;
 
 import gravit.code.chapter.domain.Chapter;
+import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.repository.ChapterRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
@@ -25,6 +26,12 @@ public class ChapterQueryService {
     @Transactional(readOnly = true)
     public ChapterSummaryResponse getChapterSummary(long chapterId) {
         return chapterRepository.findChapterSummaryByChapterId(chapterId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public ChapterBriefResponse getChapterBriefByUnitId(long unitId) {
+        return chapterRepository.findChapterBriefByUnitId(unitId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
     }
 

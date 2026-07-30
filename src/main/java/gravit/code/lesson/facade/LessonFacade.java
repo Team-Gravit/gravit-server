@@ -1,6 +1,8 @@
 package gravit.code.lesson.facade;
 
 import gravit.code.bookmark.service.BookmarkService;
+import gravit.code.chapter.dto.response.ChapterBriefResponse;
+import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.global.annotation.Facade;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
@@ -38,6 +40,7 @@ public class LessonFacade {
     private final LessonSubmissionCommandService lessonSubmissionCommandService;
     private final LessonSubmissionQueryService lessonSubmissionQueryService;
 
+    private final ChapterQueryService chapterQueryService;
     private final UnitQueryService unitQueryService;
     private final ProblemSubmissionCommandService problemSubmissionCommandService;
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
@@ -57,12 +60,15 @@ public class LessonFacade {
     ) {
         UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByUnitId(unitId);
 
+        ChapterBriefResponse chapterSummary = chapterQueryService.getChapterBriefByUnitId(unitId);
+
         List<LessonSummaryResponse> lessonSummaries = lessonQueryService.getAllLessonInUnit(userId, unitId);
 
         boolean bookmarkAccessible = bookmarkService.checkBookmarkedProblemExists(userId, unitId);
         boolean wrongAnsweredNoteAccessible = wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unitId);
 
         return LessonDetailResponse.create(
+                chapterSummary,
                 unitSummaryResponse,
                 bookmarkAccessible,
                 wrongAnsweredNoteAccessible,
