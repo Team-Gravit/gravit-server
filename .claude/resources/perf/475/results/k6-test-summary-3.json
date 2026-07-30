@@ -1,0 +1,82 @@
+{
+  "phase": "measure",
+  "target": "results",
+  "endpoint": "POST /api/v1/lessons/results",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "cold",
+    "db_cache": "제어하지 않음",
+    "user_id_start": 1001,
+    "user_count": 1000,
+    "problems_per_request": 30,
+    "wrong_per_request": 9,
+    "accuracy": 70,
+    "learning_time": 300,
+    "first_try_only": true,
+    "first_try_capacity": 100000
+  },
+  "requests": 17300,
+  "rps": 144.15073200449967,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 17300,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 17300,
+      "fails": 0
+    },
+    {
+      "name": "리그명과 유닛 요약이 실려 있다",
+      "passes": 17300,
+      "fails": 0
+    },
+    {
+      "name": "첫 풀이 조합이 남아 있다",
+      "passes": 17300,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 217.7925,
+    "p95": 658.8817499999996,
+    "p99": 1109.8230099999998,
+    "max": 2584.645
+  },
+  "waiting_ms": {
+    "med": 217.58249999999998,
+    "p95": 658.8350499999996,
+    "p99": 1108.9919499999999,
+    "max": 2584.594
+  },
+  "bytes_received": 10054093,
+  "delta_vs_prev": {
+    "from": "k6-test-summary-2.json",
+    "note": "사이클 2와 동일 조건(VU 50 / 유지 1m / Redis cold / 되돌리기 후 VACUUM ANALYZE). 조건 변경 없음.",
+    "requests": { "before": 9876, "after": 17300 },
+    "rps": { "before": 82.2901731818192, "after": 144.15073200449967 },
+    "duration_med_ms": { "before": 443.10249999999996, "after": 217.7925 },
+    "duration_p95_ms": { "before": 820.8402499999999, "after": 658.8817499999996 },
+    "duration_p99_ms": { "before": 1148.8985, "after": 1109.8230099999998 },
+    "duration_max_ms": { "before": 2110.007, "after": 2584.645 },
+    "failed_rate": { "before": 0, "after": 0 },
+    "checks_rate": { "before": 1, "after": 1 }
+  },
+  "delta_vs_original": {
+    "from": "k6-test-summary-0.json",
+    "note": "상태 0은 dead tuple 누적 전, VACUUM ANALYZE 절차 도입 전에 측정되었다. 하드웨어 의존 지표의 차이에는 기법 3개의 효과와 VACUUM 효과가 섞여 있다.",
+    "requests": { "before": 3610, "after": 17300 },
+    "rps": { "before": 30.05442998801386, "after": 144.15073200449967 },
+    "duration_med_ms": { "before": 1005.8735, "after": 217.7925 },
+    "duration_p95_ms": { "before": 3204.7293999999993, "after": 658.8817499999996 },
+    "duration_p99_ms": { "before": 3644.5262999999995, "after": 1109.8230099999998 }
+  }
+}
