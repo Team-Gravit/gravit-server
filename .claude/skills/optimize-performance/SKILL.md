@@ -87,7 +87,7 @@ Phase 1에서 "나머지 {n}개는 이 대상이 끝난 뒤에 진행한다"고 
     ├── record.md
     ├── test-script.js
     ├── k6-test-summary-{n}.json
-    ├── query-stats-summary-{n}.txt
+    ├── query-stats-summary-{n}.md
     └── query-plan-{n}.txt
 ```
 
@@ -98,7 +98,7 @@ Phase 1에서 "나머지 {n}개는 이 대상이 끝난 뒤에 진행한다"고 
 | `record.md` | 대상 | 1 | `template/PERF-template.md` |
 | `test-script.js` | 대상 | 3-B | `template/k6-script-template.js` |
 | `k6-test-summary-{n}.json` | 대상 | 4, 8 | - |
-| `query-stats-summary-{n}.txt` | 대상 | 4, 8 | `template/query-stats-template.txt` |
+| `query-stats-summary-{n}.md` | 대상 | 4, 8 | `template/query-stats-template.md` |
 | `query-plan-{n}.txt` | 대상 | 6, 8 | - |
 
 템플릿 상단의 **작성 규칙**이 해당 산출물의 작성 기준이다. phase 파일에 규칙을 중복해 적지 마라.
@@ -122,7 +122,7 @@ Read와 Write의 대상 경로에는 셸 변수가 통하지 않는다. 전체 �
 
 - 비교 대상이 되는 측정 출력은 전부 파일로 남기고, 스킬은 그 파일을 Read로 읽는다.
   터미널 출력을 붙여넣게 하지 마라.
-- **`k6-test-summary-{n}.json`과 `query-stats-summary-{n}.txt`는 가공본이다.**
+- **`k6-test-summary-{n}.json`과 `query-stats-summary-{n}.md`는 가공본이다.**
   호출자가 명령으로 뽑은 1차 출력을 스킬이 읽고, 같은 경로에 소비 가능한 형태로 다시 쓴다.
   1차 출력을 따로 보존하지 않는다. 대신 원문 없이는 재현할 수 없는 것(쿼리 원문)은 가공본 안에 포함시킨다.
 - **`query-plan-{n}.txt`는 원본 그대로 둔다.** 실행계획은 노드 트리 전체가 근거이므로 요약이 원본을 대신할 수 없다.

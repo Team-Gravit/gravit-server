@@ -291,7 +291,7 @@ DataSource dataSource = props.initializeDataSourceBuilder().build();
 
 ### 쿼리 통계 (total_exec_time 상위)
 
-> 전체: `query-stats-summary-0.txt` / k6 요약: `k6-test-summary-0.json`
+> 전체: `query-stats-summary-0.md` / k6 요약: `k6-test-summary-0.json`
 
 | 요청당 | mean_ms | total_ms | 비중 | 행/호출 | 출처 |
 |---|---|---|---|---|---|
@@ -632,7 +632,7 @@ dead tuple은 VACUUM 전까지 공간이 회수되지 않아 힙이 커지고 �
 
 **조치**: 측정 절차의 되돌리기 단계 뒤에 `VACUUM ANALYZE`를 추가하고 재측정한다.
 되돌리기 DELETE가 매번 dead tuple을 남기는데 기존 절차에는 회수 단계가 없었다.
-`k6-test-summary-2.json`, `query-stats-summary-2.txt`, `query-plan-2.txt`는 재측정 결과로 덮어쓴다
+`k6-test-summary-2.json`, `query-stats-summary-2.md`, `query-plan-2.txt`는 재측정 결과로 덮어쓴다
 (코드 상태는 동일하게 2이고, 폐기한 측정을 보존할 이유가 없다).
 
 **주의**: `n_live_tup`은 신뢰하지 않는다. `lesson_submission`이 4,445로 나오지만 실제로는 30만 행 이상이다.

@@ -61,7 +61,7 @@
 
 ### 쿼리 통계 (total_exec_time 상위)
 
-> 전체: `query-stats-summary-0.txt` / k6 요약: `k6-test-summary-0.json`
+> 전체: `query-stats-summary-0.md` / k6 요약: `k6-test-summary-0.json`
 > 여기에는 진단 근거로 쓴 행만 옮긴다. 전체를 복사하지 않는다.
 
 | 요청당 | mean_ms | total_ms | 비중 | 출처 |
