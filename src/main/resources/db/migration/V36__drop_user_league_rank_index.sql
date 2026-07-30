@@ -1,4 +1,4 @@
--- V35__drop_user_league_rank_index.sql
+-- V36__drop_user_league_rank_index.sql
 
 -- 순위 계산이 Redis Sorted Set 으로 이관되어 이 인덱스를 읽는 쿼리가 남지 않는다.
 -- league_point 가 인덱스 키에 있어 LP 갱신마다 HOT update 를 막고 있었다(HOT 0% → 95.46%).
