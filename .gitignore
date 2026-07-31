@@ -63,6 +63,6 @@ pgadmin_data_local
 .claude/resources/perf/**/tokens.json
 
 ### 로컬 개인 데이터 ###
-benchmark
-docs
+/benchmark
+/docs
 .claude/skills/grill-me
