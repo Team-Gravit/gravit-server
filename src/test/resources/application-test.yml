@@ -82,6 +82,10 @@ spring:
             authorization-grant-type: authorization_code
             scope: name,email
 
+redirect:
+  dests:
+    local: http://localhost:5173
+
 app:
   version: 1.0.0
 
