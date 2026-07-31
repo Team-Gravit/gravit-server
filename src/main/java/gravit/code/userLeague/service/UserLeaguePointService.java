@@ -1,5 +1,6 @@
 package gravit.code.userLeague.service;
 
+import gravit.code.global.event.LeagueRankChangedEvent;
 import gravit.code.global.event.TierPromotionFeedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
@@ -37,7 +38,16 @@ public class UserLeaguePointService {
         boolean isPromotion = !newLeague.getId().equals(oldLeague.getId())
                 && newLeague.getSortOrder() > oldLeague.getSortOrder();
 
+        long oldLeagueId = oldLeague.getId();
         userLeague.updateLeagueIfDifferent(newLeague);
+
+        publisher.publishEvent(LeagueRankChangedEvent.pointsChanged(
+                userId,
+                userLeague.getSeason().getId(),
+                oldLeagueId,
+                newLeague.getId(),
+                updatedLp
+        ));
 
         if (isPromotion) {
             publisher.publishEvent(new TierPromotionFeedEvent(userId, newLeague.getName()));

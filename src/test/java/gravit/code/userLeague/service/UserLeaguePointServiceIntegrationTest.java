@@ -9,17 +9,22 @@ import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.dto.internal.LeagueRankEntry;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 import static gravit.code.global.exception.domain.CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT;
 import static gravit.code.global.exception.domain.CustomErrorCode.USER_LEAGUE_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
 class UserLeaguePointServiceIntegrationTest {
@@ -29,6 +34,9 @@ class UserLeaguePointServiceIntegrationTest {
 
     @Autowired
     private UserLeagueRepository userLeagueRepository;
+
+    @Autowired
+    private LeagueRankingStore leagueRankingStore;
 
     @Autowired
     private UserFixture userFixture;
@@ -122,6 +130,53 @@ class UserLeaguePointServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(LEAGUE_NOT_MATCH_LEAGUE_POINT);
+        }
+    }
+
+    @Nested
+    @DisplayName("리그 포인트를 추가하면 랭킹 저장소에")
+    class RankingSync {
+
+        @Test
+        void 갱신된_LP가_반영된다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 0);
+
+            // when
+            userLeaguePointService.addLeaguePoints(user.getId(), 40, 100);
+
+            // then
+            List<LeagueRankEntry> entries =
+                    leagueRankingStore.findPage(season.getId(), 브론즈3.getId(), 0, 10);
+
+            assertThat(entries).singleElement()
+                    .extracting(LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                    .containsExactly(user.getId(), 40);
+        }
+
+        @Test
+        void 승급하면_이전_리그에서_제거된다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3(); // 0-100
+            League 브론즈2 = leagueFixture.브론즈_2(); // 101-200
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 80);
+            leagueRankingStore.put(season.getId(), 브론즈3.getId(), user.getId(), 80);
+
+            // when - 80 + 50 = 130 → 브론즈 2 진입
+            userLeaguePointService.addLeaguePoints(user.getId(), 50, 100);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.findRank(season.getId(), 브론즈3.getId(), user.getId()))
+                        .isEmpty();
+                softly.assertThat(leagueRankingStore.findRank(season.getId(), 브론즈2.getId(), user.getId()))
+                        .contains(1);
+            });
         }
     }
 }

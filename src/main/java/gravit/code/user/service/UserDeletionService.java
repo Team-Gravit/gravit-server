@@ -1,6 +1,7 @@
 package gravit.code.user.service;
 
 import gravit.code.global.consts.RedirectHostConst;
+import gravit.code.global.event.LeagueRankChangedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.config.UserDeleteMailProps;
@@ -10,11 +11,15 @@ import gravit.code.user.repository.UserRepository;
 import gravit.code.user.service.port.MailAuthCodeStore;
 import gravit.code.user.service.port.MailSender;
 import gravit.code.user.support.MailAuthCodeGenerator;
+import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,9 @@ public class UserDeletionService {
     private final UserRepository userRepository;
     private final MailAuthCodeStore mailAuthCodeStore;
     private final RedisUserCleanManager cleanManager;
+    private final UserLeagueRepository userLeagueRepository;
+
+    private final ApplicationEventPublisher publisher;
 
     public void requestDeleteMailWithMailAuthCode(
             long userId,
@@ -75,7 +83,13 @@ public class UserDeletionService {
 
         // 유저가 조회되면(Active 상태로 존재하면) soft delete
         userRepository.findById(userId)
-                .ifPresent(user -> userRepository.deleteById(user.getId()));
+                .ifPresent(user -> {
+                    Optional<LeagueRankChangedEvent> rankRemoved = toRankRemovedEvent(user.getId());
+
+                    userRepository.deleteById(user.getId());
+
+                    rankRemoved.ifPresent(publisher::publishEvent);
+                });
 
         // 7일 뒤 삭제하기 위해 삭제 대상 유저의 key 저장
         cleanManager.storeDeletionUser(userId);
@@ -84,5 +98,14 @@ public class UserDeletionService {
     @Transactional
     public void cleanUserDeletion(long userId){
         userRepository.cleanUserDeletion(userId);
+    }
+
+    private Optional<LeagueRankChangedEvent> toRankRemovedEvent(long userId) {
+        return userLeagueRepository.findRankKeyByUserId(userId)
+                .map(rankKey -> LeagueRankChangedEvent.removed(
+                        userId,
+                        rankKey.seasonId(),
+                        rankKey.leagueId()
+                ));
     }
 }

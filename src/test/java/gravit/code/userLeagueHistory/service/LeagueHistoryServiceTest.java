@@ -10,6 +10,8 @@ import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
+import gravit.code.userLeague.service.LeagueRankingRebuildService;
+import gravit.code.userLeague.service.UserLeagueQueryService;
 import gravit.code.userLeagueHistory.fixture.UserLeagueHistoryFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +27,8 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 class LeagueHistoryServiceTest {
 
     @Autowired LeagueHistoryService leagueHistoryService;
+    @Autowired LeagueRankingRebuildService leagueRankingRebuildService;
+    @Autowired UserLeagueQueryService userLeagueQueryService;
 
     @Autowired SeasonFixture seasonFixture;
     @Autowired UserFixture userFixture;
@@ -184,6 +188,7 @@ class LeagueHistoryServiceTest {
                 User other = userFixture.일반_유저(2);
                 userLeagueFixture.참여(user, activeSeason, bronze3, 100);  // 1위
                 userLeagueFixture.참여(other, activeSeason, bronze3, 50);  // 2위
+                leagueRankingRebuildService.rebuild(activeSeason.getId());
 
                 // when
                 LeagueHistoryResponse result = leagueHistoryService.getMyLeagueHistory(user.getId());
@@ -198,6 +203,37 @@ class LeagueHistoryServiceTest {
                 User other = userFixture.일반_유저(2);
                 userLeagueFixture.참여(other, activeSeason, bronze3, 100); // 1위
                 userLeagueFixture.참여(user, activeSeason, bronze3, 50);   // 2위
+                leagueRankingRebuildService.rebuild(activeSeason.getId());
+
+                // when
+                LeagueHistoryResponse result = leagueHistoryService.getMyLeagueHistory(user.getId());
+
+                // then
+                assertThat(result.currentSeasonRank()).isEqualTo(2);
+            }
+
+            @Test
+            void 내_순위_조회와_같은_순위를_돌려준다() {
+                // given
+                User other = userFixture.일반_유저(2);
+                userLeagueFixture.참여(other, activeSeason, bronze3, 100);
+                userLeagueFixture.참여(user, activeSeason, bronze3, 50);
+                leagueRankingRebuildService.rebuild(activeSeason.getId());
+
+                // when
+                int historyRank = leagueHistoryService.getMyLeagueHistory(user.getId()).currentSeasonRank();
+                int myRank = userLeagueQueryService.getMyLeagueRankWithProfile(user.getId()).rank();
+
+                // then
+                assertThat(historyRank).isEqualTo(myRank);
+            }
+
+            @Test
+            void 랭킹이_집계되지_않았으면_DB로_순위를_계산한다() {
+                // given - 랭킹 저장소를 채우지 않는다
+                User other = userFixture.일반_유저(2);
+                userLeagueFixture.참여(other, activeSeason, bronze3, 150);
+                userLeagueFixture.참여(user, activeSeason, bronze3, 100);
 
                 // when
                 LeagueHistoryResponse result = leagueHistoryService.getMyLeagueHistory(user.getId());

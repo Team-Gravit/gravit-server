@@ -39,7 +39,7 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
                 ul.league_id AS final_league_id,
                 DENSE_RANK() OVER (
                     PARTITION BY ul.league_id
-                    ORDER BY ul.league_point DESC, ul.updated_at ASC, ul.user_id ASC
+                    ORDER BY ul.league_point DESC, ul.user_id ASC
                 ) AS final_rank,
                 ul.league_point AS final_lp,
                 :nowKst AS created_at,
