@@ -108,6 +108,7 @@ public enum CustomErrorCode implements ErrorCode {
     USER_LEAGUE_CONFLICT(HttpStatus.CONFLICT, "U_L_4091", "이미 유저 리그가 존재합니다."),
     USER_LEAGUE_NOT_FOUND(HttpStatus.NOT_FOUND, "U_L_4041", "유저의 리그가 존재하지 않습니다"),
     LEAGUE_POINT_MUST_BE_POSITIVE(HttpStatus.BAD_REQUEST,"U_L_4001", "리그 포인트는 양수여야 합니다."),
+    LEAGUE_RANK_USER_ID_OUT_OF_RANGE(HttpStatus.INTERNAL_SERVER_ERROR, "U_L_5001", "리그 순위를 매길 수 없는 유저 식별자입니다."),
 
     // Season
     ACTIVE_SEASON_NOT_FOUND(HttpStatus.NOT_FOUND, "SEASON_4041", "ACTIVE 시즌이 없습니다."),
