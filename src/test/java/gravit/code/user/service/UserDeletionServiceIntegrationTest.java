@@ -1,12 +1,18 @@
 package gravit.code.user.service;
 
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.league.domain.League;
+import gravit.code.league.fixture.LeagueFixture;
+import gravit.code.season.domain.Season;
+import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.user.service.port.MailAuthCodeStore;
 import gravit.code.user.service.port.MailSender;
+import gravit.code.userLeague.fixture.UserLeagueFixture;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,7 +36,19 @@ class UserDeletionServiceIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private LeagueRankingStore leagueRankingStore;
+
+    @Autowired
     private UserFixture userFixture;
+
+    @Autowired
+    private SeasonFixture seasonFixture;
+
+    @Autowired
+    private LeagueFixture leagueFixture;
+
+    @Autowired
+    private UserLeagueFixture userLeagueFixture;
 
     @Autowired
     private MailAuthCodeStore mailAuthCodeStore;
@@ -125,6 +143,26 @@ class UserDeletionServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(INVALID_MAIL_AUTH_CODE);
+        }
+
+        @Test
+        void 탈퇴하면_랭킹_저장소에서_제거된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈3 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(user, season, 브론즈3, 50);
+            leagueRankingStore.put(season.getId(), 브론즈3.getId(), user.getId(), 50);
+
+            String authCode = "deleteauthcode123";
+            mailAuthCodeStore.save(authCode, user.getId(), 180);
+
+            // when
+            userDeletionService.confirmDeleteByMailAuthCode(authCode);
+
+            // then
+            assertThat(leagueRankingStore.findRank(season.getId(), 브론즈3.getId(), user.getId()))
+                    .isEmpty();
         }
     }
 

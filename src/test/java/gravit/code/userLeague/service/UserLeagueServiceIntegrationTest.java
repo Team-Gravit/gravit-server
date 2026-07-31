@@ -16,6 +16,7 @@ import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,9 @@ class UserLeagueServiceIntegrationTest {
 
     @Autowired
     private UserLeagueRepository userLeagueRepository;
+
+    @Autowired
+    private LeagueRankingStore leagueRankingStore;
 
     @Autowired
     private UserFixture userFixture;
@@ -153,6 +157,21 @@ class UserLeagueServiceIntegrationTest {
                 softly.assertThat(userLeagueRepository.findLeagueSortOrderByUserId(user.getId())).hasValue(1);
                 softly.assertThat(userLeagueRepository.findUserLeagueNameByUserId(user.getId())).hasValue("브론즈 3");
             });
+        }
+
+        @Test
+        void 랭킹_저장소에도_등록된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈3 = leagueFixture.브론즈_3();
+
+            // when
+            userLeagueService.initUserLeague(user.getId());
+
+            // then
+            assertThat(leagueRankingStore.findRank(season.getId(), 브론즈3.getId(), user.getId()))
+                    .contains(1);
         }
 
         @Test

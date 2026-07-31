@@ -8,6 +8,7 @@ import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.support.LeagueRankFinder;
 import gravit.code.userLeagueHistory.domain.UserLeagueHistory;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,13 @@ import java.util.Optional;
 @Service
 public class LeagueHistoryService {
 
+    private static final int RANK_UNKNOWN = 0;
+
     private final SeasonRepository seasonRepository;
     private final UserLeagueRepository userLeagueRepository;
     private final UserLeagueHistoryRepository userLeagueHistoryRepository;
+
+    private final LeagueRankFinder leagueRankFinder;
 
     @Transactional(readOnly = true)
     public LeagueHistoryResponse getMyLeagueHistory(long userId) {
@@ -44,7 +49,7 @@ public class LeagueHistoryService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
 
         Optional<UserLeague> currentUserLeague = userLeagueRepository.findByUserIdAndSeasonId(userId, activeSeason.getId());
-        int currentRank = userLeagueRepository.findCurrentRankByUserId(userId, activeSeason.getId()).orElse(0);
+        int currentRank = findCurrentRank(userId, activeSeason.getId(), currentUserLeague);
         List<UserLeagueHistory> histories = userLeagueHistoryRepository.findAllByUserIdOrderBySeason(userId);
 
         int totalSeasonCount = histories.size() + (currentUserLeague.isPresent() ? 1 : 0);
@@ -74,6 +79,21 @@ public class LeagueHistoryService {
         });
 
         return LeagueHistoryResponse.of(currentRank, totalSeasonCount, top3SeasonCount, bestLeagueName, seasonHistory);
+    }
+
+    private int findCurrentRank(
+            long userId,
+            long seasonId,
+            Optional<UserLeague> currentUserLeague
+    ) {
+        return currentUserLeague
+                .map(userLeague -> leagueRankFinder.findRank(
+                        seasonId,
+                        userLeague.getLeague().getId(),
+                        userId,
+                        userLeague.getLp()
+                ))
+                .orElse(RANK_UNKNOWN);
     }
 
     // "2023-S1" → "S1"

@@ -1,10 +1,16 @@
 package gravit.code.user.service;
 
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
+import gravit.code.season.domain.Season;
+import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
+import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.fixture.UserLeagueFixture;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
 import gravit.code.mission.fixture.MissionFixture;
 import gravit.code.mission.repository.MissionRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
@@ -21,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,6 +50,15 @@ class UserServiceIntegrationTest {
 
     @Autowired
     private LeagueFixture leagueFixture;
+
+    @Autowired
+    private SeasonFixture seasonFixture;
+
+    @Autowired
+    private UserLeagueFixture userLeagueFixture;
+
+    @Autowired
+    private LeagueRankingStore leagueRankingStore;
 
     @Autowired
     private MissionRepository missionRepository;
@@ -265,6 +281,29 @@ class UserServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_NOT_FOUND);
+        }
+
+        @Test
+        void 복원하면_탈퇴_직전의_리그와_점수로_랭킹에_재등록된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈3 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(user, season, 브론즈3, 70);
+
+            String providerId = user.getProviderId();
+            userRepository.deleteById(user.getId());
+
+            // when
+            userService.restoreUser(providerId);
+
+            // then
+            List<LeagueRankEntry> entries =
+                    leagueRankingStore.findPage(season.getId(), 브론즈3.getId(), 0, 10);
+
+            assertThat(entries).singleElement()
+                    .extracting(LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                    .containsExactly(user.getId(), 70);
         }
     }
 

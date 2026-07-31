@@ -1,5 +1,6 @@
 package gravit.code.user.service;
 
+import gravit.code.global.event.LeagueRankChangedEvent;
 import gravit.code.global.event.LevelUpFeedEvent;
 import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
@@ -14,6 +15,7 @@ import gravit.code.user.dto.response.UserResponse;
 import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.user.support.RandomHandleGenerator;
+import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class UserService {
     private static final int POINT_PER_LESSON = 20;
 
     private final UserRepository userRepository;
+    private final UserLeagueRepository userLeagueRepository;
 
     private final ApplicationEventPublisher publisher;
     private final RandomHandleGenerator handleGenerator;
@@ -82,6 +85,14 @@ public class UserService {
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
         String newHandle = handleGenerator.generateUniqueHandle();
         user.restoreUser(newHandle);
+
+        userLeagueRepository.findByUserId(user.getId()).ifPresent(userLeague ->
+                publisher.publishEvent(LeagueRankChangedEvent.joined(
+                        user.getId(),
+                        userLeague.getSeason().getId(),
+                        userLeague.getLeague().getId(),
+                        userLeague.getLp()
+                )));
     }
 
     @Transactional

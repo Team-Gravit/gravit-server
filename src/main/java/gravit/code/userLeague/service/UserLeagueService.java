@@ -1,5 +1,6 @@
 package gravit.code.userLeague.service;
 
+import gravit.code.global.event.LeagueRankChangedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
@@ -13,6 +14,7 @@ import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ public class UserLeagueService {
     private final UserRepository userRepository;
     private final LeagueRepository leagueRepository;
     private final SeasonService seasonService;
+
+    private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
     public String getUserLeagueName(Long userId){
@@ -68,7 +72,14 @@ public class UserLeagueService {
         League startLeague = leagueRepository.findFirstByOrderBySortOrderAsc().orElseThrow(()-> new RestApiException(CustomErrorCode.LEAGUE_NOT_FOUND));
 
         Season season = seasonService.getOrCreateActiveSeason();
-        userLeagueRepository.save(UserLeague.create(user, season, startLeague));
+        UserLeague userLeague = userLeagueRepository.save(UserLeague.create(user, season, startLeague));
+
+        publisher.publishEvent(LeagueRankChangedEvent.joined(
+                userId,
+                season.getId(),
+                startLeague.getId(),
+                userLeague.getLp()
+        ));
     }
 
 }

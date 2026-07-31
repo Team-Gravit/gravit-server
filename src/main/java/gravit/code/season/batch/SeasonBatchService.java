@@ -7,6 +7,8 @@ import gravit.code.season.domain.Season;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.season.service.port.SeasonClosedCache;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.service.LeagueRankingRebuildService;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,9 @@ public class SeasonBatchService {
     private final UserLeagueRepository userLeagueRepository;
     private final SeasonClosedCache seasonClosedCache;
     private final Clock clock;
+
+    private final LeagueRankingRebuildService leagueRankingRebuildService;
+    private final LeagueRankingStore leagueRankingStore;
 
     @Retryable(
             retryFor = {TransientDataAccessException.class, RecoverableDataAccessException.class, SQLException.class},
@@ -57,6 +62,9 @@ public class SeasonBatchService {
         // UserLeague 소프트 리셋: 직전 시즌 티어 기준으로 시작 티어·LP 차등 지급
         int inits = userLeagueRepository.softResetForNextSeason(currentSeason.getId(), nextSeason.getId());
         log.info("히스토리 스냅샷 로우 수: {},  유저 리그 롤오버 로우 수 = {}", snap, inits);
+
+        leagueRankingRebuildService.rebuild(nextSeason.getId());
+        leagueRankingStore.deleteSeason(currentSeason.getId());
 
         nextSeason.activate();
         currentSeason.close();

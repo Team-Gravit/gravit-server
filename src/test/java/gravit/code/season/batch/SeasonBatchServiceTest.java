@@ -11,8 +11,11 @@ import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.dto.internal.LeagueRankEntry;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
+import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +36,8 @@ class SeasonBatchServiceTest {
     @Autowired SeasonBatchService seasonBatchService;
     @Autowired SeasonRepository seasonRepository;
     @Autowired UserLeagueRepository userLeagueRepository;
+    @Autowired LeagueRankingStore leagueRankingStore;
+    @Autowired UserLeagueHistoryRepository historyRepository;
     @PersistenceContext EntityManager entityManager;
     @Autowired TransactionTemplate transactionTemplate;
 
@@ -114,6 +119,72 @@ class SeasonBatchServiceTest {
             Season updatedSeason = seasonRepository.findById(currentSeason.getId()).orElseThrow();
             assertThat(seasonRepository.findBySeasonKey("2025-S2")).isPresent();
             assertThat(updatedSeason.getStatus()).isEqualTo(SeasonStatus.CLOSED);
+        }
+
+        @Test
+        @DisplayName("다음 시즌 랭킹이 재구축되고 이전 시즌 랭킹은 삭제된다")
+        void 랭킹이_다음_시즌으로_이관된다() {
+            User user = userFixture.일반_유저(1);
+            userLeagueRepository.save(UserLeague.create(user, currentSeason, silver3)); // sort=4 → 브론즈2, LP=101
+            leagueRankingStore.put(currentSeason.getId(), silver3.getId(), user.getId(), 400);
+
+            seasonBatchService.finalizeAndRollover();
+            entityManager.clear();
+
+            Season nextSeason = seasonRepository.findBySeasonKey("2025-S2").orElseThrow();
+
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.hasRanking(currentSeason.getId())).isFalse();
+                softly.assertThat(leagueRankingStore.findPage(nextSeason.getId(), bronze2.getId(), 0, 10))
+                        .singleElement()
+                        .extracting(LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                        .containsExactly(user.getId(), 101);
+            });
+        }
+
+        @Test
+        @DisplayName("최종 순위의 동점은 먼저 가입한 유저가 앞선다")
+        void 최종_순위의_동점은_user_id_오름차순이다() {
+            // given - 같은 리그, 같은 LP. updated_at 은 나중에 가입한 유저가 더 이르게 만든다.
+            //         옛 기준(updated_at ASC 우선)이면 순위가 뒤집힌다.
+            User earlier = userFixture.일반_유저(1);
+            User later = userFixture.일반_유저(2);
+            userLeagueFixture.참여(earlier, currentSeason, silver3, 400);
+            userLeagueFixture.참여(later, currentSeason, silver3, 400);
+
+            updateUserLeagueUpdatedAt(earlier.getId(), 0);
+            updateUserLeagueUpdatedAt(later.getId(), 1);
+
+            // when
+            seasonBatchService.finalizeAndRollover();
+            entityManager.clear();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(finalRankOf(earlier.getId())).isEqualTo(1);
+                softly.assertThat(finalRankOf(later.getId())).isEqualTo(2);
+            });
+        }
+
+        private void updateUserLeagueUpdatedAt(
+                long userId,
+                int daysAgo
+        ) {
+            transactionTemplate.executeWithoutResult(status ->
+                    entityManager.createNativeQuery("""
+                                    UPDATE user_league
+                                    SET updated_at = now() - (:daysAgo * INTERVAL '1 day')
+                                    WHERE user_id = :userId
+                                    """)
+                            .setParameter("daysAgo", daysAgo)
+                            .setParameter("userId", userId)
+                            .executeUpdate());
+        }
+
+        private int finalRankOf(long userId) {
+            return historyRepository.findByUserIdAndSeasonId(userId, currentSeason.getId())
+                    .orElseThrow()
+                    .getFinalRank();
         }
 
         @Test

@@ -1,34 +1,67 @@
 package gravit.code.userLeague.repository;
 
 import gravit.code.userLeague.domain.UserLeague;
-import gravit.code.userLeague.repository.custom.LeagueRankingQueryRepository;
-import gravit.code.userLeague.repository.custom.MyLeagueProfileQueryRepository;
+import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankKey;
+import gravit.code.userLeague.dto.internal.LeagueRankProfileDto;
+import gravit.code.userLeague.dto.internal.MyLeagueProfileDto;
+import gravit.code.userLeague.repository.custom.LeagueRankQueryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, LeagueRankingQueryRepository, MyLeagueProfileQueryRepository {
+public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, LeagueRankQueryRepository {
 
-    @Query(value = """
-            SELECT ranked.rank_in_league
-            FROM (
-                SELECT ul.user_id,
-                       DENSE_RANK() OVER (
-                           PARTITION BY ul.league_id
-                           ORDER BY ul.league_point DESC, ul.updated_at ASC, ul.user_id ASC
-                       ) AS rank_in_league
-                FROM user_league ul
-                WHERE ul.season_id = :seasonId
-            ) ranked
-            WHERE ranked.user_id = :userId
-            """, nativeQuery = true)
-    Optional<Integer> findCurrentRankByUserId(
-            @Param("userId") long userId,
-            @Param("seasonId") long seasonId
-    );
+    @Query("""
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankEntry(0, u.id, ul.lp, ul.league.id)
+            FROM UserLeague ul
+            JOIN ul.user u
+            WHERE ul.season.id = :seasonId
+              AND u.deletedAt IS NULL
+            """)
+    List<LeagueRankEntry> findRankEntriesBySeasonId(@Param("seasonId") long seasonId);
+
+    @Query("""
+            SELECT COUNT(ul)
+            FROM UserLeague ul
+            JOIN ul.user u
+            WHERE ul.season.id = :seasonId
+              AND u.deletedAt IS NULL
+            """)
+    long countRankEntriesBySeasonId(@Param("seasonId") long seasonId);
+
+    @Query("""
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankProfileDto(
+                       u.id, u.nickname, u.profileImgNumber, u.level.xp, u.level.level)
+            FROM User u
+            WHERE u.id IN :userIds
+            """)
+    List<LeagueRankProfileDto> findRankProfilesByUserIds(@Param("userIds") List<Long> userIds);
+
+    @Query("""
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankKey(ul.season.id, ul.league.id)
+            FROM UserLeague ul
+            WHERE ul.user.id = :userId
+            """)
+    Optional<LeagueRankKey> findRankKeyByUserId(@Param("userId") long userId);
+
+    @Query("""
+            SELECT new gravit.code.userLeague.dto.internal.MyLeagueProfileDto(
+                       ul.season.id, l.id, l.name, l.maxLp,
+                       u.id, ul.lp,
+                       u.nickname, u.profileImgNumber, u.level.xp, u.level.level)
+            FROM UserLeague ul
+            JOIN ul.user u
+            JOIN ul.league l
+            WHERE ul.user.id = :userId
+              AND u.deletedAt IS NULL
+            """)
+    Optional<MyLeagueProfileDto> findLeagueProfile(@Param("userId") long userId);
+
     @Query("""
         SELECT l.name
         FROM UserLeague ul
