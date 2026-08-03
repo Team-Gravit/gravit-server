@@ -60,8 +60,7 @@ public class AuthTokenProvider {
         jwtProvider.validateToken(token);
     }
 
-    public Authentication getAuthUser(String token){
-        User user = parseUser(token);
+    public Authentication getAuthUser(User user){
         return jwtProvider.getAuthentication(user);
     }
 

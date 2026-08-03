@@ -5,6 +5,7 @@ import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.security.exception.CustomAuthenticationEntryPoint;
 import gravit.code.security.exception.CustomAuthenticationException;
+import gravit.code.user.domain.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +14,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,6 +23,8 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private static final String USER_ID_ATTRIBUTE = "user_id";
 
     private static final List<HttpEndpoint> EXCLUDE_ENDPOINTS = List.of(
             /* swagger */
@@ -75,11 +77,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String jwtToken = token.substring(7);
 
                 authTokenProvider.validateToken(jwtToken);
-                Authentication authentication = authTokenProvider.getAuthUser(jwtToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                Long userId = authTokenProvider.parseUser(jwtToken).getId();
-                request.setAttribute("user_id", userId);
+                User user = authTokenProvider.parseUser(jwtToken);
+                SecurityContextHolder.getContext().setAuthentication(authTokenProvider.getAuthUser(user));
+
+                request.setAttribute(USER_ID_ATTRIBUTE, user.getId());
 
                 log.info("[doFilterInternal] 토큰 값 검증 완료");
             }
