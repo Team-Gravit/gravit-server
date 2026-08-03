@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.USER_LEAGUE_NOT_FOUND;
-import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -75,7 +74,7 @@ class UserLeagueQueryServiceIntegrationTest {
         }
 
         @Test
-        void 존재하지_않는_유저이면_예외를_던진다() {
+        void 존재하지_않는_유저이면_리그_정보가_없다는_예외를_던진다() {
             // given
             long nonExistentUserId = 999L;
 
@@ -83,7 +82,7 @@ class UserLeagueQueryServiceIntegrationTest {
             assertThatThrownBy(() -> userLeagueQueryService.getMyLeagueRankWithProfile(nonExistentUserId))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(USER_NOT_FOUND);
+                    .isEqualTo(USER_LEAGUE_NOT_FOUND);
         }
 
         @Test
@@ -335,15 +334,18 @@ class UserLeagueQueryServiceIntegrationTest {
         }
 
         @Test
-        void 존재하지_않는_유저이면_예외를_던진다() {
+        void 존재하지_않는_유저이면_빈_페이지를_반환한다() {
             // given
             long nonExistentUserId = 999L;
 
-            // when & then
-            assertThatThrownBy(() -> userLeagueQueryService.findLeagueRankingByUser(nonExistentUserId, 0))
-                    .isInstanceOf(RestApiException.class)
-                    .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(USER_NOT_FOUND);
+            // when
+            SliceResponse<LeagueRankRowDto> result = userLeagueQueryService.findLeagueRankingByUser(nonExistentUserId, 0);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.contents()).isEmpty();
+                softly.assertThat(result.hasNextPage()).isFalse();
+            });
         }
 
         @Test

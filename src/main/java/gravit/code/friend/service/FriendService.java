@@ -126,10 +126,6 @@ public class FriendService {
 
     @Transactional(readOnly = true)
     public FollowCountsResponse getFollowAndFollowingCounts(long userId){
-        if(!userRepository.existsById(userId)){
-            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
-        }
-
         long followerCount = friendRepository.countByFolloweeId(userId);
         long followeeCount = friendRepository.countByFollowerId(userId);
 
