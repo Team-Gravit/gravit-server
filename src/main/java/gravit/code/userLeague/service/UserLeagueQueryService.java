@@ -5,7 +5,6 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.repository.SeasonRepository;
-import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.dto.internal.LeagueRankEntry;
 import gravit.code.userLeague.dto.internal.LeagueRankProfileDto;
 import gravit.code.userLeague.dto.internal.LeagueRankRowDto;
@@ -32,7 +31,6 @@ public class UserLeagueQueryService {
     private static final int NEXT_PAGE_PROBE = 1;
     private static final int FIRST_PAGE = 0;
 
-    private final UserRepository userRepository;
     private final UserLeagueRepository userLeagueRepository;
     private final SeasonRepository seasonRepository;
 
@@ -40,10 +38,6 @@ public class UserLeagueQueryService {
 
     @Transactional(readOnly = true)
     public MyLeagueRankWithProfileResponse getMyLeagueRankWithProfile(long userId) {
-
-        if(!userRepository.existsById(userId)){
-            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
-        }
 
         MyLeagueProfileDto profile = userLeagueRepository.findLeagueProfile(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
@@ -76,10 +70,6 @@ public class UserLeagueQueryService {
             int page
     ){
         int safePage = Math.max(FIRST_PAGE, page);
-
-        if(!userRepository.existsById(userId)){
-            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
-        }
 
         return userLeagueRepository.findLeagueProfile(userId)
                 .map(profile -> findRankingPage(profile.seasonId(), profile.leagueId(), safePage))
