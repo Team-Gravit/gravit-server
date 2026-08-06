@@ -1,0 +1,52 @@
+{
+  "phase": "measure",
+  "target": "units",
+  "endpoint": "GET /api/v1/units/{chapterId}",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "cold",
+    "db_cache": "제어하지 않음",
+    "user_id_start": 1001,
+    "user_count": 1000,
+    "chapter_id_start": 900001,
+    "chapter_count": 5
+  },
+  "requests": 33647,
+  "rps": 280.3764562439154,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 33647,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 33647,
+      "fails": 0
+    },
+    {
+      "name": "unitDetailResponses가 실려 있다",
+      "passes": 33647,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 128.171,
+    "p95": 251.16699999999997,
+    "p99": 502.76631999999995,
+    "max": 1101.469
+  },
+  "waiting_ms": {
+    "med": 128.033,
+    "p95": 250.94999999999996,
+    "p99": 502.6034599999999,
+    "max": 1101.394
+  },
+  "bytes_received": 68074144
+}
