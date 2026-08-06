@@ -30,18 +30,13 @@ public class LearningProgressRateService {
         return Math.floor(progressRate);
     }
 
-    @Transactional(readOnly = true)
-    public double getUnitProgress(
-            long unitId,
-            long userId
+    public double calculateProgressRate(
+            long solvedLessonCount,
+            long totalLessonCount
     ) {
-        int solvedLessonCount = lessonSubmissionRepository.countSolvedLessonByUnitIdAndUserId(unitId, userId);
-
         if(solvedLessonCount == 0) {
             return 0.0;
         }
-
-        int totalLessonCount = lessonRepository.countTotalLessonByUnitId(unitId);
 
         double progressRate = ((double) solvedLessonCount / totalLessonCount) * 100;
         return Math.floor(progressRate);

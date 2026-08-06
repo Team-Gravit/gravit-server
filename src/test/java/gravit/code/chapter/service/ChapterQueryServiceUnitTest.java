@@ -1,5 +1,6 @@
 package gravit.code.chapter.service;
 
+import gravit.code.chapter.dto.internal.ChapterProgressRowDto;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.repository.ChapterRepository;
 import gravit.code.global.exception.domain.RestApiException;
@@ -59,6 +60,28 @@ class ChapterQueryServiceTest {
 
             // then
             assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("전체 챕터의 진행도를 조회할 때")
+    class GetAllChapterProgress {
+
+        @Test
+        void 성공한다() {
+            // given
+            long userId = 1L;
+            List<ChapterProgressRowDto> expected = List.of(
+                    new ChapterProgressRowDto(1L, 10L, 5L),
+                    new ChapterProgressRowDto(2L, 10L, 0L)
+            );
+            when(chapterRepository.findChapterProgressByUserId(userId)).thenReturn(expected);
+
+            // when
+            List<ChapterProgressRowDto> result = chapterQueryService.getAllChapterProgress(userId);
+
+            // then
+            assertThat(result).isEqualTo(expected);
         }
     }
 

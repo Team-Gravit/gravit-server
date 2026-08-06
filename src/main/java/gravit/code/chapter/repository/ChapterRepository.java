@@ -1,6 +1,7 @@
 package gravit.code.chapter.repository;
 
 import gravit.code.chapter.domain.Chapter;
+import gravit.code.chapter.dto.internal.ChapterProgressRowDto;
 import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,4 +35,16 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
         WHERE u.id = :unitId
     """)
     Optional<ChapterBriefResponse> findChapterBriefByUnitId(@Param("unitId") long unitId);
+
+    @Query("""
+        SELECT new gravit.code.chapter.dto.internal.ChapterProgressRowDto(
+            c.id, COUNT(DISTINCT l.id), COUNT(DISTINCT ls.lessonId)
+        )
+        FROM Chapter c
+        LEFT JOIN Unit u ON u.chapterId = c.id
+        LEFT JOIN Lesson l ON l.unitId = u.id
+        LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id AND ls.userId = :userId
+        GROUP BY c.id
+    """)
+    List<ChapterProgressRowDto> findChapterProgressByUserId(@Param("userId") long userId);
 }

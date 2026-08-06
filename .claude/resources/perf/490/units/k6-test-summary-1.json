@@ -1,0 +1,65 @@
+{
+  "phase": "measure",
+  "target": "units",
+  "endpoint": "GET /api/v1/units/{chapterId}",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "cold",
+    "db_cache": "제어하지 않음",
+    "user_id_start": 1001,
+    "user_count": 1000,
+    "chapter_id_start": 900001,
+    "chapter_count": 5
+  },
+  "requests": 82328,
+  "rps": 686.0507502892599,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 82328,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 82328,
+      "fails": 0
+    },
+    {
+      "name": "unitDetailResponses가 실려 있다",
+      "passes": 82328,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 46.713499999999996,
+    "p95": 116.05729999999984,
+    "p99": 254.81243999999998,
+    "max": 1538.989
+  },
+  "waiting_ms": {
+    "med": 46.56,
+    "p95": 115.75189999999998,
+    "p99": 254.49304999999993,
+    "max": 1538.485
+  },
+  "bytes_received": 166565306,
+  "delta_vs_prev": {
+    "from": "k6-test-summary-0.json",
+    "requests": { "before": 33647, "after": 82328 },
+    "rps": { "before": 280.3764562439154, "after": 686.0507502892599 },
+    "duration_med_ms": { "before": 128.171, "after": 46.713499999999996 },
+    "duration_p95_ms": { "before": 251.16699999999997, "after": 116.05729999999984 },
+    "duration_p99_ms": { "before": 502.76631999999995, "after": 254.81243999999998 },
+    "duration_max_ms": { "before": 1101.469, "after": 1538.989 },
+    "queries_per_request": { "before": 27.5032543763188397, "after": 5.0 },
+    "db_time_per_request_ms": { "before": 2.7876, "after": 0.5757 },
+    "failed_rate": { "before": 0, "after": 0 },
+    "checks_rate": { "before": 1, "after": 1 }
+  }
+}

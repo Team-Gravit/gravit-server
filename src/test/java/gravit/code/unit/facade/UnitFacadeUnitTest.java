@@ -3,6 +3,7 @@ package gravit.code.unit.facade;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.learning.service.LearningProgressRateService;
+import gravit.code.unit.dto.internal.UnitProgressRowDto;
 import gravit.code.unit.dto.response.UnitPageResponse;
 import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
@@ -49,10 +50,16 @@ class UnitFacadeUnitTest {
                     new UnitSummaryResponse(2L, "스레드", "스레드 개념")
             );
 
+            List<UnitProgressRowDto> progressRows = List.of(
+                    new UnitProgressRowDto(1L, "프로세스", 5L, 4L),
+                    new UnitProgressRowDto(2L, "스레드", 3L, 0L)
+            );
+
             when(chapterQueryService.getChapterSummary(chapterId)).thenReturn(chapterSummaryResponse);
             when(unitQueryService.getAllUnitSummaryByChapterId(chapterId)).thenReturn(unitSummaries);
-            when(learningProgressRateService.getUnitProgress(1L, userId)).thenReturn(80.0);
-            when(learningProgressRateService.getUnitProgress(2L, userId)).thenReturn(0.0);
+            when(unitQueryService.getAllUnitProgressInChapter(chapterId, userId)).thenReturn(progressRows);
+            when(learningProgressRateService.calculateProgressRate(4L, 5L)).thenReturn(80.0);
+            when(learningProgressRateService.calculateProgressRate(0L, 3L)).thenReturn(0.0);
 
             // when
             UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapterId);
@@ -76,6 +83,7 @@ class UnitFacadeUnitTest {
 
             when(chapterQueryService.getChapterSummary(chapterId)).thenReturn(chapterSummaryResponse);
             when(unitQueryService.getAllUnitSummaryByChapterId(chapterId)).thenReturn(List.of());
+            when(unitQueryService.getAllUnitProgressInChapter(chapterId, userId)).thenReturn(List.of());
 
             // when
             UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapterId);

@@ -1,6 +1,7 @@
 package gravit.code.chapter.service;
 
 import gravit.code.chapter.domain.Chapter;
+import gravit.code.chapter.dto.internal.ChapterProgressRowDto;
 import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.repository.ChapterRepository;
@@ -21,6 +22,11 @@ public class ChapterQueryService {
     @Transactional(readOnly = true)
     public List<ChapterSummaryResponse> getAllChapter(){
         return chapterRepository.findAllChapterSummary();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChapterProgressRowDto> getAllChapterProgress(long userId){
+        return chapterRepository.findChapterProgressByUserId(userId);
     }
 
     @Transactional(readOnly = true)
