@@ -47,6 +47,13 @@ public class UnitQueryService {
                 .toList();
     }
 
+    public List<UnitProgressRowDto> getAllUnitProgressInChapter(
+            long chapterId,
+            long userId
+    ){
+        return unitRepository.findUnitProgressByChapterIdAndUserId(chapterId, userId);
+    }
+
     public List<RecommendedUnitResponse> getRecommendedUnits(long userId) {
         List<Long> allUnitIds = unitRepository.findAllUnitIdsOrderById();
 

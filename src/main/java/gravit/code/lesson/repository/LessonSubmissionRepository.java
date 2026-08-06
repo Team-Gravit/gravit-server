@@ -33,17 +33,6 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     );
 
     @Query("""
-        SELECT COUNT(DISTINCT l.id)
-        FROM LessonSubmission ls
-        JOIN Lesson l ON l.id = ls.lessonId
-        WHERE l.unitId = :unitId AND ls.userId = :userId
-    """)
-    int countSolvedLessonByUnitIdAndUserId(
-            @Param("unitId") long unitId,
-            @Param("userId") long userId
-    );
-
-    @Query("""
         SELECT COUNT(ls.id)
         FROM LessonSubmission ls
         WHERE ls.lessonId = :lessonId AND ls.userId = :userId

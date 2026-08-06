@@ -78,19 +78,30 @@ class LearningProgressRateServiceUnitTest {
     }
 
     @Nested
-    @DisplayName("유닛 진행률을 조회할 때")
-    class GetUnitProgress {
+    @DisplayName("진행률을 계산할 때")
+    class CalculateProgressRate {
 
         @Test
         void 풀이한_레슨이_없으면_0을_반환한다() {
             // given
-            long unitId = 1L;
-            long userId = 1L;
-
-            when(lessonSubmissionRepository.countSolvedLessonByUnitIdAndUserId(unitId, userId)).thenReturn(0);
+            long solvedLessonCount = 0L;
+            long totalLessonCount = 3L;
 
             // when
-            double result = learningProgressRateService.getUnitProgress(unitId, userId);
+            double result = learningProgressRateService.calculateProgressRate(solvedLessonCount, totalLessonCount);
+
+            // then
+            assertThat(result).isEqualTo(0.0);
+        }
+
+        @Test
+        void 레슨이_없는_유닛이면_0을_반환한다() {
+            // given
+            long solvedLessonCount = 0L;
+            long totalLessonCount = 0L;
+
+            // when
+            double result = learningProgressRateService.calculateProgressRate(solvedLessonCount, totalLessonCount);
 
             // then
             assertThat(result).isEqualTo(0.0);
@@ -99,14 +110,11 @@ class LearningProgressRateServiceUnitTest {
         @Test
         void 일부_레슨을_풀었으면_진행률을_반환한다() {
             // given
-            long unitId = 1L;
-            long userId = 1L;
-
-            when(lessonSubmissionRepository.countSolvedLessonByUnitIdAndUserId(unitId, userId)).thenReturn(2);
-            when(lessonRepository.countTotalLessonByUnitId(unitId)).thenReturn(3);
+            long solvedLessonCount = 2L;
+            long totalLessonCount = 3L;
 
             // when
-            double result = learningProgressRateService.getUnitProgress(unitId, userId);
+            double result = learningProgressRateService.calculateProgressRate(solvedLessonCount, totalLessonCount);
 
             // then
             assertThat(result).isEqualTo(66.0); // floor(66.66...)
@@ -115,14 +123,11 @@ class LearningProgressRateServiceUnitTest {
         @Test
         void 모든_레슨을_풀었으면_100을_반환한다() {
             // given
-            long unitId = 1L;
-            long userId = 1L;
-
-            when(lessonSubmissionRepository.countSolvedLessonByUnitIdAndUserId(unitId, userId)).thenReturn(3);
-            when(lessonRepository.countTotalLessonByUnitId(unitId)).thenReturn(3);
+            long solvedLessonCount = 3L;
+            long totalLessonCount = 3L;
 
             // when
-            double result = learningProgressRateService.getUnitProgress(unitId, userId);
+            double result = learningProgressRateService.calculateProgressRate(solvedLessonCount, totalLessonCount);
 
             // then
             assertThat(result).isEqualTo(100.0);
