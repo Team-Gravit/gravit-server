@@ -1,0 +1,61 @@
+BEGIN
+                                                                                                 QUERY PLAN                                                                                                  
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=43.10..46.31 rows=5 width=24) (actual time=1.266..1.386 rows=5 loops=1)
+   Output: c1_0.id, count(DISTINCT l1_0.id), count(DISTINCT ls1_0.lesson_id)
+   Group Key: c1_0.id
+   Buffers: shared hit=17
+   ->  Sort  (cost=43.10..43.89 rows=316 width=24) (actual time=1.123..1.159 rows=430 loops=1)
+         Output: c1_0.id, l1_0.id, ls1_0.lesson_id
+         Sort Key: c1_0.id
+         Sort Method: quicksort  Memory: 51kB
+         Buffers: shared hit=17
+         ->  Hash Right Join  (cost=13.20..29.98 rows=316 width=24) (actual time=0.513..0.964 rows=430 loops=1)
+               Output: c1_0.id, l1_0.id, ls1_0.lesson_id
+               Inner Unique: true
+               Hash Cond: (u1_0.chapter_id = c1_0.id)
+               Buffers: shared hit=14
+               ->  Hash Right Join  (cost=12.08..27.34 rows=316 width=24) (actual time=0.479..0.788 rows=430 loops=1)
+                     Output: u1_0.chapter_id, l1_0.id, ls1_0.lesson_id
+                     Inner Unique: true
+                     Hash Cond: (l1_0.unit_id = u1_0.id)
+                     Buffers: shared hit=13
+                     ->  Hash Right Join  (cost=8.60..22.97 rows=316 width=24) (actual time=0.415..0.594 rows=430 loops=1)
+                           Output: l1_0.id, l1_0.unit_id, ls1_0.lesson_id
+                           Inner Unique: true
+                           Hash Cond: (ls1_0.lesson_id = l1_0.id)
+                           Buffers: shared hit=11
+                           ->  Index Only Scan using ix_lesson_submission_user_created_at on public.lesson_submission ls1_0  (cost=0.42..13.95 rows=316 width=8) (actual time=0.281..0.342 rows=317 loops=1)
+                                 Output: ls1_0.user_id, ls1_0.created_at, ls1_0.lesson_id
+                                 Index Cond: (ls1_0.user_id = 1500)
+                                 Heap Fetches: 0
+                                 Buffers: shared hit=8
+                           ->  Hash  (cost=5.30..5.30 rows=230 width=16) (actual time=0.105..0.106 rows=230 loops=1)
+                                 Output: l1_0.id, l1_0.unit_id
+                                 Buckets: 1024  Batches: 1  Memory Usage: 19kB
+                                 Buffers: shared hit=3
+                                 ->  Seq Scan on public.lesson l1_0  (cost=0.00..5.30 rows=230 width=16) (actual time=0.005..0.043 rows=230 loops=1)
+                                       Output: l1_0.id, l1_0.unit_id
+                                       Buffers: shared hit=3
+                     ->  Hash  (cost=2.66..2.66 rows=66 width=16) (actual time=0.038..0.038 rows=66 loops=1)
+                           Output: u1_0.chapter_id, u1_0.id
+                           Buckets: 1024  Batches: 1  Memory Usage: 12kB
+                           Buffers: shared hit=2
+                           ->  Seq Scan on public.unit u1_0  (cost=0.00..2.66 rows=66 width=16) (actual time=0.003..0.015 rows=66 loops=1)
+                                 Output: u1_0.chapter_id, u1_0.id
+                                 Buffers: shared hit=2
+               ->  Hash  (cost=1.05..1.05 rows=5 width=8) (actual time=0.012..0.013 rows=5 loops=1)
+                     Output: c1_0.id
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on public.chapter c1_0  (cost=0.00..1.05 rows=5 width=8) (actual time=0.005..0.007 rows=5 loops=1)
+                           Output: c1_0.id
+                           Buffers: shared hit=1
+ Query Identifier: 2279778615240038781
+ Planning:
+   Buffers: shared hit=234
+ Planning Time: 3.518 ms
+ Execution Time: 1.653 ms
+(55 rows)
+
+ROLLBACK
