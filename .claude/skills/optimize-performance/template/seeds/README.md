@@ -52,7 +52,7 @@ psql -h localhost -p 5433 -U postgres -d mydb -f $PERF_DIR/seeds.sql
 | `user.sql` | `users` | 없음 |
 | `learning.sql` | `lesson_submission`, `problem_submission`, `daily_learning_record` | `content`, `user` |
 | `league.sql` | `league`, `season`, `user_league`, `user_league_history` | `user` |
-| `review.sql` | `answer`, `option`, `bookmark` | `content`, `user` |
+| `review.sql` | `answer`, `option`, `bookmark`, `wrong_answered_note` | `content`, `user` |
 
 `\i` 순서가 곧 FK 의존 순서다. 표의 위에서 아래로 부른다.
 
@@ -85,6 +85,8 @@ psql -h localhost -p 5433 -U postgres -d mydb -f $PERF_DIR/seeds.sql
 | `bookmarks_per_user` | review | 유저당 총 북마크 수 |
 | `target_unit_bookmarks_per_user` | review | 그중 `target_unit_id`에 몰아넣을 수 (= 요청당 결과 크기). 타입 균형을 위해 짝수를 쓴다 |
 | `options_per_problem` | review | OBJECTIVE 문제당 선택지 수 |
+| `target_unit_wrong_notes_per_user` | review | 유저당 `target_unit_id`에 넣을 오답노트 수. 타입 균형을 위해 짝수를 쓴다 |
+| `target_unit_resolved_per_user` | review | 그중 극복 처리할 수. **요청당 결과 크기 = `target_unit_wrong_notes_per_user` - 이 값.** 짝수를 쓴다 |
 
 ## 모듈을 고칠 때
 

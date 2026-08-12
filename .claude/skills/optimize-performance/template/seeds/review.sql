@@ -1,7 +1,8 @@
--- 복습 도메인 시드: answer → option → bookmark
+-- 복습 도메인 시드: answer → option → bookmark → wrong_answered_note
 --
 -- 필요한 변수: user_start, user_count, target_unit_id,
---              bookmarks_per_user, target_unit_bookmarks_per_user, options_per_problem
+--              bookmarks_per_user, target_unit_bookmarks_per_user, options_per_problem,
+--              target_unit_wrong_notes_per_user, target_unit_resolved_per_user
 --
 -- answer/option은 problem 전체를 커버한다. ProblemFactory가 문제 타입별로 하나라도 없으면
 -- ANSWER_NOT_FOUND / OPTION_NOT_FOUND 예외를 던져 측정이 500으로 끝난다.
@@ -10,10 +11,17 @@
 -- 나머지를 다른 유닛의 문제에 퍼뜨린다. 대상 유닛 필터가 실제로 행을 걸러내게 하려는 것이다.
 -- created_at은 유저 안에서 행마다 다른 값을 갖는다. ORDER BY b.createdAt 이 실제 정렬을 수행해야 한다.
 --
+-- wrong_answered_note는 유저마다 :target_unit_wrong_notes_per_user 건을 :target_unit_id 에 몰고,
+-- 그중 뒤쪽 :target_unit_resolved_per_user 건을 극복 처리한다.
+-- resolvedAt IS NULL 필터가 대상 유닛 안에서 실제로 행을 걸러내게 하려는 것이다.
+-- 반환 행 수 = :target_unit_wrong_notes_per_user - :target_unit_resolved_per_user 가 된다.
+--
 -- bookmark/answer/option에는 유니크 제약이 없으므로 ON CONFLICT를 쓸 수 없다.
 -- 재실행 시 중복이 쌓이지 않도록 NOT EXISTS 가드를 둔다. 가드를 지우지 마라.
+-- wrong_answered_note만 (user_id, problem_id) 유니크 인덱스가 있어 ON CONFLICT DO NOTHING을 쓴다.
+-- 이 테이블은 대상 유닛 밖에 이미 행이 있을 수 있어 "유저에 행이 없으면" 가드가 통하지 않는다.
 
-\echo '[review.sql] answer/option/bookmark 적재'
+\echo '[review.sql] answer/option/bookmark/wrong_answered_note 적재'
 
 BEGIN;
 
@@ -84,11 +92,41 @@ FROM (
     JOIN other_problems op ON op.p_idx = ((u.u_idx * 37 + k * 11) % oc.n)
 ) AS src;
 
+-- wrong_answered_note: 대상 유닛에 유저당 :target_unit_wrong_notes_per_user 건
+-- k 하나가 OBJECTIVE/SUBJECTIVE 각 1건을 집으므로 타입이 균형을 이룬다.
+-- k가 뒤쪽 구간이면 극복 처리해 resolved_at을 채운다.
+INSERT INTO wrong_answered_note (user_id, problem_id, wrong_count, created_at, updated_at, resolved_at)
+SELECT su.id,
+       tp.id,
+       1 + (k % 3),
+       TIMESTAMP '2025-01-01 00:00:00' + (k * INTERVAL '1 second'),
+       TIMESTAMP '2025-01-01 00:00:00' + (k * INTERVAL '1 second'),
+       CASE
+           WHEN k >= (:target_unit_wrong_notes_per_user - :target_unit_resolved_per_user) / 2
+               THEN TIMESTAMP '2025-06-01 00:00:00' + (k * INTERVAL '1 second')
+           ELSE NULL
+       END
+FROM (
+    SELECT u.id
+    FROM users u
+    WHERE u.id BETWEEN :user_start AND :user_start + :user_count - 1
+) AS su
+CROSS JOIN generate_series(0, :target_unit_wrong_notes_per_user / 2 - 1) AS k
+JOIN (
+    SELECT p.id,
+           row_number() OVER (PARTITION BY p.problem_type ORDER BY p.id) - 1 AS rn
+    FROM problem p
+    JOIN lesson l ON l.id = p.lesson_id
+    WHERE l.unit_id = :target_unit_id
+) AS tp ON tp.rn = k
+ON CONFLICT (user_id, problem_id) DO NOTHING;
+
 COMMIT;
 
 ANALYZE answer;
 ANALYZE "option";
 ANALYZE bookmark;
+ANALYZE wrong_answered_note;
 
 -- 검증: 행 수와 카디널리티
 SELECT 'answer' AS table_name, count(*) AS rows, count(DISTINCT problem_id) AS distinct_problem
@@ -96,7 +134,9 @@ FROM answer
 UNION ALL
 SELECT 'option', count(*), count(DISTINCT problem_id) FROM "option"
 UNION ALL
-SELECT 'bookmark', count(*), count(DISTINCT problem_id) FROM bookmark;
+SELECT 'bookmark', count(*), count(DISTINCT problem_id) FROM bookmark
+UNION ALL
+SELECT 'wrong_answered_note', count(*), count(DISTINCT problem_id) FROM wrong_answered_note;
 
 SELECT count(DISTINCT user_id) AS distinct_user,
        count(*) / NULLIF(count(DISTINCT user_id), 0) AS per_user,
@@ -115,4 +155,19 @@ JOIN lesson l ON l.id = p.lesson_id
 WHERE l.unit_id = :target_unit_id
 GROUP BY b.user_id
 ORDER BY b.user_id
+LIMIT 3;
+
+-- 검증: 대상 유닛의 유저당 오답노트 반환 크기(미극복)와 극복 건수
+SELECT wan.user_id,
+       count(*)                                                                          AS total_in_target_unit,
+       count(*) FILTER (WHERE wan.resolved_at IS NULL)                                   AS unresolved,
+       count(*) FILTER (WHERE wan.resolved_at IS NULL AND p.problem_type = 'OBJECTIVE')  AS objective,
+       count(*) FILTER (WHERE wan.resolved_at IS NULL AND p.problem_type = 'SUBJECTIVE') AS subjective,
+       count(*) FILTER (WHERE wan.resolved_at IS NOT NULL)                               AS resolved
+FROM wrong_answered_note wan
+JOIN problem p ON p.id = wan.problem_id
+JOIN lesson l ON l.id = p.lesson_id
+WHERE l.unit_id = :target_unit_id
+GROUP BY wan.user_id
+ORDER BY wan.user_id
 LIMIT 3;
