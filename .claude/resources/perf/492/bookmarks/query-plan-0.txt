@@ -1,0 +1,54 @@
+BEGIN
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=3287.53..3287.54 rows=1 width=72) (actual time=14.467..14.476 rows=30 loops=1)
+   Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, true, b1_0.created_at
+   Sort Key: b1_0.created_at
+   Sort Method: quicksort  Memory: 28kB
+   Buffers: shared hit=1306
+   ->  Nested Loop  (cost=186.10..3287.52 rows=1 width=72) (actual time=9.140..14.437 rows=30 loops=1)
+         Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, true, b1_0.created_at
+         Buffers: shared hit=1303
+         ->  Hash Join  (cost=186.10..3284.69 rows=1 width=79) (actual time=9.127..14.316 rows=30 loops=1)
+               Output: b1_0.created_at, p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, l1_0.unit_id
+               Hash Cond: (b1_0.problem_id = p1_0.id)
+               Buffers: shared hit=1243
+               ->  Seq Scan on public.bookmark b1_0  (cost=0.00..3098.00 rows=155 width=16) (actual time=7.089..12.258 rows=156 loops=1)
+                     Output: b1_0.id, b1_0.created_at, b1_0.problem_id, b1_0.user_id
+                     Filter: (b1_0.user_id = 1500)
+                     Rows Removed by Filter: 155844
+                     Buffers: shared hit=1148
+               ->  Hash  (cost=185.35..185.35 rows=60 width=71) (actual time=2.022..2.024 rows=60 loops=1)
+                     Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, l1_0.unit_id
+                     Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                     Buffers: shared hit=95
+                     ->  Hash Join  (cost=5.90..185.35 rows=60 width=71) (actual time=0.852..1.992 rows=60 loops=1)
+                           Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, l1_0.unit_id
+                           Inner Unique: true
+                           Hash Cond: (p1_0.lesson_id = l1_0.id)
+                           Buffers: shared hit=95
+                           ->  Seq Scan on public.problem p1_0  (cost=0.00..161.00 rows=6900 width=71) (actual time=0.009..0.889 rows=6900 loops=1)
+                                 Output: p1_0.id, p1_0.content, p1_0.instruction, p1_0.lesson_id, p1_0.problem_type
+                                 Buffers: shared hit=92
+                           ->  Hash  (cost=5.88..5.88 rows=2 width=16) (actual time=0.033..0.034 rows=2 loops=1)
+                                 Output: l1_0.id, l1_0.unit_id
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 Buffers: shared hit=3
+                                 ->  Seq Scan on public.lesson l1_0  (cost=0.00..5.88 rows=2 width=16) (actual time=0.018..0.028 rows=2 loops=1)
+                                       Output: l1_0.id, l1_0.unit_id
+                                       Filter: (l1_0.unit_id = 900002)
+                                       Rows Removed by Filter: 228
+                                       Buffers: shared hit=3
+         ->  Seq Scan on public.unit u1_0  (cost=0.00..2.83 rows=1 width=8) (actual time=0.001..0.003 rows=1 loops=30)
+               Output: u1_0.id, u1_0.chapter_id, u1_0.description, u1_0.title
+               Filter: (u1_0.id = 900002)
+               Rows Removed by Filter: 65
+               Buffers: shared hit=60
+ Query Identifier: -2721271575161825793
+ Planning:
+   Buffers: shared hit=275
+ Planning Time: 3.020 ms
+ Execution Time: 14.585 ms
+(48 rows)
+
+ROLLBACK

@@ -35,8 +35,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
         FROM Bookmark b
         JOIN Problem p ON p.id = b.problemId
         JOIN Lesson l ON l.id = p.lessonId
-        JOIN Unit u ON u.id = l.unitId
-        WHERE u.id = :unitId AND b.userId = :userId
+        WHERE l.unitId = :unitId AND b.userId = :userId
         ORDER BY b.createdAt ASC
     """)
     List<ProblemDetailResponse> findBookmarkedProblemDetailByUnitIdAndUserId(
@@ -49,8 +48,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
         FROM Bookmark b
         JOIN Problem p ON p.id = b.problemId
         JOIN Lesson l ON l.id = p.lessonId
-        JOIN Unit u ON u.id = l.unitId
-        WHERE u.id = :unitId AND b.userId = :userId
+        WHERE l.unitId = :unitId AND b.userId = :userId
     """)
     int countByUnitIdAndUserId(
             @Param("unitId")long unitId,
