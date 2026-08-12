@@ -1,0 +1,63 @@
+{
+  "phase": "measure",
+  "target": "bookmarks",
+  "endpoint": "GET /api/v1/bookmarks/{unitId}",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "cold (measure 직전 FLUSHDB)",
+    "db_cache": "제어하지 않음. FLUSHDB는 PostgreSQL shared_buffers와 OS page cache를 비우지 않는다",
+    "target_unit_id": 900002,
+    "expected_problems_per_request": 30,
+    "user_id_start": 1001,
+    "user_count": 1000
+  },
+  "requests": 26551,
+  "rps": 221.21615110025436,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 26551,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 26551,
+      "fails": 0
+    },
+    {
+      "name": "problems 30건이 실려 있다",
+      "passes": 26551,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 125.126,
+    "p95": 442.3124999999996,
+    "p99": 968.1165,
+    "max": 1898.165
+  },
+  "waiting_ms": {
+    "med": 124.938,
+    "p95": 441.9599999999998,
+    "p99": 967.9425,
+    "max": 1897.965
+  },
+  "bytes_received": 386109259,
+  "delta_vs_prev": {
+    "from": "k6-test-summary-0.json",
+    "requests": { "before": 19941, "after": 26551 },
+    "rps": { "before": 166.1613138464495, "after": 221.21615110025436 },
+    "duration_med_ms": { "before": 219.35, "after": 125.126 },
+    "duration_p95_ms": { "before": 473.056, "after": 442.3124999999996 },
+    "duration_p99_ms": { "before": 719.1027999999997, "after": 968.1165 },
+    "duration_max_ms": { "before": 1784.57, "after": 1898.165 },
+    "failed_rate": { "before": 0, "after": 0 },
+    "checks_rate": { "before": 1, "after": 1 }
+  }
+}
