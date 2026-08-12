@@ -233,3 +233,21 @@
 | | 캐시 hit / miss, 적중률 | - | - | 캐싱 기법을 쓰지 않았다 |
 
 적용한 기법: 사이클 1 - `bookmark (user_id, problem_id)` UNIQUE 인덱스 추가 (`V38__add_bookmark_user_problem_unique_index.sql`)
+
+---
+
+## 후속 변경 (이 대상 종료 후)
+
+같은 이슈의 두 번째 대상 `GET /api/v1/wrong-answered-notes/{unitId}`의 사이클 1에서 **불필요한 `Unit` 조인 제거**를 적용하면서,
+`BookmarkRepository`의 두 쿼리도 함께 고쳤다. 같은 결함을 한쪽만 남기지 않기 위해서다.
+
+- `findBookmarkedProblemDetailByUnitIdAndUserId` (이 대상이 측정한 쿼리)
+- `countByUnitIdAndUserId`
+
+```
+JOIN Unit u ON u.id = l.unitId ... WHERE u.id = :unitId
+→ WHERE l.unitId = :unitId
+```
+
+따라서 **위에 적힌 쿼리 원문과 `query-plan-0.txt` / `query-plan-1.txt`는 측정 당시 기록으로는 유효하지만 현재 코드와는 다르다.**
+이 변경은 이 대상에서 재측정하지 않았다. 근거와 등가성 검증은 `../wrong-answered-notes/record.md`의 사이클 1을 참조한다.
