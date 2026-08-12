@@ -45,9 +45,8 @@ public interface WrongAnsweredNoteRepository extends JpaRepository<WrongAnswered
         FROM WrongAnsweredNote wan
         JOIN Problem p ON p.id = wan.problemId
         JOIN Lesson l ON l.id = p.lessonId
-        JOIN Unit u ON u.id = l.unitId
         LEFT JOIN Bookmark b on b.problemId = p.id AND b.userId = :userId
-        WHERE wan.userId = :userId AND u.id = :unitId AND wan.resolvedAt IS NULL
+        WHERE wan.userId = :userId AND l.unitId = :unitId AND wan.resolvedAt IS NULL
     """)
     List<ProblemDetailResponse> findWrongAnsweredProblemDetailByUnitIdAndUserId(
             @Param("unitId")long unitId,
@@ -59,8 +58,7 @@ public interface WrongAnsweredNoteRepository extends JpaRepository<WrongAnswered
         FROM WrongAnsweredNote wan
         JOIN Problem p ON p.id = wan.problemId
         JOIN Lesson l ON l.id = p.lessonId
-        JOIN Unit u ON u.id = l.unitId
-        WHERE u.id = :unitId AND wan.userId = :userId AND wan.resolvedAt IS NULL
+        WHERE l.unitId = :unitId AND wan.userId = :userId AND wan.resolvedAt IS NULL
     """)
     int countByUnitIdAndUserId(
             @Param("unitId")long unitId,
