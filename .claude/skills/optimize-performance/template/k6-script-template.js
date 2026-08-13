@@ -173,13 +173,15 @@ export function handleSummary(data) {
 
     // 아래 반올림은 터미널 한 줄 출력에만 쓴다. summary 객체의 값은 손대지 않는다.
     const num = (x, d) => (typeof x === 'number' ? x.toFixed(d) : '-');
+    // null * 100은 0이 되므로 곱하기 전에 걸러낸다. 메트릭 누락을 0%로 보이게 두지 않는다.
+    const percent = (x) => (typeof x === 'number' ? `${num(x * 100, 2)}%` : '-');
     const line = [
         `[${PHASE}] ${TARGET}`,
         `요청 ${summary.requests}건`,
         `p95 ${num(summary.duration_ms.p95, 1)}ms`,
         `p99 ${num(summary.duration_ms.p99, 1)}ms`,
-        `실패율 ${num(summary.failed_rate * 100, 2)}%`,
-        `check ${num(summary.checks_rate * 100, 2)}%`,
+        `실패율 ${percent(summary.failed_rate)}`,
+        `check ${percent(summary.checks_rate)}`,
     ].join(' / ');
 
     const out = { stdout: `\n${line}\n\n` };
