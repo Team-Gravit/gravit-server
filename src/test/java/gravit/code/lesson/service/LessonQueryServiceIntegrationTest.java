@@ -68,6 +68,29 @@ class LessonQueryServiceIntegrationTest {
         }
 
         @Test
+        void 같은_레슨을_여러_번_제출해도_레슨당_한_건만_반환한다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 60, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(90, 80, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 100, lesson.getId(), userId));
+
+            // when
+            List<LessonSummaryResponse> result = lessonQueryService.getAllLessonInUnit(userId, unit.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result).extracting(LessonSummaryResponse::lessonId).containsExactly(lesson.getId());
+                softly.assertThat(result.get(0).isSolved()).isTrue();
+            });
+        }
+
+        @Test
         void 레슨이_없으면_빈_리스트를_반환한다() {
             // given
             long userId = 1L;
