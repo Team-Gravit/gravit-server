@@ -44,7 +44,7 @@ Phase 4의 워밍업에서 데이터 검증 check가 22.3%만 통과해 드러�
 - 원인: `V29__convert_lesson_submission_to_history.sql`이 `lesson_submission`을 유저+레슨당 1행 덮어쓰기에서 제출마다 새 행을 쌓는 이력 구조로 바꿨는데(`try_count` 컬럼 삭제, 시도 횟수를 행 개수로 집계), `findAllLessonSummaryByUnitId`는 그 테이블을 `LEFT JOIN`으로 1:1처럼 붙인 채였다. `DISTINCT`도 집계도 없어 레슨 행이 제출 수만큼 복제됐다
 - 수정: `LEFT JOIN LessonSubmission`을 `CASE WHEN EXISTS (...)` 서브쿼리로 대체했다. `LessonSummaryResponse.isSolved`는 제출 존재 여부만 필요하므로 이력 테이블을 조인할 이유가 없다
 - 검증: `LessonQueryService`, `LessonFacade` 단위, 통합 테스트 통과
-- 남은 일: 회귀 테스트 없음. 기존 통합 테스트(`LessonQueryServiceIntegrationTest.java:64-67`)는 레슨당 제출 1건만 넣어 이 결함을 잡지 못한다. 같은 레슨에 제출 2건 이상을 넣는 케이스를 추가해야 한다
+- 회귀 테스트: `LessonQueryServiceIntegrationTest`에 `같은_레슨을_여러_번_제출해도_레슨당_한_건만_반환한다`를 추가했다. 같은 레슨에 제출 3건을 넣고 응답이 1건인지, 레슨 id가 유일한지, `isSolved`가 `true`인지 검증한다. 기존 성공 케이스는 레슨당 제출 1건만 넣어 이 결함을 잡지 못했다
 
 - 지연 로딩 추가 쿼리 후보: 없음. 2~6번 모두 `SELECT new ...Response(...)` DTO 프로젝션이거나 스칼라 COUNT라 엔티티를 반환하지 않는다
 - N+1 후보: 4번의 `Problem` COUNT 스칼라 서브쿼리. JPQL 상으로는 SQL 1개지만 유닛 내 레슨 수만큼 서브플랜이 반복 실행될 수 있다. 실행계획으로 확인할 항목
@@ -61,7 +61,7 @@ Phase 4의 워밍업에서 데이터 검증 check가 22.3%만 통과해 드러�
 - 관측: `problem`에 PK 외 인덱스가 없어 `problem` 6,900행 전체 Seq Scan이 반복됐다. 레슨 목록 쿼리는 레슨 행마다(`loops=2`) 이 스캔을 돌려 전체 195버퍼 중 184를 썼고, 북마크와 오답노트 카운트 쿼리도 같은 Seq Scan(`cost=0.00..161.00`)을 탔다
 - 원인: V3가 만드는 인덱스 3개(`ix_problem_lesson`, `ix_answer_problem`, `ix_option_problem`)가 로컬 DB에만 없었다. `flyway_schema_history`는 V3를 success로 기록하고 있고(2026-03-03), 이를 지우는 마이그레이션도 없다(`DROP INDEX`는 V36의 `ix_ul_league_rank` 하나뿐). dev DB에는 3개 모두 존재한다
 - 없어진 3개는 전부 `content.sql`, `review.sql`이 대량 INSERT하는 테이블(`problem` 6,900 / `option` 13,800 / `answer` 3,450)이고, 살아있는 인덱스는 전부 대량 적재 이후 추가된 마이그레이션(V33, V34, V38) 것이다. 벌크 적재 전 수동 삭제 후 복구 누락으로 보이나 저장소에 흔적이 없어 정황 추론이다
-- 조치: 로컬에 V3와 동일한 정의로 인덱스 3개를 재생성하고 기준선을 다시 잡았다. 코드는 바뀌지 않았으므로 상태 번호는 `0`을 유지한다
+- 조치: 로컬에 V3와 동일한 정의로 인덱스 3개를 재생성하고 기준선을 다시 잡았다. 두 측정 사이에 바뀐 것은 로컬 DB의 인덱스뿐이고 애플리케이션 코드는 그대로이므로 상태 번호는 `0`을 유지한다. 정합성 수정은 1차 측정 이전에 이미 적용돼 있어 두 측정 모두에 포함된다
 - 파급: 같은 로컬 DB에서 측정한 #492의 기록도 `ix_problem_lesson`이 존재한다는 전제로 해석돼 있다(`492/wrong-answered-notes/record.md:154`). 그 이슈의 진단과 개선폭은 재검토가 필요하다
 
 ## 측정 환경
@@ -78,7 +78,7 @@ Phase 4의 워밍업에서 데이터 검증 check가 22.3%만 통과해 드러�
 | Redis 캐시 상태 | cold (measure 직전 FLUSHDB). 단 이 API는 Redis를 쓰지 않는다 |
 | DB 캐시 상태 | 제어하지 않음. Redis FLUSHDB는 PostgreSQL의 `shared_buffers`와 OS page cache를 비우지 않는다 |
 | 캐시 제어 수단 | `redis-cli -h localhost -p 6379` (PONG 확인) |
-| 스키마 드리프트 | 있었음. V3의 `ix_problem_lesson`, `ix_answer_problem`, `ix_option_problem`이 로컬 DB에만 없어 기준선 이전에 복구했다. 복구 후 재검사에서 V2의 `gin_users_handle_trgm`, `ix_users_cover`, `ix_users_friends_covering`, `ix_users_handle_like_with_id` 4개도 없는 것이 추가로 드러났으나, 전부 `users` 검색용이고 이번 대상은 `users`를 PK로만 읽어 측정에 영향이 없어 복구하지 않았다 |
+| 스키마 드리프트 | 있었음. V3의 `ix_problem_lesson`, `ix_answer_problem`, `ix_option_problem`이 로컬 DB에만 없어 기준선 이전에 복구했다(dev DB에는 3개 모두 존재). 복구 후 재검사에서 V2의 `gin_users_handle_trgm`, `ix_users_cover`, `ix_users_friends_covering`, `ix_users_handle_like_with_id` 4개가 추가로 드러났으나 **게이트 통과 기준의 예외로 처리하고 복구하지 않았다.** 근거: 4개 모두 `users` 테이블의 검색, 커버링 인덱스이고, 이번 대상이 `users`를 읽는 경로는 인증 필터의 PK 단건 조회(`AuthTokenProvider.parseUser`) 하나뿐이라 이 인덱스들을 타지 않는다. `users`를 검색 조건으로 읽는 대상(친구, 소셜 검색)을 측정할 때는 먼저 복구해야 한다 |
 | 시드 SQL | 미사용. 이번 대상이 읽는 8개 테이블 전부 #490, #492 시드로 목표 규모에 도달해 있어 Phase 3-A에서 새로 돌리지 않았다 |
 | 시드 모듈과 변수 | 없음 (기존 데이터 그대로 사용) |
 
@@ -114,7 +114,7 @@ Phase 4의 워밍업에서 데이터 검증 check가 22.3%만 통과해 드러�
   - 상위 3개가 실행시간 비중 83.3%를 차지하지만 그 83.3%가 1.10ms의 83.3%다. 각 쿼리의 mean은 0.306~0.330ms이고 가장 무거운 것이 0.330ms다
   - N+1 없음. 모든 쿼리가 요청당 정확히 1.00회다(트랜잭션 제어 제외)
   - 커넥션 풀 경합 없음. 543.62 RPS × 1.10ms = 평균 0.6개 점유, 풀 크기 60
-  - 인덱스는 전부 사용된다. 드리프트 복구 전후로 상위 3개 쿼리 mean이 각각 -94.9%, -92.5%, -91.8% 변한 것이 그 근거다
+  - `problem.lesson_id` 인덱스는 사용된다. 드리프트 복구 전후로 상위 3개 쿼리 mean이 각각 -94.9%, -92.5%, -91.8% 변한 것이 근거다. 나머지 인덱스의 사용 여부는 **미확인**이다. 복구 후 EXPLAIN을 다시 뜨지 않았고(개선 사이클에 들어가지 않아 Phase 6을 건너뛰었다), 드리프트 상태의 실행계획에서는 `lesson`이 `Seq Scan`(`Rows Removed by Filter: 228`)이었다. `lesson.unit_id`에는 인덱스가 없으므로 복구 후에도 이 스캔은 남아 있을 것이다. 230행 3버퍼짜리라 비용은 무시할 수준이다
 - 예상 쿼리 목록과 어긋난 지점: 2건
   1. `UserRepository.updateLastAccessedAt` - Phase 1 목록에 없던 쿼리다. `LastAccessInterceptor.preHandle`이 매 요청 호출한다. 행/호출이 0.000000이라 측정 내내 한 행도 갱신하지 않았다(시드 유저가 이미 당일 접근 처리된 상태). 읽기 전용 조회 API에 쓰기 트랜잭션이 하나 붙는 구조지만 비중 2.63%, mean 0.030ms로 이번 대상의 병목은 아니다
   2. `BEGIN READ ONLY`가 요청당 2회다. 파사드의 `@Transactional(readOnly = true)`는 하나인데 읽기 전용 트랜잭션이 두 번 열린다. 인증 필터(`AuthTokenProvider.parseUser`)가 파사드 밖에서 별도 트랜잭션을 여는 것으로 보인다. 비중 3.02%
@@ -147,6 +147,5 @@ Phase 4의 워밍업에서 데이터 검증 check가 22.3%만 통과해 드러�
 
 남은 일:
 
-- 응답 중복 회귀 테스트 (같은 레슨에 제출 2건 이상을 넣는 케이스). 보류하기로 함
 - #492 기록 재검토. 같은 로컬 DB에서 측정했고 `ix_problem_lesson`이 있다는 전제로 해석돼 있다 (`492/wrong-answered-notes/record.md:154`)
 - 로컬 DB에 V2 인덱스 4개가 아직 없다 (`gin_users_handle_trgm`, `ix_users_cover`, `ix_users_friends_covering`, `ix_users_handle_like_with_id`). `users` 검색 관련 API를 측정할 때 복구가 필요하다
