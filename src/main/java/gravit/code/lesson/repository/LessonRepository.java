@@ -50,10 +50,12 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
           l.id,
           l.title,
           (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id),
-          CASE WHEN ls.id IS NOT NULL THEN true ELSE false END
+          CASE WHEN EXISTS (
+            SELECT 1 FROM LessonSubmission ls
+            WHERE ls.lessonId = l.id AND ls.userId = :userId
+          ) THEN true ELSE false END
         )
         FROM Lesson l
-        LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id AND ls.userId = :userId
         WHERE l.unitId = :unitId
   """)
     List<LessonSummaryResponse> findAllLessonSummaryByUnitId(
