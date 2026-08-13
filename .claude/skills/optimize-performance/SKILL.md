@@ -137,7 +137,7 @@ Read와 Write의 대상 경로에는 셸 변수가 통하지 않는다. 전체 �
 | Phase | 파일 | 한 줄 요약 |
 |---|---|---|
 | 1 | `phases/phase-1-target.md` | 이슈와 브랜치 확보, 엔드포인트 확정, 실행 경로 파악, `record.md` 생성 |
-| 2 | `phases/phase-2-environment.md` | perf 프로파일, 히스토그램, `pg_stat_statements`, 캐시 제어 점검 **(게이트)** |
+| 2 | `phases/phase-2-environment.md` | perf 프로파일, 히스토그램, `pg_stat_statements`, 캐시 제어, 스키마 드리프트 점검 **(게이트)** |
 | 3 | `phases/phase-3-dataset.md` | 3-A 데이터 규모, 카디널리티, 시드 SQL (이슈 공용) / 3-B 부하 조건, k6 스크립트 (대상별) |
 | 4 | `phases/phase-4-baseline.md` | 기준선 측정 결과를 가공해 제시, 호출자가 병목을 판정 |
 | 5 | `phases/phase-5-design.md` | 근거와 함께 기법 제시 → 호출자가 선택 → 설계를 함께 확정 **(게이트)** |

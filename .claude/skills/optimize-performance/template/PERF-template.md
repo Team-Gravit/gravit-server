@@ -45,6 +45,7 @@
 | Redis 캐시 상태 | cold (measure 직전 FLUSHDB) / warm |
 | DB 캐시 상태 | {제어하지 않음 / 초기화 절차}. Redis FLUSHDB는 PostgreSQL의 `shared_buffers`와 OS page cache를 비우지 않는다. 둘을 묶어 cold라고 적지 마라 |
 | 캐시 제어 수단 | `redis-cli -h localhost -p 6379` / `docker exec gravit-redis-local redis-cli` |
+| 스키마 드리프트 | 없음 / {복구한 인덱스 이름과 복구 사실}. Phase 2의 6) 결과 |
 | 시드 SQL | `../seeds.sql` (이슈 공용) / 미사용 |
 | 시드 모듈과 변수 | {`\i` 로 부른 모듈과 확정한 변수값} |
 
