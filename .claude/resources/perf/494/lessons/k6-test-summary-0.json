@@ -1,0 +1,52 @@
+{
+  "phase": "measure",
+  "target": "lessons",
+  "endpoint": "GET /api/v1/lessons/{unitId}",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "cold (measure 직전 FLUSHDB)",
+    "db_cache": "제어하지 않음. FLUSHDB는 PostgreSQL shared_buffers와 OS page cache를 비우지 않는다",
+    "target_unit_id": 900002,
+    "expected_lesson_count": 2,
+    "user_id_start": 1001,
+    "user_count": 1000
+  },
+  "requests": 65236,
+  "rps": 543.6218810323729,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 65236,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 65236,
+      "fails": 0
+    },
+    {
+      "name": "lessonSummaries 2건이 실려 있다",
+      "passes": 65236,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 62.2035,
+    "p95": 133.33449999999996,
+    "p99": 319.93609999999995,
+    "max": 1574.542
+  },
+  "waiting_ms": {
+    "med": 62.043,
+    "p95": 133.04824999999997,
+    "p99": 319.46989999999994,
+    "max": 1573.433
+  },
+  "bytes_received": 51708908
+}
