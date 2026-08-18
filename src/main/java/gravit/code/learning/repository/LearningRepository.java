@@ -17,7 +17,7 @@ public interface LearningRepository extends JpaRepository<Learning,Long> {
 
     boolean existsByUserId(long userId);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
         UPDATE learning
         SET consecutive_solved_days = CASE WHEN today_solved THEN consecutive_solved_days ELSE 0 END,
