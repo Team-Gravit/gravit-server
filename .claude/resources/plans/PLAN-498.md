@@ -139,7 +139,9 @@ public void updateConsecutiveDays(){
 }
 ```
 
-- `@Transactional`은 유지한다. 단일 문장이라 트랜잭션 길이가 행 수와 무관하게 고정된다.
+- `@Transactional`은 유지한다. 단일 문장이라 왕복이 한 번으로 줄고 영속성 컨텍스트 적재가 사라진다.
+  다만 스캔과 갱신에 드는 DB 작업량, WAL, 대상 행 잠금 시간은 여전히 행 수에 비례하므로
+  트랜잭션 시간 자체가 고정되는 것은 아니다.
 - `java.util.List` import를 지운다. `Learning`은 `createLearning`이 계속 쓰므로 남긴다.
 - `MissionService.assignChunk`가 청크 결과를 `log.info`로 남기는 것과 같은 결로 배치 관측 지점을 남긴다.
 
