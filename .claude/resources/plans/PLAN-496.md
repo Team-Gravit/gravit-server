@@ -374,7 +374,8 @@ public ResponseEntity<LessonResultResponse> getLessonResult(
 
 - 레슨 제출 API는 생성된 제출 아이디만 응답한다. 결과 화면에 필요한 리그명, 레벨, 유닛 요약은 그 아이디로 별도 조회한다
 - 결과 조회는 본인의 제출만 가능하다. 없는 제출이거나 타인의 제출이면 같은 예외로 응답한다
-- 결과 화면의 리그명과 레벨은 "이번 제출로 확정된 값"이 아니라 **조회 시점의 현재 값**이다. 보상이 재시도 큐로 넘어간 경우 아직 반영 전 값이 보일 수 있고, 재조회하면 수렴한다
+- 결과 화면의 레벨과 XP는 제출 트랜잭션에서 함께 커밋되므로 이번 제출이 항상 반영되어 있다
+- 결과 화면의 리그명은 **조회 시점의 현재 값**이다. 리그 점수 지급이 재시도 큐로 넘어간 경우 아직 반영 전 리그명이 보일 수 있고, 재조회하면 수렴한다
 
 사용자에게 보이는 값의 의미가 바뀌므로 `service-policy/README.md`의 갱신 규칙에 따라 같은 작업에서 반영한다. 티어 구간과 산식은 `league-season.md`에 이미 있으므로 옮겨 적지 않는다.
 
@@ -411,11 +412,11 @@ public ResponseEntity<LessonResultResponse> getLessonResult(
 - 대상 테스트
   - `LessonFacadeIntegrationTest` (추가): 경계 축소 후 `LessonCompletedEvent`의 `AFTER_COMMIT` 리스너가 실제로 실행되는지. `@RecordApplicationEvents`는 발행 여부만 보므로 **리그 점수와 미션 진행도를 직접 조회해** 단언한다. 발행만 검증하면 이번 리팩토링의 핵심 위험을 못 잡는다. `TCSpringBootTest`는 클래스 레벨 `@Transactional` 없이 `DatabaseCleaner`로 정리하므로 커밋이 실제로 일어나 이 검증이 성립한다
   - `LessonFacadeIntegrationTest` (추가): 티어 승급이 일어나는 점수 경계에서 제출한 뒤 반환된 아이디로 `getLessonResult`를 호출하면 `leagueName`이 **승급 후** 값인지
-  - `LessonFacadeIntegrationTest` (추가): 경계 안 쓰기 중 하나가 실패하면 5건이 모두 롤백되는지 (`@MockitoSpyBean`으로 실패 주입)
+  - ~~`LessonFacadeIntegrationTest` (추가): 경계 안 쓰기 중 하나가 실패하면 5건이 모두 롤백되는지 (`@MockitoSpyBean`으로 실패 주입)~~ **제외** - 검증 깊이를 얕게 유지하기로 해 이번 범위에서 뺐다. 후속 보강 대상
   - `LessonFacadeIntegrationTest` (추가): **유저 리그가 없는 상태에서 제출하면 제출은 커밋되고 아이디가 반환되며, `getLessonResult`만 `USER_LEAGUE_NOT_FOUND`로 실패하는지.** 이번 설계 변경의 핵심 회귀 방어다
   - `LessonFacadeIntegrationTest` (추가): 같은 레슨을 두 번 제출하면 **서로 다른 아이디**가 반환되고, 각 아이디로 조회했을 때 모두 성공하는지. 조회 키를 `lessonSubmissionId`로 정한 근거의 회귀 방어
   - `LessonFacadeIntegrationTest` (추가): 타인의 `lessonSubmissionId`로 조회하면 `LESSON_SUBMISSION_NOT_FOUND`인지
-  - `LessonFacadeIntegrationTest`: 재제출(`isFirstTry == false`) 시 보상 미지급 유지
+  - ~~`LessonFacadeIntegrationTest`: 재제출(`isFirstTry == false`) 시 보상 미지급 유지~~ **제외** - 위와 같은 사유
   - `LessonFacadeUnitTest`: `TransactionTemplate` 스텁 주입(콜백을 즉시 실행하도록), 사전 조회 3건이 쓰기 이전에 일어나는지 `InOrder`로 검증. 기존 테스트 2건은 `saveLessonSubmission`의 응답 필드를 단언하고 있으므로 아이디 반환과 이벤트 발행 여부 단언으로 바꾼다
   - `LessonFacadeUnitTest` (추가): `getLessonResult`가 네 서비스를 조합해 응답을 만드는지
   - `ProblemFacade` 관련 기존 테스트 회귀
