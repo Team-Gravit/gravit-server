@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,10 +35,6 @@ public class Learning {
     @Column(name = "user_id", nullable = false, unique = true)
     private long userId;
 
-    @Version
-    @Column(nullable = false)
-    private long version;
-
     @Builder(access = AccessLevel.PRIVATE)
     private Learning(Long userId) {
         this.recentSolvedChapterId = 1L;
@@ -47,7 +42,6 @@ public class Learning {
         this.consecutiveSolvedDays = 0;
         this.planetConquestRate = 0;
         this.userId = userId;
-        this.version = 0L;
     }
 
     public static Learning create(long userId){
@@ -76,14 +70,6 @@ public class Learning {
 
             int after = this.consecutiveSolvedDays;
             return new ConsecutiveSolvedDto(before, after);
-        }
-    }
-
-    public void updateConsecutiveDays(){
-        if(!this.todaySolved) {
-            this.consecutiveSolvedDays = 0;
-        }else{
-            this.todaySolved = false;
         }
     }
 }
