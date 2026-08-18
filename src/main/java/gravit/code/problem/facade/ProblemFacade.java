@@ -13,6 +13,7 @@ import gravit.code.unit.service.UnitQueryService;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -27,6 +28,8 @@ public class ProblemFacade {
 
     private final UnitQueryService unitQueryService;
     private final ProblemFactory problemFactory;
+
+    private final TransactionTemplate transactionTemplate;
 
     @Transactional(readOnly = true)
     public LessonResponse getAllProblemInLesson(
@@ -45,7 +48,6 @@ public class ProblemFacade {
         );
     }
 
-    @Transactional
     public void saveProblemSubmission(
             long userId,
             ProblemSubmissionSaveRequest request
@@ -54,7 +56,9 @@ public class ProblemFacade {
 
         problemSubmissionCommandService.validateProblemSubmissions(requests);
 
-        List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, requests);
-        wrongAnsweredProblemIds.forEach(problemId -> wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemId));
+        transactionTemplate.executeWithoutResult(status -> {
+            List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, requests);
+            wrongAnsweredProblemIds.forEach(problemId -> wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemId));
+        });
     }
 }

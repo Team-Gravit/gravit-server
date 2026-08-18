@@ -3,6 +3,7 @@ package gravit.code.lesson.controller;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
+import gravit.code.lesson.dto.response.LessonResultResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.lesson.facade.LessonFacade;
 import jakarta.validation.Valid;
@@ -37,6 +38,14 @@ public class LessonController implements LessonControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid @RequestBody LearningSubmissionSaveRequest request
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(lessonFacade.saveLessonSubmission(loginUser.getId(), request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(lessonFacade.saveLessonSubmission(loginUser.getId(), request));
+    }
+
+    @GetMapping("/results/{lessonSubmissionId}")
+    public ResponseEntity<LessonResultResponse> getLessonResult(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("lessonSubmissionId") Long lessonSubmissionId
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(lessonFacade.getLessonResult(loginUser.getId(), lessonSubmissionId));
     }
 }

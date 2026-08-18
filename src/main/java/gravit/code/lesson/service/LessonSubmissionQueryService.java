@@ -3,6 +3,8 @@ package gravit.code.lesson.service;
 import gravit.code.chapter.dto.internal.ChapterSolvedStatDto;
 import gravit.code.chapter.dto.response.TopChapterResponse;
 import gravit.code.global.consts.TimeZoneConst;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +41,15 @@ public class LessonSubmissionQueryService {
             long lessonId
     ) {
         return !lessonSubmissionRepository.existsByLessonIdAndUserId(lessonId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public long getSubmittedLessonId(
+            long userId,
+            long lessonSubmissionId
+    ) {
+        return lessonSubmissionRepository.findLessonIdByIdAndUserId(lessonSubmissionId, userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

@@ -112,6 +112,14 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public UserLevelResponse getUserLevel(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+
+        return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
+    }
+
+    @Transactional(readOnly = true)
     public User getUser(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
