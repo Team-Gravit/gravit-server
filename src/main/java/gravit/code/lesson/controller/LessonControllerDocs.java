@@ -4,6 +4,7 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
+import gravit.code.lesson.dto.response.LessonResultResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,9 +57,13 @@ public interface LessonControllerDocs {
     );
 
     @Operation(summary = "레슨 결과 저장", description = "레슨 완료 후 문제 풀이 결과를 저장하고 사용자 레벨을 업데이트합니다.<br>" +
+            "생성된 레슨 제출 아이디만 반환하며, 결과 화면 정보는 <strong>레슨 결과 조회</strong> API로 받습니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "✅ 레슨 결과 저장 성공"),
+            @ApiResponse(responseCode = "201", description = "✅ 레슨 결과 저장 성공",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = LessonSubmissionSaveResponse.class))
+            ),
             @ApiResponse(responseCode = "404", description = "🚨 레슨 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -69,42 +74,12 @@ public interface LessonControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "404", description = "🚨 레슨 풀이 제출 이력 조회 실패",
+            @ApiResponse(responseCode = "404", description = "🚨 문제 조회 실패",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "레슨 풀이 제출 이력 조회 실패",
-                                            value = "{\"error\" : \"LESSON_4042\", \"message\" : \"레슨 풀이 제출 이력 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "🚨 문제 풀이 제출 이력 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "문제 풀이 제출 이력 조회 실패",
-                                            value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 풀이 제출 이력 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "🚨 유닛 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유닛 조회 실패",
-                                            value = "{\"error\" : \"UNIT_4041\", \"message\" : \"유닛 조회에 실패하였습니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "🚨 유저 리그 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
-                                    @ExampleObject(
-                                            name = "유저 리그 조회 실패",
-                                            value = "{\"error\" : \"U_L_4041\", \"message\" : \"유저의 리그가 존재하지 않습니다\"}"
+                                            name = "문제 조회 실패",
+                                            value = "{\"error\" : \"PROBLEM_4041\", \"message\" : \"문제 조회에 실패하였습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -124,5 +99,60 @@ public interface LessonControllerDocs {
     ResponseEntity<LessonSubmissionSaveResponse> saveLessonSubmission(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid @RequestBody LearningSubmissionSaveRequest request
+    );
+
+    @Operation(summary = "레슨 결과 조회", description = "레슨 제출 아이디로 결과 화면에 필요한 정보를 조회합니다.<br>" +
+            "레벨과 XP는 제출 트랜잭션에서 함께 커밋되므로 이번 제출이 항상 반영되어 있습니다.<br>" +
+            "리그명은 <strong>조회 시점의 현재 값</strong>입니다. " +
+            "리그 점수 지급이 재시도 큐로 넘어간 경우 아직 반영 전 리그명이 보일 수 있으며, 재조회하면 수렴합니다.<br>" +
+            "본인의 제출만 조회할 수 있습니다.<br>" +
+            "🔐 <strong>Jwt 필요</strong><br>")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "✅ 레슨 결과 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "🚨 레슨 풀이 제출 이력 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "레슨 풀이 제출 이력 조회 실패",
+                                            value = "{\"error\" : \"LESSON_4042\", \"message\" : \"레슨 풀이 제출 이력 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "🚨 유저 리그 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 리그 조회 실패",
+                                            value = "{\"error\" : \"U_L_4041\", \"message\" : \"유저의 리그가 존재하지 않습니다\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 조회 실패",
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "🚨 유닛 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유닛 조회 실패",
+                                            value = "{\"error\" : \"UNIT_4041\", \"message\" : \"유닛 조회에 실패하였습니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @GetMapping("/results/{lessonSubmissionId}")
+    ResponseEntity<LessonResultResponse> getLessonResult(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("lessonSubmissionId") Long lessonSubmissionId
     );
 }

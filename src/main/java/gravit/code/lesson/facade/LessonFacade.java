@@ -11,6 +11,7 @@ import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningCommandService;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
+import gravit.code.lesson.dto.response.LessonResultResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.service.LessonQueryService;
@@ -27,6 +28,7 @@ import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -52,6 +54,7 @@ public class LessonFacade {
     private final UserLeagueService userLeagueService;
 
     private final ApplicationEventPublisher publisher;
+    private final TransactionTemplate transactionTemplate;
 
     @Transactional(readOnly = true)
     public LessonDetailResponse getAllLessonInUnit(
@@ -77,51 +80,57 @@ public class LessonFacade {
         );
     }
 
-    @Transactional
     public LessonSubmissionSaveResponse saveLessonSubmission(
             long userId,
             LearningSubmissionSaveRequest request
     ){
-        // 레슨, 문제 풀이 추출
         LessonSubmissionSaveRequest lessonSubmissionSaveRequest = request.lessonSubmissionSaveRequest();
         List<ProblemSubmissionSaveRequest> problemSubmissionSaveRequests = request.problemSubmissionSaveRequests();
 
-        // 챕터, 유닛, 레슨 아이디 추출
         LearningIdsDto learningIdsDto = lessonQueryService.getLearningIdsByLessonId(lessonSubmissionSaveRequest.lessonId());
-
-        // 문제 풀이 정합성 검증
         problemSubmissionCommandService.validateProblemSubmissions(problemSubmissionSaveRequests);
-
         boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, lessonSubmissionSaveRequest.lessonId());
 
-        // 레슨, 문제 풀이 저장
-        lessonSubmissionCommandService.saveLessonSubmission(userId, lessonSubmissionSaveRequest);
-        List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, problemSubmissionSaveRequests);
+        Long lessonSubmissionId = transactionTemplate.execute(status -> {
+            long submissionId = lessonSubmissionCommandService.saveLessonSubmission(userId, lessonSubmissionSaveRequest);
 
-        // 틀린 문제에 대해 오답노트 저장
-        wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, wrongAnsweredProblemIds);
+            List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, problemSubmissionSaveRequests);
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, wrongAnsweredProblemIds);
 
-        // 응답 데이터 조회
-        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(lessonSubmissionSaveRequest.lessonId());
+            userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
+            ConsecutiveSolvedDto consecutiveSolvedDto = learningCommandService.updateLearningStatus(userId, learningIdsDto.chapterId());
+
+            if(isFirstTry){
+                publisher.publishEvent(new LessonCompletedEvent(
+                        userId,
+                        learningIdsDto.lessonId(),
+                        learningIdsDto.chapterId(),
+                        POINT_PER_LESSON,
+                        lessonSubmissionSaveRequest.accuracy(),
+                        lessonSubmissionSaveRequest.learningTime(),
+                        consecutiveSolvedDto.before(),
+                        consecutiveSolvedDto.after()
+                ));
+            }
+
+            return submissionId;
+        });
+
+        return LessonSubmissionSaveResponse.create(lessonSubmissionId);
+    }
+
+    @Transactional(readOnly = true)
+    public LessonResultResponse getLessonResult(
+            long userId,
+            long lessonSubmissionId
+    ){
+        long lessonId = lessonSubmissionQueryService.getSubmittedLessonId(userId, lessonSubmissionId);
+
         String leagueName = userLeagueService.getUserLeagueName(userId);
-        UserLevelResponse userLevelResponse = userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
+        UserLevelResponse userLevelResponse = userService.getUserLevel(userId);
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(lessonId);
 
-        ConsecutiveSolvedDto consecutiveSolvedDto = learningCommandService.updateLearningStatus(userId, learningIdsDto.chapterId());
-
-        if(isFirstTry){
-            publisher.publishEvent(new LessonCompletedEvent(
-                    userId,
-                    learningIdsDto.lessonId(),
-                    learningIdsDto.chapterId(),
-                    POINT_PER_LESSON,
-                    lessonSubmissionSaveRequest.accuracy(),
-                    lessonSubmissionSaveRequest.learningTime(),
-                    consecutiveSolvedDto.before(),
-                    consecutiveSolvedDto.after()
-            ));
-        }
-
-        return LessonSubmissionSaveResponse.create(
+        return LessonResultResponse.create(
                 leagueName,
                 userLevelResponse,
                 unitSummaryResponse

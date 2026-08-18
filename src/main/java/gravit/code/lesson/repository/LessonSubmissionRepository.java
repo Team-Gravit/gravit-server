@@ -47,6 +47,16 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
             long userId
     );
 
+    @Query("""
+        SELECT ls.lessonId
+        FROM LessonSubmission ls
+        WHERE ls.id = :lessonSubmissionId AND ls.userId = :userId
+    """)
+    Optional<Long> findLessonIdByIdAndUserId(
+            @Param("lessonSubmissionId") long lessonSubmissionId,
+            @Param("userId") long userId
+    );
+
     @Query(value = """
             SELECT CAST(CEIL(CUME_DIST() OVER (ORDER BY solved_count DESC) * 100) AS INTEGER)
             FROM (

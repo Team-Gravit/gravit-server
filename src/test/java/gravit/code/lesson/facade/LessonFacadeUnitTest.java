@@ -23,6 +23,7 @@ import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -82,6 +85,9 @@ class LessonFacadeUnitTest {
 
     @Mock
     private ApplicationEventPublisher publisher;
+
+    @Mock
+    private TransactionTemplate transactionTemplate;
 
     @Nested
     @DisplayName("유닛별 레슨 목록을 조회할 때")
@@ -143,6 +149,12 @@ class LessonFacadeUnitTest {
     @DisplayName("레슨 풀이 결과를 저장할 때")
     class SaveLessonSubmission {
 
+        @BeforeEach
+        void 트랜잭션_경계는_콜백을_즉시_실행한다() {
+            when(transactionTemplate.execute(any())).thenAnswer(invocation ->
+                    invocation.getArgument(0, TransactionCallback.class).doInTransaction(null));
+        }
+
         @Test
         void 첫_풀이면_이벤트를_발행한다() {
             // given
@@ -154,8 +166,7 @@ class LessonFacadeUnitTest {
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
-            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
+            when(lessonSubmissionCommandService.saveLessonSubmission(userId, lessonRequest)).thenReturn(100L);
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
                     .thenReturn(UserLevelResponse.create(1, 20));
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
@@ -165,10 +176,7 @@ class LessonFacadeUnitTest {
             LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(userId, request);
 
             // then
-            assertSoftly(softly -> {
-                softly.assertThat(result.leagueName()).isEqualTo("브론즈");
-                softly.assertThat(result.userLevelResponse().currentLevel()).isEqualTo(1);
-            });
+            assertThat(result.lessonSubmissionId()).isEqualTo(100L);
             verify(publisher).publishEvent(any(LessonCompletedEvent.class));
         }
 
@@ -183,8 +191,7 @@ class LessonFacadeUnitTest {
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(false);
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
-            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
+            when(lessonSubmissionCommandService.saveLessonSubmission(userId, lessonRequest)).thenReturn(200L);
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(false)))
                     .thenReturn(UserLevelResponse.create(1, 0));
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
@@ -194,7 +201,7 @@ class LessonFacadeUnitTest {
             LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(userId, request);
 
             // then
-            assertThat(result.leagueName()).isEqualTo("브론즈");
+            assertThat(result.lessonSubmissionId()).isEqualTo(200L);
             verify(publisher, never()).publishEvent(any(LessonCompletedEvent.class));
         }
 
@@ -209,8 +216,6 @@ class LessonFacadeUnitTest {
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
-            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
                     .thenReturn(UserLevelResponse.create(1, 20));
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
@@ -236,8 +241,6 @@ class LessonFacadeUnitTest {
             LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(lessonRequest, problemRequests);
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
-            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
                     .thenReturn(UserLevelResponse.create(1, 20));
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
@@ -267,8 +270,6 @@ class LessonFacadeUnitTest {
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
             when(problemSubmissionCommandService.saveProblemSubmissions(userId, problemRequests)).thenReturn(List.of(1L, 2L));
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
-            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
                     .thenReturn(UserLevelResponse.create(1, 20));
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
@@ -293,8 +294,6 @@ class LessonFacadeUnitTest {
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
             when(problemSubmissionCommandService.saveProblemSubmissions(userId, problemRequests)).thenReturn(List.of());
-            when(unitQueryService.getUnitSummaryByLessonId(1L)).thenReturn(new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"));
-            when(userLeagueService.getUserLeagueName(userId)).thenReturn("브론즈");
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
                     .thenReturn(UserLevelResponse.create(1, 20));
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));

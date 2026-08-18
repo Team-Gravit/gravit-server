@@ -1,43 +1,23 @@
 package gravit.code.lesson.dto.response;
 
-import gravit.code.unit.dto.response.UnitSummaryResponse;
-import gravit.code.user.dto.response.UserLevelResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
-@Schema(description = "풀이 결과 저장 Response")
+@Schema(description = "레슨 풀이 결과 저장 Response")
 public record LessonSubmissionSaveResponse(
 
         @Schema(
-                description = "리그 이름",
-                example = "브론즈",
+                description = "생성된 레슨 제출 아이디",
+                example = "1",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        String leagueName,
-
-        @Schema(
-                description = "유저 레벨 정보",
-                requiredMode = Schema.RequiredMode.REQUIRED
-        )
-        UserLevelResponse userLevelResponse,
-
-        @Schema(
-                description = "유닛 요약 정보",
-                requiredMode = Schema.RequiredMode.REQUIRED
-        )
-        UnitSummaryResponse unitSummaryResponse
+        long lessonSubmissionId
 ) {
-    public static LessonSubmissionSaveResponse create(
-            String leagueName,
-            UserLevelResponse userLevelResponse,
-            UnitSummaryResponse unitSummaryResponse
-    ){
+    public static LessonSubmissionSaveResponse create(long lessonSubmissionId){
         return LessonSubmissionSaveResponse.builder()
-                .leagueName(leagueName)
-                .userLevelResponse(userLevelResponse)
-                .unitSummaryResponse(unitSummaryResponse)
+                .lessonSubmissionId(lessonSubmissionId)
                 .build();
     }
 }

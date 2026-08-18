@@ -14,7 +14,7 @@ public class LessonSubmissionCommandService {
     private final LessonSubmissionRepository lessonSubmissionRepository;
 
     @Transactional
-    public void saveLessonSubmission(
+    public long saveLessonSubmission(
         long userId,
         LessonSubmissionSaveRequest request
     ) {
@@ -25,6 +25,6 @@ public class LessonSubmissionCommandService {
                 userId
         );
 
-        lessonSubmissionRepository.save(lessonSubmission);
+        return lessonSubmissionRepository.save(lessonSubmission).getId();
     }
 }
