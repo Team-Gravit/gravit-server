@@ -6,12 +6,12 @@ import gravit.code.learning.domain.Learning;
 import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.repository.LearningRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LearningCommandService {
@@ -21,13 +21,9 @@ public class LearningCommandService {
 
     @Transactional
     public void updateConsecutiveDays(){
-        List<Learning> learnings = learningRepository.findAll();
+        int resetCount = learningRepository.resetConsecutiveDays();
 
-        for(Learning learning : learnings){
-            learning.updateConsecutiveDays();
-        }
-
-        learningRepository.saveAll(learnings);
+        log.info("연속 학습일 정산 완료 - 갱신 행 수: {}", resetCount);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
