@@ -168,6 +168,10 @@ public enum CustomErrorCode implements ErrorCode {
     // CS-NOTE
     CHAPTER_NAME_NOT_MATCHING(HttpStatus.BAD_REQUEST, "CS_NOTE_4001", "CS 노트 경로와 챕터 이름이 매칭되지 않습니다."),
 
+    // Interview
+    INTERVIEW_CATEGORY_AXIS_INVALID(HttpStatus.BAD_REQUEST, "INTERVIEW_4001", "면접 카테고리의 모드와 축 조합이 유효하지 않습니다. (공통 CS는 축이 없고, 직무별은 축이 있어야 합니다.)"),
+    INTERVIEW_SESSION_SCORE_INVALID(HttpStatus.BAD_REQUEST, "INTERVIEW_4002", "면접 세션 점수가 0점과 만점 사이를 벗어났습니다."),
+
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
     DATABASE_EXCEPTION(HttpStatus.BAD_REQUEST, "DB_4001", "데이터베이스 작업 중 예외 발생"),

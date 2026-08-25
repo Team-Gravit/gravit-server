@@ -1,6 +1,8 @@
 package gravit.code.interview.domain.master;
 
 import gravit.code.global.entity.BaseEntity;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.enums.InterviewAxis;
 import gravit.code.interview.domain.enums.InterviewMode;
 import jakarta.persistence.Column;
@@ -60,10 +62,27 @@ public class InterviewCategory extends BaseEntity {
             String name,
             InterviewAxis axis
     ) {
+        validateModeAxis(mode, axis);
+
         return InterviewCategory.builder()
                 .mode(mode)
                 .name(name)
                 .axis(axis)
                 .build();
+    }
+
+    private static void validateModeAxis(
+            InterviewMode mode,
+            InterviewAxis axis
+    ) {
+        boolean hasAxis = axis != null;
+
+        if (mode == InterviewMode.COMMON_CS && hasAxis) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_CATEGORY_AXIS_INVALID);
+        }
+
+        if (mode == InterviewMode.JOB_SPECIFIC && !hasAxis) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_CATEGORY_AXIS_INVALID);
+        }
     }
 }

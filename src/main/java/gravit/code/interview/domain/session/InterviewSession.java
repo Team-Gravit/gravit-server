@@ -2,6 +2,8 @@ package gravit.code.interview.domain.session;
 
 import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.enums.InterviewInputType;
 import gravit.code.interview.domain.enums.InterviewJobRole;
 import gravit.code.interview.domain.enums.InterviewLevel;
@@ -136,6 +138,9 @@ public class InterviewSession extends BaseEntity {
             int accuracyScore,
             int coherenceScore
     ) {
+        validateScoreInRange(accuracyScore, this.accuracyMaxScore);
+        validateScoreInRange(coherenceScore, this.coherenceMaxScore);
+
         this.accuracyScore = accuracyScore;
         this.coherenceScore = coherenceScore;
         this.status = InterviewSessionStatus.COMPLETED;
@@ -153,5 +158,14 @@ public class InterviewSession extends BaseEntity {
 
     public boolean isAllGraded(int questionCount) {
         return this.gradedAnswerCount >= questionCount;
+    }
+
+    private static void validateScoreInRange(
+            int score,
+            int maxScore
+    ) {
+        if (score < 0 || score > maxScore) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID);
+        }
     }
 }
