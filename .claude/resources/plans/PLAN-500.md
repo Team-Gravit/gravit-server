@@ -127,8 +127,9 @@ AI 면접 시뮬레이터의 기반이 되는 Entity 10종과 enum, 이를 생�
 
 - `.claude/spec/service-policy/README.md` — 도메인별 파일 목록에 `interview.md` 한 줄 추가
 - `.claude/rules/project-structure.md` — 디렉토리 트리에 `interview/` 추가
+- `src/main/java/gravit/code/global/exception/domain/CustomErrorCode.java` — `// Interview` 그룹과 에러코드 2종 (리뷰 반영으로 추가)
 
-`CustomErrorCode`는 이번에 손대지 않는다. 아래 "Entity 내부 검증" 참조.
+`CustomErrorCode`는 애초에 손대지 않을 계획이었으나, PR 리뷰에서 값 조합 검증 부재가 지적되어 2종을 추가했다. 아래 "Entity 내부 검증" 참조.
 
 ## 구현 계획
 
@@ -195,6 +196,10 @@ public static InterviewCategory create(
         InterviewAxis axis
 )
 ```
+
+`create()`는 `validateModeAxis()`로 모드와 축의 조합을 검사한다. `COMMON_CS`인데 축이 있거나 `JOB_SPECIFIC`인데 축이 없으면 `INTERVIEW_CATEGORY_AXIS_INVALID`를 던진다.
+`interview_stack_axis`가 (스택, 축) → 카테고리 매핑이라 `JOB_SPECIFIC` 카테고리는 반드시 어떤 축에 붙는다. 축 없는 직무별 카테고리는 매핑될 자리가 없다.
+같은 규칙을 DB CHECK로도 걸자는 리뷰 의견이 있었으나 넣지 않았다. 아래 "CHECK 제약" 참조.
 
 **`InterviewTechStack`** — 온보딩 스택 선택지
 
@@ -303,6 +308,10 @@ public boolean isAllGraded(int questionCount)    // gradedAnswerCount >= questio
 
 **이번 이슈의 전이 메서드는 진입 상태를 검사하지 않고 전이만 수행한다.** 검사하려면 위반 시 던질 에러코드가 필요한데, 그 이름과 HTTP 상태는 서비스 흐름이 정해져야 잡힌다 (아래 "Entity 내부 검증" 참조).
 
+다만 `complete()`의 점수 범위는 예외로 검사한다. 리뷰 반영으로 `validateScoreInRange()`가 두 점수 모두에 `0 <= score <= maxScore`를 적용하고, 벗어나면 `INTERVIEW_SESSION_SCORE_INVALID`를 던진다.
+상태 전이 검증과 달리 이 규칙은 서비스 흐름이 정해지기를 기다릴 필요가 없다. 만점이 이미 엔티티 안에 있고, 점수가 만점을 넘으면 완료 세션의 점수 표시와 과거 점수 보존이 깨진다는 것도 지금 확정된 사실이다.
+DB CHECK가 아니라 엔티티에 둔 이유는 아래 "CHECK 제약" 참조.
+
 **`InterviewAnswer`**
 
 | 필드 | 타입 | 컬럼 |
@@ -331,6 +340,11 @@ public void submit(
 `submit()`은 `content`를 trim해 빈 문자열이면 `NO_RESPONSE`, 아니면 `ANSWERED`로 잡고 `answeredAt`을 채운다.
 `content`가 null이거나 공백뿐인 경우가 같은 경로를 타므로 VOICE의 STT 결과가 비었을 때도 자동으로 `NO_RESPONSE`가 된다.
 inputType별 필수 검증(VOICE에 audioFile 필수 등)은 서비스 책임이라 엔티티에 넣지 않는다.
+
+`audioUrl`만 있고 `content`가 비면 `ANSWERED`로 잡아야 한다는 리뷰 의견이 있었으나 반려했다.
+정상적인 음성 답변은 `submit(STT_변환결과, audioUrl)`이고, `content`가 빈 채로 `audioUrl`만 오는 것은 STT가 실패했거나 무음인 경우다.
+정책(`interview.md`)이 "음성 입력의 변환 결과가 비어 있는 경우도" 무응답과 같이 0점 처리하라고 규정하고, 채점은 전부 텍스트 기반(개념 커버리지, 근거 구간 인용, 오개념 교정)이라 `content` 없이는 채점할 대상이 없다.
+`audioUrl`은 판정과 무관하게 그대로 저장되므로 음성 파일이 유실되지도 않는다.
 
 `(session_id, display_order)`에 UNIQUE. 같은 순번이 두 번 생기면 화면 순서가 깨진다.
 
@@ -417,15 +431,25 @@ public static InterviewAnswerWrongConcept create(
 #### 2.4 Entity 내부 검증
 
 `domain.md`는 검증 로직을 Entity의 private 메서드로 두라고 하고, `common.md`는 `RestApiException(CustomErrorCode.XXX)`을 쓰라고 한다.
-이번 이슈에서 확실히 필요한 검증은 다음 둘이다.
+
+애초 계획은 **에러코드를 하나도 추가하지 않고 검증도 넣지 않는 것**이었다. 근거는 검증이 필요한 항목들이 모두 서비스 흐름에 달려 있다는 것이었다.
 
 - `InterviewSession`의 상태 전이 - 진입 상태가 아닌데 전이하면 실패해야 한다
 - `InterviewSession.create()`의 모드별 필수값 - `JOB_SPECIFIC`인데 `jobRole`이나 `techStackId`가 null이면 실패해야 한다
 
-두 검증 모두 에러코드가 필요한데, 코드 이름과 HTTP 상태는 이 값이 어느 API에서 어떻게 드러나는지가 정해져야 잡힌다.
+이 둘은 여전히 후속 이슈의 몫이다. 코드 이름과 HTTP 상태가 이 값이 어느 API에서 어떻게 드러나는지에 달려 있고,
 `INTERVIEW_INPUT_TYPE_MISMATCH(400)`처럼 이슈 명세에 이미 나온 코드도 답변 제출 API의 것이라 이번 범위 밖이다.
-**따라서 이번 이슈에서는 에러코드를 추가하지 않고 검증도 넣지 않는다.** 상태 전이 메서드는 전이만 수행하고, 검증과 에러코드 추가는 세션 서비스를 만드는 후속 이슈에서 함께 넣는다.
 반쯤 맞는 이름의 에러코드를 지금 박아두면 후속 이슈에서 지우고 다시 만들게 된다.
+
+**PR 리뷰를 반영해 다음 두 검증과 에러코드는 이번 이슈에 넣었다.** 위 둘과 달리, 지켜야 할 규칙이 서비스 흐름과 무관하게 엔티티 안에서 이미 확정되어 있는 항목이다.
+
+| 검증 | 위치 | 에러코드 |
+|---|---|---|
+| 모드와 축의 조합 | `InterviewCategory.validateModeAxis()` | `INTERVIEW_CATEGORY_AXIS_INVALID` (400) |
+| 세션 점수의 범위 | `InterviewSession.validateScoreInRange()` | `INTERVIEW_SESSION_SCORE_INVALID` (400) |
+
+두 규칙 모두 판단에 필요한 값이 엔티티 안에 전부 있다. 축 조합은 `mode`와 `axis`만 보면 되고, 점수 범위는 생성 시점에 계산해 둔 만점과 비교하면 된다.
+`CustomErrorCode`에는 `// CS-NOTE` 뒤, `// Global` 앞에 `// Interview` 그룹을 만들어 두 코드를 넣는다.
 
 ### 3. Flyway
 
@@ -479,6 +503,20 @@ CHECK 제약:
 - `interview_answer.display_order > 0`
 
 상한(예: `accuracy_score <= 14`)은 걸지 않는다. 점수 배분이 바뀔 때마다 마이그레이션을 새로 쳐야 하고, 상한은 채점 코드가 지킬 규칙이다.
+
+**여러 컬럼을 함께 보는 CHECK도 걸지 않는다.** 리뷰에서 다음 둘이 제안됐다.
+
+- `interview_category` - `COMMON_CS`면 `axis IS NULL`, `JOB_SPECIFIC`이면 `axis IS NOT NULL`
+- `interview_session` - `accuracy_score <= accuracy_max_score`, `coherence_score <= coherence_max_score`
+
+둘 다 규칙 자체는 맞고, 같은 행의 컬럼끼리 비교하는 형태라 위의 "배점이 바뀌면 마이그레이션을 새로 쳐야 한다"는 근거는 적용되지 않는다. 그래도 넣지 않은 이유는 셋이다.
+
+1. 기존 마이그레이션 39개에 여러 컬럼을 함께 보는 CHECK가 하나도 없다. CHECK는 enum 값 열거와 단일 컬럼 범위 검사에만 쓰고 있다
+2. 위반 시 터지는 것이 flush 시점의 `DataIntegrityViolationException`이라 어느 로직이 잘못했는지 드러나지 않는다. 특히 점수는 AI 채점을 5문항 다 돌린 뒤 트랜잭션 전체가 롤백된다. 엔티티에서 막으면 잘못 만든 지점에서 에러코드와 함께 즉시 실패한다
+3. 축 조합은 마스터 데이터 내용이 아직 확정되지 않았다. 지금 스키마로 굳히면 축 없는 직무별 카테고리가 필요해질 때 제약 해제 마이그레이션이 한 번 더 필요하다
+
+대신 두 규칙 모두 엔티티 검증으로 넣었다. 위 "Entity 내부 검증" 참조.
+`interview_session`의 `mode`와 `job_role`, `tech_stack_id` 조합도 같은 성격의 규칙인데, 이쪽은 검증 자체가 후속 이슈로 밀려 있어 DB와 엔티티 어느 쪽에도 두지 않았다.
 
 인덱스:
 
@@ -541,12 +579,12 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 
 - **세션 레벨의 질문 선별 규칙** - 일치 필터(HIGH 세션은 `difficulty = HIGH`인 질문만) 대 구성 프로파일(HIGH 세션은 상 3 + 중 2처럼 난이도 혼합). 세션 생성 서비스 이슈에서 정한다. 이 결정이 `InterviewDifficulty`와 `InterviewLevel`을 나중에 합칠지도 함께 결정한다
 - **`gradedAnswerCount` 증분의 동시성 처리** - 원자적 UPDATE 대 비관적 락. 비동기 채점 흐름 이슈에서 정한다
-- **`InterviewSession` 상태 전이 검증과 에러코드** - `CustomErrorCode`에 어떤 코드를 어떤 HTTP 상태로 추가할지. 세션 서비스 이슈에서 정한다 (위 "Entity 내부 검증" 참조)
+- **`InterviewSession` 상태 전이 검증과 에러코드** - `CustomErrorCode`에 어떤 코드를 어떤 HTTP 상태로 추가할지. 세션 서비스 이슈에서 정한다. 리뷰 반영으로 축 조합과 점수 범위 검증은 이번에 들어갔지만, 상태 전이와 모드별 필수값(`JOB_SPECIFIC`의 `jobRole`, `techStackId`)은 그대로 남아 있다 (위 "Entity 내부 검증" 참조)
 - **마스터 데이터 시딩 내용** - 카테고리 목록, 기술 스택 목록, 질문 풀과 개념명. 별도 마이그레이션 이슈에서 정한다
 
 ## 검증
 
-이번 이슈의 산출물은 Entity와 스키마뿐이라 비즈니스 로직 테스트가 성립하지 않는다. 확인 경로는 셋이다.
+이번 이슈의 산출물은 Entity와 스키마뿐이라 서비스 로직 테스트가 성립하지 않는다. 팩토리와 상태 전이, 그리고 리뷰 반영으로 들어간 값 조합 검증까지가 테스트 대상이다. 확인 경로는 셋이다.
 
 **1. `./gradlew build`** - `flyway validate`가 포함되어 V40의 문법과 체크섬 정합을 확인한다.
 
@@ -556,9 +594,18 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 
 | 시나리오 | 검증 |
 |---|---|
+| `공통_CS_카테고리는_축_없이_만들어진다()` | `create(COMMON_CS, "네트워크", null)` → `axis == null` |
+| `직무별_카테고리는_축과_함께_만들어진다()` | `create(JOB_SPECIFIC, "Spring", FRAMEWORK)` → `axis = FRAMEWORK` |
+| `공통_CS_카테고리에_축을_주면_예외가_발생한다()` | `create(COMMON_CS, "네트워크", COMMON)` → `INTERVIEW_CATEGORY_AXIS_INVALID` |
+| `직무별_카테고리에_축이_없으면_예외가_발생한다()` | `create(JOB_SPECIFIC, "Spring", null)` → `INTERVIEW_CATEGORY_AXIS_INVALID` |
 | `세션을_생성하면_진행중_상태와_만점이_채워진다()` | `create(..., questionCount = 5)` → `status = IN_PROGRESS`, `accuracyMaxScore = 70`, `coherenceMaxScore = 30`, `gradedAnswerCount = 0`, `startedAt != null` |
+| `만점_이하의_점수는_그대로_기록된다()` | `complete(70, 30)` → `status = COMPLETED`, 점수 2종 그대로, `endedAt != null` |
+| `만점을_넘는_점수는_예외가_발생한다()` | `complete(71, 30)` → `INTERVIEW_SESSION_SCORE_INVALID` |
+| `음수_점수는_예외가_발생한다()` | `complete(70, -1)` → `INTERVIEW_SESSION_SCORE_INVALID` |
 | `답변이_비어있으면_무응답으로_기록된다()` | `submit("   ", null)` → `status = NO_RESPONSE` |
 | `답변에_내용이_있으면_응답으로_기록된다()` | `submit("본문", null)` → `status = ANSWERED`, `answeredAt != null` |
+| `음성_답변의_변환_결과가_비어있으면_음성_파일을_남기고_무응답으로_기록된다()` | `submit(null, audioUrl)` → `status = NO_RESPONSE`, `audioUrl`은 그대로 저장 |
+| `음성_답변의_변환_결과가_있으면_응답으로_기록된다()` | `submit("본문", audioUrl)` → `status = ANSWERED`, `audioUrl`은 그대로 저장 |
 | `무응답_피드백은_모든_점수가_0이다()` | `createNoResponse(answerId)` → 점수 3종 0, `accuracyMultiplier = 1.0` |
 | `개념_판정은_전달과_누락이_서로_다른_필드를_채운다()` | `covered(...)` → `quote != null` 이고 `missingFeedbackText == null`, `missing(...)`은 반대 |
 | `엔티티_10종이_저장되고_조회된다()` | 각 Entity를 `TestEntityManager`로 저장 후 재조회. 컬럼 매핑과 enum 매핑 확인 |
@@ -566,7 +613,9 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 작성 시 유의:
 
 - `accuracyMultiplier` 비교에는 `isEqualByComparingTo`를 쓴다. `createNoResponse()`가 넣는 `BigDecimal.ONE`은 scale이 0이고 `NUMERIC(2,1)` 컬럼에서 읽으면 scale이 1이라, `isEqualTo`는 값이 같아도 실패한다.
-- 상태 전이 메서드는 진입 상태를 검사하지 않으므로 "잘못된 전이가 막힌다"류 시나리오를 쓰지 않는다. 그 검증은 에러코드가 생기는 후속 이슈의 몫이다.
+- 상태 전이 메서드는 진입 상태를 검사하지 않으므로 "잘못된 전이가 막힌다"류 시나리오를 쓰지 않는다. 그 검증은 에러코드가 생기는 후속 이슈의 몫이다. `complete()`의 점수 범위는 검사하므로 예외다.
+- 예외 케이스는 `test-convention.md`에 따라 타입만이 아니라 `errorCode`까지 검증하고, `CustomErrorCode`는 static import로 쓴다.
+- 음성 답변 2건은 "`audioUrl`만으로는 `ANSWERED`가 되지 않는다"가 의도된 동작임을 코드로 못 박는 목적이다. 리뷰에서 이 지점이 버그로 오인됐다.
 
 **3. V40 자체 검증은 로컬 기동으로 한다** - Docker Compose로 PostgreSQL을 띄우고 `./gradlew bootRun`으로 V40을 실제 적용해, 테이블 10개와 제약, 인덱스가 생성되는지 확인한다. 이슈 체크리스트의 "로컬 기동으로 스키마와 Entity 매핑 검증" 항목이 이것이다.
 
@@ -576,4 +625,6 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 
 - `src/main/java/gravit/code/interview/domain/{master,session,grading}/`: 계획서가 지정한 `domain/` 평면 배치 대신 성격별 하위 패키지로 나눴다 — 이유: 구현 후 실측하니 `interview/domain/`이 19개 파일로 2위 `admin`(9개)의 두 배가 됐다. `admin`이 domain 9개에서 전체 94개로 늘어난 비율을 보면, Repository와 Service가 붙는 후속 이슈에서 한 패키지에 100개 안팎이 쌓인다. `admin/domain/staging`, `admin/domain/audit` 선례를 따라 나눴고, 아직 참조하는 코드가 없어 파일 이동과 `package` 선언 변경만으로 끝났다. 엔티티를 합쳐 개수를 줄이는 방향은 검토 후 기각했다 (`InterviewFeedback`을 `InterviewAnswer`에 흡수하면 채점 전후가 구분되지 않고, `InterviewAnswerWrongConcept`을 `InterviewAnswerConceptResult`에 흡수하면 `conceptId`가 nullable이 되고 `covered`가 3값이 된다)
 - `src/main/resources/db/migration/V40__add_interview_tables.sql`: 계획서가 지정한 `V32`가 아니라 `V40`으로 만들었다 — 이유: 계획 수립 시 최신 마이그레이션 번호를 이전 브랜치(`refactor/467-oauth-env-boundary`)에서 확인해 V31로 오인했다. `origin/dev`에는 V39까지 있고 `V32__add_problem_submission_user_index.sql`이 이미 존재해 `flywayMigrate`가 "Found more than one migration with version 32"로 실패했다. 다음 빈 번호인 V40으로 바꿔 `flywayValidate`를 통과시켰다
+- `InterviewCategory`, `InterviewSession`, `CustomErrorCode`: 계획서가 "이번 이슈에서는 에러코드를 추가하지 않고 검증도 넣지 않는다"고 못 박았으나, PR 리뷰를 반영해 검증 2종과 에러코드 2종을 넣었다 — 이유: 계획의 근거는 "검증에 필요한 판단 기준이 서비스 흐름에 달려 있다"였는데, 축 조합(`mode`와 `axis`)과 점수 범위(생성 시점에 계산해 둔 만점)는 판단에 필요한 값이 엔티티 안에 이미 전부 있어 그 근거가 적용되지 않는다. 리뷰는 두 건 모두 DB CHECK로 해결하자고 제안했으나 엔티티 검증으로 대신했다 (근거는 "CHECK 제약" 절). 상태 전이와 모드별 필수값 검증은 계획대로 후속 이슈에 남겼다
+- `InterviewAnswer`: 리뷰에서 "`audioUrl`만 있어도 `ANSWERED`로 잡아야 한다"는 수정 요청이 있었으나 로직을 바꾸지 않고 테스트 2건만 추가했다 — 이유: 정책 `interview.md`가 음성 변환 결과가 빈 경우를 무응답과 같이 0점 처리하도록 규정하고, 채점이 전부 텍스트 기반이라 `content` 없이는 채점 대상이 없다. 제안대로 고치면 무음 녹음이 `ANSWERED`로 남아 "무응답은 전체 개념을 누락으로 기록한다"는 채점 경로를 타지 못한다. 대신 이 동작이 의도된 것임을 테스트로 명시했다
 - `src/test/java/gravit/code/interview/domain/InterviewEntityMappingIntegrationTest.java`: 계획서가 지정한 파일명 `InterviewEntityMappingTest.java`와 `TestEntityManager` 대신 `InterviewEntityMappingIntegrationTest.java` + `@TCSpringBootTest` + `EntityManager` 직접 주입으로 작성했다 — 이유: `TestEntityManager`를 쓰려면 `@DataJpaTest` 인프라가 필요한데 이 프로젝트의 `TCRepositoryTest`가 파일 전체 주석 처리되어 죽어 있다. 또 `test-convention.md`가 "모든 테스트는 통합 테스트(`@TCSpringBootTest`)"와 파일명 `{Class}IntegrationTest`를 규정한다. 검증 시나리오 6개는 계획서 그대로 유지했고, 트랜잭션이 필요한 저장/조회 구간은 `TransactionTemplate`으로 감쌌다 (테스트 클래스에 `@Transactional`을 붙이지 않는 기존 통합 테스트 방식)
