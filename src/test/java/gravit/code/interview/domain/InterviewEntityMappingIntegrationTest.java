@@ -1,5 +1,6 @@
 package gravit.code.interview.domain;
 
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.enums.InterviewAnswerStatus;
 import gravit.code.interview.domain.enums.InterviewAxis;
 import gravit.code.interview.domain.enums.InterviewConceptType;
@@ -30,7 +31,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_CATEGORY_AXIS_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
@@ -49,12 +53,57 @@ class InterviewEntityMappingIntegrationTest {
     private static final long CONCEPT_ID = 1L;
     private static final long TECH_STACK_ID = 1L;
     private static final int FIRST_ORDER = 1;
+    private static final String AUDIO_URL = "https://cdn.gravit.com/interview/answer-1.m4a";
 
     @PersistenceContext
     private EntityManager em;
 
     @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Nested
+    @DisplayName("카테고리를 만들 때")
+    class CreateCategory {
+
+        @Test
+        void 공통_CS_카테고리는_축_없이_만들어진다() {
+            // given & when
+            InterviewCategory category = InterviewCategory.create(InterviewMode.COMMON_CS, "네트워크", null);
+
+            // then
+            assertThat(category.getAxis()).isNull();
+        }
+
+        @Test
+        void 직무별_카테고리는_축과_함께_만들어진다() {
+            // given & when
+            InterviewCategory category = InterviewCategory.create(
+                    InterviewMode.JOB_SPECIFIC, "Spring", InterviewAxis.FRAMEWORK);
+
+            // then
+            assertThat(category.getAxis()).isEqualTo(InterviewAxis.FRAMEWORK);
+        }
+
+        @Test
+        void 공통_CS_카테고리에_축을_주면_예외가_발생한다() {
+            // given & when & then
+            assertThatThrownBy(() ->
+                    InterviewCategory.create(InterviewMode.COMMON_CS, "네트워크", InterviewAxis.COMMON))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_CATEGORY_AXIS_INVALID);
+        }
+
+        @Test
+        void 직무별_카테고리에_축이_없으면_예외가_발생한다() {
+            // given & when & then
+            assertThatThrownBy(() ->
+                    InterviewCategory.create(InterviewMode.JOB_SPECIFIC, "Spring", null))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_CATEGORY_AXIS_INVALID);
+        }
+    }
 
     @Nested
     @DisplayName("세션을 생성할 때")
@@ -88,6 +137,64 @@ class InterviewEntityMappingIntegrationTest {
     }
 
     @Nested
+    @DisplayName("세션을 완료할 때")
+    class CompleteSession {
+
+        @Test
+        void 만점_이하의_점수는_그대로_기록된다() {
+            // given
+            InterviewSession session = 진행중_세션();
+
+            // when
+            session.complete(EXPECTED_ACCURACY_MAX_SCORE, EXPECTED_COHERENCE_MAX_SCORE);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(session.getStatus()).isEqualTo(InterviewSessionStatus.COMPLETED);
+                softly.assertThat(session.getAccuracyScore()).isEqualTo(EXPECTED_ACCURACY_MAX_SCORE);
+                softly.assertThat(session.getCoherenceScore()).isEqualTo(EXPECTED_COHERENCE_MAX_SCORE);
+                softly.assertThat(session.getEndedAt()).isNotNull();
+            });
+        }
+
+        @Test
+        void 만점을_넘는_점수는_예외가_발생한다() {
+            // given
+            InterviewSession session = 진행중_세션();
+
+            // when & then
+            assertThatThrownBy(() -> session.complete(EXPECTED_ACCURACY_MAX_SCORE + 1, EXPECTED_COHERENCE_MAX_SCORE))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_SESSION_SCORE_INVALID);
+        }
+
+        @Test
+        void 음수_점수는_예외가_발생한다() {
+            // given
+            InterviewSession session = 진행중_세션();
+
+            // when & then
+            assertThatThrownBy(() -> session.complete(EXPECTED_ACCURACY_MAX_SCORE, -1))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_SESSION_SCORE_INVALID);
+        }
+
+        private InterviewSession 진행중_세션() {
+            return InterviewSession.create(
+                    USER_ID,
+                    InterviewMode.COMMON_CS,
+                    InterviewInputType.TEXT,
+                    null,
+                    null,
+                    InterviewLevel.MEDIUM,
+                    QUESTION_COUNT
+            );
+        }
+    }
+
+    @Nested
     @DisplayName("답변을 제출할 때")
     class SubmitAnswer {
 
@@ -101,6 +208,36 @@ class InterviewEntityMappingIntegrationTest {
 
             // then
             assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.NO_RESPONSE);
+        }
+
+        @Test
+        void 음성_답변의_변환_결과가_비어있으면_음성_파일을_남기고_무응답으로_기록된다() {
+            // given
+            InterviewAnswer answer = InterviewAnswer.createPending(SESSION_ID, QUESTION_ID, FIRST_ORDER);
+
+            // when
+            answer.submit(null, AUDIO_URL);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.NO_RESPONSE);
+                softly.assertThat(answer.getAudioUrl()).isEqualTo(AUDIO_URL);
+            });
+        }
+
+        @Test
+        void 음성_답변의_변환_결과가_있으면_응답으로_기록된다() {
+            // given
+            InterviewAnswer answer = InterviewAnswer.createPending(SESSION_ID, QUESTION_ID, FIRST_ORDER);
+
+            // when
+            answer.submit("TCP는 연결 지향 프로토콜입니다", AUDIO_URL);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.ANSWERED);
+                softly.assertThat(answer.getAudioUrl()).isEqualTo(AUDIO_URL);
+            });
         }
 
         @Test
