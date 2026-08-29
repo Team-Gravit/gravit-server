@@ -1,7 +1,6 @@
-package gravit.code.interview.domain.master;
+package gravit.code.interviewTechStack.domain;
 
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.interview.domain.enums.InterviewJobRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

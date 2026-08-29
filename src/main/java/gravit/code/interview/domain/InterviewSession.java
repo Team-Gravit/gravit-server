@@ -1,14 +1,9 @@
-package gravit.code.interview.domain.session;
+package gravit.code.interview.domain;
 
 import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.interview.domain.enums.InterviewInputType;
-import gravit.code.interview.domain.enums.InterviewJobRole;
-import gravit.code.interview.domain.enums.InterviewLevel;
-import gravit.code.interview.domain.enums.InterviewMode;
-import gravit.code.interview.domain.enums.InterviewSessionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,6 +25,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewSession extends BaseEntity {
 
+    public static final int QUESTION_COUNT = 5;
+
     private static final int ACCURACY_SCORE_PER_QUESTION = 14;
     private static final int COHERENCE_SCORE_PER_QUESTION = 6;
 
@@ -47,10 +44,6 @@ public class InterviewSession extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "input_type", nullable = false)
     private InterviewInputType inputType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "job_role")
-    private InterviewJobRole jobRole;
 
     @Column(name = "tech_stack_id")
     private Long techStackId;
@@ -89,22 +82,19 @@ public class InterviewSession extends BaseEntity {
             long userId,
             InterviewMode mode,
             InterviewInputType inputType,
-            InterviewJobRole jobRole,
             Long techStackId,
-            InterviewLevel level,
-            int questionCount
+            InterviewLevel level
     ) {
         this.userId = userId;
         this.mode = mode;
         this.inputType = inputType;
-        this.jobRole = jobRole;
         this.techStackId = techStackId;
         this.level = level;
         this.status = InterviewSessionStatus.IN_PROGRESS;
         this.accuracyScore = 0;
-        this.accuracyMaxScore = ACCURACY_SCORE_PER_QUESTION * questionCount;
+        this.accuracyMaxScore = ACCURACY_SCORE_PER_QUESTION * QUESTION_COUNT;
         this.coherenceScore = 0;
-        this.coherenceMaxScore = COHERENCE_SCORE_PER_QUESTION * questionCount;
+        this.coherenceMaxScore = COHERENCE_SCORE_PER_QUESTION * QUESTION_COUNT;
         this.gradedAnswerCount = 0;
         this.startedAt = LocalDateTime.now(TimeZoneConst.KST);
         this.endedAt = null;
@@ -114,19 +104,15 @@ public class InterviewSession extends BaseEntity {
             long userId,
             InterviewMode mode,
             InterviewInputType inputType,
-            InterviewJobRole jobRole,
             Long techStackId,
-            InterviewLevel level,
-            int questionCount
+            InterviewLevel level
     ) {
         return InterviewSession.builder()
                 .userId(userId)
                 .mode(mode)
                 .inputType(inputType)
-                .jobRole(jobRole)
                 .techStackId(techStackId)
                 .level(level)
-                .questionCount(questionCount)
                 .build();
     }
 
@@ -156,8 +142,8 @@ public class InterviewSession extends BaseEntity {
         this.gradedAnswerCount++;
     }
 
-    public boolean isAllGraded(int questionCount) {
-        return this.gradedAnswerCount >= questionCount;
+    public boolean isAllGraded() {
+        return this.gradedAnswerCount >= QUESTION_COUNT;
     }
 
     private static void validateScoreInRange(

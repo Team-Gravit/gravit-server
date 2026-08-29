@@ -1,4 +1,4 @@
-package gravit.code.interview.domain.grading;
+package gravit.code.interviewFeedback.domain;
 
 import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package gravit.code.interview.domain.enums;
+package gravit.code.interview.domain;
 
 public enum InterviewSessionStatus {
     IN_PROGRESS,

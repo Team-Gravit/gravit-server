@@ -1,8 +1,7 @@
-package gravit.code.interview.domain.session;
+package gravit.code.interview.domain;
 
 import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.interview.domain.enums.InterviewAnswerStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,8 +50,8 @@ public class InterviewAnswer extends BaseEntity {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "audio_url", columnDefinition = "TEXT")
-    private String audioUrl;
+    @Column(name = "audio_key")
+    private String audioKey;
 
     @Column(name = "answered_at")
     private LocalDateTime answeredAt;
@@ -68,7 +67,7 @@ public class InterviewAnswer extends BaseEntity {
         this.displayOrder = displayOrder;
         this.status = InterviewAnswerStatus.PENDING;
         this.content = null;
-        this.audioUrl = null;
+        this.audioKey = null;
         this.answeredAt = null;
     }
 
@@ -86,10 +85,10 @@ public class InterviewAnswer extends BaseEntity {
 
     public void submit(
             String content,
-            String audioUrl
+            String audioKey
     ) {
         this.content = content;
-        this.audioUrl = audioUrl;
+        this.audioKey = audioKey;
         this.status = resolveStatus(content);
         this.answeredAt = LocalDateTime.now(TimeZoneConst.KST);
     }

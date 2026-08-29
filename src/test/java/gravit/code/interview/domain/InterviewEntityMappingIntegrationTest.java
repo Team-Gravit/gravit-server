@@ -1,25 +1,18 @@
 package gravit.code.interview.domain;
 
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.interview.domain.enums.InterviewAnswerStatus;
-import gravit.code.interview.domain.enums.InterviewAxis;
-import gravit.code.interview.domain.enums.InterviewConceptType;
-import gravit.code.interview.domain.enums.InterviewDifficulty;
-import gravit.code.interview.domain.enums.InterviewInputType;
-import gravit.code.interview.domain.enums.InterviewJobRole;
-import gravit.code.interview.domain.enums.InterviewLevel;
-import gravit.code.interview.domain.enums.InterviewMode;
-import gravit.code.interview.domain.enums.InterviewSessionStatus;
-import gravit.code.interview.domain.grading.InterviewAnswerConceptResult;
-import gravit.code.interview.domain.grading.InterviewAnswerWrongConcept;
-import gravit.code.interview.domain.grading.InterviewFeedback;
-import gravit.code.interview.domain.master.InterviewCategory;
-import gravit.code.interview.domain.master.InterviewQuestion;
-import gravit.code.interview.domain.master.InterviewQuestionConcept;
-import gravit.code.interview.domain.master.InterviewStackAxis;
-import gravit.code.interview.domain.master.InterviewTechStack;
-import gravit.code.interview.domain.session.InterviewAnswer;
-import gravit.code.interview.domain.session.InterviewSession;
+import gravit.code.interviewFeedback.domain.InterviewAnswerConceptResult;
+import gravit.code.interviewFeedback.domain.InterviewAnswerWrongConcept;
+import gravit.code.interviewFeedback.domain.InterviewFeedback;
+import gravit.code.interviewQuestion.domain.InterviewCategory;
+import gravit.code.interviewQuestion.domain.InterviewConceptType;
+import gravit.code.interviewQuestion.domain.InterviewDifficulty;
+import gravit.code.interviewQuestion.domain.InterviewQuestion;
+import gravit.code.interviewQuestion.domain.InterviewQuestionConcept;
+import gravit.code.interviewTechStack.domain.InterviewAxis;
+import gravit.code.interviewTechStack.domain.InterviewJobRole;
+import gravit.code.interviewTechStack.domain.InterviewStackAxis;
+import gravit.code.interviewTechStack.domain.InterviewTechStack;
 import gravit.code.support.TCSpringBootTest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -40,7 +33,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 @TCSpringBootTest
 class InterviewEntityMappingIntegrationTest {
 
-    private static final int QUESTION_COUNT = 5;
     private static final int EXPECTED_ACCURACY_MAX_SCORE = 70;
     private static final int EXPECTED_COHERENCE_MAX_SCORE = 30;
 
@@ -53,7 +45,7 @@ class InterviewEntityMappingIntegrationTest {
     private static final long CONCEPT_ID = 1L;
     private static final long TECH_STACK_ID = 1L;
     private static final int FIRST_ORDER = 1;
-    private static final String AUDIO_URL = "https://cdn.gravit.com/interview/answer-1.m4a";
+    private static final String AUDIO_KEY = "interview/session-1/answer-1.m4a";
 
     @PersistenceContext
     private EntityManager em;
@@ -116,10 +108,8 @@ class InterviewEntityMappingIntegrationTest {
                     USER_ID,
                     InterviewMode.JOB_SPECIFIC,
                     InterviewInputType.TEXT,
-                    InterviewJobRole.BACKEND,
                     TECH_STACK_ID,
-                    InterviewLevel.HIGH,
-                    QUESTION_COUNT
+                    InterviewLevel.HIGH
             );
 
             // then
@@ -187,9 +177,7 @@ class InterviewEntityMappingIntegrationTest {
                     InterviewMode.COMMON_CS,
                     InterviewInputType.TEXT,
                     null,
-                    null,
-                    InterviewLevel.MEDIUM,
-                    QUESTION_COUNT
+                    InterviewLevel.MEDIUM
             );
         }
     }
@@ -216,12 +204,12 @@ class InterviewEntityMappingIntegrationTest {
             InterviewAnswer answer = InterviewAnswer.createPending(SESSION_ID, QUESTION_ID, FIRST_ORDER);
 
             // when
-            answer.submit(null, AUDIO_URL);
+            answer.submit(null, AUDIO_KEY);
 
             // then
             assertSoftly(softly -> {
                 softly.assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.NO_RESPONSE);
-                softly.assertThat(answer.getAudioUrl()).isEqualTo(AUDIO_URL);
+                softly.assertThat(answer.getAudioKey()).isEqualTo(AUDIO_KEY);
             });
         }
 
@@ -231,12 +219,12 @@ class InterviewEntityMappingIntegrationTest {
             InterviewAnswer answer = InterviewAnswer.createPending(SESSION_ID, QUESTION_ID, FIRST_ORDER);
 
             // when
-            answer.submit("TCP는 연결 지향 프로토콜입니다", AUDIO_URL);
+            answer.submit("TCP는 연결 지향 프로토콜입니다", AUDIO_KEY);
 
             // then
             assertSoftly(softly -> {
                 softly.assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.ANSWERED);
-                softly.assertThat(answer.getAudioUrl()).isEqualTo(AUDIO_URL);
+                softly.assertThat(answer.getAudioKey()).isEqualTo(AUDIO_KEY);
             });
         }
 
@@ -319,9 +307,7 @@ class InterviewEntityMappingIntegrationTest {
                     InterviewMode.COMMON_CS,
                     InterviewInputType.VOICE,
                     null,
-                    null,
-                    InterviewLevel.LOW,
-                    QUESTION_COUNT
+                    InterviewLevel.LOW
             );
             InterviewAnswer answer = InterviewAnswer.createPending(SESSION_ID, QUESTION_ID, FIRST_ORDER);
             InterviewFeedback feedback = InterviewFeedback.create(
@@ -370,7 +356,6 @@ class InterviewEntityMappingIntegrationTest {
                 InterviewSession foundSession = em.find(InterviewSession.class, session.getId());
                 softly.assertThat(foundSession.getStatus()).isEqualTo(InterviewSessionStatus.IN_PROGRESS);
                 softly.assertThat(foundSession.getInputType()).isEqualTo(InterviewInputType.VOICE);
-                softly.assertThat(foundSession.getJobRole()).isNull();
                 softly.assertThat(foundSession.getTechStackId()).isNull();
                 softly.assertThat(foundSession.getAccuracyMaxScore()).isEqualTo(EXPECTED_ACCURACY_MAX_SCORE);
 

@@ -1,10 +1,10 @@
-package gravit.code.interview.domain.master;
+package gravit.code.interviewQuestion.domain;
 
 import gravit.code.global.entity.BaseEntity;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.interview.domain.enums.InterviewAxis;
-import gravit.code.interview.domain.enums.InterviewMode;
+import gravit.code.interview.domain.InterviewMode;
+import gravit.code.interviewTechStack.domain.InterviewAxis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
