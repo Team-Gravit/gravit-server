@@ -73,7 +73,7 @@ AI 면접 시뮬레이터의 기반이 되는 Entity 10종과 enum, 이를 생�
 
 따라서 `accuracyMaxScore = 70`, `coherenceMaxScore = 30`이고 `interview_answer.display_order`는 1~5다.
 
-문항당 배점(14 / 3 / 3)은 최초 명세와 일치하며 갈린 것은 문항 수뿐이다. 엔티티는 만점을 상수로 박지 않고 `create()`가 `questionCount`로 계산하므로 문항 수가 다시 바뀌어도 컬럼과 마이그레이션은 손대지 않는다.
+문항당 배점(14 / 3 / 3)은 최초 명세와 일치하며 갈린 것은 문항 수뿐이다. 리뷰 반영으로 문항 수는 `InterviewSession.QUESTION_COUNT` 상수가 되었고 `create()`가 이 상수로 만점을 계산한다. 만점을 컬럼에 저장하는 것은 그대로라 배점이 바뀌어도 과거 세션의 만점은 보존된다.
 
 **5. `gradedAnswerCount` 증분에 `@Version`을 붙이지 않는다**
 
@@ -84,34 +84,32 @@ AI 면접 시뮬레이터의 기반이 되는 Entity 10종과 enum, 이를 생�
 
 ### 신규 파일
 
-**enum (`src/main/java/gravit/code/interview/domain/enums/`)**
-
-- `InterviewMode.java` — `COMMON_CS`, `JOB_SPECIFIC`
-- `InterviewAxis.java` — `COMMON`, `FRAMEWORK`, `LANGUAGE`
-- `InterviewJobRole.java` — `BACKEND`, `FRONTEND`, `ANDROID`, `IOS`
-- `InterviewDifficulty.java` — `HIGH`, `MEDIUM`, `LOW` (질문 하나의 난이도)
-- `InterviewLevel.java` — `HIGH`, `MEDIUM`, `LOW` (세션 전체 난이도, 아래 "난이도와 레벨을 왜 나누는가" 참조)
-- `InterviewConceptType.java` — `ESSENTIAL`, `SUPPLEMENTARY`
-- `InterviewInputType.java` — `TEXT`, `VOICE`
-- `InterviewSessionStatus.java` — `IN_PROGRESS`, `GRADING`, `COMPLETED`, `ABANDONED`
-- `InterviewAnswerStatus.java` — `PENDING`, `ANSWERED`, `NO_RESPONSE`
-
-**Entity (`src/main/java/gravit/code/interview/domain/`, 성격별 하위 패키지)**
-
-`master/` — 사전 저장
-
-- `InterviewCategory.java` — 채점 집계 단위
-- `InterviewTechStack.java` — 온보딩 스택 선택지
-- `InterviewStackAxis.java` — 스택의 축별 카테고리 매핑
-- `InterviewQuestion.java` — 질문
-- `InterviewQuestionConcept.java` — 질문별 핵심 개념
-
-`session/` — 진행 상태
+**`interview/domain/` — 세션·답변**
 
 - `InterviewSession.java` — 면접 세션
 - `InterviewAnswer.java` — 답변
+- `InterviewMode.java` — `COMMON_CS`, `JOB_SPECIFIC`
+- `InterviewInputType.java` — `TEXT`, `VOICE`
+- `InterviewLevel.java` — `HIGH`, `MEDIUM`, `LOW` (세션 전체 난이도, 아래 "난이도와 레벨을 왜 나누는가" 참조)
+- `InterviewSessionStatus.java` — `IN_PROGRESS`, `GRADING`, `COMPLETED`, `ABANDONED`
+- `InterviewAnswerStatus.java` — `PENDING`, `ANSWERED`, `NO_RESPONSE`
 
-`grading/` — 채점 결과
+**`interviewQuestion/domain/` — 질문 풀과 분류**
+
+- `InterviewCategory.java` — 채점 집계 단위
+- `InterviewQuestion.java` — 질문
+- `InterviewQuestionConcept.java` — 질문별 핵심 개념
+- `InterviewDifficulty.java` — `HIGH`, `MEDIUM`, `LOW` (질문 하나의 난이도)
+- `InterviewConceptType.java` — `ESSENTIAL`, `SUPPLEMENTARY`
+
+**`interviewTechStack/domain/` — 온보딩 스택 선택지**
+
+- `InterviewTechStack.java` — 스택 선택지
+- `InterviewStackAxis.java` — 스택의 축별 카테고리 매핑
+- `InterviewJobRole.java` — `BACKEND`, `FRONTEND`, `ANDROID`, `IOS`
+- `InterviewAxis.java` — `COMMON`, `FRAMEWORK`, `LANGUAGE`
+
+**`interviewFeedback/domain/` — 채점 결과**
 
 - `InterviewFeedback.java` — 답변 1건의 채점 결과 (1:1)
 - `InterviewAnswerConceptResult.java` — 개념별 전달/누락 판정
@@ -135,10 +133,11 @@ AI 면접 시뮬레이터의 기반이 되는 Entity 10종과 enum, 이를 생�
 
 ### 1. enum
 
-`domain/enums/` 하위에 9개 파일. 상수 나열만 하고 필드나 메서드를 두지 않는다 (`MissionStatus`와 동일한 형태).
+9개 파일. 상수 나열만 하고 필드나 메서드를 두지 않는다 (`MissionStatus`와 동일한 형태).
+각 enum은 자신을 쓰는 엔티티와 같은 패키지의 `domain/` 바로 아래에 둔다.
 
 ```java
-package gravit.code.interview.domain.enums;
+package gravit.code.interview.domain;
 
 public enum InterviewSessionStatus {
     IN_PROGRESS,
@@ -148,7 +147,13 @@ public enum InterviewSessionStatus {
 }
 ```
 
-> **배치 주의**: 기존 도메인(`mission`)은 enum을 `domain/` 바로 아래 둔다. 이번엔 Entity가 10개라 같은 디렉토리에 20개 파일이 섞이는 걸 피하려 `domain/enums/`로 내린다. 사용자가 확정한 배치다.
+> **배치**: 면접 도메인을 `interview/`, `interviewQuestion/`, `interviewTechStack/`, `interviewFeedback/` 네 개의 최상위 패키지로 나누고, 각 패키지의 `domain/` 바로 아래에 Entity와 enum을 평면으로 둔다.
+>
+> 처음에는 `interview/domain/` 아래 `enums/`, `master/`, `session/`, `grading/`로 뎁스를 나눴으나 리뷰 반영으로 두 번 바뀌었다. 먼저 팀 컨벤션(enum은 자신을 포함하는 엔티티와 같은 패키지)에 맞춰 평면화했고, 이어서 `interview/` 하나에 19개가 몰리는 문제로 최상위를 분할했다.
+>
+> 분할 근거는 이 프로젝트의 실제 배치다. `domain/` 파일 수는 `auth` 6개, `user`·`mission` 5개가 최대이고 나머지 17개 패키지는 1~2개다. `option/`, `answer/`처럼 상위 개념에 종속적인 도메인도 최상위 패키지를 갖는다.
+>
+> `InterviewMode`(세션·카테고리)와 `InterviewAxis`(카테고리·스택 축)만 패키지를 넘나든다. `Mode`는 `interview/`, `Axis`는 `interviewTechStack/`에 두고 `interviewQuestion/`이 참조한다. 한 방향 참조라 순환은 없다.
 
 ### 2. Entity
 
@@ -255,7 +260,6 @@ public static InterviewTechStack create(
 | userId | long | `user_id` NOT NULL |
 | mode | InterviewMode | `mode` NOT NULL |
 | inputType | InterviewInputType | `input_type` NOT NULL |
-| jobRole | InterviewJobRole | `job_role` NULL |
 | techStackId | Long | `tech_stack_id` NULL |
 | level | InterviewLevel | `level` NOT NULL |
 | status | InterviewSessionStatus | `status` NOT NULL |
@@ -267,13 +271,16 @@ public static InterviewTechStack create(
 | startedAt | LocalDateTime | `started_at` NOT NULL |
 | endedAt | LocalDateTime | `ended_at` NULL |
 
-- `jobRole`, `techStackId`는 `JOB_SPECIFIC`일 때만 채워지므로 래퍼 타입 `Long`과 nullable 컬럼을 쓴다. 나머지 ID는 `long`.
+- `techStackId`는 `JOB_SPECIFIC`일 때만 채워지므로 래퍼 타입 `Long`과 nullable 컬럼을 쓴다. 나머지 ID는 `long`.
+- 직무는 세션이 들고 있지 않는다. `interview_tech_stack.job_role`이 NOT NULL이라 `techStackId`만으로 결정되고, 둘 다 두면 서로 어긋난 세션을 만들 수 있다. 리뷰 반영으로 제거했다.
 - 점수는 `int`로 두고 nullable로 만들지 않는다. "채점 전"은 `status`가 이미 구분하므로 null을 겹쳐 둘 이유가 없다.
 - `accuracyMaxScore`, `coherenceMaxScore`는 세션 생성 시점에 문항 수로 계산해 채운다. 정책이 바뀌어도 과거 세션의 만점이 보존된다.
 
 상수와 팩토리:
 
 ```java
+public static final int QUESTION_COUNT = 5;
+
 private static final int ACCURACY_SCORE_PER_QUESTION = 14;
 private static final int COHERENCE_SCORE_PER_QUESTION = 6;
 
@@ -281,16 +288,16 @@ public static InterviewSession create(
         long userId,
         InterviewMode mode,
         InterviewInputType inputType,
-        InterviewJobRole jobRole,
         Long techStackId,
-        InterviewLevel level,
-        int questionCount
+        InterviewLevel level
 )
 ```
 
+`QUESTION_COUNT`만 `public`이다. 세션 생성 서비스가 뽑는 질문 수와 `InterviewAnswer.display_order` 범위를 같은 값으로 맞춰야 하는데, `private`이면 서비스가 5를 따로 들고 있게 되어 만점과 답변 행 수가 어긋날 수 있다.
+
 `create()`가 `status = IN_PROGRESS`, `startedAt = LocalDateTime.now(TimeZoneConst.KST)`,
-`accuracyMaxScore = ACCURACY_SCORE_PER_QUESTION * questionCount`,
-`coherenceMaxScore = COHERENCE_SCORE_PER_QUESTION * questionCount`,
+`accuracyMaxScore = ACCURACY_SCORE_PER_QUESTION * QUESTION_COUNT`,
+`coherenceMaxScore = COHERENCE_SCORE_PER_QUESTION * QUESTION_COUNT`,
 나머지 카운터를 0으로 세팅한다. 문항 5개면 70점과 30점, 합 100점이 된다.
 
 `COHERENCE_SCORE_PER_QUESTION = 6`은 구조성 3점과 명료성 3점의 합이다. 두 축의 개별 상한(각 3점)은 엔티티에 두지 않는다. `structureScore`와 `clarityScore`가 각각 별도 컬럼이라 합계 상수와 개별 상한이 세 곳에 흩어지고, 배점이 바뀔 때 어긋날 여지가 생긴다. 개별 상한은 채점 프롬프트와 채점 코드가 지키고, 정책 파일에 값을 남긴다.
@@ -303,7 +310,7 @@ public void complete(int accuracyScore,
                      int coherenceScore)         // GRADING → COMPLETED, endedAt 기록
 public void abandon()                            // IN_PROGRESS → ABANDONED, endedAt 기록
 public void increaseGradedAnswerCount()
-public boolean isAllGraded(int questionCount)    // gradedAnswerCount >= questionCount
+public boolean isAllGraded()                     // gradedAnswerCount >= QUESTION_COUNT
 ```
 
 **이번 이슈의 전이 메서드는 진입 상태를 검사하지 않고 전이만 수행한다.** 검사하려면 위반 시 던질 에러코드가 필요한데, 그 이름과 HTTP 상태는 서비스 흐름이 정해져야 잡힌다 (아래 "Entity 내부 검증" 참조).
@@ -321,7 +328,7 @@ DB CHECK가 아니라 엔티티에 둔 이유는 아래 "CHECK 제약" 참조.
 | displayOrder | int | `display_order` NOT NULL |
 | status | InterviewAnswerStatus | `status` NOT NULL |
 | content | String | `content` TEXT NULL |
-| audioUrl | String | `audio_url` TEXT NULL |
+| audioKey | String | `audio_key` VARCHAR(255) NULL |
 | answeredAt | LocalDateTime | `answered_at` NULL |
 
 ```java
@@ -333,7 +340,7 @@ public static InterviewAnswer createPending(
 
 public void submit(
         String content,
-        String audioUrl
+        String audioKey
 )
 ```
 
@@ -341,10 +348,12 @@ public void submit(
 `content`가 null이거나 공백뿐인 경우가 같은 경로를 타므로 VOICE의 STT 결과가 비었을 때도 자동으로 `NO_RESPONSE`가 된다.
 inputType별 필수 검증(VOICE에 audioFile 필수 등)은 서비스 책임이라 엔티티에 넣지 않는다.
 
-`audioUrl`만 있고 `content`가 비면 `ANSWERED`로 잡아야 한다는 리뷰 의견이 있었으나 반려했다.
-정상적인 음성 답변은 `submit(STT_변환결과, audioUrl)`이고, `content`가 빈 채로 `audioUrl`만 오는 것은 STT가 실패했거나 무음인 경우다.
+`audioKey`만 있고 `content`가 비면 `ANSWERED`로 잡아야 한다는 리뷰 의견이 있었으나 반려했다.
+정상적인 음성 답변은 `submit(STT_변환결과, audioKey)`이고, `content`가 빈 채로 `audioKey`만 오는 것은 STT가 실패했거나 무음인 경우다.
 정책(`interview.md`)이 "음성 입력의 변환 결과가 비어 있는 경우도" 무응답과 같이 0점 처리하라고 규정하고, 채점은 전부 텍스트 기반(개념 커버리지, 근거 구간 인용, 오개념 교정)이라 `content` 없이는 채점할 대상이 없다.
-`audioUrl`은 판정과 무관하게 그대로 저장되므로 음성 파일이 유실되지도 않는다.
+`audioKey`는 판정과 무관하게 그대로 저장되므로 음성 파일이 유실되지도 않는다.
+
+`audio_key`는 URL이 아니라 스토리지 키를 담는다. 리뷰 반영으로 `audio_url TEXT`에서 바꿨다. 저장 대상은 만료되는 presigned URL이 아니라 영구 경로라 길이가 예측되고, `users.profile_img_number`처럼 URL을 저장하지 않고 식별자만 두는 것이 이 프로젝트의 기존 방식이다. URL 조립은 서비스 책임이고 키 스킴은 음성 업로드 이슈에서 정한다.
 
 `(session_id, display_order)`에 UNIQUE. 같은 순번이 두 번 생기면 화면 순서가 깨진다.
 
@@ -435,7 +444,7 @@ public static InterviewAnswerWrongConcept create(
 애초 계획은 **에러코드를 하나도 추가하지 않고 검증도 넣지 않는 것**이었다. 근거는 검증이 필요한 항목들이 모두 서비스 흐름에 달려 있다는 것이었다.
 
 - `InterviewSession`의 상태 전이 - 진입 상태가 아닌데 전이하면 실패해야 한다
-- `InterviewSession.create()`의 모드별 필수값 - `JOB_SPECIFIC`인데 `jobRole`이나 `techStackId`가 null이면 실패해야 한다
+- `InterviewSession.create()`의 모드별 필수값 - `JOB_SPECIFIC`인데 `techStackId`가 null이면 실패해야 한다
 
 이 둘은 여전히 후속 이슈의 몫이다. 코드 이름과 HTTP 상태가 이 값이 어느 API에서 어떻게 드러나는지에 달려 있고,
 `INTERVIEW_INPUT_TYPE_MISMATCH(400)`처럼 이슈 명세에 이미 나온 코드도 답변 제출 API의 것이라 이번 범위 밖이다.
@@ -516,7 +525,7 @@ CHECK 제약:
 3. 축 조합은 마스터 데이터 내용이 아직 확정되지 않았다. 지금 스키마로 굳히면 축 없는 직무별 카테고리가 필요해질 때 제약 해제 마이그레이션이 한 번 더 필요하다
 
 대신 두 규칙 모두 엔티티 검증으로 넣었다. 위 "Entity 내부 검증" 참조.
-`interview_session`의 `mode`와 `job_role`, `tech_stack_id` 조합도 같은 성격의 규칙인데, 이쪽은 검증 자체가 후속 이슈로 밀려 있어 DB와 엔티티 어느 쪽에도 두지 않았다.
+`interview_session`의 `mode`와 `tech_stack_id` 조합도 같은 성격의 규칙인데, 이쪽은 검증 자체가 후속 이슈로 밀려 있어 DB와 엔티티 어느 쪽에도 두지 않았다.
 
 인덱스:
 
@@ -579,7 +588,7 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 
 - **세션 레벨의 질문 선별 규칙** - 일치 필터(HIGH 세션은 `difficulty = HIGH`인 질문만) 대 구성 프로파일(HIGH 세션은 상 3 + 중 2처럼 난이도 혼합). 세션 생성 서비스 이슈에서 정한다. 이 결정이 `InterviewDifficulty`와 `InterviewLevel`을 나중에 합칠지도 함께 결정한다
 - **`gradedAnswerCount` 증분의 동시성 처리** - 원자적 UPDATE 대 비관적 락. 비동기 채점 흐름 이슈에서 정한다
-- **`InterviewSession` 상태 전이 검증과 에러코드** - `CustomErrorCode`에 어떤 코드를 어떤 HTTP 상태로 추가할지. 세션 서비스 이슈에서 정한다. 리뷰 반영으로 축 조합과 점수 범위 검증은 이번에 들어갔지만, 상태 전이와 모드별 필수값(`JOB_SPECIFIC`의 `jobRole`, `techStackId`)은 그대로 남아 있다 (위 "Entity 내부 검증" 참조)
+- **`InterviewSession` 상태 전이 검증과 에러코드** - `CustomErrorCode`에 어떤 코드를 어떤 HTTP 상태로 추가할지. 세션 서비스 이슈에서 정한다. 리뷰 반영으로 축 조합과 점수 범위 검증은 이번에 들어갔지만, 상태 전이와 모드별 필수값(`JOB_SPECIFIC`의 `techStackId`)은 그대로 남아 있다 (위 "Entity 내부 검증" 참조)
 - **마스터 데이터 시딩 내용** - 카테고리 목록, 기술 스택 목록, 질문 풀과 개념명. 별도 마이그레이션 이슈에서 정한다
 
 ## 검증
@@ -598,14 +607,14 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 | `직무별_카테고리는_축과_함께_만들어진다()` | `create(JOB_SPECIFIC, "Spring", FRAMEWORK)` → `axis = FRAMEWORK` |
 | `공통_CS_카테고리에_축을_주면_예외가_발생한다()` | `create(COMMON_CS, "네트워크", COMMON)` → `INTERVIEW_CATEGORY_AXIS_INVALID` |
 | `직무별_카테고리에_축이_없으면_예외가_발생한다()` | `create(JOB_SPECIFIC, "Spring", null)` → `INTERVIEW_CATEGORY_AXIS_INVALID` |
-| `세션을_생성하면_진행중_상태와_만점이_채워진다()` | `create(..., questionCount = 5)` → `status = IN_PROGRESS`, `accuracyMaxScore = 70`, `coherenceMaxScore = 30`, `gradedAnswerCount = 0`, `startedAt != null` |
+| `세션을_생성하면_진행중_상태와_만점이_채워진다()` | `create(...)` → `status = IN_PROGRESS`, `accuracyMaxScore = 70`, `coherenceMaxScore = 30`, `gradedAnswerCount = 0`, `startedAt != null` |
 | `만점_이하의_점수는_그대로_기록된다()` | `complete(70, 30)` → `status = COMPLETED`, 점수 2종 그대로, `endedAt != null` |
 | `만점을_넘는_점수는_예외가_발생한다()` | `complete(71, 30)` → `INTERVIEW_SESSION_SCORE_INVALID` |
 | `음수_점수는_예외가_발생한다()` | `complete(70, -1)` → `INTERVIEW_SESSION_SCORE_INVALID` |
 | `답변이_비어있으면_무응답으로_기록된다()` | `submit("   ", null)` → `status = NO_RESPONSE` |
 | `답변에_내용이_있으면_응답으로_기록된다()` | `submit("본문", null)` → `status = ANSWERED`, `answeredAt != null` |
-| `음성_답변의_변환_결과가_비어있으면_음성_파일을_남기고_무응답으로_기록된다()` | `submit(null, audioUrl)` → `status = NO_RESPONSE`, `audioUrl`은 그대로 저장 |
-| `음성_답변의_변환_결과가_있으면_응답으로_기록된다()` | `submit("본문", audioUrl)` → `status = ANSWERED`, `audioUrl`은 그대로 저장 |
+| `음성_답변의_변환_결과가_비어있으면_음성_파일을_남기고_무응답으로_기록된다()` | `submit(null, audioKey)` → `status = NO_RESPONSE`, `audioKey`는 그대로 저장 |
+| `음성_답변의_변환_결과가_있으면_응답으로_기록된다()` | `submit("본문", audioKey)` → `status = ANSWERED`, `audioKey`는 그대로 저장 |
 | `무응답_피드백은_모든_점수가_0이다()` | `createNoResponse(answerId)` → 점수 3종 0, `accuracyMultiplier = 1.0` |
 | `개념_판정은_전달과_누락이_서로_다른_필드를_채운다()` | `covered(...)` → `quote != null` 이고 `missingFeedbackText == null`, `missing(...)`은 반대 |
 | `엔티티_10종이_저장되고_조회된다()` | 각 Entity를 `TestEntityManager`로 저장 후 재조회. 컬럼 매핑과 enum 매핑 확인 |
@@ -615,7 +624,7 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 - `accuracyMultiplier` 비교에는 `isEqualByComparingTo`를 쓴다. `createNoResponse()`가 넣는 `BigDecimal.ONE`은 scale이 0이고 `NUMERIC(2,1)` 컬럼에서 읽으면 scale이 1이라, `isEqualTo`는 값이 같아도 실패한다.
 - 상태 전이 메서드는 진입 상태를 검사하지 않으므로 "잘못된 전이가 막힌다"류 시나리오를 쓰지 않는다. 그 검증은 에러코드가 생기는 후속 이슈의 몫이다. `complete()`의 점수 범위는 검사하므로 예외다.
 - 예외 케이스는 `test-convention.md`에 따라 타입만이 아니라 `errorCode`까지 검증하고, `CustomErrorCode`는 static import로 쓴다.
-- 음성 답변 2건은 "`audioUrl`만으로는 `ANSWERED`가 되지 않는다"가 의도된 동작임을 코드로 못 박는 목적이다. 리뷰에서 이 지점이 버그로 오인됐다.
+- 음성 답변 2건은 "`audioKey`만으로는 `ANSWERED`가 되지 않는다"가 의도된 동작임을 코드로 못 박는 목적이다. 리뷰에서 이 지점이 버그로 오인됐다.
 
 **3. V40 자체 검증은 로컬 기동으로 한다** - Docker Compose로 PostgreSQL을 띄우고 `./gradlew bootRun`으로 V40을 실제 적용해, 테이블 10개와 제약, 인덱스가 생성되는지 확인한다. 이슈 체크리스트의 "로컬 기동으로 스키마와 Entity 매핑 검증" 항목이 이것이다.
 
@@ -626,5 +635,5 @@ FK 제약은 걸지 않는다. `V31`의 `user_mission`이 `user_id`, `mission_id
 - `src/main/java/gravit/code/interview/domain/{master,session,grading}/`: 계획서가 지정한 `domain/` 평면 배치 대신 성격별 하위 패키지로 나눴다 — 이유: 구현 후 실측하니 `interview/domain/`이 19개 파일로 2위 `admin`(9개)의 두 배가 됐다. `admin`이 domain 9개에서 전체 94개로 늘어난 비율을 보면, Repository와 Service가 붙는 후속 이슈에서 한 패키지에 100개 안팎이 쌓인다. `admin/domain/staging`, `admin/domain/audit` 선례를 따라 나눴고, 아직 참조하는 코드가 없어 파일 이동과 `package` 선언 변경만으로 끝났다. 엔티티를 합쳐 개수를 줄이는 방향은 검토 후 기각했다 (`InterviewFeedback`을 `InterviewAnswer`에 흡수하면 채점 전후가 구분되지 않고, `InterviewAnswerWrongConcept`을 `InterviewAnswerConceptResult`에 흡수하면 `conceptId`가 nullable이 되고 `covered`가 3값이 된다)
 - `src/main/resources/db/migration/V40__add_interview_tables.sql`: 계획서가 지정한 `V32`가 아니라 `V40`으로 만들었다 — 이유: 계획 수립 시 최신 마이그레이션 번호를 이전 브랜치(`refactor/467-oauth-env-boundary`)에서 확인해 V31로 오인했다. `origin/dev`에는 V39까지 있고 `V32__add_problem_submission_user_index.sql`이 이미 존재해 `flywayMigrate`가 "Found more than one migration with version 32"로 실패했다. 다음 빈 번호인 V40으로 바꿔 `flywayValidate`를 통과시켰다
 - `InterviewCategory`, `InterviewSession`, `CustomErrorCode`: 계획서가 "이번 이슈에서는 에러코드를 추가하지 않고 검증도 넣지 않는다"고 못 박았으나, PR 리뷰를 반영해 검증 2종과 에러코드 2종을 넣었다 — 이유: 계획의 근거는 "검증에 필요한 판단 기준이 서비스 흐름에 달려 있다"였는데, 축 조합(`mode`와 `axis`)과 점수 범위(생성 시점에 계산해 둔 만점)는 판단에 필요한 값이 엔티티 안에 이미 전부 있어 그 근거가 적용되지 않는다. 리뷰는 두 건 모두 DB CHECK로 해결하자고 제안했으나 엔티티 검증으로 대신했다 (근거는 "CHECK 제약" 절). 상태 전이와 모드별 필수값 검증은 계획대로 후속 이슈에 남겼다
-- `InterviewAnswer`: 리뷰에서 "`audioUrl`만 있어도 `ANSWERED`로 잡아야 한다"는 수정 요청이 있었으나 로직을 바꾸지 않고 테스트 2건만 추가했다 — 이유: 정책 `interview.md`가 음성 변환 결과가 빈 경우를 무응답과 같이 0점 처리하도록 규정하고, 채점이 전부 텍스트 기반이라 `content` 없이는 채점 대상이 없다. 제안대로 고치면 무음 녹음이 `ANSWERED`로 남아 "무응답은 전체 개념을 누락으로 기록한다"는 채점 경로를 타지 못한다. 대신 이 동작이 의도된 것임을 테스트로 명시했다
+- `InterviewAnswer`: 리뷰에서 "`audioKey`만 있어도 `ANSWERED`로 잡아야 한다"는 수정 요청이 있었으나 로직을 바꾸지 않고 테스트 2건만 추가했다 — 이유: 정책 `interview.md`가 음성 변환 결과가 빈 경우를 무응답과 같이 0점 처리하도록 규정하고, 채점이 전부 텍스트 기반이라 `content` 없이는 채점 대상이 없다. 제안대로 고치면 무음 녹음이 `ANSWERED`로 남아 "무응답은 전체 개념을 누락으로 기록한다"는 채점 경로를 타지 못한다. 대신 이 동작이 의도된 것임을 테스트로 명시했다
 - `src/test/java/gravit/code/interview/domain/InterviewEntityMappingIntegrationTest.java`: 계획서가 지정한 파일명 `InterviewEntityMappingTest.java`와 `TestEntityManager` 대신 `InterviewEntityMappingIntegrationTest.java` + `@TCSpringBootTest` + `EntityManager` 직접 주입으로 작성했다 — 이유: `TestEntityManager`를 쓰려면 `@DataJpaTest` 인프라가 필요한데 이 프로젝트의 `TCRepositoryTest`가 파일 전체 주석 처리되어 죽어 있다. 또 `test-convention.md`가 "모든 테스트는 통합 테스트(`@TCSpringBootTest`)"와 파일명 `{Class}IntegrationTest`를 규정한다. 검증 시나리오 6개는 계획서 그대로 유지했고, 트랜잭션이 필요한 저장/조회 구간은 `TransactionTemplate`으로 감쌌다 (테스트 클래스에 `@Transactional`을 붙이지 않는 기존 통합 테스트 방식)
