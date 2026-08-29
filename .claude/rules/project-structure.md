@@ -24,6 +24,10 @@ src/main/java/gravit/code/
 ├── bookmark/            # 문제 북마크
 ├── wrongAnsweredNote/   # 오답 노트
 ├── csnote/              # CS 노트
+├── interview/           # AI 면접 세션, 답변
+├── interviewQuestion/   # 면접 질문 풀과 분류(카테고리, 개념)
+├── interviewTechStack/  # 면접 온보딩 스택 선택지
+├── interviewFeedback/   # 면접 채점 결과
 │
 ├── league/              # 리그
 ├── userLeague/          # 사용자별 리그 정보
