@@ -30,6 +30,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewAnswer extends BaseEntity {
 
+    public static final int FIRST_DISPLAY_ORDER = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
