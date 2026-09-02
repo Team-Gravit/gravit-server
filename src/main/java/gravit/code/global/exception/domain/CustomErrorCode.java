@@ -181,6 +181,7 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_4010", "존재하지 않는 면접 답변입니다."),
     INTERVIEW_SESSION_ALREADY_IN_PROGRESS(HttpStatus.CONFLICT, "INTERVIEW_4011", "이미 진행 중인 면접 세션이 있습니다."),
     INTERVIEW_FEEDBACK_NOT_READY(HttpStatus.CONFLICT, "INTERVIEW_4012", "면접 채점이 완료되지 않아 피드백을 조회할 수 없습니다."),
+    INTERVIEW_GRADING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5001", "면접 답변 채점 판정 요청이 실패했습니다."),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
