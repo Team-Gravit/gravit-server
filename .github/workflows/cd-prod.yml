@@ -53,6 +53,8 @@ jobs:
 
           admin.bootstrap.emails: ${{ secrets.ADMIN_BOOTSTRAP_EMAILS }}
 
+          spring.ai.openai.api-key: ${{ secrets.LITELLM_MASTER_KEY }}
+
       - name: Firebase 서비스 계정 키 파일 생성
         run: |
           mkdir -p ./src/main/resources/firebase
@@ -122,6 +124,9 @@ jobs:
 
             echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME" > .env
             echo "IMAGE_TAG=$IMAGE_TAG" >> .env
+
+            # LLM 게이트웨이(litellm-gw)와 통신할 외부 네트워크. 없으면 만들어 compose 기동이 막히지 않게 한다.
+            docker network inspect llm-net >/dev/null 2>&1 || docker network create llm-net
 
             # 인프라 서비스: compose 설정이 변경된 경우에만 재시작
             docker-compose -f docker-compose-prod.yml up -d --no-deps gravit-redis-prod alloy

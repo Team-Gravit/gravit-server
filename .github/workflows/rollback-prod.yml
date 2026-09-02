@@ -70,6 +70,9 @@ jobs:
             echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME" > .env
             echo "IMAGE_TAG=$VERSION" >> .env
 
+            # LLM 게이트웨이(litellm-gw)와 통신할 외부 네트워크. 없으면 만들어 compose 기동이 막히지 않게 한다.
+            docker network inspect llm-net >/dev/null 2>&1 || docker network create llm-net
+
             docker-compose -f docker-compose-prod.yml pull gravit-server-prod || { echo "이미지 pull 실패. 롤백 중단."; exit 1; }
             docker-compose -f docker-compose-prod.yml up -d --no-deps --force-recreate gravit-server-prod
 
