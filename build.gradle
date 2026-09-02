@@ -113,6 +113,15 @@ tasks.named('bootJar') {
     dependsOn 'flywayCi'
 }
 
+tasks.named('processResources') {
+    // static/ 하위는 정적 리소스로 외부에 그대로 서빙되므로,
+    // notes 서브모듈에서 노트 콘텐츠가 아닌 파일은 산출물(classpath/jar)에서 제외한다.
+    exclude 'static/notes/.claude/**'
+    exclude 'static/notes/CLAUDE.md'
+    exclude 'static/notes/requirement.md'
+    exclude 'static/notes/LICENSE'
+}
+
 tasks.named('bootRun') {
     // bootRun 기본값(optimizedLaunch)은 -XX:TieredStopAtLevel=1로 C1까지만 컴파일한다.
     // 기동은 빨라지지만 정상 상태 처리량이 낮게 나오므로, perf 프로파일 측정에서는 끈다.
