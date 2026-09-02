@@ -13,6 +13,16 @@ spring:
         show_sql: true # 쿼리 확인을 위해 true 권장
     open-in-view: false
 
+  # Spring AI 스타터는 api-key가 비어 있으면 컨텍스트 기동을 거부한다.
+  # 테스트에서 LLM을 실호출하지 않으므로 기동 보장용 더미 값만 둔다.
+  ai:
+    openai:
+      base-url: http://localhost:4000
+      api-key: test-key
+      chat:
+        options:
+          model: codex-terra
+
   data:
     redis:
       host: localhost
