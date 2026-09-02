@@ -9,6 +9,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
       - gravit-dev
+      - llm-net
     volumes:
       - ./logs:/var/log/spring
     depends_on:
@@ -52,3 +53,6 @@ volumes:
 networks:
   gravit-dev:
     driver: bridge
+  # LLM 게이트웨이(LiteLLM, llm-net 상 이름 litellm-gw)가 속한 서버 공용 네트워크. 배포 스크립트가 존재를 보장한다.
+  llm-net:
+    external: true
