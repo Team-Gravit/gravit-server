@@ -107,6 +107,8 @@ public class InterviewSession extends BaseEntity {
             Long techStackId,
             InterviewLevel level
     ) {
+        validateModeTechStack(mode, techStackId);
+
         return InterviewSession.builder()
                 .userId(userId)
                 .mode(mode)
@@ -114,6 +116,21 @@ public class InterviewSession extends BaseEntity {
                 .techStackId(techStackId)
                 .level(level)
                 .build();
+    }
+
+    public static void validateModeTechStack(
+            InterviewMode mode,
+            Long techStackId
+    ) {
+        boolean hasTechStack = techStackId != null;
+
+        if (mode == InterviewMode.JOB_SPECIFIC && !hasTechStack) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_TECH_STACK_REQUIRED);
+        }
+
+        if (mode == InterviewMode.COMMON_CS && hasTechStack) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_TECH_STACK_NOT_ALLOWED);
+        }
     }
 
     public void startGrading() {

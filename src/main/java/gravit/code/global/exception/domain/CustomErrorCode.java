@@ -181,6 +181,8 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_4010", "존재하지 않는 면접 답변입니다."),
     INTERVIEW_SESSION_ALREADY_IN_PROGRESS(HttpStatus.CONFLICT, "INTERVIEW_4011", "이미 진행 중인 면접 세션이 있습니다."),
     INTERVIEW_FEEDBACK_NOT_READY(HttpStatus.CONFLICT, "INTERVIEW_4012", "면접 채점이 완료되지 않아 피드백을 조회할 수 없습니다."),
+    INTERVIEW_INPUT_TYPE_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "INTERVIEW_4013", "아직 지원하지 않는 답변 입력 방식입니다."),
+    INTERVIEW_TECH_STACK_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_4014", "존재하지 않는 면접 기술 스택입니다."),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
