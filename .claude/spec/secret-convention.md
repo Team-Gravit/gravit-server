@@ -33,6 +33,11 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 - 메일: `STMP_PASSWORD`
 - Firebase: `FIREBASE_SERVICE_ACCOUNT`
 
+### 의도적으로 공유하는 값
+
+- LLM 게이트웨이 키: `LITELLM_MASTER_KEY`. dev와 prod가 같은 서버의 LiteLLM 게이트웨이(`llm-net` 네트워크 상 `litellm-gw`)를 함께 쓰므로 값이 하나다.
+  `spring.ai.openai.api-key`에 주입되며, 비어 있으면 Spring AI 스타터가 기동 자체를 거부하니 워크플로 머지 전에 반드시 등록하라.
+
 `DEV_GOOGLE_REDIRECT_URI`, `GOOGLE_REDIRECT_URI` 등 redirect-uri 계열 6종은 워크플로가 주입하지만
 런타임에서 참조하지 않는다. 실제 redirect_uri는 요청의 `dest` 파라미터로 결정된다. 이 역시 #467 범위다.
 

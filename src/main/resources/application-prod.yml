@@ -17,6 +17,14 @@ spring:
         show_sql: true
     open-in-view: false
 
+  ai:
+    openai:
+      base-url: http://litellm-gw:4000
+      api-key: ${LITELLM_MASTER_KEY:dummy}
+      chat:
+        options:
+          model: codex-terra
+
   data:
     redis:
       host: gravit-redis-prod
