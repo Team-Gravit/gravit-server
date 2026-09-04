@@ -2,8 +2,7 @@ package gravit.code.interview.domain;
 
 import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.interviewQuestion.domain.InterviewDifficulty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,7 +27,10 @@ public class InterviewSession extends BaseEntity {
     public static final int QUESTION_COUNT = 5;
 
     private static final int ACCURACY_SCORE_PER_QUESTION = 14;
-    private static final int COHERENCE_SCORE_PER_QUESTION = 6;
+    private static final int STRUCTURE_SCORE_PER_QUESTION = 3;
+    private static final int CLARITY_SCORE_PER_QUESTION = 3;
+    private static final int INITIAL_SCORE = 0;
+    private static final int INITIAL_GRADING_ATTEMPT_COUNT = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +38,9 @@ public class InterviewSession extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
     private long userId;
+
+    @Column(name = "attempt_count", nullable = false)
+    private long attemptCount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mode", nullable = false)
@@ -45,12 +50,13 @@ public class InterviewSession extends BaseEntity {
     @Column(name = "input_type", nullable = false)
     private InterviewInputType inputType;
 
-    @Column(name = "tech_stack_id")
-    private Long techStackId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "difficulty", nullable = false)
+    private InterviewDifficulty difficulty;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "level", nullable = false)
-    private InterviewLevel level;
+    @Column(name = "stack")
+    private InterviewStack stack;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -59,17 +65,20 @@ public class InterviewSession extends BaseEntity {
     @Column(name = "accuracy_score", nullable = false)
     private int accuracyScore;
 
+    @Column(name = "delivery_score", nullable = false)
+    private int deliveryScore;
+
     @Column(name = "accuracy_max_score", nullable = false)
     private int accuracyMaxScore;
 
-    @Column(name = "coherence_score", nullable = false)
-    private int coherenceScore;
+    @Column(name = "structure_max_score", nullable = false)
+    private int structureMaxScore;
 
-    @Column(name = "coherence_max_score", nullable = false)
-    private int coherenceMaxScore;
+    @Column(name = "clarity_max_score", nullable = false)
+    private int clarityMaxScore;
 
-    @Column(name = "graded_answer_count", nullable = false)
-    private int gradedAnswerCount;
+    @Column(name = "grading_attempt_count", nullable = false)
+    private int gradingAttemptCount;
 
     @Column(name = "started_at", nullable = false)
     private LocalDateTime startedAt;
@@ -80,78 +89,44 @@ public class InterviewSession extends BaseEntity {
     @Builder(access = AccessLevel.PRIVATE)
     private InterviewSession(
             long userId,
+            long attemptCount,
             InterviewMode mode,
             InterviewInputType inputType,
-            Long techStackId,
-            InterviewLevel level
+            InterviewDifficulty difficulty,
+            InterviewStack stack
     ) {
         this.userId = userId;
+        this.attemptCount = attemptCount;
         this.mode = mode;
         this.inputType = inputType;
-        this.techStackId = techStackId;
-        this.level = level;
+        this.difficulty = difficulty;
+        this.stack = stack;
         this.status = InterviewSessionStatus.IN_PROGRESS;
-        this.accuracyScore = 0;
+        this.accuracyScore = INITIAL_SCORE;
+        this.deliveryScore = INITIAL_SCORE;
         this.accuracyMaxScore = ACCURACY_SCORE_PER_QUESTION * QUESTION_COUNT;
-        this.coherenceScore = 0;
-        this.coherenceMaxScore = COHERENCE_SCORE_PER_QUESTION * QUESTION_COUNT;
-        this.gradedAnswerCount = 0;
+        this.structureMaxScore = STRUCTURE_SCORE_PER_QUESTION * QUESTION_COUNT;
+        this.clarityMaxScore = CLARITY_SCORE_PER_QUESTION * QUESTION_COUNT;
+        this.gradingAttemptCount = INITIAL_GRADING_ATTEMPT_COUNT;
         this.startedAt = LocalDateTime.now(TimeZoneConst.KST);
         this.endedAt = null;
     }
 
     public static InterviewSession create(
             long userId,
+            long attemptCount,
             InterviewMode mode,
             InterviewInputType inputType,
-            Long techStackId,
-            InterviewLevel level
+            InterviewDifficulty difficulty,
+            InterviewStack stack
     ) {
         return InterviewSession.builder()
                 .userId(userId)
+                .attemptCount(attemptCount)
                 .mode(mode)
                 .inputType(inputType)
-                .techStackId(techStackId)
-                .level(level)
+                .difficulty(difficulty)
+                .stack(stack)
                 .build();
-    }
-
-    public void startGrading() {
-        this.status = InterviewSessionStatus.GRADING;
-    }
-
-    public void complete(
-            int accuracyScore,
-            int coherenceScore
-    ) {
-        validateScoreInRange(accuracyScore, this.accuracyMaxScore);
-        validateScoreInRange(coherenceScore, this.coherenceMaxScore);
-
-        this.accuracyScore = accuracyScore;
-        this.coherenceScore = coherenceScore;
-        this.status = InterviewSessionStatus.COMPLETED;
-        this.endedAt = LocalDateTime.now(TimeZoneConst.KST);
-    }
-
-    public void abandon() {
-        this.status = InterviewSessionStatus.ABANDONED;
-        this.endedAt = LocalDateTime.now(TimeZoneConst.KST);
-    }
-
-    public void increaseGradedAnswerCount() {
-        this.gradedAnswerCount++;
-    }
-
-    public boolean isAllGraded() {
-        return this.gradedAnswerCount >= QUESTION_COUNT;
-    }
-
-    private static void validateScoreInRange(
-            int score,
-            int maxScore
-    ) {
-        if (score < 0 || score > maxScore) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID);
-        }
     }
 }

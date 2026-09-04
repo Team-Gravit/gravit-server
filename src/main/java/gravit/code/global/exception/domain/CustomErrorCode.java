@@ -169,7 +169,6 @@ public enum CustomErrorCode implements ErrorCode {
     CHAPTER_NAME_NOT_MATCHING(HttpStatus.BAD_REQUEST, "CS_NOTE_4001", "CS 노트 경로와 챕터 이름이 매칭되지 않습니다."),
 
     // Interview
-    INTERVIEW_CATEGORY_AXIS_INVALID(HttpStatus.BAD_REQUEST, "INTERVIEW_4001", "면접 카테고리의 모드와 축 조합이 유효하지 않습니다. (공통 CS는 축이 없고, 직무별은 축이 있어야 합니다.)"),
     INTERVIEW_SESSION_SCORE_INVALID(HttpStatus.BAD_REQUEST, "INTERVIEW_4002", "면접 세션 점수가 0점과 만점 사이를 벗어났습니다."),
     INTERVIEW_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_4003", "존재하지 않는 면접 세션입니다."),
     INTERVIEW_SESSION_ACCESS_DENIED(HttpStatus.FORBIDDEN, "INTERVIEW_4004", "본인의 면접 세션만 접근할 수 있습니다."),
@@ -179,7 +178,6 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_TECH_STACK_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "INTERVIEW_4008", "공통 CS 면접은 기술 스택을 선택할 수 없습니다."),
     INTERVIEW_QUESTION_POOL_INSUFFICIENT(HttpStatus.CONFLICT, "INTERVIEW_4009", "면접 질문 풀이 부족하여 세션을 생성할 수 없습니다."),
     INTERVIEW_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_4010", "존재하지 않는 면접 답변입니다."),
-    INTERVIEW_SESSION_ALREADY_IN_PROGRESS(HttpStatus.CONFLICT, "INTERVIEW_4011", "이미 진행 중인 면접 세션이 있습니다."),
     INTERVIEW_FEEDBACK_NOT_READY(HttpStatus.CONFLICT, "INTERVIEW_4012", "면접 채점이 완료되지 않아 피드백을 조회할 수 없습니다."),
     INTERVIEW_GRADING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5001", "면접 답변 채점 판정 요청이 실패했습니다."),
 

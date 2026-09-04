@@ -20,9 +20,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewFeedback extends BaseEntity {
 
-    private static final int NO_RESPONSE_SCORE = 0;
-    private static final int NO_RESPONSE_IRRELEVANT_STATEMENT_COUNT = 0;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,11 +36,14 @@ public class InterviewFeedback extends BaseEntity {
     @Column(name = "clarity_score", nullable = false)
     private int clarityScore;
 
-    @Column(name = "irrelevant_statement_count", nullable = false)
-    private int irrelevantStatementCount;
+    @Column(name = "accuracy_base_ratio", precision = 4, scale = 3)
+    private BigDecimal accuracyBaseRatio;
 
-    @Column(name = "accuracy_multiplier", precision = 2, scale = 1, nullable = false)
+    @Column(name = "accuracy_multiplier", precision = 2, scale = 1)
     private BigDecimal accuracyMultiplier;
+
+    @Column(name = "irrelevant_statement_count")
+    private Integer irrelevantStatementCount;
 
     @Column(name = "improvement_suggestion", columnDefinition = "TEXT")
     private String improvementSuggestion;
@@ -54,16 +54,18 @@ public class InterviewFeedback extends BaseEntity {
             int accuracyScore,
             int structureScore,
             int clarityScore,
-            int irrelevantStatementCount,
+            BigDecimal accuracyBaseRatio,
             BigDecimal accuracyMultiplier,
+            Integer irrelevantStatementCount,
             String improvementSuggestion
     ) {
         this.answerId = answerId;
         this.accuracyScore = accuracyScore;
         this.structureScore = structureScore;
         this.clarityScore = clarityScore;
-        this.irrelevantStatementCount = irrelevantStatementCount;
+        this.accuracyBaseRatio = accuracyBaseRatio;
         this.accuracyMultiplier = accuracyMultiplier;
+        this.irrelevantStatementCount = irrelevantStatementCount;
         this.improvementSuggestion = improvementSuggestion;
     }
 
@@ -72,8 +74,9 @@ public class InterviewFeedback extends BaseEntity {
             int accuracyScore,
             int structureScore,
             int clarityScore,
-            int irrelevantStatementCount,
+            BigDecimal accuracyBaseRatio,
             BigDecimal accuracyMultiplier,
+            Integer irrelevantStatementCount,
             String improvementSuggestion
     ) {
         return InterviewFeedback.builder()
@@ -81,21 +84,10 @@ public class InterviewFeedback extends BaseEntity {
                 .accuracyScore(accuracyScore)
                 .structureScore(structureScore)
                 .clarityScore(clarityScore)
-                .irrelevantStatementCount(irrelevantStatementCount)
+                .accuracyBaseRatio(accuracyBaseRatio)
                 .accuracyMultiplier(accuracyMultiplier)
+                .irrelevantStatementCount(irrelevantStatementCount)
                 .improvementSuggestion(improvementSuggestion)
-                .build();
-    }
-
-    public static InterviewFeedback createNoResponse(long answerId) {
-        return InterviewFeedback.builder()
-                .answerId(answerId)
-                .accuracyScore(NO_RESPONSE_SCORE)
-                .structureScore(NO_RESPONSE_SCORE)
-                .clarityScore(NO_RESPONSE_SCORE)
-                .irrelevantStatementCount(NO_RESPONSE_IRRELEVANT_STATEMENT_COUNT)
-                .accuracyMultiplier(BigDecimal.ONE)
-                .improvementSuggestion(null)
                 .build();
     }
 }

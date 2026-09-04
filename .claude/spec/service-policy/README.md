@@ -34,7 +34,7 @@ Gravit 서비스 정책의 단일 출처다. 정책을 확인할 때 코드를 �
 | `learning.md` | 학습 보상, 연속 학습일, 일일과 주간 기록 |
 | `bookmark-note.md` | 북마크, 오답 노트 |
 | `cs-note.md` | CS 노트 제공 방식 |
-| `interview.md` | AI 면접 모드, 세션 상태, 채점 배점과 무응답 처리 |
+| `interview.md` | AI 면접 모드와 선택지, 세션 생성과 출제, 제출과 취소, 세션 상태, 채점과 점수 계산, 결과 노출, 문제 콘텐츠와 학습 연결 |
 | `league-season.md` | 리그 티어, 리그 점수, 시즌 롤오버 |
 | `mission.md` | 일일 미션 배정, 진행, 완료 보상 |
 | `notification.md` | 인앱 알림과 푸시 발송 조건, 스케줄 |
