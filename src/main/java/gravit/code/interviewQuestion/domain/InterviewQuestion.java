@@ -24,43 +24,55 @@ public class InterviewQuestion extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category_id", nullable = false)
-    private long categoryId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "topic", nullable = false)
+    private InterviewTopic topic;
 
     @Column(name = "unit_id", nullable = false)
     private long unitId;
-
-    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
-    private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "difficulty", nullable = false)
     private InterviewDifficulty difficulty;
 
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+    private String content;
+
+    @Column(name = "model_answer", columnDefinition = "TEXT", nullable = false)
+    private String modelAnswer;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean active;
+
     @Builder(access = AccessLevel.PRIVATE)
     private InterviewQuestion(
-            long categoryId,
+            InterviewTopic topic,
             long unitId,
+            InterviewDifficulty difficulty,
             String content,
-            InterviewDifficulty difficulty
+            String modelAnswer
     ) {
-        this.categoryId = categoryId;
+        this.topic = topic;
         this.unitId = unitId;
-        this.content = content;
         this.difficulty = difficulty;
+        this.content = content;
+        this.modelAnswer = modelAnswer;
+        this.active = true;
     }
 
     public static InterviewQuestion create(
-            long categoryId,
+            InterviewTopic topic,
             long unitId,
+            InterviewDifficulty difficulty,
             String content,
-            InterviewDifficulty difficulty
+            String modelAnswer
     ) {
         return InterviewQuestion.builder()
-                .categoryId(categoryId)
+                .topic(topic)
                 .unitId(unitId)
-                .content(content)
                 .difficulty(difficulty)
+                .content(content)
+                .modelAnswer(modelAnswer)
                 .build();
     }
 }

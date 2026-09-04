@@ -1,6 +1,5 @@
 package gravit.code.interview.domain;
 
-import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,10 +21,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table(
         name = "interview_answer",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uq_interview_answer_session_order",
-                columnNames = {"session_id", "display_order"}
-        )
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_interview_answer_session_order",
+                        columnNames = {"session_id", "display_order"}
+                ),
+                @UniqueConstraint(
+                        name = "uq_interview_answer_session_question",
+                        columnNames = {"session_id", "question_id"}
+                )
+        }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewAnswer extends BaseEntity {
@@ -71,7 +76,7 @@ public class InterviewAnswer extends BaseEntity {
         this.answeredAt = null;
     }
 
-    public static InterviewAnswer createPending(
+    public static InterviewAnswer create(
             long sessionId,
             long questionId,
             int displayOrder
@@ -81,23 +86,5 @@ public class InterviewAnswer extends BaseEntity {
                 .questionId(questionId)
                 .displayOrder(displayOrder)
                 .build();
-    }
-
-    public void submit(
-            String content,
-            String audioKey
-    ) {
-        this.content = content;
-        this.audioKey = audioKey;
-        this.status = resolveStatus(content);
-        this.answeredAt = LocalDateTime.now(TimeZoneConst.KST);
-    }
-
-    private static InterviewAnswerStatus resolveStatus(String content) {
-        if (content == null || content.isBlank()) {
-            return InterviewAnswerStatus.NO_RESPONSE;
-        }
-
-        return InterviewAnswerStatus.ANSWERED;
     }
 }
