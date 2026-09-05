@@ -1,6 +1,6 @@
 package gravit.code.test.interview;
 
-import gravit.code.interviewFeedback.dto.internal.InterviewGradingJudgment;
+import gravit.code.interviewFeedback.dto.internal.InterviewGradingJudgmentDto;
 import gravit.code.interviewFeedback.service.InterviewGradingService;
 import gravit.code.test.interview.docs.TestInterviewGradingControllerDocs;
 import gravit.code.test.interview.dto.request.TestInterviewGradingRequest;
@@ -25,7 +25,7 @@ public class TestInterviewGradingController implements TestInterviewGradingContr
 
     @PostMapping("/interview/grading")
     public ResponseEntity<TestInterviewGradingResponse> gradeAnswer(@Valid @RequestBody TestInterviewGradingRequest request) {
-        InterviewGradingJudgment judgment = interviewGradingService.judge(request.toSource());
+        InterviewGradingJudgmentDto judgment = interviewGradingService.judge(request.toInput());
 
         return ResponseEntity.status(HttpStatus.OK).body(TestInterviewGradingResponse.from(judgment));
     }
