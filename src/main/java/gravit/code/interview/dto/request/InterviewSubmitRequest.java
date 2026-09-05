@@ -13,6 +13,6 @@ public record InterviewSubmitRequest(
         @NotNull
         @Size(min = 5, max = 5)
         @Valid
-        List<InterviewAnswerSubmitRequest> answers
+        List<@NotNull InterviewAnswerSubmitRequest> answers
 ) {
 }
