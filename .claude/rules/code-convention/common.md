@@ -59,6 +59,7 @@ return BookmarkedProblemResponse.of(unit, problems);
 - 클래스는 PascalCase로 작성하라 (`ChapterQueryService`, `BookmarkFacade`)
 - 메서드는 camelCase + CRUD 동사를 사용하라 (`findById`, `addBookmark`, `deleteBookmark`)
 - API 경로는 kebab-case 복수형으로 작성하라 (`/api/v1/chapters`, `/api/v1/bookmarks`)
+- Map 변수는 `{키}To{값}` 형태로 지어라 (`questionIdToConcepts`, `sessionIdToTopics`, `unitIdToTopic`). `{값}By{키}`(`conceptsByQuestionId`)는 리포지토리 메서드처럼 읽혀 쓰지 않는다
 
 ## 주석
 

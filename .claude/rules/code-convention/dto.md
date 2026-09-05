@@ -32,3 +32,10 @@ public List<FollowerResponse> contents;
 ```
 
 - 속성이 1개면 한 줄로 작성해도 된다 (예: `@Schema(requiredMode = Schema.RequiredMode.REQUIRED)`)
+
+## Internal
+
+- 레이어 간 내부 전달용 DTO와 쿼리 프로젝션은 `{domain}/dto/internal/`에 두고, 이름은 `{Name}Dto` 접미사로 끝내라 (예: `SearchUserDto`, `UnitStatRowDto`)
+- JPQL 생성자 표현식(`SELECT new ...`)의 대상이면 정적 팩토리 없이 표준 생성자를 그대로 써라. 집계 함수(`SUM`, `AVG`, `COUNT`) 결과는 래퍼 타입(`Long`, `Double`)으로 받아 생성자 매칭 실패를 막아라
+- 외부 노출용이 아니므로 `@Schema`를 붙이지 마라
+- 기존 파일 중 접미사가 다른 것(`*Projection`, `*Row`, `*Entry` 등)은 따르지 마라. 새로 만들 때는 `Dto`로 통일한다

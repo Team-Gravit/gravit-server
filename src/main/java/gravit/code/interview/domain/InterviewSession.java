@@ -31,6 +31,7 @@ public class InterviewSession extends BaseEntity {
     private static final int CLARITY_SCORE_PER_QUESTION = 3;
     private static final int INITIAL_SCORE = 0;
     private static final int INITIAL_GRADING_ATTEMPT_COUNT = 0;
+    private static final int WEAK_THRESHOLD_DIVISOR = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -128,5 +129,45 @@ public class InterviewSession extends BaseEntity {
                 .difficulty(difficulty)
                 .stack(stack)
                 .build();
+    }
+
+    public int getScore() {
+        return accuracyScore + deliveryScore;
+    }
+
+    public int getMaxScore() {
+        return accuracyMaxScore + structureMaxScore + clarityMaxScore;
+    }
+
+    public int getDeliveryMaxScore() {
+        return structureMaxScore + clarityMaxScore;
+    }
+
+    public int getQuestionMaxScore() {
+        return getMaxScore() / QUESTION_COUNT;
+    }
+
+    public int getQuestionAccuracyMaxScore() {
+        return accuracyMaxScore / QUESTION_COUNT;
+    }
+
+    public int getQuestionStructureMaxScore() {
+        return structureMaxScore / QUESTION_COUNT;
+    }
+
+    public int getQuestionClarityMaxScore() {
+        return clarityMaxScore / QUESTION_COUNT;
+    }
+
+    public boolean isCompleted() {
+        return status == InterviewSessionStatus.COMPLETED;
+    }
+
+    public boolean isOwnedBy(long userId) {
+        return this.userId == userId;
+    }
+
+    public boolean isWeakAnswer(int earnedScore) {
+        return earnedScore * WEAK_THRESHOLD_DIVISOR <= getQuestionMaxScore();
     }
 }
