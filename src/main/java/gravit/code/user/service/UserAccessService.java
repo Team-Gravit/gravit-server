@@ -23,7 +23,7 @@ public class UserAccessService {
     @Transactional
     public void updateLastAccessed(long userId) {
         LocalDateTime now = LocalDateTime.now(clock);
-        LocalDate today = LocalDate.now(clock);
+        LocalDate today = now.toLocalDate();
 
         int updated = userRepository.updateLastAccessedAt(userId, now, today.atStartOfDay());
         if (updated == 0) {

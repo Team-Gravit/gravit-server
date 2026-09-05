@@ -65,11 +65,12 @@ public class AdminDashboardService {
 
     @Transactional(readOnly = true)
     public MonthlyActiveUserTrendResponse getMonthlyActiveUsers(int months) {
-        YearMonth currentMonth = YearMonth.now(clock);
+        LocalDate today = LocalDate.now(clock);
+        YearMonth currentMonth = YearMonth.from(today);
         YearMonth startMonth = currentMonth.minusMonths(months - 1L);
 
         Map<YearMonth, Long> monthToActiveUserCount = adminActiveUserRepository
-                .findMonthlyActiveUserCounts(startMonth.atDay(1), currentMonth.atEndOfMonth()).stream()
+                .findMonthlyActiveUserCounts(startMonth.atDay(1), today).stream()
                 .collect(Collectors.toMap(
                         dto -> YearMonth.of(dto.year(), dto.month()),
                         MonthlyActiveUserCountDto::activeUserCount
