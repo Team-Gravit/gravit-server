@@ -47,7 +47,7 @@ public record InterviewAnswerDetailResponse(
         String audioKey,
 
         @Schema(
-                description = "모범답안",
+                description = "모범답안 (Markdown)",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         String modelAnswer,
@@ -59,8 +59,8 @@ public record InterviewAnswerDetailResponse(
         List<InterviewConceptResponse> concepts,
 
         @Schema(
-                description = "개선 제안. 무응답 문항은 null",
-                example = "최악의 경우 O(n^2)가 되는 조건을 함께 언급하면 좋습니다.",
+                description = "개선 제안 (Markdown). 개선할 점이 없으면 격려 한 문장, 있으면 최대 2개 항목. 무응답 문항은 null",
+                example = "**최악 시간복잡도 언급**\n\n최악의 경우 O(n^2)가 되는 조건을 함께 언급하면 좋습니다.",
                 nullable = true
         )
         String improvementSuggestion,
