@@ -5,6 +5,9 @@ import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.exception.AccountSoftDeletedException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -53,6 +56,21 @@ public class GlobalExceptionHandler {
         return handleExceptionInternal(errorMessages);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse<List<String>>> handleConstraintViolationException(ConstraintViolationException e) {
+        List<String> errorMessages = new ArrayList<>();
+
+        log.error("@Validated Exception occur with below parameter");
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+            String errorMessage = "[ " + extractLeafName(violation.getPropertyPath()) + " ]" +
+                    "[ " + violation.getMessage() + " ]" +
+                    "[ " + violation.getInvalidValue() + " ]";
+            errorMessages.add(errorMessage);
+        }
+
+        return handleExceptionInternal(errorMessages);
+    }
+
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse<String>> handleDatabaseException(DataAccessException e){
         ErrorCode errorCode = CustomErrorCode.DATABASE_EXCEPTION;
@@ -78,6 +96,14 @@ public class GlobalExceptionHandler {
         ErrorResponse<String> errorResponse = ErrorResponse.of(errorCode, message);
         HttpStatus status = HttpStatus.LOCKED;
         return ResponseEntity.status(status).body(errorResponse);
+    }
+
+    private String extractLeafName(Path propertyPath) {
+        String leafName = null;
+        for (Path.Node node : propertyPath) {
+            leafName = node.getName();
+        }
+        return leafName;
     }
 
     private ResponseEntity<ErrorResponse<String>> handleExceptionInternal(ErrorCode errorCode) {

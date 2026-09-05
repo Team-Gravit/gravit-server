@@ -1,5 +1,6 @@
 package gravit.code.user.service;
 
+import gravit.code.user.repository.UserDailyActivityRepository;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,14 +16,21 @@ import java.util.List;
 public class UserAccessService {
 
     private final UserRepository userRepository;
+    private final UserDailyActivityRepository userDailyActivityRepository;
+
     private final Clock clock;
 
     @Transactional
     public void updateLastAccessed(long userId) {
         LocalDateTime now = LocalDateTime.now(clock);
-        LocalDateTime startOfToday = LocalDate.now(clock).atStartOfDay();
+        LocalDate today = now.toLocalDate();
 
-        userRepository.updateLastAccessedAt(userId, now, startOfToday);
+        int updated = userRepository.updateLastAccessedAt(userId, now, today.atStartOfDay());
+        if (updated == 0) {
+            return;
+        }
+
+        userDailyActivityRepository.insertIfAbsent(userId, today);
     }
 
     @Transactional(readOnly = true)
