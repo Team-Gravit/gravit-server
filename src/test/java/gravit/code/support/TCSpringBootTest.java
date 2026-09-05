@@ -23,7 +23,8 @@ import java.lang.annotation.Target;
         PostgreSQLTestContainerConfig.class,
         DatabaseCleaner.class,
         FixedClockConfig.class,
-        FcmTestConfig.class
+        FcmTestConfig.class,
+        InterviewGradingTestConfig.class
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith(DatabaseClearExtension.class)
