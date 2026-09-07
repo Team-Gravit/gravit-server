@@ -22,6 +22,9 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 |---|---|---|
 | JWT 서명 키 | `DEV_JWT_SECRET` | `PROD_JWT_SECRET` |
 | DB 접속 URL | `POSTGRESQL_DEV_URL` | `POSTGRESQL_URL` |
+| 면접 음성 버킷 | `DEV_S3_INTERVIEW_AUDIO_BUCKET` | `PROD_S3_INTERVIEW_AUDIO_BUCKET` |
+| S3 액세스 키 | `DEV_S3_ACCESS_KEY` | `PROD_S3_ACCESS_KEY` |
+| S3 시크릿 키 | `DEV_S3_SECRET_KEY` | `PROD_S3_SECRET_KEY` |
 
 ### 아직 분리되지 않은 값
 
