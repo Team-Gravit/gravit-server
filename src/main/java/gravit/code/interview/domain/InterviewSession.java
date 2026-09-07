@@ -1,6 +1,8 @@
 package gravit.code.interview.domain;
 
 import gravit.code.global.consts.TimeZoneConst;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.global.entity.BaseEntity;
 import gravit.code.interviewQuestion.domain.InterviewDifficulty;
 import jakarta.persistence.Column;
@@ -32,6 +34,7 @@ public class InterviewSession extends BaseEntity {
     private static final int INITIAL_SCORE = 0;
     private static final int INITIAL_GRADING_ATTEMPT_COUNT = 0;
     private static final int WEAK_THRESHOLD_DIVISOR = 2;
+    private static final int GRADING_ATTEMPT_INCREMENT = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -169,5 +172,67 @@ public class InterviewSession extends BaseEntity {
 
     public boolean isWeakAnswer(int earnedScore) {
         return earnedScore * WEAK_THRESHOLD_DIVISOR <= getQuestionMaxScore();
+    }
+
+    public boolean isInProgress() {
+        return status == InterviewSessionStatus.IN_PROGRESS;
+    }
+
+    public boolean isGrading() {
+        return status == InterviewSessionStatus.GRADING;
+    }
+
+    public boolean isTextInput() {
+        return inputType == InterviewInputType.TEXT;
+    }
+
+    public void startGrading(LocalDateTime endedAt) {
+        validateInProgress();
+
+        this.status = InterviewSessionStatus.GRADING;
+        this.endedAt = endedAt;
+        this.gradingAttemptCount += GRADING_ATTEMPT_INCREMENT;
+    }
+
+    public void completeGrading(
+            int accuracyScore,
+            int deliveryScore
+    ) {
+        validateGrading();
+        validateScoreRange(accuracyScore, deliveryScore);
+
+        this.accuracyScore = accuracyScore;
+        this.deliveryScore = deliveryScore;
+        this.status = InterviewSessionStatus.COMPLETED;
+    }
+
+    public void failGrading() {
+        validateGrading();
+
+        this.status = InterviewSessionStatus.GRADING_FAILED;
+    }
+
+    private void validateInProgress() {
+        if (!isInProgress()) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS);
+        }
+    }
+
+    private void validateGrading() {
+        if (!isGrading()) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_GRADING);
+        }
+    }
+
+    private void validateScoreRange(
+            int accuracyScore,
+            int deliveryScore
+    ) {
+        if (accuracyScore < INITIAL_SCORE || accuracyScore > accuracyMaxScore) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID);
+        }
+        if (deliveryScore < INITIAL_SCORE || deliveryScore > getDeliveryMaxScore()) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID);
+        }
     }
 }

@@ -21,7 +21,7 @@ public interface TestInterviewGradingControllerDocs {
 
     @Operation(
             summary = "[테스트] 면접 답변 채점 판정",
-            description = "질문, 핵심 개념 목록, 답변을 보내면 LLM이 개념별 전달/누락, 잘못 말한 구간, 구조성과 명료성을 판정해 돌려줍니다.<br>"
+            description = "질문, 모범답안, 핵심 개념 목록, 답변을 보내면 LLM이 개념별 전달 여부, 잘못된 개념, 구조성, 질문 이탈, 관계없는 발화 수, 개선 제안을 판정해 돌려줍니다.<br>"
                     + "점수 계산과 결과 저장은 하지 않습니다."
     )
     @ApiResponses({

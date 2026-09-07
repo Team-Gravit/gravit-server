@@ -1,7 +1,7 @@
 package gravit.code.interviewFeedback.service;
 
-import gravit.code.interviewFeedback.dto.internal.InterviewGradingJudgment;
-import gravit.code.interviewFeedback.dto.internal.InterviewGradingSource;
+import gravit.code.interviewFeedback.dto.internal.InterviewGradingJudgmentDto;
+import gravit.code.interviewFeedback.dto.internal.InterviewGradingInputDto;
 import gravit.code.interviewFeedback.infrastructure.InterviewGradingClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public class InterviewGradingService {
 
     private final InterviewGradingClient interviewGradingClient;
 
-    public InterviewGradingJudgment judge(InterviewGradingSource source) {
-        return interviewGradingClient.judge(source);
+    public InterviewGradingJudgmentDto judge(InterviewGradingInputDto input) {
+        return interviewGradingClient.judge(input);
     }
 }

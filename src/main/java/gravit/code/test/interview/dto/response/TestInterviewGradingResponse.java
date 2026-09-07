@@ -1,6 +1,7 @@
 package gravit.code.test.interview.dto.response;
 
-import gravit.code.interviewFeedback.dto.internal.InterviewGradingJudgment;
+import gravit.code.interviewFeedback.domain.InterviewStructureLevel;
+import gravit.code.interviewFeedback.dto.internal.InterviewGradingJudgmentDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,85 +11,43 @@ import java.util.List;
 @Builder(access = AccessLevel.PRIVATE)
 public record TestInterviewGradingResponse(
 
-        @Schema(description = "개념별 전달/누락 판정 목록")
-        List<ConceptJudgmentResponse> conceptJudgments,
+        @Schema(description = "개념별 전달 판정 목록")
+        List<TestInterviewConceptJudgmentResponse> conceptJudgments,
 
-        @Schema(description = "잘못 말한 구간과 교정 문장 목록")
-        List<WrongStatementResponse> wrongStatements,
+        @Schema(description = "잘못된 개념으로 판정된 답변 원문 구간 목록")
+        List<String> wrongConcepts,
 
         @Schema(
-                description = "결론을 먼저 말했는지 여부 (조리 - 구조성)",
-                example = "true"
+                description = "답변 구성 판정 (구조성). CONCLUSION_FIRST | CONCLUSION_REACHED | UNCLEAR",
+                example = "CONCLUSION_FIRST"
         )
-        boolean conclusionFirst,
+        InterviewStructureLevel structureLevel,
 
         @Schema(
-                description = "군더더기 발화 개수 (조리 - 명료성)",
+                description = "질문 이탈 여부 (명료성)",
+                example = "false"
+        )
+        boolean offTopic,
+
+        @Schema(
+                description = "관계없는 발화 수 (명료성)",
                 example = "0"
         )
         int irrelevantStatementCount,
 
-        @Schema(description = "종합 개선 제안")
+        @Schema(description = "개선 제안 (Markdown)")
         String improvementSuggestion
 ) {
-    @Builder(access = AccessLevel.PRIVATE)
-    public record ConceptJudgmentResponse(
-
-            @Schema(description = "개념명")
-            String conceptName,
-
-            @Schema(
-                    description = "전달 여부",
-                    example = "true"
-            )
-            boolean covered,
-
-            @Schema(description = "전달 시 답변 원문의 근거 구간")
-            String quote,
-
-            @Schema(description = "누락 시 안내 문구")
-            String missingFeedbackText
-    ) {
-        public static ConceptJudgmentResponse from(InterviewGradingJudgment.ConceptJudgment judgment) {
-            return ConceptJudgmentResponse.builder()
-                    .conceptName(judgment.conceptName())
-                    .covered(judgment.covered())
-                    .quote(judgment.quote())
-                    .missingFeedbackText(judgment.missingFeedbackText())
-                    .build();
-        }
-    }
-
-    @Builder(access = AccessLevel.PRIVATE)
-    public record WrongStatementResponse(
-
-            @Schema(description = "잘못 말한 답변 원문 구간")
-            String quotedText,
-
-            @Schema(description = "교정 문장")
-            String correctionText
-    ) {
-        public static WrongStatementResponse from(InterviewGradingJudgment.WrongStatement wrongStatement) {
-            return WrongStatementResponse.builder()
-                    .quotedText(wrongStatement.quotedText())
-                    .correctionText(wrongStatement.correctionText())
-                    .build();
-        }
-    }
-
-    public static TestInterviewGradingResponse from(InterviewGradingJudgment judgment) {
-        List<ConceptJudgmentResponse> conceptJudgments = judgment.conceptJudgments().stream()
-                .map(ConceptJudgmentResponse::from)
-                .toList();
-
-        List<WrongStatementResponse> wrongStatements = judgment.wrongStatements().stream()
-                .map(WrongStatementResponse::from)
+    public static TestInterviewGradingResponse from(InterviewGradingJudgmentDto judgment) {
+        List<TestInterviewConceptJudgmentResponse> conceptJudgments = judgment.conceptJudgments().stream()
+                .map(TestInterviewConceptJudgmentResponse::from)
                 .toList();
 
         return TestInterviewGradingResponse.builder()
                 .conceptJudgments(conceptJudgments)
-                .wrongStatements(wrongStatements)
-                .conclusionFirst(judgment.conclusionFirst())
+                .wrongConcepts(judgment.wrongConcepts())
+                .structureLevel(judgment.structureLevel())
+                .offTopic(judgment.offTopic())
                 .irrelevantStatementCount(judgment.irrelevantStatementCount())
                 .improvementSuggestion(judgment.improvementSuggestion())
                 .build();

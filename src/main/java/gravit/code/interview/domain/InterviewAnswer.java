@@ -1,6 +1,8 @@
 package gravit.code.interview.domain;
 
 import gravit.code.global.entity.BaseEntity;
+import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -86,5 +88,34 @@ public class InterviewAnswer extends BaseEntity {
                 .questionId(questionId)
                 .displayOrder(displayOrder)
                 .build();
+    }
+
+    public boolean isPending() {
+        return status == InterviewAnswerStatus.PENDING;
+    }
+
+    public boolean isAnswered() {
+        return status == InterviewAnswerStatus.ANSWERED;
+    }
+
+    public void submit(
+            String content,
+            String audioKey,
+            LocalDateTime answeredAt
+    ) {
+        validatePending();
+
+        boolean noResponse = content == null || content.isBlank();
+
+        this.status = noResponse ? InterviewAnswerStatus.NO_RESPONSE : InterviewAnswerStatus.ANSWERED;
+        this.content = noResponse ? null : content;
+        this.audioKey = audioKey;
+        this.answeredAt = answeredAt;
+    }
+
+    private void validatePending() {
+        if (!isPending()) {
+            throw new RestApiException(CustomErrorCode.INTERVIEW_ANSWER_ALREADY_SUBMITTED);
+        }
     }
 }

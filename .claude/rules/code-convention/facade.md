@@ -56,7 +56,8 @@ Long createdId = transactionTemplate.execute(status -> {
 
 - `spring.jpa.open-in-view: false`다. 경계 밖에는 영속성 컨텍스트가 없다
 - 리스너가 전부 `AFTER_COMMIT`이고 `fallbackExecution`이 없다. **경계 없이 발행한 이벤트는 예외 없이 폐기된다.** 이벤트 발행은 반드시 경계 안에서 하라
-- `@Async`가 붙은 메서드가 없어 `AFTER_COMMIT` 리스너는 커밋 직후 동기 실행된다. `TransactionTemplate.execute()`는 리스너 실행까지 끝낸 뒤 반환한다
+- `AFTER_COMMIT` 리스너는 커밋 직후 동기 실행되고, `TransactionTemplate.execute()`는 그 실행까지 끝낸 뒤 반환한다. 예외는 면접 채점 리스너(`InterviewGradingEventListener`)뿐으로, `@Async`가 붙어 실행기 스레드에서 돌고 `execute()`는 작업 제출만 하고 반환한다
+- `AFTER_COMMIT` 리스너에서 난 예외는 `invokeAfterCompletion`이 삼켜 호출자에게 닿지 않는다. 비동기 리스너의 제출 거부도 마찬가지다. 리스너가 실패를 스스로 기록해야 한다
 
 ### 보상의 실제 성질
 
