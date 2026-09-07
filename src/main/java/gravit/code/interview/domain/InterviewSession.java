@@ -212,6 +212,13 @@ public class InterviewSession extends BaseEntity {
         this.status = InterviewSessionStatus.GRADING_FAILED;
     }
 
+    public void abandon(LocalDateTime endedAt) {
+        validateInProgress();
+
+        this.status = InterviewSessionStatus.ABANDONED;
+        this.endedAt = endedAt;
+    }
+
     private void validateInProgress() {
         if (!isInProgress()) {
             throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS);

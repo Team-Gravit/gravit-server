@@ -56,4 +56,11 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
             WHERE s.status = :status
     """)
     InterviewSessionAverageDto findAverageScoresByStatus(@Param("status") InterviewSessionStatus status);
+
+    @Query("""
+            SELECT COALESCE(MAX(s.attemptCount), 0)
+            FROM InterviewSession s
+            WHERE s.userId = :userId
+    """)
+    long findMaxAttemptCountByUserId(@Param("userId") long userId);
 }

@@ -4,11 +4,15 @@ import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewSession;
+import gravit.code.interview.domain.InterviewSessionTopic;
 import gravit.code.interview.dto.event.InterviewSubmittedEvent;
+import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
+import gravit.code.interview.policy.InterviewAudioKeyPolicy;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
+import gravit.code.interview.repository.InterviewSessionTopicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,11 +31,66 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InterviewSessionCommandService {
 
+    private static final long ATTEMPT_COUNT_INCREMENT = 1L;
+    private static final int FIRST_DISPLAY_ORDER = 1;
+
     private final InterviewSessionRepository interviewSessionRepository;
+    private final InterviewSessionTopicRepository interviewSessionTopicRepository;
     private final InterviewAnswerRepository interviewAnswerRepository;
+
+    private final InterviewAudioKeyPolicy interviewAudioKeyPolicy;
 
     private final ApplicationEventPublisher publisher;
     private final Clock clock;
+
+    @Transactional
+    public long create(
+            long userId,
+            InterviewSessionCreateDto createDto
+    ) {
+        long attemptCount = interviewSessionRepository.findMaxAttemptCountByUserId(userId) + ATTEMPT_COUNT_INCREMENT;
+
+        InterviewSession session = interviewSessionRepository.save(
+                InterviewSession.create(
+                        userId,
+                        attemptCount,
+                        createDto.mode(),
+                        createDto.inputType(),
+                        createDto.difficulty(),
+                        createDto.stack()
+                )
+        );
+
+        long sessionId = session.getId();
+
+        interviewSessionTopicRepository.saveAll(
+                createDto.topics().stream()
+                        .map(topic -> InterviewSessionTopic.create(sessionId, topic))
+                        .toList()
+        );
+
+        List<Long> orderedQuestionIds = createDto.orderedQuestionIds();
+        List<InterviewAnswer> answers = new ArrayList<>();
+        for (int index = 0; index < orderedQuestionIds.size(); index++) {
+            answers.add(InterviewAnswer.create(sessionId, orderedQuestionIds.get(index), index + FIRST_DISPLAY_ORDER));
+        }
+        interviewAnswerRepository.saveAll(answers);
+
+        return sessionId;
+    }
+
+    @Transactional
+    public InterviewSessionStatusResponse abandon(
+            long userId,
+            long sessionId
+    ) {
+        InterviewSession session = findSession(sessionId);
+        validateOwner(session, userId);
+
+        session.abandon(LocalDateTime.now(clock));
+
+        return InterviewSessionStatusResponse.of(session.getId(), session.getStatus());
+    }
 
     @Transactional
     public InterviewSessionStatusResponse submit(
@@ -108,15 +168,34 @@ public class InterviewSessionCommandService {
             InterviewSession session,
             List<InterviewAnswerSubmitRequest> answerRequests
     ) {
-        if (!session.isTextInput()) {
+        if (session.isTextInput()) {
+            validateTextAudioKeysEmpty(answerRequests);
             return;
         }
 
+        validateVoiceAudioKeys(session, answerRequests);
+    }
+
+    private void validateTextAudioKeysEmpty(List<InterviewAnswerSubmitRequest> answerRequests) {
         boolean hasAudioKey = answerRequests.stream()
                 .anyMatch(answerRequest -> answerRequest.audioKey() != null);
 
         if (hasAudioKey) {
             throw new RestApiException(CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH);
+        }
+    }
+
+    private void validateVoiceAudioKeys(
+            InterviewSession session,
+            List<InterviewAnswerSubmitRequest> answerRequests
+    ) {
+        for (InterviewAnswerSubmitRequest answerRequest : answerRequests) {
+            String audioKey = answerRequest.audioKey();
+            if (audioKey == null || audioKey.isBlank()) {
+                continue;
+            }
+
+            interviewAudioKeyPolicy.validate(session.getId(), answerRequest.displayOrder(), audioKey);
         }
     }
 
