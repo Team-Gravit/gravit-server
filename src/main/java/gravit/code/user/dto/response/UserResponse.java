@@ -1,5 +1,6 @@
 package gravit.code.user.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -17,7 +18,11 @@ public record UserResponse(
         String nickname,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        String providerId
+        String providerId,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        @JsonProperty("isOnboarded")
+        boolean isOnboarded
 ) {
     public static UserResponse from(User user) {
         return UserResponse.builder()
@@ -25,6 +30,7 @@ public record UserResponse(
                 .profileImgNumber(user.getProfileImgNumber())
                 .nickname(user.getNickname())
                 .providerId(user.getProviderId())
+                .isOnboarded(user.isOnboarded())
                 .build();
     }
 }

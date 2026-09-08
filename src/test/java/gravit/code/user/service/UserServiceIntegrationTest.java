@@ -80,6 +80,7 @@ class UserServiceIntegrationTest {
                 softly.assertThat(result.userId()).isEqualTo(user.getId());
                 softly.assertThat(result.nickname()).isEqualTo(user.getNickname());
                 softly.assertThat(result.providerId()).isEqualTo(user.getProviderId());
+                softly.assertThat(result.isOnboarded()).isEqualTo(user.isOnboarded());
             });
         }
 
