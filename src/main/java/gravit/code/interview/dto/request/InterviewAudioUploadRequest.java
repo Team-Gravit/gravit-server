@@ -12,8 +12,8 @@ public record InterviewAudioUploadRequest(
                 example = "1",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @Min(1)
-        @Max(5)
+        @Min(value = 1, message = "문항 번호는 1 이상이어야 합니다.")
+        @Max(value = 5, message = "문항 번호는 5 이하여야 합니다.")
         int displayOrder,
 
         @Schema(
@@ -21,7 +21,7 @@ public record InterviewAudioUploadRequest(
                 example = "audio/m4a",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotBlank
+        @NotBlank(message = "음성 MIME 타입이 비어있습니다.")
         String contentType
 ) {
 }

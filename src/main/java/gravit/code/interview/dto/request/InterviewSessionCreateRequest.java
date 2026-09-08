@@ -17,7 +17,7 @@ public record InterviewSessionCreateRequest(
                 example = "TEXT",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotNull
+        @NotNull(message = "답변 입력 방식이 비어있습니다.")
         InterviewInputType inputType,
 
         @Schema(
@@ -25,7 +25,7 @@ public record InterviewSessionCreateRequest(
                 example = "COMMON_CS",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotNull
+        @NotNull(message = "면접 모드가 비어있습니다.")
         InterviewMode mode,
 
         @Schema(
@@ -33,7 +33,7 @@ public record InterviewSessionCreateRequest(
                 example = "NORMAL",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotNull
+        @NotNull(message = "난이도가 비어있습니다.")
         InterviewDifficulty difficulty,
 
         @Schema(
@@ -46,6 +46,6 @@ public record InterviewSessionCreateRequest(
                 description = "주제 목록. 공통 CS(COMMON_CS) 모드에서만 중복 없이 1~5개를 담고, 직군 모드는 비워야 합니다.",
                 example = "[\"DATA_STRUCTURE\", \"NETWORK\"]"
         )
-        List<InterviewTopic> topics
+        List<@NotNull(message = "주제 목록에 빈 값이 있습니다.") InterviewTopic> topics
 ) {
 }
