@@ -38,12 +38,29 @@ public class CSNoteController implements CSNoteControllerDocs {
 
     private static final String BASE_PATH = "static/notes";
     private static final String UNIT_PREFIX = "unit";
-    private static final Map<String, String> chapterMap = Map.of(
-            "자료구조", "data-structure",
-            "알고리즘", "algorithm",
-            "네트워크", "network",
-            "데이터베이스","database",
-            "운영체제","operating-system"
+    private static final Map<String, String> chapterMap = Map.ofEntries(
+            Map.entry("자료구조", "data-structure"),
+            Map.entry("알고리즘", "algorithm"),
+            Map.entry("네트워크", "network"),
+            Map.entry("데이터베이스", "database"),
+            Map.entry("운영체제", "operating-system"),
+            Map.entry("Common · Server", "common-server"),
+            Map.entry("Common · Web", "common-web"),
+            Map.entry("Common · AOS", "common-aos"),
+            Map.entry("Common · iOS", "common-ios"),
+            Map.entry("BE · Spring", "be-spring"),
+            Map.entry("BE · Node.js", "be-nodejs"),
+            Map.entry("BE · Django", "be-django"),
+            Map.entry("FE · React", "fe-react"),
+            Map.entry("FE · Vue.js", "fe-vue"),
+            Map.entry("FE · Next.js", "fe-nextjs"),
+            Map.entry("Mobile · Android", "mobile-android"),
+            Map.entry("Mobile · iOS", "mobile-ios"),
+            Map.entry("Language · Java", "lang-java"),
+            Map.entry("Language · Kotlin", "lang-kotlin"),
+            Map.entry("Language · TypeScript", "lang-typescript"),
+            Map.entry("Language · Python", "lang-python"),
+            Map.entry("Language · Swift", "lang-swift")
     );
 
     @GetMapping("/{unitId}")
