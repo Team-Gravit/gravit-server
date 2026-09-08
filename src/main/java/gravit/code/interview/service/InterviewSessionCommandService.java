@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InterviewSessionCommandService {
 
-    private static final long ATTEMPT_COUNT_INCREMENT = 1L;
     private static final int FIRST_DISPLAY_ORDER = 1;
 
     private final InterviewSessionRepository interviewSessionRepository;
@@ -48,7 +47,7 @@ public class InterviewSessionCommandService {
             long userId,
             InterviewSessionCreateDto createDto
     ) {
-        long attemptCount = interviewSessionRepository.findMaxAttemptCountByUserId(userId) + ATTEMPT_COUNT_INCREMENT;
+        long attemptCount = interviewSessionRepository.findMaxAttemptCountByUserId(userId) + 1;
 
         InterviewSession session = interviewSessionRepository.save(
                 InterviewSession.create(

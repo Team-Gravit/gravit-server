@@ -34,7 +34,6 @@ public class InterviewSession extends BaseEntity {
     private static final int INITIAL_SCORE = 0;
     private static final int INITIAL_GRADING_ATTEMPT_COUNT = 0;
     private static final int WEAK_THRESHOLD_DIVISOR = 2;
-    private static final int GRADING_ATTEMPT_INCREMENT = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -191,7 +190,7 @@ public class InterviewSession extends BaseEntity {
 
         this.status = InterviewSessionStatus.GRADING;
         this.endedAt = endedAt;
-        this.gradingAttemptCount += GRADING_ATTEMPT_INCREMENT;
+        this.gradingAttemptCount++;
     }
 
     public void completeGrading(
