@@ -46,9 +46,6 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     """)
     Optional<UnitSummaryResponse> findUnitSummaryById(@Param("unitId")long unitId);
 
-    @Query("SELECT u.id FROM Unit u WHERE u.chapterId = :chapterId ORDER BY u.id ASC")
-    List<Long> findIdsByChapterIdOrderById(@Param("chapterId") long chapterId);
-
     @Query("""
         SELECT u.id
         FROM Unit u

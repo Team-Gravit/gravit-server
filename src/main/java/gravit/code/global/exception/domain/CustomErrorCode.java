@@ -166,7 +166,7 @@ public enum CustomErrorCode implements ErrorCode {
     ADMIN_ONLY_FEATURE(HttpStatus.UNAUTHORIZED, "ADMIN_4011", "admin 전용 기능입니다."),
 
     // CS-NOTE
-    CHAPTER_NAME_NOT_MATCHING(HttpStatus.BAD_REQUEST, "CS_NOTE_4001", "CS 노트 경로와 챕터 이름이 매칭되지 않습니다."),
+    CS_NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "CS_NOTE_4041", "개념 노트를 찾을 수 없습니다."),
 
     // Interview
     INTERVIEW_SESSION_SCORE_INVALID(HttpStatus.BAD_REQUEST, "INTERVIEW_4002", "면접 세션 점수가 0점과 만점 사이를 벗어났습니다."),

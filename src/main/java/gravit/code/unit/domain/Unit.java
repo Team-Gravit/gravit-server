@@ -28,15 +28,20 @@ public class Unit {
     @Column(name = "chapter_id", nullable = false)
     private long chapterId;
 
+    @Column(name = "note_path")
+    private String notePath;
+
     @Builder(access = AccessLevel.PRIVATE)
     private Unit(
             String title,
             String description,
-            long chapterId
+            long chapterId,
+            String notePath
     ) {
         this.title = title;
         this.description = description;
         this.chapterId = chapterId;
+        this.notePath = notePath;
     }
 
     public static Unit create(
@@ -44,10 +49,20 @@ public class Unit {
             String description,
             long chapterId
     ) {
+        return create(title, description, chapterId, null);
+    }
+
+    public static Unit create(
+            String title,
+            String description,
+            long chapterId,
+            String notePath
+    ) {
         return Unit.builder()
                 .title(title)
                 .description(description)
                 .chapterId(chapterId)
+                .notePath(notePath)
                 .build();
     }
 
