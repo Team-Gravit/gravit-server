@@ -124,3 +124,11 @@ admin:
     enabled: true
     emails:
       - test@test.com
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: test-interview-audio
+    access-key: test-access-key
+    secret-key: test-secret-key
+    upload-expiry: 10m

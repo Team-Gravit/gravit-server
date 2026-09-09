@@ -10,8 +10,8 @@ public record InterviewAnswerSubmitRequest(
                 description = "문항 번호",
                 example = "1"
         )
-        @Min(1)
-        @Max(5)
+        @Min(value = 1, message = "문항 번호는 1 이상이어야 합니다.")
+        @Max(value = 5, message = "문항 번호는 5 이하여야 합니다.")
         int displayOrder,
 
         @Schema(

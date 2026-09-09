@@ -5,8 +5,11 @@ import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewMode;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionStatus;
+import gravit.code.interview.domain.InterviewStack;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
+import gravit.code.interview.dto.request.InterviewSessionCreateRequest;
 import gravit.code.interviewQuestion.domain.InterviewDifficulty;
+import gravit.code.interviewQuestion.domain.InterviewTopic;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -35,9 +38,53 @@ public class InterviewSessionFixture {
             long userId,
             InterviewSessionStatus status
     ) {
-        InterviewSession session = 진행중_세션(userId, InterviewInputType.TEXT);
+        return 상태_세션(userId, status, InterviewInputType.TEXT);
+    }
+
+    public static InterviewSession 상태_세션(
+            long userId,
+            InterviewSessionStatus status,
+            InterviewInputType inputType
+    ) {
+        InterviewSession session = 진행중_세션(userId, inputType);
         ReflectionTestUtils.setField(session, "status", status);
         return session;
+    }
+
+    public static InterviewSessionCreateRequest 생성_요청_공통CS(
+            InterviewDifficulty difficulty,
+            InterviewTopic... topics
+    ) {
+        return new InterviewSessionCreateRequest(
+                InterviewInputType.TEXT,
+                InterviewMode.COMMON_CS,
+                difficulty,
+                null,
+                List.of(topics)
+        );
+    }
+
+    public static InterviewSessionCreateRequest 생성_요청_직군(
+            InterviewDifficulty difficulty,
+            InterviewStack stack
+    ) {
+        return new InterviewSessionCreateRequest(
+                InterviewInputType.TEXT,
+                InterviewMode.JOB_SPECIFIC,
+                difficulty,
+                stack,
+                null
+        );
+    }
+
+    public static InterviewSessionCreateRequest 생성_요청(
+            InterviewInputType inputType,
+            InterviewMode mode,
+            InterviewDifficulty difficulty,
+            InterviewStack stack,
+            List<InterviewTopic> topics
+    ) {
+        return new InterviewSessionCreateRequest(inputType, mode, difficulty, stack, topics);
     }
 
     public static List<InterviewAnswer> 미제출_답안(

@@ -152,3 +152,11 @@ management:
 
 app:
   version: 1.0.0
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: ${S3_INTERVIEW_AUDIO_BUCKET}
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    upload-expiry: 10m

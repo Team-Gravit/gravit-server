@@ -55,6 +55,10 @@ jobs:
 
           spring.ai.openai.api-key: ${{ secrets.LITELLM_MASTER_KEY }}
 
+          aws.s3.bucket: ${{ secrets.PROD_S3_INTERVIEW_AUDIO_BUCKET }}
+          aws.s3.access-key: ${{ secrets.PROD_S3_ACCESS_KEY }}
+          aws.s3.secret-key: ${{ secrets.PROD_S3_SECRET_KEY }}
+
       - name: Firebase 서비스 계정 키 파일 생성
         run: |
           mkdir -p ./src/main/resources/firebase
