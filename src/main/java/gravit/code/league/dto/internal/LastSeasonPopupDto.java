@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 public record LastSeasonPopupDto(
 
         int rank,
+        int finalLp,
         @NotNull
         String leagueName,
         long profileImgNumber,
@@ -20,6 +21,7 @@ public record LastSeasonPopupDto(
     ) {
         return new LastSeasonPopupDto(
                 history.getFinalRank(),
+                history.getFinalLp(),
                 history.getFinalLeague().getName(),
                 history.getUser().getProfileImgNumber(),
                 nextUserLeague.getLeague().getName(),
