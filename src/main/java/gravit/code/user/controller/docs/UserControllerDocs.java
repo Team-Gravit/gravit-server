@@ -81,8 +81,16 @@ public interface UserControllerDocs {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
+                                            name = "닉네임 길이 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 2자 이상 8자 이하이어야 합니다. ][ 가 ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "닉네임 패턴 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 공백이나 특수문자를 포함할 수 없습니다. ][ 홍 길동! ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "복수 필드 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 필수입니다. ][  ]\", \"[ profilePhotoNumber ][ 프로필 사진 번호는 필수입니다. ][ null ]\"]}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -120,8 +128,16 @@ public interface UserControllerDocs {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
+                                            name = "닉네임 길이 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 2자 이상 8자 이하이어야 합니다. ][ 가 ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "닉네임 패턴 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 공백이나 특수문자를 포함할 수 없습니다. ][ 홍 길동! ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "복수 필드 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 필수입니다. ][  ]\", \"[ profilePhotoNumber ][ 프로필 사진 번호는 필수입니다. ][ null ]\"]}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
