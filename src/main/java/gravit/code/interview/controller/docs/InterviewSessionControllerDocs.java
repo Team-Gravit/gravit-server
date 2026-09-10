@@ -402,8 +402,12 @@ public interface InterviewSessionControllerDocs {
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\": \"GLOBAL_4001\", \"message\": \"유효성 검사 실패\"}"
+                                            name = "답안 개수 위반",
+                                            value = "{\"error\": \"GLOBAL_4001\", \"message\": [\"[ answers ][ size must be between 5 and 5 ][ [] ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "문항 번호 범위 위반",
+                                            value = "{\"error\": \"GLOBAL_4001\", \"message\": [\"[ answers[0].displayOrder ][ must be greater than or equal to 1 ][ 0 ]\"]}"
                                     ),
                                     @ExampleObject(
                                             name = "문항 번호 오류",
