@@ -92,6 +92,7 @@ class LeagueServiceTest {
                 softly.assertThat(result.containsPopup()).isTrue();
                 softly.assertThat(result.lastSeasonPopupDto()).isNotNull();
                 softly.assertThat(result.lastSeasonPopupDto().rank()).isEqualTo(3);
+                softly.assertThat(result.lastSeasonPopupDto().finalLp()).isEqualTo(900);
                 softly.assertThat(result.lastSeasonPopupDto().leagueName()).isEqualTo("골드 3");
                 softly.assertThat(result.lastSeasonPopupDto().nextLeagueName()).isEqualTo("실버 3");
                 softly.assertThat(result.lastSeasonPopupDto().nextStartLp()).isEqualTo(321);
