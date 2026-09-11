@@ -9,6 +9,7 @@ import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningCommandService;
+import gravit.code.lesson.dto.internal.LessonSubmissionSavedDto;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResultResponse;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @Facade
 @RequiredArgsConstructor
@@ -91,13 +93,17 @@ public class LessonFacade {
         problemSubmissionCommandService.validateProblemSubmissions(problemSubmissionSaveRequests);
         boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, lessonSubmissionSaveRequest.lessonId());
 
-        Long lessonSubmissionId = transactionTemplate.execute(status -> {
+        Optional<Integer> leagueSortOrderBeforeSubmission = isFirstTry
+                ? userLeagueService.findLeagueSortOrder(userId)
+                : Optional.empty();
+
+        LessonSubmissionSavedDto saved = transactionTemplate.execute(status -> {
             long submissionId = lessonSubmissionCommandService.saveLessonSubmission(userId, lessonSubmissionSaveRequest);
 
             List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, problemSubmissionSaveRequests);
             wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, wrongAnsweredProblemIds);
 
-            userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
+            boolean isLevelUp = userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
             ConsecutiveSolvedDto consecutiveSolvedDto = learningCommandService.updateLearningStatus(userId, learningIdsDto.chapterId());
 
             if(isFirstTry){
@@ -113,10 +119,18 @@ public class LessonFacade {
                 ));
             }
 
-            return submissionId;
+            return new LessonSubmissionSavedDto(submissionId, isLevelUp);
         });
 
-        return LessonSubmissionSaveResponse.create(lessonSubmissionId);
+        boolean isLeaguePromoted = leagueSortOrderBeforeSubmission
+                .map(sortOrderBefore -> userLeagueService.checkLeaguePromoted(userId, sortOrderBefore))
+                .orElse(false);
+
+        return LessonSubmissionSaveResponse.create(
+                saved.lessonSubmissionId(),
+                saved.isLevelUp(),
+                isLeaguePromoted
+        );
     }
 
     @Transactional(readOnly = true)
