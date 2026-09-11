@@ -32,12 +32,15 @@ import gravit.code.user.domain.UserLevel;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.service.UserLeagueService;
 import gravit.code.wrongAnsweredNote.repository.WrongAnsweredNoteRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.CannotCreateTransactionException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -50,6 +53,9 @@ import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_TYPE_M
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 
 @TCSpringBootTest
 class LessonFacadeIntegrationTest {
@@ -96,6 +102,9 @@ class LessonFacadeIntegrationTest {
 
     @Autowired
     private LearningRepository learningRepository;
+
+    @MockitoSpyBean
+    private UserLeagueService userLeagueService;
 
     private User 유저() {
         return userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 3, Role.USER));
@@ -324,6 +333,26 @@ class LessonFacadeIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result.isLevelUp()).isFalse();
+                softly.assertThat(result.isLeaguePromoted()).isFalse();
+            });
+        }
+
+        @Test
+        void 제출_저장_뒤_승급_여부_조회에_실패해도_제출은_성공하고_승급이_아니다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 승급_직전_LP);
+            learningRepository.save(Learning.create(user.getId()));
+            Lesson lesson = 레슨();
+            doThrow(new CannotCreateTransactionException("커넥션 획득 실패"))
+                    .when(userLeagueService).checkLeaguePromoted(eq(user.getId()), anyInt());
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(lessonSubmissionRepository.findById(result.lessonSubmissionId())).isPresent();
                 softly.assertThat(result.isLeaguePromoted()).isFalse();
             });
         }
