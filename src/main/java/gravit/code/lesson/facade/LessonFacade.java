@@ -27,6 +27,7 @@ import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -34,6 +35,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Facade
 @RequiredArgsConstructor
 public class LessonFacade {
@@ -123,7 +125,7 @@ public class LessonFacade {
         });
 
         boolean isLeaguePromoted = leagueSortOrderBeforeSubmission
-                .map(sortOrderBefore -> userLeagueService.checkLeaguePromoted(userId, sortOrderBefore))
+                .map(sortOrderBefore -> checkLeaguePromotedOrFalse(userId, sortOrderBefore))
                 .orElse(false);
 
         return LessonSubmissionSaveResponse.create(
@@ -149,5 +151,17 @@ public class LessonFacade {
                 userLevelResponse,
                 unitSummaryResponse
         );
+    }
+
+    private boolean checkLeaguePromotedOrFalse(
+            long userId,
+            int sortOrderBefore
+    ) {
+        try {
+            return userLeagueService.checkLeaguePromoted(userId, sortOrderBefore);
+        } catch (RuntimeException e) {
+            log.error("리그 승급 여부 조회 실패, 승급 아님으로 응답: userId={}", userId, e);
+            return false;
+        }
     }
 }

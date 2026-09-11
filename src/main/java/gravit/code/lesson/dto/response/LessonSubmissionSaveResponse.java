@@ -25,7 +25,7 @@ public record LessonSubmissionSaveResponse(
         boolean isLevelUp,
 
         @Schema(
-                description = "이번 제출의 리그 점수로 리그가 승급했는지 여부. 리그 점수 지급이 재시도 큐로 넘어갔거나 리그에 참여하지 않았으면 false이며, 재제출은 항상 false",
+                description = "이번 제출의 리그 점수로 리그가 승급했는지 여부. 리그 점수 지급이 재시도 큐로 넘어갔거나, 승급 여부 조회에 실패했거나, 리그에 참여하지 않았으면 false이며, 재제출은 항상 false",
                 example = "false",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
