@@ -36,7 +36,7 @@ A안이 감수하는 한계는 아래와 같다.
 | 누군가 `UserLeagueEventListener`에 `@Async`를 붙임 | 사후 조회가 지급 전 상태를 읽어 항상 false로 조용히 회귀함. 통합 테스트로 고정한다 |
 | 같은 유저가 서로 다른 레슨을 동시에 첫 제출 | 다른 제출이 일으킨 승급이 섞여 두 응답이 모두 true일 수 있음 |
 | 사전 조회와 사후 조회 사이에 다른 유저가 이 유저의 피드를 축하함 | 축하 LP 5점(`SocialFacade.congratulateFeed:107`)으로 승급해도 레슨 제출 응답이 true. 두 조회 사이 간격이 제출 트랜잭션과 리스너 실행 시간뿐이라 발생 확률은 낮음 |
-| 커밋 뒤 사후 조회(`checkLeaguePromoted`)가 DB 오류로 실패 | 제출은 커밋됐는데 응답은 500. 클라이언트가 다시 보내면 재제출로 처리돼 보상이 없고 모달도 뜨지 않음. 커밋 직후 같은 DB 조회가 실패하는 경우는 드물어 예외를 삼키지 않고 한계로 둔다 |
+| 커밋 뒤 사후 조회(`checkLeaguePromoted`)가 DB 오류로 실패 | 예외를 로그로 남기고 `isLeaguePromoted` false로 성공 응답. 승급했더라도 모달은 뜨지 않음 (PR #538 리뷰 반영, Deviation Log 참고) |
 | 사전 조회와 사후 조회 사이에 시즌이 전환됨(소프트 리셋) | 티어가 내려가 false |
 | 첫 제출의 조회 비용 | 리그 `sortOrder` 단건 조회 2회 추가 |
 
@@ -300,6 +300,7 @@ public record LessonSubmissionSaveResponse(
 | 첫 제출이지만 레벨·리그 구간을 넘지 않음 | 두 값 모두 false |
 | 재제출 (기존 제출 이력을 먼저 저장하고, XP·LP는 경계 직전) | 두 값 모두 false |
 | 리그에 참여하지 않은 유저의 첫 제출 | 예외 없이 제출이 저장되고 `isLeaguePromoted` false |
+| 제출 저장 뒤 승급 여부 조회 실패 (`checkLeaguePromoted`가 커넥션 획득 실패를 던짐) | 예외 없이 제출이 저장되고 `isLeaguePromoted` false |
 
 - 미션 XP로 인한 레벨업은 테스트로 고정하지 않는다. 한계를 테스트로 묶으면 나중에 포함하기로 했을 때 개선이 회귀처럼 보이고, 결정 내용은 `learning.md`에 남는다
 
@@ -335,3 +336,4 @@ public record LessonSubmissionSaveResponse(
 ## Deviation Log
 - `LessonSubmissionSaveResponse.java`: `isLevelUp`, `isLeaguePromoted`에 `@JsonProperty("isLevelUp")`, `@JsonProperty("isLeaguePromoted")` 추가 — 이유: 5. DTO의 근거("`LessonSummaryResponse.isSolved`가 같은 방식으로 `isSolved` 키로 나간다")가 사실과 다름. `isSolved`는 `@JsonProperty("isSolved")`로 키를 고정하고 있고, `UserResponse`, `MissionDetailResponse`, `ProblemResponse` 등 다른 응답 DTO의 `isXxx` 필드도 같은 방식임. 결정된 필드 이름을 확실히 고정하기 위해 기존 방식을 따름
 - `UserServiceIntegrationTest.java`, `LessonFacadeIntegrationTest.java`, `UserLeagueServiceIntegrationTest.java`: 구현 단계에서 수정하지 않음 — 이유: 검증 섹션 시나리오 작성은 테스트 작성이라 implement 범위 밖. `write-test`에서 작성. 그 전까지 `UserServiceIntegrationTest:322,336`이 반환 타입 변경으로 컴파일되지 않음
+- `LessonFacade.java`: 커밋 뒤 사후 조회 실패를 `RuntimeException`으로 잡아 로그를 남기고 `isLeaguePromoted` false로 응답 — 이유: PR #538 리뷰 반영. 원래는 드문 경우라 한계로 뒀으나, 이 PR이 커밋된 제출을 500으로 응답하는 경로를 새로 만들고, 클라이언트가 POST를 다시 보내면 중복 제출이 쌓임. false는 이미 "승급을 관측하지 못함"의 의미라 조회 실패도 같은 값으로 응답. 커넥션 획득 실패는 `@Transactional` 프록시가 트랜잭션을 시작하는 단계에서 나므로 서비스가 아닌 Facade에서 잡음. 사전 조회는 커밋 전이라 그대로 둠
