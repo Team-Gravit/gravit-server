@@ -8,6 +8,7 @@ import gravit.code.season.domain.Season;
 import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserLevel;
 import gravit.code.userLeague.dto.internal.LeagueRankEntry;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
@@ -16,7 +17,6 @@ import gravit.code.mission.repository.MissionRepository;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
-import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
 import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.fixture.UserFixture;
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -312,31 +313,64 @@ class UserServiceIntegrationTest {
     @DisplayName("레슨 제출로 유저 레벨을 업데이트할 때")
     class UpdateUserLevelByLessonSubmission {
 
-        @Test
-        void 첫_시도이면_정확도에_비례한_XP가_누적된다() {
-            // given
+        private static final int 레벨업_직전_XP = 90;
+
+        private User 경험치를_보유한_유저(int xp) {
             User user = userFixture.일반_유저(1);
-            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
+            ReflectionTestUtils.setField(user, "level", UserLevel.create(1, xp), UserLevel.class);
+            return userRepository.save(user);
+        }
 
-            // when
-            UserLevelResponse result = userService.updateUserLevelByLessonSubmission(user.getId(), request, true);
-
-            // then
-            // 20 point * 100% accuracy = 20 XP
-            assertThat(result.xp()).isEqualTo(20);
+        private UserLevel 저장된_레벨(long userId) {
+            return userRepository.findById(userId).orElseThrow().getLevel();
         }
 
         @Test
-        void 재시도이면_XP가_증가하지_않는다() {
+        void 첫_시도로_레벨_구간을_넘으면_레벨업으로_판정한다() {
+            // given
+            User user = 경험치를_보유한_유저(레벨업_직전_XP);
+            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
+
+            // when
+            boolean result = userService.updateUserLevelByLessonSubmission(user.getId(), request, true);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).isTrue();
+                softly.assertThat(저장된_레벨(user.getId()).getLevel()).isEqualTo(2);
+            });
+        }
+
+        @Test
+        void 첫_시도라도_레벨_구간을_넘지_않으면_레벨업이_아니다() {
             // given
             User user = userFixture.일반_유저(1);
             LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
 
             // when
-            UserLevelResponse result = userService.updateUserLevelByLessonSubmission(user.getId(), request, false);
+            boolean result = userService.updateUserLevelByLessonSubmission(user.getId(), request, true);
 
             // then
-            assertThat(result.xp()).isEqualTo(0);
+            assertSoftly(softly -> {
+                softly.assertThat(result).isFalse();
+                softly.assertThat(저장된_레벨(user.getId()).getXp()).isEqualTo(20);
+            });
+        }
+
+        @Test
+        void 재시도이면_XP가_증가하지_않아_레벨업이_아니다() {
+            // given
+            User user = 경험치를_보유한_유저(레벨업_직전_XP);
+            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
+
+            // when
+            boolean result = userService.updateUserLevelByLessonSubmission(user.getId(), request, false);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).isFalse();
+                softly.assertThat(저장된_레벨(user.getId()).getXp()).isEqualTo(레벨업_직전_XP);
+            });
         }
 
         @Test

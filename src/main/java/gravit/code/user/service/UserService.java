@@ -96,19 +96,19 @@ public class UserService {
     }
 
     @Transactional
-    public UserLevelResponse updateUserLevelByLessonSubmission(
+    public boolean updateUserLevelByLessonSubmission(
             long userId,
             LessonSubmissionSaveRequest request,
             boolean isFirstTry
     ){
-        UserLevelResponse userLevelResponse;
+        boolean isLevelUp;
 
         if(isFirstTry){
-            userLevelResponse = updateUserLevelAndXp(userId, POINT_PER_LESSON, request.accuracy());
+            isLevelUp = updateUserLevelAndXp(userId, POINT_PER_LESSON, request.accuracy());
         }else{
-            userLevelResponse = updateUserLevelAndXp(userId, 0, request.accuracy());
+            isLevelUp = updateUserLevelAndXp(userId, 0, request.accuracy());
         }
-        return userLevelResponse;
+        return isLevelUp;
     }
 
     @Transactional(readOnly = true)
@@ -136,7 +136,7 @@ public class UserService {
                 .collect(Collectors.toMap(UserSummaryResponse::id, Function.identity()));
     }
 
-    private UserLevelResponse updateUserLevelAndXp(
+    private boolean updateUserLevelAndXp(
             long userId,
             int xp,
             int accuracy
@@ -148,10 +148,11 @@ public class UserService {
         user.getLevel().updateXp((int) Math.round(xp * accuracy * 0.01));
         int newLevel = user.getLevel().getLevel();
 
-        if (newLevel > oldLevel) {
+        boolean isLevelUp = newLevel > oldLevel;
+        if (isLevelUp) {
             publisher.publishEvent(new LevelUpFeedEvent(userId, newLevel));
         }
 
-        return UserLevelResponse.create(newLevel, user.getLevel().getXp());
+        return isLevelUp;
     }
 }

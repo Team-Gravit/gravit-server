@@ -9,6 +9,7 @@ import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningCommandService;
+import gravit.code.lesson.dto.internal.LessonSubmissionSavedDto;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResultResponse;
@@ -26,12 +27,15 @@ import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Facade
 @RequiredArgsConstructor
 public class LessonFacade {
@@ -91,13 +95,17 @@ public class LessonFacade {
         problemSubmissionCommandService.validateProblemSubmissions(problemSubmissionSaveRequests);
         boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, lessonSubmissionSaveRequest.lessonId());
 
-        Long lessonSubmissionId = transactionTemplate.execute(status -> {
+        Optional<Integer> leagueSortOrderBeforeSubmission = isFirstTry
+                ? userLeagueService.findLeagueSortOrder(userId)
+                : Optional.empty();
+
+        LessonSubmissionSavedDto saved = transactionTemplate.execute(status -> {
             long submissionId = lessonSubmissionCommandService.saveLessonSubmission(userId, lessonSubmissionSaveRequest);
 
             List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, problemSubmissionSaveRequests);
             wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, wrongAnsweredProblemIds);
 
-            userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
+            boolean isLevelUp = userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
             ConsecutiveSolvedDto consecutiveSolvedDto = learningCommandService.updateLearningStatus(userId, learningIdsDto.chapterId());
 
             if(isFirstTry){
@@ -113,10 +121,18 @@ public class LessonFacade {
                 ));
             }
 
-            return submissionId;
+            return new LessonSubmissionSavedDto(submissionId, isLevelUp);
         });
 
-        return LessonSubmissionSaveResponse.create(lessonSubmissionId);
+        boolean isLeaguePromoted = leagueSortOrderBeforeSubmission
+                .map(sortOrderBefore -> checkLeaguePromotedOrFalse(userId, sortOrderBefore))
+                .orElse(false);
+
+        return LessonSubmissionSaveResponse.create(
+                saved.lessonSubmissionId(),
+                saved.isLevelUp(),
+                isLeaguePromoted
+        );
     }
 
     @Transactional(readOnly = true)
@@ -135,5 +151,17 @@ public class LessonFacade {
                 userLevelResponse,
                 unitSummaryResponse
         );
+    }
+
+    private boolean checkLeaguePromotedOrFalse(
+            long userId,
+            int sortOrderBefore
+    ) {
+        try {
+            return userLeagueService.checkLeaguePromoted(userId, sortOrderBefore);
+        } catch (RuntimeException e) {
+            log.error("리그 승급 여부 조회 실패, 승급 아님으로 응답: userId={}", userId, e);
+            return false;
+        }
     }
 }

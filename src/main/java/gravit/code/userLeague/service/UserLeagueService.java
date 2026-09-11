@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -58,6 +60,21 @@ public class UserLeagueService {
     public int getLeagueSortOrder(long userId) {
         return userLeagueRepository.findLeagueSortOrderByUserId(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Integer> findLeagueSortOrder(long userId) {
+        return userLeagueRepository.findLeagueSortOrderByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkLeaguePromoted(
+            long userId,
+            int sortOrderBefore
+    ) {
+        return userLeagueRepository.findLeagueSortOrderByUserId(userId)
+                .map(sortOrder -> sortOrder > sortOrderBefore)
+                .orElse(false);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
