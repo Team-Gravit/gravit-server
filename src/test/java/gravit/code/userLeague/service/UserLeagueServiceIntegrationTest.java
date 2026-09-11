@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,6 +135,87 @@ class UserLeagueServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_LEAGUE_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자의 리그 순서를 조회할 때")
+    class FindLeagueSortOrder {
+
+        @Test
+        void 리그에_참여했으면_현재_리그의_순서를_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈2 = leagueFixture.브론즈_2();
+            userLeagueFixture.참여(user, season, 브론즈2, 150);
+
+            // when
+            Optional<Integer> result = userLeagueService.findLeagueSortOrder(user.getId());
+
+            // then
+            assertThat(result).hasValue(브론즈2.getSortOrder());
+        }
+
+        @Test
+        void 리그에_참여하지_않았으면_빈_값을_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            Optional<Integer> result = userLeagueService.findLeagueSortOrder(user.getId());
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("리그 승급 여부를 판정할 때")
+    class CheckLeaguePromoted {
+
+        @Test
+        void 현재_리그_순서가_기준보다_크면_승급으로_판정한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈3 = leagueFixture.브론즈_3();
+            League 브론즈2 = leagueFixture.브론즈_2();
+            userLeagueFixture.참여(user, season, 브론즈2, 150);
+
+            // when
+            boolean result = userLeagueService.checkLeaguePromoted(user.getId(), 브론즈3.getSortOrder());
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 현재_리그_순서가_기준과_같으면_승급이_아니다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈2 = leagueFixture.브론즈_2();
+            userLeagueFixture.참여(user, season, 브론즈2, 150);
+
+            // when
+            boolean result = userLeagueService.checkLeaguePromoted(user.getId(), 브론즈2.getSortOrder());
+
+            // then
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void 리그에_참여하지_않았으면_승급이_아니다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            League 브론즈3 = leagueFixture.브론즈_3();
+
+            // when
+            boolean result = userLeagueService.checkLeaguePromoted(user.getId(), 브론즈3.getSortOrder());
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 

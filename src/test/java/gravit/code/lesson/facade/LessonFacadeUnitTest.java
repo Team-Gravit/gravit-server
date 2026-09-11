@@ -19,7 +19,6 @@ import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.problem.service.ProblemSubmissionCommandService;
 import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
-import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
@@ -168,7 +167,7 @@ class LessonFacadeUnitTest {
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
             when(lessonSubmissionCommandService.saveLessonSubmission(userId, lessonRequest)).thenReturn(100L);
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
-                    .thenReturn(UserLevelResponse.create(1, 20));
+                    .thenReturn(false);
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
 
@@ -193,7 +192,7 @@ class LessonFacadeUnitTest {
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(false);
             when(lessonSubmissionCommandService.saveLessonSubmission(userId, lessonRequest)).thenReturn(200L);
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(false)))
-                    .thenReturn(UserLevelResponse.create(1, 0));
+                    .thenReturn(false);
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(1, 1));
 
@@ -217,7 +216,7 @@ class LessonFacadeUnitTest {
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
-                    .thenReturn(UserLevelResponse.create(1, 20));
+                    .thenReturn(false);
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
 
@@ -242,7 +241,7 @@ class LessonFacadeUnitTest {
 
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
-                    .thenReturn(UserLevelResponse.create(1, 20));
+                    .thenReturn(false);
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
 
@@ -271,7 +270,7 @@ class LessonFacadeUnitTest {
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
             when(problemSubmissionCommandService.saveProblemSubmissions(userId, problemRequests)).thenReturn(List.of(1L, 2L));
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
-                    .thenReturn(UserLevelResponse.create(1, 20));
+                    .thenReturn(false);
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
 
@@ -295,7 +294,7 @@ class LessonFacadeUnitTest {
             when(lessonSubmissionQueryService.checkFirstLessonSubmission(userId, 1L)).thenReturn(true);
             when(problemSubmissionCommandService.saveProblemSubmissions(userId, problemRequests)).thenReturn(List.of());
             when(userService.updateUserLevelByLessonSubmission(eq(userId), eq(lessonRequest), eq(true)))
-                    .thenReturn(UserLevelResponse.create(1, 20));
+                    .thenReturn(false);
             when(lessonQueryService.getLearningIdsByLessonId(1L)).thenReturn(new LearningIdsDto(1L, 1L, 1L));
             when(learningCommandService.updateLearningStatus(userId, 1L)).thenReturn(new ConsecutiveSolvedDto(0, 1));
 
