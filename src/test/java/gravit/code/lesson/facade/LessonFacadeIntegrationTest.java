@@ -28,14 +28,19 @@ import gravit.code.unit.domain.Unit;
 import gravit.code.unit.repository.UnitRepository;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserLevel;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.service.UserLeagueService;
 import gravit.code.wrongAnsweredNote.repository.WrongAnsweredNoteRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.CannotCreateTransactionException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,9 +53,16 @@ import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_TYPE_M
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 
 @TCSpringBootTest
 class LessonFacadeIntegrationTest {
+
+    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
+    private static final int 승급_직전_LP = 90;
+    private static final int 레벨업_직전_XP = 90;
 
     @Autowired
     private LessonFacade lessonFacade;
@@ -90,6 +102,44 @@ class LessonFacadeIntegrationTest {
 
     @Autowired
     private LearningRepository learningRepository;
+
+    @MockitoSpyBean
+    private UserLeagueService userLeagueService;
+
+    private User 유저() {
+        return userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 3, Role.USER));
+    }
+
+    private User 경험치를_보유한_유저(int xp) {
+        User user = 유저();
+        ReflectionTestUtils.setField(user, "level", UserLevel.create(1, xp), UserLevel.class);
+        return userRepository.save(user);
+    }
+
+    private void 브론즈로_리그에_참여시킨다(
+            User user,
+            int lp
+    ) {
+        League bronze = leagueRepository.save(League.create("브론즈", 100, 0, 1));
+        leagueRepository.save(League.create("실버", 200, 101, 2));
+        Season season = seasonRepository.save(Season.active("2026-W18", LocalDateTime.now(KST), LocalDateTime.now(KST).plusWeeks(1)));
+
+        UserLeague userLeague = UserLeague.create(user, season, bronze);
+        userLeague.addLeaguePoints(lp);
+        userLeagueRepository.save(userLeague);
+    }
+
+    private LearningSubmissionSaveRequest 정답_제출(
+            long lessonId,
+            int accuracy
+    ) {
+        Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "설명하시오.", "큐의 특성은?", lessonId));
+
+        return new LearningSubmissionSaveRequest(
+                new LessonSubmissionSaveRequest(lessonId, 120, accuracy),
+                List.of(new ProblemSubmissionSaveRequest(problem.getId(), true, null, "FIFO"))
+        );
+    }
 
     @Nested
     @DisplayName("유닛별 레슨 목록을 조회할 때")
@@ -219,50 +269,123 @@ class LessonFacadeIntegrationTest {
                 softly.assertThat(wrongAnsweredNoteRepository.findAll()).isEmpty();
             });
         }
+
+        @Test
+        void 첫_제출로_레벨_구간을_넘으면_레벨업으로_응답한다() {
+            // given
+            User user = 경험치를_보유한_유저(레벨업_직전_XP);
+            브론즈로_리그에_참여시킨다(user, 0);
+            learningRepository.save(Learning.create(user.getId()));
+            Lesson lesson = 레슨();
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertThat(result.isLevelUp()).isTrue();
+        }
+
+        @Test
+        void 첫_제출로_리그_구간을_넘으면_승급으로_응답한다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 승급_직전_LP);
+            learningRepository.save(Learning.create(user.getId()));
+            Lesson lesson = 레슨();
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertThat(result.isLeaguePromoted()).isTrue();
+        }
+
+        @Test
+        void 첫_제출이라도_레벨과_리그_구간을_넘지_않으면_레벨업과_승급이_모두_아니다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 0);
+            learningRepository.save(Learning.create(user.getId()));
+            Lesson lesson = 레슨();
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.isLevelUp()).isFalse();
+                softly.assertThat(result.isLeaguePromoted()).isFalse();
+            });
+        }
+
+        @Test
+        void 재제출이면_구간_직전이어도_레벨업과_승급이_모두_아니다() {
+            // given
+            User user = 경험치를_보유한_유저(레벨업_직전_XP);
+            브론즈로_리그에_참여시킨다(user, 승급_직전_LP);
+            learningRepository.save(Learning.create(user.getId()));
+            Lesson lesson = 레슨();
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), user.getId()));
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.isLevelUp()).isFalse();
+                softly.assertThat(result.isLeaguePromoted()).isFalse();
+            });
+        }
+
+        @Test
+        void 제출_저장_뒤_승급_여부_조회에_실패해도_제출은_성공하고_승급이_아니다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 승급_직전_LP);
+            learningRepository.save(Learning.create(user.getId()));
+            Lesson lesson = 레슨();
+            doThrow(new CannotCreateTransactionException("커넥션 획득 실패"))
+                    .when(userLeagueService).checkLeaguePromoted(eq(user.getId()), anyInt());
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(lessonSubmissionRepository.findById(result.lessonSubmissionId())).isPresent();
+                softly.assertThat(result.isLeaguePromoted()).isFalse();
+            });
+        }
+
+        @Test
+        void 리그에_참여하지_않은_유저도_제출이_저장되고_승급이_아니다() {
+            // given
+            User user = 유저();
+            learningRepository.save(Learning.create(user.getId()));
+            Lesson lesson = 레슨();
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(lessonSubmissionRepository.findById(result.lessonSubmissionId())).isPresent();
+                softly.assertThat(result.isLeaguePromoted()).isFalse();
+            });
+        }
     }
 
     @Nested
     @DisplayName("레슨 결과를 조회할 때")
     class GetLessonResult {
 
-        private static final ZoneId KST = ZoneId.of("Asia/Seoul");
         private static final long OTHER_USER_ID = 999_999L;
-        private static final int 승급_직전_LP = 90;
-
-        private User 유저() {
-            return userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 3, Role.USER));
-        }
-
-        private void 브론즈로_리그에_참여시킨다(
-                User user,
-                int lp
-        ) {
-            League bronze = leagueRepository.save(League.create("브론즈", 100, 0, 1));
-            leagueRepository.save(League.create("실버", 200, 101, 2));
-            Season season = seasonRepository.save(Season.active("2026-W18", LocalDateTime.now(KST), LocalDateTime.now(KST).plusWeeks(1)));
-
-            UserLeague userLeague = UserLeague.create(user, season, bronze);
-            userLeague.addLeaguePoints(lp);
-            userLeagueRepository.save(userLeague);
-        }
 
         private Lesson 레슨() {
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
 
             return lessonRepository.save(Lesson.create("레슨1", unit.getId()));
-        }
-
-        private LearningSubmissionSaveRequest 정답_제출(
-                long lessonId,
-                int accuracy
-        ) {
-            Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "설명하시오.", "큐의 특성은?", lessonId));
-
-            return new LearningSubmissionSaveRequest(
-                    new LessonSubmissionSaveRequest(lessonId, 120, accuracy),
-                    List.of(new ProblemSubmissionSaveRequest(problem.getId(), true, null, "FIFO"))
-            );
         }
 
         @Test
