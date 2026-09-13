@@ -24,15 +24,38 @@ public class UserLeaguePointService {
     private final ApplicationEventPublisher publisher;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addLeaguePoints(
+    public void addLeaguePointsForLesson(
             Long userId,
             int points,
             int accuracy
     ) {
+        applyLeaguePoints(userId, (int) Math.round(points * accuracy * 0.01));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addLeaguePointsForInterview(
+            long userId,
+            int earnedPoints
+    ) {
+        applyLeaguePoints(userId, earnedPoints);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addLeaguePointsForCongratulation(
+            long userId,
+            int earnedPoints
+    ) {
+        applyLeaguePoints(userId, earnedPoints);
+    }
+
+    private void applyLeaguePoints(
+            long userId,
+            int earnedPoints
+    ) {
         UserLeague userLeague = userLeagueRepository.findByUserId(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
 
         League oldLeague = userLeague.getLeague();
-        int updatedLp = userLeague.addLeaguePoints((int) Math.round(points * accuracy * 0.01));
+        int updatedLp = userLeague.addLeaguePoints(earnedPoints);
         League newLeague = leagueRepository.findByLpBetween(updatedLp).orElseThrow(() -> new RestApiException(CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT));
 
         boolean isPromotion = !newLeague.getId().equals(oldLeague.getId())

@@ -19,6 +19,7 @@ import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -111,6 +112,14 @@ public class UserService {
         return userLevelResponse;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addXp(
+            long userId,
+            int xp
+    ) {
+        applyXp(userId, xp);
+    }
+
     @Transactional(readOnly = true)
     public UserLevelResponse getUserLevel(long userId) {
         User user = userRepository.findById(userId)
@@ -141,11 +150,18 @@ public class UserService {
             int xp,
             int accuracy
     ) {
+        return applyXp(userId, (int) Math.round(xp * accuracy * 0.01));
+    }
+
+    private UserLevelResponse applyXp(
+            long userId,
+            int earnedXp
+    ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
 
         int oldLevel = user.getLevel().getLevel();
-        user.getLevel().updateXp((int) Math.round(xp * accuracy * 0.01));
+        user.getLevel().updateXp(earnedXp);
         int newLevel = user.getLevel().getLevel();
 
         if (newLevel > oldLevel) {

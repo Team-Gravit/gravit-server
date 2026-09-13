@@ -30,7 +30,6 @@ import java.util.List;
 public class SocialFacade {
 
     private static final int CONGRATULATION_LP = 5;
-    private static final int FULL_ACCURACY = 100;
 
     private final SocialFeedService socialFeedService;
     private final UserFeedService userFeedService;
@@ -104,7 +103,7 @@ public class SocialFacade {
         }
         congratulationService.checkAndRecord(userId, actorId, feedId);
         userFeedService.congratulateFeed(userId, feedId);
-        userLeaguePointService.addLeaguePoints(actorId, CONGRATULATION_LP, FULL_ACCURACY);
+        userLeaguePointService.addLeaguePointsForCongratulation(actorId, CONGRATULATION_LP);
         String congratulatorNickname = userService.getUser(userId).getNickname();
         notificationFacade.notifyUserInApp(actorId, NotificationType.CONGRATULATION, messageProvider.congratulation(congratulatorNickname), null);
     }

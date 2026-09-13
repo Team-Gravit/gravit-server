@@ -187,7 +187,7 @@ class UserLeagueEventListenerIntegrationTest {
             Season season = seasonFixture.진행중인_시즌("S1");
             User user = userFixture.일반_유저(1);
             userLeagueFixture.참여(user, season, 브론즈3, 0);
-            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePoints(user.getId(), 40, 100);
+            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePointsForLesson(user.getId(), 40, 100);
 
             LessonCompletedEvent event = new LessonCompletedEvent(user.getId(), 1L, 1L, 40, 100, 120, 0, 1);
 

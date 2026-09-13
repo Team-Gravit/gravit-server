@@ -1,5 +1,6 @@
 package gravit.code.userLeague.listener;
 
+import gravit.code.global.event.InterviewCompletedEvent;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
@@ -27,11 +28,9 @@ public class UserLeagueEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleLessonCompleted(LessonCompletedEvent event) {
         try {
-            pointService.addLeaguePoints(event.userId(), event.points(), event.accuracy());
+            pointService.addLeaguePointsForLesson(event.userId(), event.points(), event.accuracy());
         } catch (RestApiException e) {
-            if (e.getErrorCode() == CustomErrorCode.USER_LEAGUE_NOT_FOUND
-                    || e.getErrorCode() == CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT
-            ) {
+            if (isNonRetryable(e)) {
                 log.error("리그 포인트 반영 실패(재시도 불가, 확인 필요): userId={}, errorCode={}", event.userId(), e.getErrorCode(), e);
                 return;
             }
@@ -50,6 +49,32 @@ public class UserLeagueEventListener {
                 "userId", String.valueOf(event.userId()),
                 "points", String.valueOf(event.points()),
                 "accuracy", String.valueOf(event.accuracy())
+        ));
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleInterviewCompleted(InterviewCompletedEvent event) {
+        try {
+            pointService.addLeaguePointsForInterview(event.userId(), event.rewardPoints());
+        } catch (RestApiException e) {
+            if (isNonRetryable(e)) {
+                log.error("면접 완료 리그 포인트 반영 실패(재시도 불가, 확인 필요): userId={}, sessionId={}, errorCode={}", event.userId(), event.sessionId(), e.getErrorCode(), e);
+                return;
+            }
+            queueInterviewLeaguePointsRetry(event, e);
+        } catch (Exception e) {
+            queueInterviewLeaguePointsRetry(event, e);
+        }
+    }
+
+    private void queueInterviewLeaguePointsRetry(
+            InterviewCompletedEvent event,
+            Exception cause
+    ) {
+        log.error("면접 완료 리그 포인트 반영 실패, 재시도 큐 적재: userId={}, sessionId={}", event.userId(), event.sessionId(), cause);
+        retryEventPublisher.publish("league-points-interview-retry", Map.of(
+                "userId", String.valueOf(event.userId()),
+                "points", String.valueOf(event.rewardPoints())
         ));
     }
 
@@ -80,5 +105,10 @@ public class UserLeagueEventListener {
         retryEventPublisher.publish("user-league-create-retry", Map.of(
                 "userId", String.valueOf(userId)
         ));
+    }
+
+    private boolean isNonRetryable(RestApiException e) {
+        return e.getErrorCode() == CustomErrorCode.USER_LEAGUE_NOT_FOUND
+                || e.getErrorCode() == CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT;
     }
 }
