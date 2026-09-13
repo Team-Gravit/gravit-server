@@ -188,6 +188,7 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_AUDIO_FORMAT_UNSUPPORTED(HttpStatus.BAD_REQUEST, "INTERVIEW_4019", "지원하지 않는 음성 포맷입니다."),
     INTERVIEW_AUDIO_KEY_INVALID(HttpStatus.BAD_REQUEST, "INTERVIEW_4020", "서버가 발급한 음성 키가 아닙니다."),
     INTERVIEW_GRADING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5001", "면접 답변 채점 판정 요청이 실패했습니다."),
+    INTERVIEW_AUDIO_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5002", "면접 음성 파일 삭제에 실패했습니다."),
 
     // Global
     INVALID_PARAMS(HttpStatus.BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
