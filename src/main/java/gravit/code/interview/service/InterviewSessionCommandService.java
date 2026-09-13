@@ -1,5 +1,6 @@
 package gravit.code.interview.service;
 
+import gravit.code.global.event.InterviewCompletedEvent;
 import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
@@ -10,6 +11,7 @@ import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
 import gravit.code.interview.policy.InterviewAudioKeyPolicy;
+import gravit.code.interview.policy.InterviewRewardPolicy;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
 import gravit.code.interview.repository.InterviewSessionTopicRepository;
@@ -32,12 +34,14 @@ import java.util.stream.Collectors;
 public class InterviewSessionCommandService {
 
     private static final int FIRST_DISPLAY_ORDER = 1;
+    private static final int NO_REWARD = 0;
 
     private final InterviewSessionRepository interviewSessionRepository;
     private final InterviewSessionTopicRepository interviewSessionTopicRepository;
     private final InterviewAnswerRepository interviewAnswerRepository;
 
     private final InterviewAudioKeyPolicy interviewAudioKeyPolicy;
+    private final InterviewRewardPolicy interviewRewardPolicy;
 
     private final ApplicationEventPublisher publisher;
     private final Clock clock;
@@ -124,6 +128,8 @@ public class InterviewSessionCommandService {
         InterviewSession session = findSession(sessionId);
 
         session.completeGrading(accuracyScore, deliveryScore);
+
+        publishReward(session);
     }
 
     @Transactional
@@ -220,5 +226,15 @@ public class InterviewSessionCommandService {
 
             answer.submit(answerRequest.content(), answerRequest.audioKey(), answeredAt);
         }
+    }
+
+    private void publishReward(InterviewSession session) {
+        int rewardPoints = interviewRewardPolicy.calculate(session.getScore(), session.getMaxScore());
+
+        if (rewardPoints == NO_REWARD) {
+            return;
+        }
+
+        publisher.publishEvent(InterviewCompletedEvent.of(session.getUserId(), session.getId(), rewardPoints));
     }
 }

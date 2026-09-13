@@ -1,5 +1,6 @@
 package gravit.code.user.service;
 
+import gravit.code.global.event.LevelUpFeedEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
@@ -25,6 +26,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
@@ -381,6 +384,96 @@ class UserServiceIntegrationTest {
 
             // when & then
             assertThatThrownBy(() -> userService.updateUserLevelByLessonSubmission(nonExistentUserId, request, true))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @RecordApplicationEvents
+    @DisplayName("확정된 XP를 지급할 때")
+    class AddXp {
+
+        private User XP를_가진_유저(int xp) {
+            User user = userFixture.일반_유저(1);
+            ReflectionTestUtils.setField(user, "level", UserLevel.create(1, xp), UserLevel.class);
+            return userRepository.save(user);
+        }
+
+        @Test
+        void XP가_그대로_누적된다(ApplicationEvents events) {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            userService.addXp(user.getId(), 30);
+
+            // then
+            // 정답률 비율을 적용하지 않고 받은 양을 그대로 더한다
+            User updated = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLevel().getXp()).isEqualTo(30);
+                softly.assertThat(updated.getLevel().getLevel()).isEqualTo(1);
+                softly.assertThat(events.stream(LevelUpFeedEvent.class)).isEmpty();
+            });
+        }
+
+        @Test
+        void 레벨_경계를_넘으면_레벨이_오르고_레벨업_피드_이벤트가_발행된다(ApplicationEvents events) {
+            // given - 레벨 2 시작 XP는 100
+            User user = XP를_가진_유저(99);
+
+            // when
+            userService.addXp(user.getId(), 1);
+
+            // then
+            User updated = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLevel().getXp()).isEqualTo(100);
+                softly.assertThat(updated.getLevel().getLevel()).isEqualTo(2);
+                softly.assertThat(events.stream(LevelUpFeedEvent.class))
+                        .containsExactly(new LevelUpFeedEvent(user.getId(), 2));
+            });
+        }
+
+        @Test
+        void 경계_직전까지만_오르면_레벨업_피드_이벤트가_발행되지_않는다(ApplicationEvents events) {
+            // given
+            User user = XP를_가진_유저(50);
+
+            // when
+            userService.addXp(user.getId(), 49);
+
+            // then
+            User updated = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLevel().getXp()).isEqualTo(99);
+                softly.assertThat(updated.getLevel().getLevel()).isEqualTo(1);
+                softly.assertThat(events.stream(LevelUpFeedEvent.class)).isEmpty();
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userService.addXp(nonExistentUserId, 30))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+
+        @Test
+        void 탈퇴한_유저이면_예외를_던진다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            userRepository.deleteById(user.getId()); // soft-delete
+
+            // when & then
+            assertThatThrownBy(() -> userService.addXp(user.getId(), 30))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_NOT_FOUND);

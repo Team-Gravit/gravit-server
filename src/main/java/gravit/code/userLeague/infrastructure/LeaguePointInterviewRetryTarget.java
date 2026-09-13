@@ -15,7 +15,7 @@ import java.util.Set;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LeaguePointRetryTarget implements RetrySweepTarget {
+public class LeaguePointInterviewRetryTarget implements RetrySweepTarget {
 
     private static final int MAX_ATTEMPTS = 10;
 
@@ -28,7 +28,7 @@ public class LeaguePointRetryTarget implements RetrySweepTarget {
 
     @Override
     public String queueKey() {
-        return "league-points-retry";
+        return "league-points-interview-retry";
     }
 
     @Override
@@ -40,13 +40,12 @@ public class LeaguePointRetryTarget implements RetrySweepTarget {
     public void reprocess(Map<String, String> fields) {
         Long userId = Long.valueOf(fields.get("userId"));
         int points = Integer.parseInt(fields.get("points"));
-        int accuracy = Integer.parseInt(fields.get("accuracy"));
 
         try {
-            pointService.addLeaguePointsForLesson(userId, points, accuracy);
+            pointService.addLeaguePointsForInterview(userId, points);
         } catch (RestApiException e) {
             if (NON_RETRYABLE_ERRORS.contains(e.getErrorCode())) {
-                log.error("리그 포인트 반영 실패(재시도 불가, 확인 필요), 재시도 종료: userId={}, errorCode={}", userId, e.getErrorCode(), e);
+                log.error("면접 완료 리그 포인트 반영 실패(재시도 불가, 확인 필요), 재시도 종료: userId={}, errorCode={}", userId, e.getErrorCode(), e);
                 return;
             }
             throw e;

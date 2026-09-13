@@ -1,5 +1,6 @@
 package gravit.code.interview.service;
 
+import gravit.code.global.event.InterviewCompletedEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewAnswerStatus;
@@ -25,6 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Clock;
@@ -455,6 +458,98 @@ class InterviewSessionCommandServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(INTERVIEW_SESSION_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @RecordApplicationEvents
+    @DisplayName("채점을 완료하면 보상 이벤트를")
+    class PublishReward {
+
+        private InterviewSession 채점중_세션() {
+            return interviewSessionRepository.save(상태_세션(USER_ID, InterviewSessionStatus.GRADING));
+        }
+
+        @Test
+        void 세션_점수_비율만큼의_보상으로_발행한다(ApplicationEvents events) {
+            // given
+            InterviewSession session = 채점중_세션();
+
+            // when - round(30 × 80 ÷ 100) = 24
+            interviewSessionCommandService.completeGrading(session.getId(), 56, 24);
+
+            // then
+            assertThat(events.stream(InterviewCompletedEvent.class))
+                    .containsExactly(InterviewCompletedEvent.of(USER_ID, session.getId(), 24));
+        }
+
+        @Test
+        void 보상이_0이면_발행하지_않는다(ApplicationEvents events) {
+            // given
+            InterviewSession session = 채점중_세션();
+
+            // when
+            interviewSessionCommandService.completeGrading(session.getId(), 0, 0);
+
+            // then
+            assertThat(events.stream(InterviewCompletedEvent.class)).isEmpty();
+        }
+
+        @Test
+        void 반올림해_0이_되는_점수여도_발행하지_않는다(ApplicationEvents events) {
+            // given
+            InterviewSession session = 채점중_세션();
+
+            // when - round(30 × 1 ÷ 100) = 0
+            interviewSessionCommandService.completeGrading(session.getId(), 1, 0);
+
+            // then
+            assertThat(events.stream(InterviewCompletedEvent.class)).isEmpty();
+        }
+
+        @Test
+        void 같은_사용자가_세션을_여러_번_완료하면_세션마다_발행한다(ApplicationEvents events) {
+            // given
+            InterviewSession first = 채점중_세션();
+            InterviewSession second = 채점중_세션();
+
+            // when
+            interviewSessionCommandService.completeGrading(first.getId(), 70, 30);
+            interviewSessionCommandService.completeGrading(second.getId(), 70, 30);
+
+            // then
+            assertThat(events.stream(InterviewCompletedEvent.class))
+                    .containsExactly(
+                            InterviewCompletedEvent.of(USER_ID, first.getId(), 30),
+                            InterviewCompletedEvent.of(USER_ID, second.getId(), 30)
+                    );
+        }
+
+        @Test
+        void 점수가_만점을_넘어_실패하면_발행하지_않는다(ApplicationEvents events) {
+            // given
+            InterviewSession session = 채점중_세션();
+            int overAccuracy = session.getAccuracyMaxScore() + 1;
+
+            // when & then
+            assertThatThrownBy(() -> interviewSessionCommandService.completeGrading(session.getId(), overAccuracy, 0))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_SESSION_SCORE_INVALID);
+            assertThat(events.stream(InterviewCompletedEvent.class)).isEmpty();
+        }
+
+        @Test
+        void 채점_중이_아니면_발행하지_않는다(ApplicationEvents events) {
+            // given
+            InterviewSession session = interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.TEXT));
+
+            // when & then
+            assertThatThrownBy(() -> interviewSessionCommandService.completeGrading(session.getId(), 56, 24))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_SESSION_NOT_GRADING);
+            assertThat(events.stream(InterviewCompletedEvent.class)).isEmpty();
         }
     }
 

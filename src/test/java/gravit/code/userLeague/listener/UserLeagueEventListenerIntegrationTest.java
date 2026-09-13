@@ -1,5 +1,6 @@
 package gravit.code.userLeague.listener;
 
+import gravit.code.global.event.InterviewCompletedEvent;
 import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
@@ -187,7 +188,7 @@ class UserLeagueEventListenerIntegrationTest {
             Season season = seasonFixture.진행중인_시즌("S1");
             User user = userFixture.일반_유저(1);
             userLeagueFixture.참여(user, season, 브론즈3, 0);
-            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePoints(user.getId(), 40, 100);
+            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePointsForLesson(user.getId(), 40, 100);
 
             LessonCompletedEvent event = new LessonCompletedEvent(user.getId(), 1L, 1L, 40, 100, 120, 0, 1);
 
@@ -201,6 +202,96 @@ class UserLeagueEventListenerIntegrationTest {
                     "userId", String.valueOf(user.getId()),
                     "points", "40",
                     "accuracy", "100"
+            ));
+        }
+    }
+
+    @Nested
+    @DisplayName("면접 완료 이벤트를 수신할 때")
+    class HandleInterviewCompleted {
+
+        private static final long SESSION_ID = 1L;
+        private static final int REWARD_POINTS = 30;
+        private static final String INTERVIEW_RETRY_QUEUE_KEY = "league-points-interview-retry";
+
+        @Test
+        @Transactional
+        void LP가_지급량만큼_누적된다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 0);
+
+            InterviewCompletedEvent event = InterviewCompletedEvent.of(user.getId(), SESSION_ID, REWARD_POINTS);
+
+            // when
+            publisher.publishEvent(event);
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            UserLeague updated = userLeagueRepository.findByUserId(user.getId()).orElseThrow();
+            assertThat(updated.getLp()).isEqualTo(REWARD_POINTS);
+        }
+
+        @Test
+        @Transactional
+        void 유저_리그가_없으면_재시도_큐에_적재하지_않는다() {
+            // given — userLeagueFixture로 리그 참여를 시키지 않음
+            User user = userFixture.일반_유저(1);
+            InterviewCompletedEvent event = InterviewCompletedEvent.of(user.getId(), SESSION_ID, REWARD_POINTS);
+
+            // when
+            publisher.publishEvent(event);
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            verify(retryEventPublisher, after(500).never()).publish(eq(INTERVIEW_RETRY_QUEUE_KEY), any());
+        }
+
+        @Test
+        @Transactional
+        void LP가_매칭되는_리그가_없으면_재시도_큐에_적재하지_않는다() {
+            // given — 브론즈 3(0-100)만 존재, 90 + 30 = 120은 매칭 리그가 없음
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 90);
+
+            InterviewCompletedEvent event = InterviewCompletedEvent.of(user.getId(), SESSION_ID, REWARD_POINTS);
+
+            // when
+            publisher.publishEvent(event);
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            verify(retryEventPublisher, after(500).never()).publish(eq(INTERVIEW_RETRY_QUEUE_KEY), any());
+        }
+
+        @Test
+        @Transactional
+        void 일시적_오류가_발생하면_재시도_큐에_적재된다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 0);
+            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePointsForInterview(user.getId(), REWARD_POINTS);
+
+            InterviewCompletedEvent event = InterviewCompletedEvent.of(user.getId(), SESSION_ID, REWARD_POINTS);
+
+            // when
+            publisher.publishEvent(event);
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            verify(retryEventPublisher, timeout(3000)).publish(INTERVIEW_RETRY_QUEUE_KEY, Map.of(
+                    "userId", String.valueOf(user.getId()),
+                    "points", String.valueOf(REWARD_POINTS)
             ));
         }
     }
