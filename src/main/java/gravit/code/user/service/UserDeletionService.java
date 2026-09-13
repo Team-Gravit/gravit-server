@@ -100,6 +100,11 @@ public class UserDeletionService {
         userRepository.cleanUserDeletion(userId);
     }
 
+    @Transactional(readOnly = true)
+    public boolean isWithdrawn(long userId) {
+        return userRepository.existsWithdrawnById(userId);
+    }
+
     private Optional<LeagueRankChangedEvent> toRankRemovedEvent(long userId) {
         return userLeagueRepository.findRankKeyByUserId(userId)
                 .map(rankKey -> LeagueRankChangedEvent.removed(

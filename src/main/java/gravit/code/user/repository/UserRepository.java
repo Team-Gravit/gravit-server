@@ -85,4 +85,12 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDeletionR
             @Param("lastId") long lastId,
             Pageable pageable
     );
+
+    @Query(value = """
+            SELECT EXISTS (
+                SELECT 1 FROM users
+                WHERE id = :userId AND deleted_at IS NOT NULL
+            )
+    """, nativeQuery = true)
+    boolean existsWithdrawnById(@Param("userId") long userId);
 }
