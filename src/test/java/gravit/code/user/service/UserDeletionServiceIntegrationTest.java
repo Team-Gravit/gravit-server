@@ -1,6 +1,16 @@
 package gravit.code.user.service;
 
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.interview.domain.InterviewAnswer;
+import gravit.code.interview.domain.InterviewSession;
+import gravit.code.interview.domain.InterviewSessionStatus;
+import gravit.code.interview.domain.InterviewSessionTopic;
+import gravit.code.interview.repository.InterviewAnswerRepository;
+import gravit.code.interview.repository.InterviewSessionRepository;
+import gravit.code.interview.repository.InterviewSessionTopicRepository;
+import gravit.code.interviewFeedback.domain.InterviewFeedback;
+import gravit.code.interviewFeedback.repository.InterviewFeedbackRepository;
+import gravit.code.interviewQuestion.domain.InterviewTopic;
 import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
 import gravit.code.season.domain.Season;
@@ -19,9 +29,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import static gravit.code.global.exception.domain.CustomErrorCode.*;
+import static gravit.code.interview.fixture.InterviewSessionFixture.미제출_답안;
+import static gravit.code.interview.fixture.InterviewSessionFixture.상태_세션;
+import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.답변한_답안;
+import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.세션_주제;
+import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.피드백;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,8 +48,21 @@ import static org.mockito.Mockito.verify;
 @TCSpringBootTest
 class UserDeletionServiceIntegrationTest {
 
+    private static final long NON_EXISTENT_USER_ID = 999L;
+    private static final long QUESTION_ID = 100L;
+    private static final int FIRST_DISPLAY_ORDER = 1;
+    private static final String ANSWER_CONTENT = "TCP는 연결 지향 프로토콜입니다.";
+    private static final LocalDateTime ANSWERED_AT = LocalDateTime.of(2025, 8, 5, 12, 0);
+    private static final int ACCURACY_SCORE = 14;
+    private static final int STRUCTURE_SCORE = 3;
+    private static final int CLARITY_SCORE = 3;
+    private static final String IMPROVEMENT_SUGGESTION = "핵심을 먼저 말한 좋은 답변입니다.";
+
     @Autowired
     private UserDeletionService userDeletionService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -52,6 +84,18 @@ class UserDeletionServiceIntegrationTest {
 
     @Autowired
     private MailAuthCodeStore mailAuthCodeStore;
+
+    @Autowired
+    private InterviewSessionRepository interviewSessionRepository;
+
+    @Autowired
+    private InterviewSessionTopicRepository interviewSessionTopicRepository;
+
+    @Autowired
+    private InterviewAnswerRepository interviewAnswerRepository;
+
+    @Autowired
+    private InterviewFeedbackRepository interviewFeedbackRepository;
 
     @MockitoBean
     private MailSender mailSender;
@@ -112,6 +156,110 @@ class UserDeletionServiceIntegrationTest {
 
             // then
             assertThat(userRepository.findById(user.getId())).isEmpty();
+        }
+
+        @Test
+        void 탈퇴_회원의_면접_기록만_삭제하고_다른_회원의_기록은_남긴다() {
+            // given
+            User target = userFixture.일반_유저(1);
+            User other = userFixture.일반_유저(2);
+
+            InterviewSession completedSession = interviewSessionRepository.save(
+                    상태_세션(target.getId(), InterviewSessionStatus.COMPLETED));
+            InterviewSession inProgressSession = interviewSessionRepository.save(
+                    상태_세션(target.getId(), InterviewSessionStatus.IN_PROGRESS));
+            InterviewSessionTopic topic = interviewSessionTopicRepository.save(
+                    세션_주제(completedSession.getId(), InterviewTopic.NETWORK));
+            InterviewAnswer answer = interviewAnswerRepository.save(
+                    답변한_답안(completedSession.getId(), QUESTION_ID, FIRST_DISPLAY_ORDER, ANSWER_CONTENT, ANSWERED_AT));
+            List<InterviewAnswer> pendingAnswers = interviewAnswerRepository.saveAll(
+                    미제출_답안(inProgressSession.getId(), List.of(QUESTION_ID)));
+            InterviewFeedback feedback = interviewFeedbackRepository.save(
+                    피드백(answer.getId(), ACCURACY_SCORE, STRUCTURE_SCORE, CLARITY_SCORE, IMPROVEMENT_SUGGESTION));
+
+            InterviewSession otherSession = interviewSessionRepository.save(
+                    상태_세션(other.getId(), InterviewSessionStatus.COMPLETED));
+            InterviewSessionTopic otherTopic = interviewSessionTopicRepository.save(
+                    세션_주제(otherSession.getId(), InterviewTopic.NETWORK));
+            InterviewAnswer otherAnswer = interviewAnswerRepository.save(
+                    답변한_답안(otherSession.getId(), QUESTION_ID, FIRST_DISPLAY_ORDER, ANSWER_CONTENT, ANSWERED_AT));
+            InterviewFeedback otherFeedback = interviewFeedbackRepository.save(
+                    피드백(otherAnswer.getId(), ACCURACY_SCORE, STRUCTURE_SCORE, CLARITY_SCORE, IMPROVEMENT_SUGGESTION));
+
+            // when
+            userDeletionService.cleanUserDeletion(target.getId());
+
+            // then
+            List<Long> pendingAnswerIds = pendingAnswers.stream()
+                    .map(InterviewAnswer::getId)
+                    .toList();
+
+            assertSoftly(softly -> {
+                softly.assertThat(interviewSessionRepository.findAllById(
+                        List.of(completedSession.getId(), inProgressSession.getId()))).isEmpty();
+                softly.assertThat(interviewSessionTopicRepository.findById(topic.getId())).isEmpty();
+                softly.assertThat(interviewAnswerRepository.findById(answer.getId())).isEmpty();
+                softly.assertThat(interviewAnswerRepository.findAllById(pendingAnswerIds)).isEmpty();
+                softly.assertThat(interviewFeedbackRepository.findById(feedback.getId())).isEmpty();
+
+                softly.assertThat(interviewSessionRepository.findById(otherSession.getId())).isPresent();
+                softly.assertThat(interviewSessionTopicRepository.findById(otherTopic.getId())).isPresent();
+                softly.assertThat(interviewAnswerRepository.findById(otherAnswer.getId())).isPresent();
+                softly.assertThat(interviewFeedbackRepository.findById(otherFeedback.getId())).isPresent();
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("탈퇴 상태를 확인할 때")
+    class IsWithdrawn {
+
+        @Test
+        void 탈퇴한_회원이면_true를_돌려준다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            userRepository.deleteById(user.getId());
+
+            // when
+            boolean withdrawn = userDeletionService.isWithdrawn(user.getId());
+
+            // then
+            assertThat(withdrawn).isTrue();
+        }
+
+        @Test
+        void 활성_회원이면_false를_돌려준다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            boolean withdrawn = userDeletionService.isWithdrawn(user.getId());
+
+            // then
+            assertThat(withdrawn).isFalse();
+        }
+
+        @Test
+        void 탈퇴_후_복구한_회원이면_false를_돌려준다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            userRepository.deleteById(user.getId());
+            userService.restoreUser(user.getProviderId());
+
+            // when
+            boolean withdrawn = userDeletionService.isWithdrawn(user.getId());
+
+            // then
+            assertThat(withdrawn).isFalse();
+        }
+
+        @Test
+        void 없는_회원이면_false를_돌려준다() {
+            // when
+            boolean withdrawn = userDeletionService.isWithdrawn(NON_EXISTENT_USER_ID);
+
+            // then
+            assertThat(withdrawn).isFalse();
         }
     }
 
