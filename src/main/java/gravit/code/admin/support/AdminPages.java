@@ -1,13 +1,11 @@
 package gravit.code.admin.support;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-/**
- * admin 목록 공통 페이지 정책: 1-based, size 20 고정. page < 1 이면 PAGE_MUST_START_FROM_1.
- */
+import static gravit.code.global.exception.domain.CustomErrorCode.PAGE_MUST_START_FROM_1;
+
 public final class AdminPages {
 
     public static final int PAGE_SIZE = 20;
@@ -30,7 +28,7 @@ public final class AdminPages {
 
     private static void validate(int page) {
         if (page < 1) {
-            throw new RestApiException(CustomErrorCode.PAGE_MUST_START_FROM_1);
+            throw new RestApiException(PAGE_MUST_START_FROM_1);
         }
     }
 }

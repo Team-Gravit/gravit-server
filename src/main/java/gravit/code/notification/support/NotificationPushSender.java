@@ -1,6 +1,6 @@
 package gravit.code.notification.support;
 
-import gravit.code.fcm.dto.internal.PushMessage;
+import gravit.code.fcm.dto.internal.PushMessageDto;
 import gravit.code.fcm.service.FcmService;
 import gravit.code.fcm.service.FcmTokenQueryService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class NotificationPushSender {
             return;
         }
 
-        PushMessage pushMessage = PushMessage.of(tokens, message, null, data);
+        PushMessageDto pushMessage = PushMessageDto.of(tokens, message, null, data);
 
         fcmService.sendNotifications(List.of(pushMessage));
     }
@@ -39,12 +39,12 @@ public class NotificationPushSender {
             Map<String, String> data,
             Supplier<String> messageSupplier
     ) {
-        Map<Long, List<String>> tokensByUserId = fcmTokenQueryService.getTokensByUserIds(userIds);
+        Map<Long, List<String>> userIdToTokens = fcmTokenQueryService.getTokensByUserIds(userIds);
 
-        List<PushMessage> messages = userIds.stream()
-                .filter(tokensByUserId::containsKey)
-                .map(userId -> PushMessage.of(
-                        tokensByUserId.get(userId),
+        List<PushMessageDto> messages = userIds.stream()
+                .filter(userIdToTokens::containsKey)
+                .map(userId -> PushMessageDto.of(
+                        userIdToTokens.get(userId),
                         messageSupplier.get(),
                         null,
                         data
@@ -54,17 +54,16 @@ public class NotificationPushSender {
         fcmService.sendNotifications(messages);
     }
 
-    // 유저별로 다른 문구를 푸시할 때 사용 (연속학습 위기·오늘 미완료)
     public void pushEach(
-            Map<Long, String> messageByUserId,
+            Map<Long, String> userIdToMessage,
             Map<String, String> data
     ) {
-        Map<Long, List<String>> tokensByUserId = fcmTokenQueryService.getTokensByUserIds(List.copyOf(messageByUserId.keySet()));
+        Map<Long, List<String>> userIdToTokens = fcmTokenQueryService.getTokensByUserIds(List.copyOf(userIdToMessage.keySet()));
 
-        List<PushMessage> messages = messageByUserId.entrySet().stream()
-                .filter(entry -> tokensByUserId.containsKey(entry.getKey()))
-                .map(entry -> PushMessage.of(
-                        tokensByUserId.get(entry.getKey()),
+        List<PushMessageDto> messages = userIdToMessage.entrySet().stream()
+                .filter(entry -> userIdToTokens.containsKey(entry.getKey()))
+                .map(entry -> PushMessageDto.of(
+                        userIdToTokens.get(entry.getKey()),
                         entry.getValue(),
                         null,
                         data
@@ -84,7 +83,7 @@ public class NotificationPushSender {
             return;
         }
 
-        PushMessage pushMessage = PushMessage.of(tokens, message, null, data);
+        PushMessageDto pushMessage = PushMessageDto.of(tokens, message, null, data);
 
         fcmService.sendNotifications(List.of(pushMessage));
     }

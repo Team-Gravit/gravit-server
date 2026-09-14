@@ -5,7 +5,6 @@ import gravit.code.admin.dto.response.LessonListItemResponse;
 import gravit.code.admin.dto.response.UnitDetailResponse;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.unit.domain.Unit;
@@ -15,6 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INVALID_PARAMS;
+import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class AdminUnitService {
     @Transactional(readOnly = true)
     public UnitDetailResponse getUnit(long unitId) {
         Unit unit = unitRepository.findById(unitId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(UNIT_NOT_FOUND));
 
         long lessonCount = lessonRepository.countTotalLessonByUnitId(unitId);
 
@@ -39,7 +41,7 @@ public class AdminUnitService {
             UnitUpdateRequest request
     ) {
         Unit unit = unitRepository.findById(unitId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(UNIT_NOT_FOUND));
 
         String title = request.title() != null ? request.title() : unit.getTitle();
         String description = request.description() != null ? request.description() : unit.getDescription();
@@ -61,7 +63,7 @@ public class AdminUnitService {
 
     private void validateNotBlank(String title) {
         if (title != null && title.isBlank()) {
-            throw new RestApiException(CustomErrorCode.INVALID_PARAMS);
+            throw new RestApiException(INVALID_PARAMS);
         }
     }
 }

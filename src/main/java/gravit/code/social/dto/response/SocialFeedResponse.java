@@ -1,7 +1,7 @@
 package gravit.code.social.dto.response;
 
 import gravit.code.social.domain.FeedEventType;
-import gravit.code.social.dto.internal.SocialFeedProjection;
+import gravit.code.social.dto.internal.SocialFeedDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ public record SocialFeedResponse(
         LocalDateTime createdAt
 ) {
     public static SocialFeedResponse of(
-            SocialFeedProjection projection,
+            SocialFeedDto projection,
             boolean congratulated,
             boolean canCongratulate,
             String timeAgo

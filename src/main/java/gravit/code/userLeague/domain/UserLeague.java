@@ -1,7 +1,6 @@
 package gravit.code.userLeague.domain;
 
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.season.domain.Season;
@@ -21,6 +20,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.LEAGUE_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.LEAGUE_POINT_MUST_BE_POSITIVE;
 
 @Table(name = "user_league")
 @Entity
@@ -74,7 +76,7 @@ public class UserLeague extends BaseEntity {
 
     public int addLeaguePoints(int points) {
         if(points < 0){
-            throw new RestApiException(CustomErrorCode.LEAGUE_POINT_MUST_BE_POSITIVE);
+            throw new RestApiException(LEAGUE_POINT_MUST_BE_POSITIVE);
         }
         this.lp += points;
         return lp;
@@ -88,7 +90,7 @@ public class UserLeague extends BaseEntity {
 
     private boolean validateAndCheckDifferent(League newLeague) {
         if(newLeague == null){
-            throw new RestApiException(CustomErrorCode.LEAGUE_INVALID);
+            throw new RestApiException(LEAGUE_INVALID);
         }
         else return !this.league.equals(newLeague);
     }

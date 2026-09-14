@@ -7,13 +7,14 @@ import gravit.code.test.notification.controller.docs.TestNotificationControllerD
 import gravit.code.test.notification.facade.TestNotificationQaFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @Profile("!prod")
 @RestController
@@ -31,7 +32,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendConsecutiveLearningWarningToUser(loginUser.getId(), consecutiveDays);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/daily-incomplete")
@@ -40,7 +41,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendDailyIncompleteToUser(loginUser.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/inactivity")
@@ -50,7 +51,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendInactivityToUser(loginUser.getId(), inactiveDays);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/new-content")
@@ -60,7 +61,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendNewContentToUser(loginUser.getId(), unitId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/season-ending")
@@ -70,7 +71,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendSeasonEndingToUser(loginUser.getId(), daysBefore);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/season-reset")
@@ -79,7 +80,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendSeasonResetToUser(loginUser.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/follow")
@@ -90,7 +91,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
         long actor = followerId != null ? followerId : loginUser.getId();
         notificationQaFacade.sendFollowToUser(loginUser.getId(), actor);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/congratulation")
@@ -101,12 +102,9 @@ public class TestNotificationController implements TestNotificationControllerDoc
         long actor = congratulatorId != null ? congratulatorId : loginUser.getId();
         notificationQaFacade.sendCongratulationToUser(loginUser.getId(), actor);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
-    // 실제 발행 흐름(SocialFacade.publishFeed)을 그대로 재사용한다.
-    // actor의 SocialFeed를 생성하고 팔로워에게 UserFeed 배포 + FRIEND_ACTIVITY 알림을 발송하므로,
-    // actor를 팔로우한 유저의 알림함/피드에서 축하 동기화까지 실제로 검증할 수 있다.
     @PostMapping("/friend-activity")
     public ResponseEntity<Long> sendFriendActivity(
             @AuthenticationPrincipal LoginUser loginUser,
@@ -117,7 +115,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
         long actor = actorId != null ? actorId : loginUser.getId();
         socialFacade.publishFeed(actor, eventType, eventValue);
 
-        return ResponseEntity.status(HttpStatus.OK).body(actor);
+        return ResponseEntity.status(OK).body(actor);
     }
 
     @PostMapping("/notice")
@@ -128,7 +126,7 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendNoticeToUser(loginUser.getId(), title, noticeId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 
     @PostMapping("/inquiry-answered")
@@ -139,6 +137,6 @@ public class TestNotificationController implements TestNotificationControllerDoc
     ) {
         notificationQaFacade.sendInquiryAnsweredToUser(loginUser.getId(), title, inquiryId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginUser.getId());
+        return ResponseEntity.status(OK).body(loginUser.getId());
     }
 }

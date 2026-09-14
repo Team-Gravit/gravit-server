@@ -13,7 +13,6 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
 
-// test 프로파일에서는 키 파일(gitignore)이 없으므로 빈을 등록하지 않는다
 @Profile("!test")
 @Configuration
 public class FcmConfig {

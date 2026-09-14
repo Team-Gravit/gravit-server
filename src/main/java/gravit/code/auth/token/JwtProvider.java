@@ -4,7 +4,6 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.token.config.JwtProperties;
 import gravit.code.global.consts.TimeZoneConst;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
 import io.jsonwebtoken.Claims;
@@ -31,6 +30,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERNAL_SERVER_ERROR;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_EMPTY;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_EXPIRED;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_NOT_SIGNED;
 import static io.jsonwebtoken.Jwts.SIG.HS256;
 
 @Component
@@ -125,15 +129,15 @@ public class JwtProvider {
         try{
             return function.apply(token);
         }catch (MalformedJwtException malformedJwtException){
-            throw new RestApiException(CustomErrorCode.TOKEN_INVALID);
+            throw new RestApiException(TOKEN_INVALID);
         }catch (ExpiredJwtException expiredJwtException){
-            throw new RestApiException(CustomErrorCode.TOKEN_EXPIRED);
+            throw new RestApiException(TOKEN_EXPIRED);
         }catch (IllegalArgumentException illegalArgumentException){
-            throw new RestApiException(CustomErrorCode.TOKEN_EMPTY);
+            throw new RestApiException(TOKEN_EMPTY);
         }catch (SignatureException signatureException){
-            throw new RestApiException(CustomErrorCode.TOKEN_NOT_SIGNED);
+            throw new RestApiException(TOKEN_NOT_SIGNED);
         }catch (JwtException jwtException){
-            throw new RestApiException(CustomErrorCode.INTERNAL_SERVER_ERROR);
+            throw new RestApiException(INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -1,6 +1,5 @@
 package gravit.code.global.exception.handler;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.global.exception.domain.RestApiException;
@@ -21,6 +20,11 @@ import org.springframework.web.servlet.View;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.DATABASE_EXCEPTION;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERNAL_SERVER_ERROR;
+import static gravit.code.global.exception.domain.CustomErrorCode.INVALID_PARAMS;
+import static org.springframework.http.HttpStatus.LOCKED;
 
 @Log4j2
 @RestControllerAdvice
@@ -73,7 +77,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse<String>> handleDatabaseException(DataAccessException e){
-        ErrorCode errorCode = CustomErrorCode.DATABASE_EXCEPTION;
+        ErrorCode errorCode = DATABASE_EXCEPTION;
 
         log.error("DataAccessException occur with: {}", e.getMessage());
 
@@ -84,7 +88,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse<String>> handleException(Exception e){
 
         log.error("예외 발생 :", e);
-        ErrorCode errorCode = CustomErrorCode.INTERNAL_SERVER_ERROR;
+        ErrorCode errorCode = INTERNAL_SERVER_ERROR;
 
         return handleExceptionInternal(errorCode);
     }
@@ -94,7 +98,7 @@ public class GlobalExceptionHandler {
         String errorCode = "USER_423";
         String message = ex.getProviderId();
         ErrorResponse<String> errorResponse = ErrorResponse.of(errorCode, message);
-        HttpStatus status = HttpStatus.LOCKED;
+        HttpStatus status = LOCKED;
         return ResponseEntity.status(status).body(errorResponse);
     }
 
@@ -112,7 +116,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse<List<String>>> handleExceptionInternal(List<String> message) {
-        return ResponseEntity.status(CustomErrorCode.INVALID_PARAMS.getHttpStatus())
+        return ResponseEntity.status(INVALID_PARAMS.getHttpStatus())
                 .body(makeErrorResponse(message));
     }
 
@@ -121,6 +125,6 @@ public class GlobalExceptionHandler {
     }
 
     private ErrorResponse<List<String>> makeErrorResponse(List<String> message){
-        return ErrorResponse.of(CustomErrorCode.INVALID_PARAMS.getCode(), message);
+        return ErrorResponse.of(INVALID_PARAMS.getCode(), message);
     }
 }

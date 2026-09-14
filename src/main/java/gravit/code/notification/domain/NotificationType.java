@@ -23,25 +23,27 @@ public enum NotificationType {
     NEW_CONTENT(GO_TO_LEARNING),       // 3.13 새 콘텐츠 업데이트
     INQUIRY_ANSWERED(GO_TO_INQUIRY);   // 문의 답변 등록(명세 외, 현행 유지)
 
+    private static final String TYPE_KEY = "type";
+    private static final String ACTION_TYPE_KEY = "actionType";
+    private static final String TARGET_ID_KEY = "targetId";
+
     private final NotificationActionType actionType;
 
-    // 클라이언트 액션 라우팅용 FCM data payload. 키 계약은 프론트와 동일하게 맞춘다
     public Map<String, String> toPushData() {
         return Map.of(
-                "type", name(),
-                "actionType", actionType.name()
+                TYPE_KEY, name(),
+                ACTION_TYPE_KEY, actionType.name()
         );
     }
 
-    // 액션 대상이 있는 경우(targetId) deeplink용으로 함께 실어 보낸다
     public Map<String, String> toPushData(Long targetId) {
         if (targetId == null) {
             return toPushData();
         }
         return Map.of(
-                "type", name(),
-                "actionType", actionType.name(),
-                "targetId", String.valueOf(targetId)
+                TYPE_KEY, name(),
+                ACTION_TYPE_KEY, actionType.name(),
+                TARGET_ID_KEY, String.valueOf(targetId)
         );
     }
 }

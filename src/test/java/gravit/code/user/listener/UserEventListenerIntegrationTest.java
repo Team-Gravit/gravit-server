@@ -1,7 +1,7 @@
 package gravit.code.user.listener;
 
-import gravit.code.global.event.InterviewCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
+import gravit.code.interview.dto.event.InterviewCompletedEvent;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;

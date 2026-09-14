@@ -11,15 +11,15 @@ import java.util.List;
 public interface AdminStatsRepository extends JpaRepository<Unit, Long> {
 
     @Query("""
-        SELECT new gravit.code.admin.dto.internal.UnitStatRowDto(
-            u.id, u.title, COUNT(DISTINCT ls.userId)
-        )
-        FROM Unit u
-        LEFT JOIN Lesson l ON l.unitId = u.id
-        LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id
-        WHERE u.chapterId = :chapterId
-        GROUP BY u.id, u.title
-        ORDER BY u.id
+            SELECT new gravit.code.admin.dto.internal.UnitStatRowDto(
+                u.id, u.title, COUNT(DISTINCT ls.userId)
+            )
+            FROM Unit u
+            LEFT JOIN Lesson l ON l.unitId = u.id
+            LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id
+            WHERE u.chapterId = :chapterId
+            GROUP BY u.id, u.title
+            ORDER BY u.id
     """)
     List<UnitStatRowDto> findUnitStatsByChapterId(@Param("chapterId") long chapterId);
 }

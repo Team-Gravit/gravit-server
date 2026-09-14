@@ -34,7 +34,6 @@ public class Notification extends BaseEntity {
     @Column(name = "message", nullable = false)
     private String message;
 
-    // 헤드라인(message) 하위 보조 문구. 없으면 NULL.
     @Column(name = "sub_text")
     private String subText;
 

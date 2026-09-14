@@ -1,6 +1,5 @@
 package gravit.code.season.batch;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.season.calendar.SeasonCalendar;
 import gravit.code.season.domain.Season;
@@ -23,19 +22,23 @@ import java.sql.SQLException;
 import java.time.Clock;
 import java.time.LocalDateTime;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.ACTIVE_SEASON_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class SeasonBatchService {
-    private final SeasonRepository seasonRepository;
-    private final UserLeagueHistoryRepository historyRepository;
-    private final UserLeagueRepository userLeagueRepository;
-    private final SeasonClosedCache seasonClosedCache;
-    private final Clock clock;
 
     private final LeagueRankingRebuildService leagueRankingRebuildService;
+
+    private final SeasonRepository seasonRepository;
+    private final UserLeagueRepository userLeagueRepository;
+    private final UserLeagueHistoryRepository historyRepository;
+
+    private final SeasonClosedCache seasonClosedCache;
     private final LeagueRankingStore leagueRankingStore;
+
+    private final Clock clock;
 
     @Retryable(
             retryFor = {TransientDataAccessException.class, RecoverableDataAccessException.class, SQLException.class},
@@ -43,23 +46,19 @@ public class SeasonBatchService {
     )
     @Transactional
     public void finalizeAndRollover(){
-        // 닫을 시즌 확정 , 락
         LocalDateTime nowKst = LocalDateTime.now(clock);
-        Season currentSeason = seasonRepository.findCloseableActiveByNowForUpdate(nowKst).orElseThrow(()-> new RestApiException(CustomErrorCode.ACTIVE_SEASON_NOT_FOUND));
+        Season currentSeason = seasonRepository.findCloseableActiveByNowForUpdate(nowKst).orElseThrow(()-> new RestApiException(ACTIVE_SEASON_NOT_FOUND));
         currentSeason.finalizing();
 
-        // 히스토리, UserLeague 스냅샷
-        historyRepository.deleteBySeasonId(currentSeason); // 멱등성 보장
+        historyRepository.deleteBySeasonId(currentSeason);
         int snap = historyRepository.insertFromCurrent(currentSeason.getId(), nowKst);
 
-        // 다음 시즌 확보 (4개월 단위)
         LocalDateTime nextStartsAt = currentSeason.getEndsAt();
-        LocalDateTime nextEndsAt = nextStartsAt.plusMonths(4);
+        LocalDateTime nextEndsAt = nextStartsAt.plusMonths(SeasonCalendar.SEASON_MONTHS);
         Season nextSeason = seasonRepository.findPrepByStartingAt(nextStartsAt).orElseGet(()->
                 seasonRepository.save(Season.prep(SeasonCalendar.seasonKey(nextStartsAt.toLocalDate()), nextStartsAt, nextEndsAt))
         );
 
-        // UserLeague 소프트 리셋: 직전 시즌 티어 기준으로 시작 티어·LP 차등 지급
         int inits = userLeagueRepository.softResetForNextSeason(currentSeason.getId(), nextSeason.getId());
         log.info("히스토리 스냅샷 로우 수: {},  유저 리그 롤오버 로우 수 = {}", snap, inits);
 
@@ -69,10 +68,6 @@ public class SeasonBatchService {
         nextSeason.activate();
         currentSeason.close();
 
-        // 전 시즌 id 캐싱
         seasonClosedCache.setLastClosedSeasonId(currentSeason.getId());
-
-        // 3.8 시즌 종료 + 새 시즌 시작 알림은 새벽 푸시 회피를 위해
-        // 다음날 오전 9시 스케줄(NotificationScheduler)에서 ACTIVE 시즌 시작일을 감지해 발송한다.
     }
 }

@@ -75,10 +75,11 @@ public interface FriendControllerDocs {
             )
     })
     @PostMapping("/following/{followeeId}")
-    ResponseEntity<FriendResponse> following(
+    ResponseEntity<FriendResponse> follow(
             @Parameter(description = "팔로잉할 대상 유저 ID")
             @PathVariable("followeeId") Long followeeId,
-            @AuthenticationPrincipal LoginUser loginUser);
+            @AuthenticationPrincipal LoginUser loginUser
+    );
 
 
     @Operation(summary = "언팔로잉", description = "다른 사용자에 대한 팔로잉을 취소합니다<br>" +
@@ -107,10 +108,11 @@ public interface FriendControllerDocs {
             )
     })
     @PostMapping("/unfollowing/{followeeId}")
-    ResponseEntity<Void> unFollowing(
+    ResponseEntity<Void> unfollow(
             @Parameter(description = "언팔로잉할 대상 유저 ID")
             @PathVariable("followeeId") Long followeeId,
-            @AuthenticationPrincipal LoginUser loginUser);
+            @AuthenticationPrincipal LoginUser loginUser
+    );
 
     @Operation(summary = "팔로잉 거절 ", description = "다른 사용자가 나에게 보낸 팔로잉을 거절합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -141,7 +143,8 @@ public interface FriendControllerDocs {
     ResponseEntity<Void> rejectFollowing(
             @Parameter(description = "나를 팔로잉한 대상 유저 ID")
             @PathVariable("followerId") Long followerId,
-            @AuthenticationPrincipal LoginUser loginUser);
+            @AuthenticationPrincipal LoginUser loginUser
+    );
 
 
     @Operation(summary = "팔로워 목록 조회", description = "현재 사용자를 팔로우하고 있는 사용자 목록을 조회합니다<br>" +
@@ -195,7 +198,8 @@ public interface FriendControllerDocs {
     @GetMapping("/follower")
     ResponseEntity<SliceResponse<FollowerResponse>> getFollowers(
             @AuthenticationPrincipal LoginUser loginUser,
-            @RequestParam int page
+            @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0")
+            @RequestParam(defaultValue = "0") int page
     );
 
 
@@ -220,7 +224,8 @@ public interface FriendControllerDocs {
     @GetMapping("/following")
     ResponseEntity<SliceResponse<FollowingResponse>> getFollowings(
             @AuthenticationPrincipal LoginUser loginUser,
-            @RequestParam int page
+            @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0")
+            @RequestParam(defaultValue = "0") int page
     );
 
 
@@ -348,10 +353,10 @@ public interface FriendControllerDocs {
                     )
             )
     })
-    @GetMapping
+    @GetMapping("/search")
     ResponseEntity<SliceResponse<SearchUserDto>> search(
             @AuthenticationPrincipal LoginUser loginUser,
-            @Parameter(description = "검색할 핸들 문자열 (선두 '@' 허용, 대소문자 무시)") @RequestParam String handleQuery,
+            @Parameter(description = "검색어 (선두가 '@'이면 핸들, 그 외에는 닉네임으로 검색)") @RequestParam String queryText,
             @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0") @RequestParam(defaultValue = "0") int page
     );
 }

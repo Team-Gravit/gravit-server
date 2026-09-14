@@ -1,6 +1,7 @@
 package gravit.code.mission.domain;
 
 import gravit.code.global.entity.BaseEntity;
+import gravit.code.global.util.DecimalRounding;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -97,7 +98,6 @@ public class Mission extends BaseEntity {
                 .build();
     }
 
-    // 레슨 완료 이벤트가 이 미션의 progress_count를 얼마나 올리는가. 해당 없으면 0
     public int calculateLessonIncrement(
             int accuracy,
             int learningTime
@@ -122,7 +122,7 @@ public class Mission extends BaseEntity {
 
     public double calculateProgressRate(int progressCount) {
         double rate = Math.min((double) progressCount / this.targetValue * MAX_RATE, MAX_RATE);
-        return Math.round(rate * 10) / 10.0;
+        return DecimalRounding.roundToFirstDecimal(rate);
     }
 
     private int capPerEvent(int rawProgress) {

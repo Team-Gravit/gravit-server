@@ -5,6 +5,7 @@ import gravit.code.auth.dto.oauth.android.IdTokenRequest;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,7 +52,7 @@ public interface OAuthAndroidControllerDocs {
                             examples = {
                                     @ExampleObject(
                                             name = "IdToken 디코딩 실패",
-                                            value = "{\"error\" : \"AUTH_4004\", \"message\" : \"IdToken을 JWT로 디코딩하는데 실패했습니다.\"}"
+                                            value = "{\"error\" : \"AUTH_4005\", \"message\" : \"유효하지 않은 OAuth IdToken 입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -61,7 +62,7 @@ public interface OAuthAndroidControllerDocs {
                             examples = {
                                     @ExampleObject(
                                             name = "Issuer 불일치",
-                                            value = "{\"error\" : \"AUTH_4005\", \"message\" : \"IdToken의 발급자(issuer)가 일치하지 않습니다.\"}"
+                                            value = "{\"error\" : \"AUTH_4007\", \"message\" : \"IdToken 의 Issuer 가 매칭되지 않습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -71,7 +72,7 @@ public interface OAuthAndroidControllerDocs {
                             examples = {
                                     @ExampleObject(
                                             name = "Audience 없음",
-                                            value = "{\"error\" : \"AUTH_4006\", \"message\" : \"IdToken에 audience claim이 존재하지 않습니다.\"}"
+                                            value = "{\"error\" : \"AUTH_4008\", \"message\" : \"IdToken 의 audience 가 비어있습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -81,7 +82,7 @@ public interface OAuthAndroidControllerDocs {
                             examples = {
                                     @ExampleObject(
                                             name = "Audience 불일치",
-                                            value = "{\"error\" : \"AUTH_4007\", \"message\" : \"IdToken의 수신자(audience)가 일치하지 않습니다.\"}"
+                                            value = "{\"error\" : \"AUTH_4009\", \"message\" : \"IdToken 의 audience 가 매칭되지 않습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -99,6 +100,7 @@ public interface OAuthAndroidControllerDocs {
     })
     @PostMapping
     ResponseEntity<LoginResponse> oauthLogin(
+            @Parameter(description = "OAuth 제공자 이름(google, kakao)", example = "google")
             @RequestParam("provider") String provider,
             @RequestBody IdTokenRequest request
     );

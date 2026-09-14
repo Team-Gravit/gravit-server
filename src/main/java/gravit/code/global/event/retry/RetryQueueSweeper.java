@@ -25,9 +25,10 @@ public class RetryQueueSweeper {
     private static final long MAX_BACKOFF_MS = 300_000L;
     private static final int SWEEP_BATCH_SIZE = 100;
 
+    private final List<RetrySweepTarget> targets;
+
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
-    private final List<RetrySweepTarget> targets;
 
     @Scheduled(fixedDelay = 30000)
     public void sweep() {

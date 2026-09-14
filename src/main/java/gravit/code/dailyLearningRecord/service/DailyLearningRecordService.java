@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DailyLearningRecordService {
 
+    private static final int COMPARED_WEEK_COUNT = 3;
+
     private final DailyLearningRecordRepository dailyLearningRecordRepository;
 
     @Transactional(readOnly = true)
@@ -53,34 +55,34 @@ public class DailyLearningRecordService {
         LocalDate today = LocalDate.now(TimeZoneConst.KST);
         LocalDate thisMonday = today.with(DayOfWeek.MONDAY);
         LocalDate thisSunday = today.with(DayOfWeek.SUNDAY);
-        LocalDate threeWeeksAgoMonday = thisMonday.minusWeeks(3);
+        LocalDate oldestComparedMonday = thisMonday.minusWeeks(COMPARED_WEEK_COUNT);
 
         List<DailyLearningRecord> records = dailyLearningRecordRepository
-                .findByUserIdAndSolvedDateBetween(userId, threeWeeksAgoMonday, thisSunday);
+                .findByUserIdAndSolvedDateBetween(userId, oldestComparedMonday, thisSunday);
 
-        Map<DayOfWeek, Integer> thisWeekCountsByDay = records.stream()
+        Map<DayOfWeek, Integer> dayOfWeekToCount = records.stream()
                 .filter(dlr -> !dlr.getSolvedDate().isBefore(thisMonday))
                 .collect(Collectors.toMap(
                         dlr -> dlr.getSolvedDate().getDayOfWeek(),
                         DailyLearningRecord::getSolvedLessonCount
                 ));
 
-        Map<LocalDate, Integer> countsByWeekStart = records.stream()
+        Map<LocalDate, Integer> weekStartToCount = records.stream()
                 .collect(Collectors.groupingBy(
                         dlr -> dlr.getSolvedDate().with(DayOfWeek.MONDAY),
                         Collectors.summingInt(DailyLearningRecord::getSolvedLessonCount)
                 ));
 
-        int thisWeekCompletedLessonCount = countsByWeekStart.getOrDefault(thisMonday, 0);
+        int thisWeekCompletedLessonCount = weekStartToCount.getOrDefault(thisMonday, 0);
 
-        List<Integer> weekOverWeekDeltas = new ArrayList<>(3);
-        for (int weeksAgo = 1; weeksAgo <= 3; weeksAgo++) {
-            int pastWeekCount = countsByWeekStart.getOrDefault(thisMonday.minusWeeks(weeksAgo), 0);
+        List<Integer> weekOverWeekDeltas = new ArrayList<>(COMPARED_WEEK_COUNT);
+        for (int weeksAgo = 1; weeksAgo <= COMPARED_WEEK_COUNT; weeksAgo++) {
+            int pastWeekCount = weekStartToCount.getOrDefault(thisMonday.minusWeeks(weeksAgo), 0);
             weekOverWeekDeltas.add(thisWeekCompletedLessonCount - pastWeekCount);
         }
 
         return WeeklyLearningReportResponse.of(
-                thisWeekCountsByDay,
+                dayOfWeekToCount,
                 thisWeekCompletedLessonCount,
                 weekOverWeekDeltas
         );

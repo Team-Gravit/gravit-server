@@ -1,11 +1,12 @@
 package gravit.code.interview.domain;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_FORMAT_UNSUPPORTED;
 
 @Getter
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public enum InterviewAudioFormat {
         return Arrays.stream(values())
                 .filter(format -> format.contentType.equalsIgnoreCase(contentType))
                 .findFirst()
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INTERVIEW_AUDIO_FORMAT_UNSUPPORTED));
+                .orElseThrow(() -> new RestApiException(INTERVIEW_AUDIO_FORMAT_UNSUPPORTED));
     }
 
     public static boolean hasExtension(String extension) {

@@ -1,16 +1,16 @@
 package gravit.code.userLeague.listener;
 
-import gravit.code.global.event.InterviewCompletedEvent;
-import gravit.code.global.event.LessonCompletedEvent;
-import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
+import gravit.code.interview.dto.event.InterviewCompletedEvent;
 import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
+import gravit.code.lesson.dto.event.LessonCompletedEvent;
 import gravit.code.mission.service.MissionService;
 import gravit.code.season.domain.Season;
 import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
+import gravit.code.user.dto.event.OnboardingCompletedEvent;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.fixture.UserLeagueFixture;

@@ -1,6 +1,5 @@
 package gravit.code.interviewFeedback.infrastructure;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interviewFeedback.dto.internal.InterviewGradingConceptDto;
 import gravit.code.interviewFeedback.dto.internal.InterviewGradingInputDto;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_GRADING_FAILED;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -24,6 +25,10 @@ public class InterviewGradingClient {
     private static final Resource USER_PROMPT = new ClassPathResource("prompts/interview-grading-user.st");
     private static final String CONCEPT_LINE_FORMAT = "- [%s] %s";
     private static final String CONCEPT_LINE_SEPARATOR = "\n";
+    private static final String PARAM_QUESTION_CONTENT = "questionContent";
+    private static final String PARAM_MODEL_ANSWER = "modelAnswer";
+    private static final String PARAM_CONCEPTS = "concepts";
+    private static final String PARAM_ANSWER_CONTENT = "answerContent";
 
     private final ChatClient chatClient;
 
@@ -32,15 +37,15 @@ public class InterviewGradingClient {
             return chatClient.prompt()
                     .system(SYSTEM_PROMPT)
                     .user(user -> user.text(USER_PROMPT)
-                            .param("questionContent", input.questionContent())
-                            .param("modelAnswer", input.modelAnswer())
-                            .param("concepts", buildConceptLines(input.concepts()))
-                            .param("answerContent", input.answerContent()))
+                            .param(PARAM_QUESTION_CONTENT, input.questionContent())
+                            .param(PARAM_MODEL_ANSWER, input.modelAnswer())
+                            .param(PARAM_CONCEPTS, buildConceptLines(input.concepts()))
+                            .param(PARAM_ANSWER_CONTENT, input.answerContent()))
                     .call()
                     .entity(InterviewGradingJudgmentDto.class);
         } catch (RuntimeException e) {
             log.error("면접 답변 채점 판정 호출 실패", e);
-            throw new RestApiException(CustomErrorCode.INTERVIEW_GRADING_FAILED);
+            throw new RestApiException(INTERVIEW_GRADING_FAILED);
         }
     }
 

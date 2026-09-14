@@ -1,7 +1,7 @@
 package gravit.code.auth.infrastructure.client;
 
 import gravit.code.auth.service.oauth.OAuthClient;
-import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.consts.AuthHeaderConst;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,10 @@ import org.springframework.web.client.RestClientException;
 import java.net.http.HttpTimeoutException;
 import java.util.Map;
 import java.util.Optional;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.AUTH_CODE_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_ACCESS_TOKEN_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_SERVER_ERROR;
 
 @Component
 @RequiredArgsConstructor
@@ -38,20 +42,20 @@ public class OAuthHttpClientAdapter implements OAuthClient {
                             .body(tokenRequest)
                             .retrieve()
                             .body(new ParameterizedTypeReference<Map<String, Object>>() {})
-            ).orElseThrow(() -> new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR));
+            ).orElseThrow(() -> new RestApiException(OAUTH_SERVER_ERROR));
         } catch (HttpClientErrorException.BadRequest e) {
             log.warn("유효하지 않은 AuthCode 요청 : {}", e.getMessage());
-            throw new RestApiException(CustomErrorCode.AUTH_CODE_INVALID);
-        } catch(ResourceAccessException e){ // timeout 과 일반 네트워크 에러를 구분
+            throw new RestApiException(AUTH_CODE_INVALID);
+        } catch(ResourceAccessException e){
             if(e.getCause() instanceof HttpTimeoutException){
                 log.warn("OAuth 서버 timeout 발생", e);
             }else{
                 log.warn("OAuth 서버 통신 오류", e);
             }
-            throw new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR);
+            throw new RestApiException(OAUTH_SERVER_ERROR);
         } catch (RestClientException e) {
             log.error("OAuth 서버 통신 오류", e);
-            throw new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR);
+            throw new RestApiException(OAUTH_SERVER_ERROR);
         }
     }
 
@@ -64,19 +68,19 @@ public class OAuthHttpClientAdapter implements OAuthClient {
             return Optional.ofNullable(
                     restClient.get()
                             .uri(uri)
-                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                            .header(HttpHeaders.AUTHORIZATION, AuthHeaderConst.BEARER_PREFIX + accessToken)
                             .retrieve()
                             .body(new ParameterizedTypeReference<Map<String, Object>>() {})
-            ).orElseThrow(() -> new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR));
+            ).orElseThrow(() -> new RestApiException(OAUTH_SERVER_ERROR));
         } catch (HttpClientErrorException.BadRequest e) {
             log.warn("유효하지 않은 AccessToken 요청 : {}", e.getMessage());
-            throw new RestApiException(CustomErrorCode.OAUTH_ACCESS_TOKEN_INVALID);
+            throw new RestApiException(OAUTH_ACCESS_TOKEN_INVALID);
         } catch (HttpClientErrorException.Unauthorized e) {
             log.warn("만료되었거나 유효하지 않은 AccessToken 요청 : {}", e.getMessage());
-            throw new RestApiException(CustomErrorCode.OAUTH_ACCESS_TOKEN_INVALID);
+            throw new RestApiException(OAUTH_ACCESS_TOKEN_INVALID);
         } catch (RestClientException e) {
             log.error("OAuth 서버 통신 오류", e);
-            throw new RestApiException(CustomErrorCode.OAUTH_SERVER_ERROR);
+            throw new RestApiException(OAUTH_SERVER_ERROR);
         }
     }
 }

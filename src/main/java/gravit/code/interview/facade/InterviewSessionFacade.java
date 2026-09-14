@@ -18,10 +18,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InterviewSessionFacade {
 
-    private final InterviewQuestionAllocationPolicy interviewQuestionAllocationPolicy;
-
     private final InterviewQuestionQueryService interviewQuestionQueryService;
     private final InterviewSessionCommandService interviewSessionCommandService;
+
+    private final InterviewQuestionAllocationPolicy interviewQuestionAllocationPolicy;
 
     public InterviewSessionCreateResponse create(
             long userId,

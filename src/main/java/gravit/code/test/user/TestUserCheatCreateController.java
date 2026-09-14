@@ -8,9 +8,8 @@ import gravit.code.auth.service.AuthTokenProvider;
 import gravit.code.auth.token.JwtProvider;
 import gravit.code.friend.domain.Friend;
 import gravit.code.friend.repository.FriendRepository;
-import gravit.code.global.event.NoticeCreatedEvent;
+import gravit.code.notice.dto.event.NoticeCreatedEvent;
 import gravit.code.test.user.docs.TestUserCheatCreateControllerDocs;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
@@ -21,7 +20,6 @@ import gravit.code.user.support.RandomHandleGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,21 +32,38 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_LENGTH_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_NOT_NULL;
+import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_PATTERN_INVALID;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
+
 @Profile("!prod")
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
 public class TestUserCheatCreateController implements TestUserCheatCreateControllerDocs {
 
+    private static final String PROVIDER = "gravit";
+    private static final int NICKNAME_MIN_LENGTH = 2;
+    private static final int NICKNAME_MAX_LENGTH = 8;
+    private static final String NICKNAME_PATTERN = "^[가-힣a-zA-Z0-9]+$";
+    private static final long MAIN_USER_ID = 1L;
+    private static final long MUTUAL_FOLLOWER_FIRST_ID = 2L;
+    private static final long MUTUAL_FOLLOWER_LAST_ID = 10L;
+    private static final long ONE_WAY_FOLLOWER_FIRST_ID = 11L;
+    private static final long ONE_WAY_FOLLOWER_LAST_ID = 19L;
+
+    private final UserService userService;
+
+    private final UserRepository userRepository;
+    private final FriendRepository friendRepository;
+
     private final AuthTokenProvider authTokenProvider;
     private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
-    private final UserService userService;
     private final RandomHandleGenerator handleGenerator;
-    private final FriendRepository friendRepository;
-    private final ApplicationEventPublisher publisher;
 
-    private final String PROVIDER = "gravit";
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     @PostMapping("/users/create")
@@ -57,7 +72,6 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
             @RequestParam String nickname,
             @RequestParam String role
     ) {
-        // 실제 서버 제약과 동일하게 저장 전에 검증한다. (저장과 onboarding은 @Transactional로 원자적 처리)
         validateEmail(email);
         Role userRole = parseRole(role);
         validateNickname(nickname);
@@ -67,44 +81,40 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
         User user = User.create(email,PROVIDER + s, nickname, handle, 1, userRole);
         userRepository.save(user);
         OnboardingRequest request = new OnboardingRequest(nickname, 1);
-        userService.onboarding(user.getId(), request);
+        userService.onboard(user.getId(), request);
 
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
+        return ResponseEntity.status(OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }
 
-    // cheat 전용 검증이라 운영 카탈로그(CustomErrorCode)를 오염시키지 않도록 ResponseStatusException으로 400을 던진다.
-    // User.email 은 NOT NULL 제약만 존재하므로 공백 여부만 검증한다.
     private void validateEmail(String email) {
         if (email == null || email.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 null 이거나 empty 일 순 없습니다.");
+            throw new ResponseStatusException(BAD_REQUEST, "이메일이 null 이거나 empty 일 순 없습니다.");
         }
     }
 
-    // 실제 서버는 Role enum(ADMIN/USER)만 허용한다. 유효하지 않으면 예외를 던진다.
     private Role parseRole(String role) {
         if (role == null || role.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 권한 값입니다.");
+            throw new ResponseStatusException(BAD_REQUEST, "유효하지 않은 권한 값입니다.");
         }
         try {
             return Role.valueOf(role.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 권한 값입니다.");
+            throw new ResponseStatusException(BAD_REQUEST, "유효하지 않은 권한 값입니다.");
         }
     }
 
-    // OnboardingRequest / User.validateNickname 과 동일한 제약 (2~8자, 한글/영문/숫자).
     private void validateNickname(String nickname) {
         if (nickname == null || nickname.isBlank()) {
-            throw new RestApiException(CustomErrorCode.NICKNAME_NOT_NULL);
+            throw new RestApiException(NICKNAME_NOT_NULL);
         }
-        if (nickname.length() < 2 || nickname.length() > 8) {
-            throw new RestApiException(CustomErrorCode.NICKNAME_LENGTH_INVALID);
+        if (nickname.length() < NICKNAME_MIN_LENGTH || nickname.length() > NICKNAME_MAX_LENGTH) {
+            throw new RestApiException(NICKNAME_LENGTH_INVALID);
         }
-        if (!nickname.matches("^[가-힣a-zA-Z0-9]+$")) {
-            throw new RestApiException(CustomErrorCode.NICKNAME_PATTERN_INVALID);
+        if (!nickname.matches(NICKNAME_PATTERN)) {
+            throw new RestApiException(NICKNAME_PATTERN_INVALID);
         }
     }
 
@@ -117,7 +127,7 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
+        return ResponseEntity.status(OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }
 
     @PostMapping("/tokens/custom")
@@ -127,10 +137,13 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
     ){
         User user = authTokenProvider.parseUser(accessToken);
         AccessToken newAccessToken = createNewCustomAccessToken(user, newExpirationMinutes);
-        return ResponseEntity.status(HttpStatus.OK).body(LoginResponse.of(newAccessToken,new RefreshToken("refresh"),true, user.getRole()));
+        return ResponseEntity.status(OK).body(LoginResponse.of(newAccessToken,new RefreshToken("refresh"),true, user.getRole()));
     }
 
-    private AccessToken createNewCustomAccessToken(User user, Long newExpirationMinutes) {
+    private AccessToken createNewCustomAccessToken(
+            User user,
+            Long newExpirationMinutes
+    ) {
         Subject subject = toSubject(user);
         Role role = user.getRole();
 
@@ -146,25 +159,19 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
         return new Subject(user.getId().toString());
     }
 
-    // 1번 유저 기준 팔로우 관계 세팅
-    // - 2~10번: 1번과 맞 팔로우
-    // - 11~19번: 1번을 팔로잉 (1번은 팔로잉 안 함)
-    // - 20번: 관계 없음
     @Transactional
     @PostMapping("/follows/setup")
     public ResponseEntity<Void> setupFollowRelations() {
-        for (long i = 2; i <= 10; i++) {
-            follow(1L, i);
-            follow(i, 1L);
+        for (long i = MUTUAL_FOLLOWER_FIRST_ID; i <= MUTUAL_FOLLOWER_LAST_ID; i++) {
+            follow(MAIN_USER_ID, i);
+            follow(i, MAIN_USER_ID);
         }
-        for (long i = 11; i <= 19; i++) {
-            follow(i, 1L);
+        for (long i = ONE_WAY_FOLLOWER_FIRST_ID; i <= ONE_WAY_FOLLOWER_LAST_ID; i++) {
+            follow(i, MAIN_USER_ID);
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
-    // NoticeCreatedEvent 리스너가 @TransactionalEventListener(AFTER_COMMIT)라, 커밋되는 트랜잭션 안에서
-    // publish해야 실행된다. @Transactional 없이 publish하면 리스너가 발화되지 않아 알림이 생성되지 않는다.
     @Transactional
     @PostMapping("/events/notice-created")
     public ResponseEntity<Void> publishNoticeCreatedEvent(
@@ -172,10 +179,13 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
             @RequestParam String title
     ) {
         publisher.publishEvent(new NoticeCreatedEvent(noticeId, title));
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
-    private void follow(long followerId, long followeeId) {
+    private void follow(
+            long followerId,
+            long followeeId
+    ) {
         if (!friendRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)) {
             friendRepository.save(Friend.create(followerId, followeeId));
         }

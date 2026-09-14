@@ -1,7 +1,6 @@
 package gravit.code.notice.service;
 
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notice.domain.Notice;
 import gravit.code.notice.domain.NoticeStatus;
@@ -16,24 +15,26 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.PAGE_MUST_START_FROM_1;
+
 @Service
 @RequiredArgsConstructor
 public class NoticeQueryService {
-    private final NoticeRepository noticeRepository;
 
     private static final int PAGE_SIZE = 10;
     private static final int SUMMARY_MAX_SIZE = 70;
-
-    // 정렬 규칙
     private static final Sort NOTICE_LIST_SORT = Sort.by(
             Sort.Order.desc("pinned"),
             Sort.Order.desc("publishedAt"),
             Sort.Order.desc("id")
     );
 
+    private final NoticeRepository noticeRepository;
+
     @Transactional(readOnly = true)
     public PageResponse<NoticeSummaryResponse> getNoticeSummaries(int page){
-        if(page < 1) throw new RestApiException(CustomErrorCode.PAGE_MUST_START_FROM_1);
+        if(page < 1) throw new RestApiException(PAGE_MUST_START_FROM_1);
         int realPage = page - 1;
         Pageable pageable = noticePageable(realPage);
         Page<NoticeSummaryResponse> pageResult = noticeRepository.findSummaries(NoticeStatus.PUBLISHED, SUMMARY_MAX_SIZE, pageable);
@@ -44,7 +45,7 @@ public class NoticeQueryService {
     @Transactional(readOnly = true)
     public NoticeDetailResponse getNoticeDetail(long noticeId){
         Notice notice = noticeRepository.findByIdAndStatus(noticeId, NoticeStatus.PUBLISHED)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(NOTICE_NOT_FOUND));
         return NoticeDetailResponse.from(notice);
     }
 

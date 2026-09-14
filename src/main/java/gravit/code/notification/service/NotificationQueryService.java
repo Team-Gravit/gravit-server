@@ -16,12 +16,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationQueryService {
 
-    // 알림함 노출 정책: 최근 30일 이내, 최신 30건
     private static final int MAX_SIZE = 30;
     private static final int RETENTION_DAYS = 30;
     private static final Pageable LATEST_30 = PageRequest.of(0, MAX_SIZE);
 
     private final NotificationRepository notificationRepository;
+
     private final Clock clock;
 
     @Transactional(readOnly = true)

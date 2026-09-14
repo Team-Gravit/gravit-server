@@ -11,9 +11,10 @@ import java.util.List;
 public interface CongratulationRepository extends JpaRepository<Congratulation, Long> {
 
     @Query("""
-            SELECT COUNT(c) FROM Congratulation c
+            SELECT COUNT(c)
+            FROM Congratulation c
             WHERE c.userId = :userId AND c.actorId = :actorId AND c.createdAt >= :startOfDay
-            """)
+    """)
     long countTodayByUserIdAndActorId(
             @Param("userId") long userId,
             @Param("actorId") long actorId,
@@ -21,10 +22,12 @@ public interface CongratulationRepository extends JpaRepository<Congratulation, 
     );
 
     @Query("""
-            SELECT c.actorId FROM Congratulation c
+            SELECT c.actorId
+            FROM Congratulation c
             WHERE c.userId = :userId AND c.actorId IN :actorIds AND c.createdAt >= :startOfDay
-            GROUP BY c.actorId HAVING COUNT(c) >= 3
-            """)
+            GROUP BY c.actorId
+            HAVING COUNT(c) >= 3
+    """)
     List<Long> findActorIdsWithLimitReached(
             @Param("userId") long userId,
             @Param("actorIds") List<Long> actorIds,
@@ -32,13 +35,17 @@ public interface CongratulationRepository extends JpaRepository<Congratulation, 
     );
 
     @Query("""
-            SELECT c.feedId FROM Congratulation c
+            SELECT c.feedId
+            FROM Congratulation c
             WHERE c.userId = :userId AND c.feedId IN :feedIds
-            """)
+    """)
     List<Long> findCongratulatedFeedIds(
             @Param("userId") long userId,
             @Param("feedIds") List<Long> feedIds
     );
 
-    boolean existsByUserIdAndFeedId(long userId, long feedId);
+    boolean existsByUserIdAndFeedId(
+            long userId,
+            long feedId
+    );
 }

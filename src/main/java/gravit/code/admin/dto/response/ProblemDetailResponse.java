@@ -1,6 +1,5 @@
 package gravit.code.admin.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.answer.domain.Answer;
 import gravit.code.option.domain.Option;
 import gravit.code.problem.domain.Problem;
@@ -55,45 +54,5 @@ public record ProblemDetailResponse(
                 .options(null)
                 .answer(ProblemAnswerResponse.from(answer))
                 .build();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE)
-    public record ProblemOptionResponse(
-
-            long optionId,
-
-            String content,
-
-            String explanation,
-
-            @JsonProperty("isAnswer")
-            boolean isAnswer
-    ) {
-        public static ProblemOptionResponse from(Option option) {
-            return ProblemOptionResponse.builder()
-                    .optionId(option.getId())
-                    .content(option.getContent())
-                    .explanation(option.getExplanation())
-                    .isAnswer(option.isAnswer())
-                    .build();
-        }
-    }
-
-    @Builder(access = AccessLevel.PRIVATE)
-    public record ProblemAnswerResponse(
-
-            long answerId,
-
-            String content,
-
-            String explanation
-    ) {
-        public static ProblemAnswerResponse from(Answer answer) {
-            return ProblemAnswerResponse.builder()
-                    .answerId(answer.getId())
-                    .content(answer.getContent())
-                    .explanation(answer.getExplanation())
-                    .build();
-        }
     }
 }

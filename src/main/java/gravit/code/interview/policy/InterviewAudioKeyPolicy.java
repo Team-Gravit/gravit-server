@@ -1,9 +1,10 @@
 package gravit.code.interview.policy;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAudioFormat;
 import org.springframework.stereotype.Component;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_KEY_INVALID;
 
 @Component
 public class InterviewAudioKeyPolicy {
@@ -28,12 +29,12 @@ public class InterviewAudioKeyPolicy {
         String prefix = String.format(KEY_PREFIX_FORMAT, sessionId, displayOrder);
 
         if (!audioKey.startsWith(prefix)) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_AUDIO_KEY_INVALID);
+            throw new RestApiException(INTERVIEW_AUDIO_KEY_INVALID);
         }
 
         String extension = audioKey.substring(prefix.length());
         if (!InterviewAudioFormat.hasExtension(extension)) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_AUDIO_KEY_INVALID);
+            throw new RestApiException(INTERVIEW_AUDIO_KEY_INVALID);
         }
     }
 

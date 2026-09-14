@@ -1,8 +1,9 @@
 package gravit.code.userLeague.infrastructure;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.experimental.UtilityClass;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.LEAGUE_RANK_USER_ID_OUT_OF_RANGE;
 
 @UtilityClass
 public class LeagueRankScore {
@@ -25,7 +26,7 @@ public class LeagueRankScore {
 
     private static void validateUserId(long userId) {
         if (userId < MIN_USER_ID || userId >= TIE_BREAK_BASE) {
-            throw new RestApiException(CustomErrorCode.LEAGUE_RANK_USER_ID_OUT_OF_RANGE);
+            throw new RestApiException(LEAGUE_RANK_USER_ID_OUT_OF_RANGE);
         }
     }
 }

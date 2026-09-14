@@ -15,10 +15,10 @@ public interface AnswerRepository extends JpaRepository<Answer,Long> {
     Optional<Answer> findByProblemId(long problemId);
 
     @Query("""
-        SELECT a
-        FROM Answer a
-        WHERE a.problemId IN :problemIds
-        ORDER BY a.problemId ASC
+            SELECT a
+            FROM Answer a
+            WHERE a.problemId IN :problemIds
+            ORDER BY a.problemId ASC
     """)
     List<Answer> findByProblemIdIn(@Param("problemIds") List<Long> problemIds);
 }

@@ -27,7 +27,8 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
     );
 
     @Query("""
-            SELECT s FROM InterviewSession s
+            SELECT s
+            FROM InterviewSession s
             WHERE s.userId = :userId AND s.status = :status
             ORDER BY s.startedAt DESC, s.id DESC
     """)
@@ -38,7 +39,8 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
     );
 
     @Query("""
-            SELECT s FROM InterviewSession s
+            SELECT s
+            FROM InterviewSession s
             WHERE s.userId = :userId AND s.status = :status AND s.startedAt <= :startedAt
             ORDER BY s.startedAt DESC, s.id DESC
     """)
@@ -66,7 +68,8 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
     long findMaxAttemptCountByUserId(@Param("userId") long userId);
 
     @Query("""
-            SELECT s.id FROM InterviewSession s
+            SELECT s.id
+            FROM InterviewSession s
             WHERE s.userId = :userId AND s.inputType = :inputType
     """)
     List<Long> findIdsByUserIdAndInputType(

@@ -14,14 +14,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class RedisUserCleanManager {
 
-    private final RedisTemplate<String, String> redisTemplate;
-
     private static final String DUE_KEY = "user:clean:due";
+    private static final long PURGE_DELAY_DAYS = 7;
+
+    private final RedisTemplate<String, String> redisTemplate;
     private final Clock clock;
 
     public void storeDeletionUser(long userId) {
         ZonedDateTime now = ZonedDateTime.now(clock);
-        Instant purgeAt = now.plusDays(7).toInstant();
+        Instant purgeAt = now.plusDays(PURGE_DELAY_DAYS).toInstant();
 
         redisTemplate.opsForZSet()
                 .add(DUE_KEY, Long.toString(userId), purgeAt.getEpochSecond());

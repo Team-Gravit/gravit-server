@@ -1,9 +1,9 @@
 package gravit.code.notification.listener;
 
-import gravit.code.global.event.FollowedEvent;
-import gravit.code.global.event.InquiryAnsweredEvent;
-import gravit.code.global.event.NoticeCreatedEvent;
+import gravit.code.friend.dto.event.FollowedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
+import gravit.code.inquiry.dto.event.InquiryAnsweredEvent;
+import gravit.code.notice.dto.event.NoticeCreatedEvent;
 import gravit.code.notification.support.NotificationMessageProvider;
 import gravit.code.support.TCSpringBootTest;
 import org.junit.jupiter.api.DisplayName;

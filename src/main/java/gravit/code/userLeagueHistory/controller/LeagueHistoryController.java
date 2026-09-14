@@ -5,13 +5,14 @@ import gravit.code.league.dto.response.LeagueHistoryResponse;
 import gravit.code.userLeagueHistory.controller.docs.LeagueHistoryControllerDocs;
 import gravit.code.userLeagueHistory.service.LeagueHistoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/v1/league-history")
@@ -22,11 +23,11 @@ public class LeagueHistoryController implements LeagueHistoryControllerDocs {
 
     @GetMapping("/me")
     public ResponseEntity<LeagueHistoryResponse> getMyLeagueHistory(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(leagueHistoryService.getMyLeagueHistory(loginUser.getId()));
+        return ResponseEntity.status(OK).body(leagueHistoryService.getMyLeagueHistory(loginUser.getId()));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<LeagueHistoryResponse> getUserLeagueHistory(@PathVariable long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(leagueHistoryService.getUserLeagueHistory(userId));
+        return ResponseEntity.status(OK).body(leagueHistoryService.getUserLeagueHistory(userId));
     }
 }

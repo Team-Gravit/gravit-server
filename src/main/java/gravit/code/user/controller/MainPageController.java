@@ -15,7 +15,6 @@ import gravit.code.user.dto.response.ProfileSummaryResponse;
 import gravit.code.user.facade.UserFacade;
 import gravit.code.userLeague.service.UserLeagueService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/main-pages")
@@ -31,38 +32,39 @@ public class MainPageController implements MainPageControllerDocs {
 
     private final UserFacade userFacade;
     private final LearningFacade learningFacade;
+    private final DailyLearningRecordFacade dailyLearningRecordFacade;
+
     private final UserLeagueService userLeagueService;
     private final UnitQueryService unitQueryService;
-    private final DailyLearningRecordFacade dailyLearningRecordFacade;
     private final MissionService missionService;
 
     @GetMapping("/profile")
     public ResponseEntity<ProfileSummaryResponse> getProfile(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(userFacade.getProfileSummary(loginUser.getId()));
+        return ResponseEntity.status(OK).body(userFacade.getProfileSummary(loginUser.getId()));
     }
 
     @GetMapping("/league")
     public ResponseEntity<LeagueDetailResponse> getLeague(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(userLeagueService.getUserLeagueDetail(loginUser.getId()));
+        return ResponseEntity.status(OK).body(userLeagueService.getUserLeagueDetail(loginUser.getId()));
     }
 
     @GetMapping("/learning")
     public ResponseEntity<LearningDetailResponse> getLearning(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(learningFacade.getLearningDetail(loginUser.getId()));
+        return ResponseEntity.status(OK).body(learningFacade.getLearningDetail(loginUser.getId()));
     }
 
     @GetMapping("/units")
     public ResponseEntity<List<RecommendedUnitResponse>> getUnits(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(unitQueryService.getRecommendedUnits(loginUser.getId()));
+        return ResponseEntity.status(OK).body(unitQueryService.getRecommendedUnits(loginUser.getId()));
     }
 
     @GetMapping("/weekly-record")
     public ResponseEntity<WeeklyLearningRecordResponse> getWeeklyRecord(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(dailyLearningRecordFacade.getWeeklyLearningRecord(loginUser.getId()));
+        return ResponseEntity.status(OK).body(dailyLearningRecordFacade.getWeeklyLearningRecord(loginUser.getId()));
     }
 
     @GetMapping("/mission")
     public ResponseEntity<MissionDetailResponse> getMission(@AuthenticationPrincipal LoginUser loginUser) {
-        return ResponseEntity.status(HttpStatus.OK).body(missionService.getMissionDetail(loginUser.getId()));
+        return ResponseEntity.status(OK).body(missionService.getMissionDetail(loginUser.getId()));
     }
 }

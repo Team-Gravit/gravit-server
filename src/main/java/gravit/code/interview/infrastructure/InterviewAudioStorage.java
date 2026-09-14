@@ -1,6 +1,5 @@
 package gravit.code.interview.infrastructure;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.dto.internal.InterviewAudioUploadDto;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_DELETE_FAILED;
+
 @Slf4j
 @Component
 public class InterviewAudioStorage {
@@ -31,7 +32,6 @@ public class InterviewAudioStorage {
     private final S3Presigner s3Presigner;
     private final S3Client s3Client;
     private final Clock clock;
-
     private final String bucket;
     private final Duration uploadExpiry;
 
@@ -102,7 +102,7 @@ public class InterviewAudioStorage {
                     .toList();
 
             log.warn("면접 음성 삭제 일부 실패: prefix={}, errors={}", prefix, failures);
-            throw new RestApiException(CustomErrorCode.INTERVIEW_AUDIO_DELETE_FAILED);
+            throw new RestApiException(INTERVIEW_AUDIO_DELETE_FAILED);
         }
     }
 }

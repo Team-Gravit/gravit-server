@@ -18,8 +18,8 @@ import java.util.List;
 public class WrongAnsweredNoteFacade {
 
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
-
     private final UnitQueryService unitQueryService;
+
     private final ProblemFactory problemFactory;
 
     @Transactional(readOnly = true)

@@ -1,7 +1,6 @@
 package gravit.code.inquiry.domain;
 
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INQUIRY_CONTENT_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.INQUIRY_TITLE_INVALID;
 import static gravit.code.inquiry.domain.InquiryStatus.PENDING;
 import static gravit.code.inquiry.domain.InquiryStatus.RESOLVED;
 
@@ -79,12 +80,10 @@ public class Inquiry extends BaseEntity {
                 .build();
     }
 
-    // 관리자 답변 등록 시 자동 완료 처리
     public void resolve() {
         this.status = RESOLVED;
     }
 
-    // 관리자 답변 삭제 시 미답변 상태로 되돌린다
     public void reopen() {
         this.status = PENDING;
     }
@@ -95,13 +94,13 @@ public class Inquiry extends BaseEntity {
 
     private static void validateTitle(String title) {
         if (title == null || title.isBlank() || title.trim().length() > TITLE_MAX_SIZE) {
-            throw new RestApiException(CustomErrorCode.INQUIRY_TITLE_INVALID);
+            throw new RestApiException(INQUIRY_TITLE_INVALID);
         }
     }
 
     private static void validateContent(String content) {
         if (content == null || content.isBlank()) {
-            throw new RestApiException(CustomErrorCode.INQUIRY_CONTENT_INVALID);
+            throw new RestApiException(INQUIRY_CONTENT_INVALID);
         }
     }
 }

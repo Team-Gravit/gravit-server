@@ -8,13 +8,14 @@ import gravit.code.userLeague.dto.response.MyLeagueRankWithProfileResponse;
 import gravit.code.userLeague.service.UserLeagueQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -29,25 +30,25 @@ public class UserLeagueController implements UserLeagueControllerDocs {
         Long userId = loginUser.getId();
         MyLeagueRankWithProfileResponse myLeagueRankWithProfile = userLeagueQueryService.getMyLeagueRankWithProfile(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(myLeagueRankWithProfile);
+        return ResponseEntity.status(OK).body(myLeagueRankWithProfile);
     }
 
     @GetMapping("/leagues/{leagueId}/page/{pageNum}")
     public ResponseEntity<SliceResponse<LeagueRankRowDto>> getLeagueRanking(
             @PathVariable("leagueId") Long leagueId,
             @PathVariable("pageNum") int pageNum
-    ){
+    ) {
         SliceResponse<LeagueRankRowDto> sliceResponse = userLeagueQueryService.findLeagueRanking(leagueId, pageNum);
-        return ResponseEntity.status(HttpStatus.OK).body(sliceResponse);
+        return ResponseEntity.status(OK).body(sliceResponse);
     }
 
     @GetMapping("/user-leagues/page/{pageNum}")
     public ResponseEntity<SliceResponse<LeagueRankRowDto>> getLeagueRankingByUser(
             @PathVariable("pageNum") int pageNum,
             @AuthenticationPrincipal LoginUser loginUser
-    ){
+    ) {
         Long userId = loginUser.getId();
         SliceResponse<LeagueRankRowDto> sliceResponse = userLeagueQueryService.findLeagueRankingByUser(userId, pageNum);
-        return ResponseEntity.status(HttpStatus.OK).body(sliceResponse);
+        return ResponseEntity.status(OK).body(sliceResponse);
     }
 }

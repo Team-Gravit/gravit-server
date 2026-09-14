@@ -15,7 +15,6 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.dto.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,12 +40,12 @@ public class AdminStagingController implements AdminStagingControllerDocs {
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "status", required = false) LabelStatus status
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminStagingService.getLabels(page, status));
+        return ResponseEntity.status(OK).body(adminStagingService.getLabels(page, status));
     }
 
     @GetMapping("/labels/{label}")
     public ResponseEntity<StagingLabelDetailResponse> getLabelDetail(@PathVariable("label") String label) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminStagingService.getLabelDetail(label));
+        return ResponseEntity.status(OK).body(adminStagingService.getLabelDetail(label));
     }
 
     @PatchMapping("/lessons/{lessonId}")
@@ -53,7 +54,7 @@ public class AdminStagingController implements AdminStagingControllerDocs {
             @Valid @RequestBody StagingLessonUpdateRequest request
     ) {
         adminStagingService.updateLesson(lessonId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
     @PatchMapping("/problems/{problemId}")
@@ -62,7 +63,7 @@ public class AdminStagingController implements AdminStagingControllerDocs {
             @Valid @RequestBody StagingProblemUpdateRequest request
     ) {
         adminStagingService.updateProblem(problemId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
     @PatchMapping("/options/{optionId}")
@@ -71,7 +72,7 @@ public class AdminStagingController implements AdminStagingControllerDocs {
             @Valid @RequestBody StagingOptionUpdateRequest request
     ) {
         adminStagingService.updateOption(optionId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
     @PatchMapping("/answers/{answerId}")
@@ -80,7 +81,7 @@ public class AdminStagingController implements AdminStagingControllerDocs {
             @Valid @RequestBody StagingAnswerUpdateRequest request
     ) {
         adminStagingService.updateAnswer(answerId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
     @PatchMapping("/labels/{label}/status")
@@ -90,6 +91,6 @@ public class AdminStagingController implements AdminStagingControllerDocs {
             @Valid @RequestBody LabelStatusUpdateRequest request
     ) {
         adminStagingPromoteService.promote(loginUser.getId(), label, request.status());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 }

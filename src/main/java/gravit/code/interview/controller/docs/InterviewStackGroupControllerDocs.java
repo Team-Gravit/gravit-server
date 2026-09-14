@@ -1,6 +1,7 @@
 package gravit.code.interview.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.interview.domain.InterviewStackGroup;
 import gravit.code.interview.dto.response.InterviewStackGroupResponse;
 import gravit.code.interview.dto.response.InterviewStackResponse;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,12 +51,13 @@ public interface InterviewStackGroupControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "🚨 서버 내부 오류",
+                    description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "서버 오류",
-                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"서버 내부 오류가 발생했습니다.\"}"
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )
@@ -90,12 +93,13 @@ public interface InterviewStackGroupControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "🚨 서버 내부 오류",
+                    description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "서버 오류",
-                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"서버 내부 오류가 발생했습니다.\"}"
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )

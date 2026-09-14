@@ -1,10 +1,8 @@
 package gravit.code.social.listener;
 
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
-import gravit.code.global.event.LessonCompletedEvent;
-import gravit.code.global.event.LevelUpFeedEvent;
-import gravit.code.global.event.TierPromotionFeedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
+import gravit.code.lesson.dto.event.LessonCompletedEvent;
 import gravit.code.mission.service.MissionService;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.infrastructure.SocialFeedLevelUpRetryTarget;
@@ -12,6 +10,8 @@ import gravit.code.social.infrastructure.SocialFeedStreakRetryTarget;
 import gravit.code.social.infrastructure.SocialFeedTierPromotionRetryTarget;
 import gravit.code.social.repository.SocialFeedRepository;
 import gravit.code.support.TCSpringBootTest;
+import gravit.code.user.dto.event.LevelUpFeedEvent;
+import gravit.code.userLeague.dto.event.TierPromotionFeedEvent;
 import gravit.code.userLeague.service.UserLeaguePointService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -1,8 +1,8 @@
 package gravit.code.userLeague.listener;
 
-import gravit.code.global.event.LeagueRankChangedEvent;
 import gravit.code.support.TCSpringBootTest;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.event.LeagueRankChangedEvent;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -70,9 +70,9 @@ class LeagueRankSyncListenerIntegrationTest {
             publishInCommittedTransaction(event);
 
             // then
-            List<LeagueRankEntry> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
+            List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
             assertThat(entries).singleElement()
-                    .extracting(LeagueRankEntry::leaguePoint)
+                    .extracting(LeagueRankEntryDto::leaguePoint)
                     .isEqualTo(300);
         }
 

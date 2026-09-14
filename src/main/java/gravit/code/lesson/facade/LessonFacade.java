@@ -4,11 +4,11 @@ import gravit.code.bookmark.service.BookmarkService;
 import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.global.annotation.Facade;
-import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningCommandService;
+import gravit.code.lesson.dto.event.LessonCompletedEvent;
 import gravit.code.lesson.dto.internal.LessonSubmissionSavedDto;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
@@ -45,15 +45,12 @@ public class LessonFacade {
     private final LessonQueryService lessonQueryService;
     private final LessonSubmissionCommandService lessonSubmissionCommandService;
     private final LessonSubmissionQueryService lessonSubmissionQueryService;
-
     private final ChapterQueryService chapterQueryService;
     private final UnitQueryService unitQueryService;
     private final ProblemSubmissionCommandService problemSubmissionCommandService;
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
     private final BookmarkService bookmarkService;
-
     private final LearningCommandService learningCommandService;
-
     private final UserService userService;
     private final UserLeagueService userLeagueService;
 
@@ -87,7 +84,7 @@ public class LessonFacade {
     public LessonSubmissionSaveResponse saveLessonSubmission(
             long userId,
             LearningSubmissionSaveRequest request
-    ){
+    ) {
         LessonSubmissionSaveRequest lessonSubmissionSaveRequest = request.lessonSubmissionSaveRequest();
         List<ProblemSubmissionSaveRequest> problemSubmissionSaveRequests = request.problemSubmissionSaveRequests();
 
@@ -139,7 +136,7 @@ public class LessonFacade {
     public LessonResultResponse getLessonResult(
             long userId,
             long lessonSubmissionId
-    ){
+    ) {
         long lessonId = lessonSubmissionQueryService.getSubmittedLessonId(userId, lessonSubmissionId);
 
         String leagueName = userLeagueService.getUserLeagueName(userId);

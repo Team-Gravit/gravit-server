@@ -1,12 +1,12 @@
 package gravit.code.interview.service;
 
-import gravit.code.global.event.InterviewCompletedEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewAnswerStatus;
 import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionStatus;
+import gravit.code.interview.dto.event.InterviewCompletedEvent;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
 import gravit.code.interview.repository.InterviewAnswerRepository;

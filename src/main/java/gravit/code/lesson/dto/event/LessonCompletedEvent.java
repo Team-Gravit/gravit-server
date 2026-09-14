@@ -1,0 +1,20 @@
+package gravit.code.lesson.dto.event;
+
+public record LessonCompletedEvent(
+        long userId,
+
+        long lessonId,
+
+        long chapterId,
+
+        int points,
+
+        int accuracy,
+
+        int learningTime,
+
+        int beforeConsecutiveSolved,
+
+        int afterConsecutiveSolved
+) {
+}

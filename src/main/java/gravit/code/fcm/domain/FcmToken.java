@@ -23,16 +23,15 @@ public class FcmToken extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "user_id", nullable = false)
     private long userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "device_id", nullable = false, unique = true)
     private String deviceId;
 
-    @Column(nullable = false)
+    @Column(name = "token", nullable = false)
     private String token;
 
-    // 발송 대상 플랫폼. 기존(백필 안 된) 토큰은 NULL이며, 재로그인 시 재발급되어 채워진다
     @Enumerated(EnumType.STRING)
     @Column(name = "platform")
     private Platform platform;

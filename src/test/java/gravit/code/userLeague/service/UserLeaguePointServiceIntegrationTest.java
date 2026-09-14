@@ -9,7 +9,7 @@ import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.userLeague.domain.UserLeague;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
@@ -236,11 +236,11 @@ class UserLeaguePointServiceIntegrationTest {
             userLeaguePointService.addLeaguePointsForLesson(user.getId(), 40, 100);
 
             // then
-            List<LeagueRankEntry> entries =
+            List<LeagueRankEntryDto> entries =
                     leagueRankingStore.findPage(season.getId(), 브론즈3.getId(), 0, 10);
 
             assertThat(entries).singleElement()
-                    .extracting(LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                    .extracting(LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
                     .containsExactly(user.getId(), 40);
         }
 

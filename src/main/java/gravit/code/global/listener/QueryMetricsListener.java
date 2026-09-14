@@ -23,12 +23,18 @@ public class QueryMetricsListener implements QueryExecutionListener {
 
 
     @Override
-    public void beforeQuery(ExecutionInfo executionInfo, List<QueryInfo> list) {
+    public void beforeQuery(
+            ExecutionInfo executionInfo,
+            List<QueryInfo> list
+    ) {
 
     }
 
     @Override
-    public void afterQuery(ExecutionInfo exec, List<QueryInfo> queries) {
+    public void afterQuery(
+            ExecutionInfo exec,
+            List<QueryInfo> queries
+    ) {
         long elapsedMs = exec.getElapsedTime();
         String sql = queries.isEmpty() ? "" : queries.get(0).getQuery();
         String type = guessType(sql);

@@ -1,10 +1,11 @@
 package gravit.code.admin.service;
 
+import gravit.code.admin.dto.request.ObjectiveOptionUpdateRequest;
 import gravit.code.admin.dto.request.ObjectiveProblemUpdateRequest;
-import gravit.code.admin.dto.request.ObjectiveProblemUpdateRequest.ObjectiveOptionUpdateRequest;
+import gravit.code.admin.dto.request.SubjectiveAnswerUpdateRequest;
 import gravit.code.admin.dto.request.SubjectiveProblemUpdateRequest;
-import gravit.code.admin.dto.request.SubjectiveProblemUpdateRequest.SubjectiveAnswerUpdateRequest;
 import gravit.code.admin.dto.response.ProblemDetailResponse;
+import gravit.code.admin.dto.response.ProblemOptionResponse;
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;
 import gravit.code.global.exception.domain.CustomErrorCode;
@@ -108,7 +109,7 @@ class AdminProblemServiceIntegrationTest {
             softly.assertThat(detail.instruction()).isEqualTo("새지시문");
             softly.assertThat(detail.content()).isEqualTo("새본문");
             softly.assertThat(detail.options().get(0).content()).startsWith("수정옵션");
-            softly.assertThat(detail.options().stream().filter(ProblemDetailResponse.ProblemOptionResponse::isAnswer).count()).isEqualTo(1);
+            softly.assertThat(detail.options().stream().filter(ProblemOptionResponse::isAnswer).count()).isEqualTo(1);
         });
     }
 

@@ -1,7 +1,6 @@
 package gravit.code.interview.domain;
 
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ALREADY_SUBMITTED;
 
 @Getter
 @Entity
@@ -115,7 +116,7 @@ public class InterviewAnswer extends BaseEntity {
 
     private void validatePending() {
         if (!isPending()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_ANSWER_ALREADY_SUBMITTED);
+            throw new RestApiException(INTERVIEW_ANSWER_ALREADY_SUBMITTED);
         }
     }
 }

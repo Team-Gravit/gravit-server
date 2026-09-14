@@ -1,5 +1,7 @@
 package gravit.code.test.season;
 
+import gravit.code.season.infrastructure.RedisSeasonClosedCache;
+import gravit.code.season.infrastructure.RedisSeasonPopupSeenStore;
 import gravit.code.test.season.docs.TestSeasonCleanControllerDocs;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import jakarta.persistence.EntityManager;
@@ -7,7 +9,6 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @Profile("!prod")
 @RestController
@@ -24,9 +27,9 @@ public class TestSeasonCleanController implements TestSeasonCleanControllerDocs 
     @PersistenceContext
     private EntityManager em;
 
-    private final RedisTemplate<String, String> redisTemplate;
-
     private final UserLeagueHistoryRepository userLeagueHistoryRepository;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     @PostMapping("/season/clean")
     @Transactional
@@ -52,15 +55,13 @@ public class TestSeasonCleanController implements TestSeasonCleanControllerDocs 
 
         userLeagueHistoryRepository.deleteAll();
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
     private void cleanSeasonRelatedCache() {
-        // 1. lastClosedSeasonId 삭제
-        redisTemplate.delete("season:lastClosedSeasonId");
+        redisTemplate.delete(RedisSeasonClosedCache.LAST_CLOSED_SEASON_ID_KEY);
 
-        // 2. 시즌 팝업 본 기록 전체 삭제 (패턴 매칭)
-        Set<String> keys = redisTemplate.keys("season:seen:*");
+        Set<String> keys = redisTemplate.keys(RedisSeasonPopupSeenStore.SEEN_KEY_PATTERN);
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }

@@ -17,8 +17,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LeagueRankingWarmupRunner implements ApplicationRunner {
 
-    private final SeasonRepository seasonRepository;
     private final LeagueRankingRebuildService leagueRankingRebuildService;
+
+    private final SeasonRepository seasonRepository;
 
     @Override
     public void run(ApplicationArguments args) {

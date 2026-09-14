@@ -1,7 +1,6 @@
 package gravit.code.user.domain;
 
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -21,13 +20,25 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.ALREADY_ONBOARDING;
+import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_LENGTH_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_NOT_NULL;
+import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_PATTERN_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROFILE_IMG_NUM_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_RESTORE_ONLY_POSSIBLE_DELETED_STATUS_USER;
+
 @Table(name = "users")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("deleted_at IS NULL") // 기본은 활성만
+@SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE users SET handle = NULL, deleted_at = NOW(), status = 'DELETED' WHERE id = ?")
 public class User extends BaseEntity {
+
+    private static final int PROFILE_IMG_NUMBER_MAX = 20;
+    private static final int NICKNAME_MIN_LENGTH = 2;
+    private static final int NICKNAME_MAX_LENGTH = 8;
+    private static final String NICKNAME_PATTERN = "^[가-힣a-zA-Z0-9]+$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,7 +72,7 @@ public class User extends BaseEntity {
     @Column(name = "status", nullable = false)
     private UserStatus status;
 
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -136,7 +147,7 @@ public class User extends BaseEntity {
 
     public void restoreUser(String handle){
         if(!isDeleted()){
-            throw new RestApiException(CustomErrorCode.USER_RESTORE_ONLY_POSSIBLE_DELETED_STATUS_USER);
+            throw new RestApiException(USER_RESTORE_ONLY_POSSIBLE_DELETED_STATUS_USER);
         }
         this.deletedAt = null;
         this.status = UserStatus.ACTIVE;
@@ -166,27 +177,27 @@ public class User extends BaseEntity {
 
     private void validateIsOnboarded(){
         if(this.isOnboarded()){
-            throw new RestApiException(CustomErrorCode.ALREADY_ONBOARDING);
+            throw new RestApiException(ALREADY_ONBOARDING);
         }
     }
 
     private void validateProfileImgNum(int profileImgNumber) {
-        if(profileImgNumber < 1 || profileImgNumber > 20){
-            throw new RestApiException(CustomErrorCode.PROFILE_IMG_NUM_INVALID);
+        if(profileImgNumber < 1 || profileImgNumber > PROFILE_IMG_NUMBER_MAX){
+            throw new RestApiException(PROFILE_IMG_NUM_INVALID);
         }
     }
 
     private void validateNickname(String nickname) {
         if(nickname == null || nickname.isBlank()){
-            throw new RestApiException(CustomErrorCode.NICKNAME_NOT_NULL);
+            throw new RestApiException(NICKNAME_NOT_NULL);
         }
 
-        if (nickname.length() < 2 || nickname.length() > 8) {
-            throw new RestApiException(CustomErrorCode.NICKNAME_LENGTH_INVALID);
+        if (nickname.length() < NICKNAME_MIN_LENGTH || nickname.length() > NICKNAME_MAX_LENGTH) {
+            throw new RestApiException(NICKNAME_LENGTH_INVALID);
         }
 
-        if (!nickname.matches("^[가-힣a-zA-Z0-9]+$")) {
-            throw new RestApiException(CustomErrorCode.NICKNAME_PATTERN_INVALID);
+        if (!nickname.matches(NICKNAME_PATTERN)) {
+            throw new RestApiException(NICKNAME_PATTERN_INVALID);
         }
     }
 }

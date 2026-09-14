@@ -6,7 +6,6 @@ import gravit.code.auth.domain.Subject;
 import gravit.code.auth.token.JwtProvider;
 import gravit.code.auth.token.TokenStorage;
 import gravit.code.auth.token.config.TokenProperties;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
@@ -18,15 +17,19 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Objects;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class AuthTokenProvider {
 
     private static final String ROLE_CLAIM_KEY = "role";
 
+    private final UserRepository userRepository;
+
     private final JwtProvider jwtProvider;
     private final TokenStorage tokenStorage;
-    private final UserRepository userRepository;
+
     private final TokenProperties tokenProperties;
 
     public AccessToken generateAccessToken(User user){
@@ -68,7 +71,7 @@ public class AuthTokenProvider {
         Subject subject = jwtProvider.parseSubject(token);
         long siteUserId = Long.parseLong(subject.value());
         return userRepository.findById(siteUserId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
     }
 
     private Subject toSubject(User user) {

@@ -7,7 +7,6 @@ import gravit.code.interview.dto.response.InterviewStackGroupResponse;
 import gravit.code.interview.dto.response.InterviewStackResponse;
 import gravit.code.interview.service.InterviewStackQueryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class InterviewStackGroupController implements InterviewStackGroupControl
     ) {
         List<InterviewStackGroupResponse> stackGroups = interviewStackQueryService.getStackGroups();
 
-        return ResponseEntity.status(HttpStatus.OK).body(stackGroups);
+        return ResponseEntity.status(OK).body(stackGroups);
     }
 
     @GetMapping("/{stackGroup}/stacks")
@@ -40,6 +41,6 @@ public class InterviewStackGroupController implements InterviewStackGroupControl
     ) {
         List<InterviewStackResponse> stacks = interviewStackQueryService.getStacks(stackGroup);
 
-        return ResponseEntity.status(HttpStatus.OK).body(stacks);
+        return ResponseEntity.status(OK).body(stacks);
     }
 }

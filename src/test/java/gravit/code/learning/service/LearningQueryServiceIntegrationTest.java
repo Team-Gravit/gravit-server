@@ -1,7 +1,7 @@
 package gravit.code.learning.service;
 
 import gravit.code.learning.domain.Learning;
-import gravit.code.learning.dto.internal.ConsecutiveAtRiskUser;
+import gravit.code.learning.dto.internal.ConsecutiveAtRiskUserDto;
 import gravit.code.learning.repository.LearningRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.Role;
@@ -47,7 +47,7 @@ class LearningQueryServiceIntegrationTest {
             createUserAndLearning(4, INACTIVE, 3, false);              // 미접속 7일↑ → 제외
 
             // when
-            List<ConsecutiveAtRiskUser> result = learningQueryService.getConsecutiveAtRiskUsers();
+            List<ConsecutiveAtRiskUserDto> result = learningQueryService.getConsecutiveAtRiskUsers();
 
             // then
             assertThat(result).hasSize(1);
@@ -61,7 +61,7 @@ class LearningQueryServiceIntegrationTest {
             createUserAndLearning(1, ACTIVE, 0, false);
 
             // when
-            List<ConsecutiveAtRiskUser> result = learningQueryService.getConsecutiveAtRiskUsers();
+            List<ConsecutiveAtRiskUserDto> result = learningQueryService.getConsecutiveAtRiskUsers();
 
             // then
             assertThat(result).isEmpty();

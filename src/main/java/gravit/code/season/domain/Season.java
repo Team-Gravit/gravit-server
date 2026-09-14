@@ -1,6 +1,6 @@
 package gravit.code.season.domain;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INVALID_SEASON_STATUS_TRANSITION;
+
 @Getter
 @Entity
 @Table(name = "season",
@@ -30,7 +32,6 @@ public class Season {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 2026-S1 (4개월 단위: S1=1~4월, S2=5~8월, S3=9~12월)
     @Column(name = "season_key", nullable = false, length = 16)
     private String seasonKey;
 
@@ -58,7 +59,7 @@ public class Season {
         this.startsAt = startsAt;
         this.endsAt = endsAt;
         this.status = status;
-        this.tz = "Asia/Seoul";
+        this.tz = TimeZoneConst.KST.getId();
     }
 
     public static Season prep(
@@ -87,19 +88,16 @@ public class Season {
                 .build();
     }
 
-    /** ACTIVE -> FINALIZING */
     public void finalizing() {
         validateStatus(SeasonStatus.ACTIVE);
         this.status = SeasonStatus.FINALIZING;
     }
 
-    /** PREP -> ACTIVE */
     public void activate() {
         validateStatus(SeasonStatus.PREP);
         this.status = SeasonStatus.ACTIVE;
     }
 
-    /** FINALIZING -> CLOSED */
     public void close() {
         validateStatus(SeasonStatus.FINALIZING);
         this.status = SeasonStatus.CLOSED;
@@ -107,7 +105,7 @@ public class Season {
 
     private void validateStatus(SeasonStatus expected) {
         if (this.status != expected) {
-            throw new RestApiException(CustomErrorCode.INVALID_SEASON_STATUS_TRANSITION);
+            throw new RestApiException(INVALID_SEASON_STATUS_TRANSITION);
         }
     }
 

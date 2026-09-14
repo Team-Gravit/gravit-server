@@ -2,7 +2,7 @@ package gravit.code.userLeague.infrastructure;
 
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.support.TCSpringBootTest;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -153,11 +153,11 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 3L, 200);
 
             // when
-            List<LeagueRankEntry> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
+            List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
 
             // then
             assertThat(entries)
-                    .extracting(LeagueRankEntry::rank, LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                    .extracting(LeagueRankEntryDto::rank, LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
                     .containsExactly(
                             tuple(1, 3L, 200),
                             tuple(2, 1L, 100),
@@ -173,11 +173,11 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 3L, 200);
 
             // when
-            List<LeagueRankEntry> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 1, 2);
+            List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 1, 2);
 
             // then
             assertThat(entries)
-                    .extracting(LeagueRankEntry::rank, LeagueRankEntry::userId)
+                    .extracting(LeagueRankEntryDto::rank, LeagueRankEntryDto::userId)
                     .containsExactly(
                             tuple(2, 1L),
                             tuple(3, 2L)
@@ -190,11 +190,11 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 9999);
 
             // when
-            List<LeagueRankEntry> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
+            List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
 
             // then
             assertThat(entries).singleElement()
-                    .extracting(LeagueRankEntry::leaguePoint)
+                    .extracting(LeagueRankEntryDto::leaguePoint)
                     .isEqualTo(9999);
         }
 
@@ -204,7 +204,7 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
 
             // when
-            List<LeagueRankEntry> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 10, 10);
+            List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 10, 10);
 
             // then
             assertThat(entries).isEmpty();
@@ -213,7 +213,7 @@ class RedisLeagueRankingStoreIntegrationTest {
         @Test
         void 랭킹이_없는_리그는_빈_목록이다() {
             // when
-            List<LeagueRankEntry> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
+            List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
 
             // then
             assertThat(entries).isEmpty();
@@ -249,9 +249,9 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.move(SEASON_ID, LEAGUE_ID, LEAGUE_ID, 1L, 300);
 
             // then
-            List<LeagueRankEntry> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
+            List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
             assertThat(entries)
-                    .extracting(LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                    .extracting(LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
                     .containsExactly(
                             tuple(1L, 300),
                             tuple(2L, 200)
@@ -291,8 +291,8 @@ class RedisLeagueRankingStoreIntegrationTest {
 
             // when
             leagueRankingStore.replaceAll(SEASON_ID, List.of(
-                    new LeagueRankEntry(0, 2L, 500, LEAGUE_ID),
-                    new LeagueRankEntry(0, 3L, 700, OTHER_LEAGUE_ID)
+                    new LeagueRankEntryDto(0, 2L, 500, LEAGUE_ID),
+                    new LeagueRankEntryDto(0, 3L, 700, OTHER_LEAGUE_ID)
             ));
 
             // then
@@ -309,7 +309,7 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.put(OTHER_SEASON_ID, LEAGUE_ID, 1L, 100);
 
             // when
-            leagueRankingStore.replaceAll(SEASON_ID, List.of(new LeagueRankEntry(0, 2L, 500, LEAGUE_ID)));
+            leagueRankingStore.replaceAll(SEASON_ID, List.of(new LeagueRankEntryDto(0, 2L, 500, LEAGUE_ID)));
 
             // then
             assertThat(leagueRankingStore.findRank(OTHER_SEASON_ID, LEAGUE_ID, 1L)).contains(1);
@@ -320,8 +320,8 @@ class RedisLeagueRankingStoreIntegrationTest {
             // given - 배치 경계(1,000)를 두 번 넘겨 배치가 3회 이상 돌게 한다.
             //         한 번에 보내면 커맨드 타임아웃 100ms를 넘겨 일부만 들어간다.
             int total = BATCH_SIZE * 2 + 500;
-            List<LeagueRankEntry> entries = IntStream.rangeClosed(1, total)
-                    .mapToObj(seq -> new LeagueRankEntry(0, seq, total - seq + 1, LEAGUE_ID))
+            List<LeagueRankEntryDto> entries = IntStream.rangeClosed(1, total)
+                    .mapToObj(seq -> new LeagueRankEntryDto(0, seq, total - seq + 1, LEAGUE_ID))
                     .toList();
 
             // when
@@ -341,11 +341,11 @@ class RedisLeagueRankingStoreIntegrationTest {
         void 배치_크기를_넘어도_리그별로_나뉘어_저장된다() {
             // given - 두 리그에 배치 경계를 넘는 인원을 나눠 담는다
             int perLeague = BATCH_SIZE + 200;
-            List<LeagueRankEntry> entries = new ArrayList<>();
+            List<LeagueRankEntryDto> entries = new ArrayList<>();
 
             for (int seq = 1; seq <= perLeague; seq++) {
-                entries.add(new LeagueRankEntry(0, seq, perLeague - seq + 1, LEAGUE_ID));
-                entries.add(new LeagueRankEntry(0, perLeague + seq, perLeague - seq + 1, OTHER_LEAGUE_ID));
+                entries.add(new LeagueRankEntryDto(0, seq, perLeague - seq + 1, LEAGUE_ID));
+                entries.add(new LeagueRankEntryDto(0, perLeague + seq, perLeague - seq + 1, OTHER_LEAGUE_ID));
             }
 
             // when
@@ -372,7 +372,7 @@ class RedisLeagueRankingStoreIntegrationTest {
 
             // when
             leagueRankingStore.replaceAll(SEASON_ID, IntStream.rangeClosed(1, total)
-                    .mapToObj(seq -> new LeagueRankEntry(0, seq, total - seq + 1, LEAGUE_ID))
+                    .mapToObj(seq -> new LeagueRankEntryDto(0, seq, total - seq + 1, LEAGUE_ID))
                     .toList());
 
             // then
@@ -384,7 +384,7 @@ class RedisLeagueRankingStoreIntegrationTest {
             // given - deleteSeason 도 크기에 비례하는 명령이라 같은 위험을 안는다
             int total = BATCH_SIZE * 2;
             leagueRankingStore.replaceAll(SEASON_ID, IntStream.rangeClosed(1, total)
-                    .mapToObj(seq -> new LeagueRankEntry(0, seq, total - seq + 1, LEAGUE_ID))
+                    .mapToObj(seq -> new LeagueRankEntryDto(0, seq, total - seq + 1, LEAGUE_ID))
                     .toList());
 
             // when

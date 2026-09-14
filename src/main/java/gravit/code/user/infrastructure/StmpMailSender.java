@@ -1,6 +1,5 @@
 package gravit.code.user.infrastructure;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.service.port.MailSender;
 import jakarta.mail.MessagingException;
@@ -11,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.MAIL_SEND_ERROR;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
@@ -38,7 +38,7 @@ public class StmpMailSender implements MailSender {
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RestApiException(CustomErrorCode.MAIL_SEND_ERROR);
+            throw new RestApiException(MAIL_SEND_ERROR);
         }
     }
 }

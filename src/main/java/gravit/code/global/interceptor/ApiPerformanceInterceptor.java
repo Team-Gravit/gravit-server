@@ -38,8 +38,8 @@ public class ApiPerformanceInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler,
-            Exception ex)
-    {
+            Exception ex
+    ) {
         Long startTime = (Long) request.getAttribute(START_TIME_ATTRIBUTE);
         if(startTime == null) {
             return;

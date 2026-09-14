@@ -1,6 +1,5 @@
 package gravit.code.user.service;
 
-import gravit.code.global.event.LevelUpFeedEvent;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
@@ -10,7 +9,9 @@ import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserLevel;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.user.dto.event.LevelUpFeedEvent;
+import gravit.code.user.dto.internal.UserSummaryDto;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import gravit.code.mission.fixture.MissionFixture;
@@ -19,7 +20,6 @@ import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserResponse;
-import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -114,7 +114,7 @@ class UserServiceIntegrationTest {
             OnboardingRequest request = new OnboardingRequest("새닉네임", 3);
 
             // when
-            UserResponse result = userService.onboarding(user.getId(), request);
+            UserResponse result = userService.onboard(user.getId(), request);
 
             // then
             assertSoftly(softly -> {
@@ -131,7 +131,7 @@ class UserServiceIntegrationTest {
             OnboardingRequest request = new OnboardingRequest("닉네임", 1);
 
             // when & then
-            assertThatThrownBy(() -> userService.onboarding(nonExistentUserId, request))
+            assertThatThrownBy(() -> userService.onboard(nonExistentUserId, request))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_NOT_FOUND);
@@ -143,10 +143,10 @@ class UserServiceIntegrationTest {
             leagueFixture.브론즈_3(); // OnboardingCompletedEvent 리스너가 리그 초기화 시 필요
             missionRepository.save(MissionFixture.미션정의_레슨_1개()); // 같은 리스너가 미션 배정 시 활성 정의를 요구
             User user = userFixture.일반_유저(1);
-            userService.onboarding(user.getId(), new OnboardingRequest("닉네임", 1));
+            userService.onboard(user.getId(), new OnboardingRequest("닉네임", 1));
 
             // when & then
-            assertThatThrownBy(() -> userService.onboarding(user.getId(), new OnboardingRequest("닉네임", 1)))
+            assertThatThrownBy(() -> userService.onboard(user.getId(), new OnboardingRequest("닉네임", 1)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(ALREADY_ONBOARDING);
@@ -159,7 +159,7 @@ class UserServiceIntegrationTest {
             OnboardingRequest request = new OnboardingRequest("이름이너무길다길다", 1); // 9자
 
             // when & then
-            assertThatThrownBy(() -> userService.onboarding(user.getId(), request))
+            assertThatThrownBy(() -> userService.onboard(user.getId(), request))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(NICKNAME_LENGTH_INVALID);
@@ -172,7 +172,7 @@ class UserServiceIntegrationTest {
             OnboardingRequest request = new OnboardingRequest("닉네임", 21); // 최대 20
 
             // when & then
-            assertThatThrownBy(() -> userService.onboarding(user.getId(), request))
+            assertThatThrownBy(() -> userService.onboard(user.getId(), request))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(PROFILE_IMG_NUM_INVALID);
@@ -303,11 +303,11 @@ class UserServiceIntegrationTest {
             userService.restoreUser(providerId);
 
             // then
-            List<LeagueRankEntry> entries =
+            List<LeagueRankEntryDto> entries =
                     leagueRankingStore.findPage(season.getId(), 브론즈3.getId(), 0, 10);
 
             assertThat(entries).singleElement()
-                    .extracting(LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                    .extracting(LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
                     .containsExactly(user.getId(), 70);
         }
     }
@@ -491,7 +491,7 @@ class UserServiceIntegrationTest {
             User user2 = userFixture.일반_유저(2);
 
             // when
-            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(Set.of(user1.getId(), user2.getId()));
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(Set.of(user1.getId(), user2.getId()));
 
             // then
             assertSoftly(softly -> {
@@ -508,7 +508,7 @@ class UserServiceIntegrationTest {
             Set<Long> emptyIds = Collections.emptySet();
 
             // when
-            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(emptyIds);
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(emptyIds);
 
             // then
             assertThat(result).isEmpty();
@@ -522,7 +522,7 @@ class UserServiceIntegrationTest {
             userRepository.deleteById(deleted.getId()); // soft-delete
 
             // when
-            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(Set.of(active.getId(), deleted.getId()));
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(Set.of(active.getId(), deleted.getId()));
 
             // then
             assertSoftly(softly -> {
@@ -539,7 +539,7 @@ class UserServiceIntegrationTest {
             long nonExistentUserId = 999L;
 
             // when
-            Map<Long, UserSummaryResponse> result = userService.getUserSummaries(Set.of(user.getId(), nonExistentUserId));
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(Set.of(user.getId(), nonExistentUserId));
 
             // then
             assertSoftly(softly -> {

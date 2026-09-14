@@ -11,10 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-/**
- * admin users 조회/변경. User 의 @SQLRestriction(deleted_at IS NULL) 을 우회하기 위해 전부 native query.
- * 조회는 AdminUser projection 으로, 변경은 by-id native UPDATE 로 처리(DELETED 포함).
- */
 public interface AdminUserRepository extends JpaRepository<User, Long> {
 
     @Query(value = """
@@ -28,8 +24,7 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
               AND (:status IS NULL OR u.status = :status)
               AND (:role IS NULL OR u.role = :role)
             ORDER BY u.id DESC
-            """,
-            countQuery = """
+    """, countQuery = """
             SELECT COUNT(*)
             FROM users u
             WHERE (:search IS NULL OR u.email ILIKE CONCAT('%', :search, '%')
@@ -37,8 +32,7 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
                                   OR u.handle ILIKE CONCAT('%', :search, '%'))
               AND (:status IS NULL OR u.status = :status)
               AND (:role IS NULL OR u.role = :role)
-            """,
-            nativeQuery = true)
+    """, nativeQuery = true)
     Page<AdminUser> searchUsers(
             @Param("search") String search,
             @Param("status") String status,
@@ -52,14 +46,22 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
                    u.level AS level, u.created_at AS createdAt
             FROM users u
             WHERE u.id = :userId
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     Optional<AdminUser> findRowById(@Param("userId") long userId);
 
-    @Query(value = "SELECT COUNT(*) FROM users WHERE status <> 'DELETED'", nativeQuery = true)
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM users
+            WHERE status <> 'DELETED'
+    """, nativeQuery = true)
     long countActiveUsers();
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "UPDATE users SET role = :role WHERE id = :id", nativeQuery = true)
+    @Query(value = """
+            UPDATE users
+            SET role = :role
+            WHERE id = :id
+    """, nativeQuery = true)
     int updateRoleById(
             @Param("id") long id,
             @Param("role") String role
@@ -72,13 +74,12 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
                 deleted_at = CASE WHEN :status = 'DELETED' THEN NOW() ELSE NULL END,
                 handle = CASE WHEN :status = 'DELETED' THEN NULL ELSE handle END
             WHERE id = :id
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     int updateStatusById(
             @Param("id") long id,
             @Param("status") String status
     );
 
-    // DELETED -> ACTIVE/SUSPENDED 복구: deleted_at 해제 + handle 재발급(soft delete 시 NULL 처리된 handle 복원)
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
             UPDATE users
@@ -86,7 +87,7 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
                 deleted_at = NULL,
                 handle = :handle
             WHERE id = :id
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     int restoreStatusById(
             @Param("id") long id,
             @Param("status") String status,

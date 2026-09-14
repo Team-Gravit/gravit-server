@@ -14,18 +14,18 @@ import java.util.Optional;
 public interface LessonSubmissionRepository extends JpaRepository<LessonSubmission, Long> {
 
     @Query("""
-        SELECT COUNT(DISTINCT ls.lessonId)
-        FROM LessonSubmission ls
-        WHERE ls.userId = :userId
+            SELECT COUNT(DISTINCT ls.lessonId)
+            FROM LessonSubmission ls
+            WHERE ls.userId = :userId
     """)
     long countDistinctLessonByUserId(@Param("userId") long userId);
 
     @Query("""
-        SELECT COUNT(DISTINCT l.id)
-        FROM LessonSubmission ls
-        JOIN Lesson l ON l.id = ls.lessonId
-        JOIN Unit u ON u.id = l.unitId
-        WHERE u.chapterId = :chapterId AND ls.userId = :userId
+            SELECT COUNT(DISTINCT l.id)
+            FROM LessonSubmission ls
+            JOIN Lesson l ON l.id = ls.lessonId
+            JOIN Unit u ON u.id = l.unitId
+            WHERE u.chapterId = :chapterId AND ls.userId = :userId
     """)
     int countSolvedLessonByChapterIdAndUserId(
             @Param("chapterId") long chapterId,
@@ -33,9 +33,9 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     );
 
     @Query("""
-        SELECT COUNT(ls.id)
-        FROM LessonSubmission ls
-        WHERE ls.lessonId = :lessonId AND ls.userId = :userId
+            SELECT COUNT(ls.id)
+            FROM LessonSubmission ls
+            WHERE ls.lessonId = :lessonId AND ls.userId = :userId
     """)
     int countLessonSubmissionByLessonIdAndUserId(
             @Param("lessonId") long lessonId,
@@ -48,9 +48,9 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     );
 
     @Query("""
-        SELECT ls.lessonId
-        FROM LessonSubmission ls
-        WHERE ls.id = :lessonSubmissionId AND ls.userId = :userId
+            SELECT ls.lessonId
+            FROM LessonSubmission ls
+            WHERE ls.id = :lessonSubmissionId AND ls.userId = :userId
     """)
     Optional<Long> findLessonIdByIdAndUserId(
             @Param("lessonSubmissionId") long lessonSubmissionId,
@@ -67,46 +67,46 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
                 GROUP BY u.id
             ) ranked
             WHERE user_id = :userId
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     Optional<Integer> findLearningRateTopPercent(@Param("userId") long userId);
 
     @Query("""
-        SELECT COALESCE(SUM(ls.learningTime), 0)
-        FROM LessonSubmission ls
-        WHERE ls.userId = :userId
+            SELECT COALESCE(SUM(ls.learningTime), 0)
+            FROM LessonSubmission ls
+            WHERE ls.userId = :userId
     """)
     int getTotalLearningTime(@Param("userId") long userId);
 
     @Query("""
-        SELECT COALESCE(CEIL(AVG(ls.accuracy)), 0)
-        FROM LessonSubmission ls
-        WHERE ls.userId = :userId
+            SELECT COALESCE(CEIL(AVG(ls.accuracy)), 0)
+            FROM LessonSubmission ls
+            WHERE ls.userId = :userId
     """)
     int getAverageAccuracy(@Param("userId") long userId);
 
     @Query(value = """
-        SELECT CAST(EXTRACT(HOUR FROM created_at) AS INTEGER) AS hour
-        FROM lesson_submission
-        WHERE user_id = :userId AND created_at IS NOT NULL
-        GROUP BY hour
-        ORDER BY COUNT(*) DESC, hour ASC
-        LIMIT 1
+            SELECT CAST(EXTRACT(HOUR FROM created_at) AS INTEGER) AS hour
+            FROM lesson_submission
+            WHERE user_id = :userId AND created_at IS NOT NULL
+            GROUP BY hour
+            ORDER BY COUNT(*) DESC, hour ASC
+            LIMIT 1
     """, nativeQuery = true)
     Optional<Integer> getPeakLearningHour(@Param("userId") long userId);
 
     @Query("""
-        SELECT new gravit.code.chapter.dto.internal.ChapterSolvedStatDto(
-            c.id, c.title, COUNT(DISTINCT l.id)
-        )
-        FROM LessonSubmission ls
-        JOIN Lesson l ON l.id = ls.lessonId
-        JOIN Unit u ON u.id = l.unitId
-        JOIN Chapter c ON c.id = u.chapterId
-        WHERE ls.userId = :userId
-          AND ls.createdAt >= :weekStart
-          AND ls.createdAt < :nextWeekStart
-        GROUP BY c.id, c.title
-        ORDER BY COUNT(DISTINCT l.id) DESC, c.id ASC
+            SELECT new gravit.code.chapter.dto.internal.ChapterSolvedStatDto(
+                c.id, c.title, COUNT(DISTINCT l.id)
+            )
+            FROM LessonSubmission ls
+            JOIN Lesson l ON l.id = ls.lessonId
+            JOIN Unit u ON u.id = l.unitId
+            JOIN Chapter c ON c.id = u.chapterId
+            WHERE ls.userId = :userId
+              AND ls.createdAt >= :weekStart
+              AND ls.createdAt < :nextWeekStart
+            GROUP BY c.id, c.title
+            ORDER BY COUNT(DISTINCT l.id) DESC, c.id ASC
     """)
     List<ChapterSolvedStatDto> findTopChaptersByUserIdInWeek(
             @Param("userId") long userId,
@@ -116,11 +116,11 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     );
 
     @Query("""
-        SELECT COUNT(DISTINCT ls.lessonId)
-        FROM LessonSubmission ls
-        WHERE ls.userId = :userId
-          AND ls.createdAt >= :weekStart
-          AND ls.createdAt < :nextWeekStart
+            SELECT COUNT(DISTINCT ls.lessonId)
+            FROM LessonSubmission ls
+            WHERE ls.userId = :userId
+              AND ls.createdAt >= :weekStart
+              AND ls.createdAt < :nextWeekStart
     """)
     long countSolvedLessonsByUserIdInWeek(
             @Param("userId") long userId,

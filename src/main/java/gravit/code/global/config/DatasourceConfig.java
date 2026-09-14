@@ -20,19 +20,18 @@ import javax.sql.DataSource;
 @Configuration
 public class DatasourceConfig {
 
-    private final QueryMetricsListener queryMetricsListener;
-
     // Pool Name
     public static final String FLYWAY_POOL_NAME = "FlywayPool";
 
     // Connection Pool Settings
-    public static final int FLYWAY_MINIMUM_IDLE = 0;             // 유휴 커넥션을 0으로 설정하면 사용하지 않을 때 커넥션을 즉시 반납
-    public static final int FLYWAY_MAXIMUM_POOL_SIZE = 2;        // 마이그레이션은 순차 실행이므로 2개로 충분
+    public static final int FLYWAY_MINIMUM_IDLE = 0;
+    public static final int FLYWAY_MAXIMUM_POOL_SIZE = 2;
     public static final long FLYWAY_CONNECTION_TIMEOUT = 10000L;
-    public static final long FLYWAY_IDLE_TIMEOUT = 60000L;       // 1분 후 유휴 커넥션 반환
-    public static final long FLYWAY_MAX_LIFETIME = 300000L;      // 최대 5분
+    public static final long FLYWAY_IDLE_TIMEOUT = 60000L;
+    public static final long FLYWAY_MAX_LIFETIME = 300000L;
 
-    // Flyway 전용 DataSource (Proxy 미적용, 커넥션 최소화)
+    private final QueryMetricsListener queryMetricsListener;
+
     @Bean
     @FlywayDataSource
     public DataSource flywayDataSource(

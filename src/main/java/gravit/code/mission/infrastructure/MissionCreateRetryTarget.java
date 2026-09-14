@@ -11,13 +11,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MissionCreateRetryTarget implements RetrySweepTarget {
 
+    public static final String QUEUE_KEY = "mission-create-retry";
+    public static final String FIELD_USER_ID = "userId";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private final MissionService missionService;
 
     @Override
     public String queueKey() {
-        return "mission-create-retry";
+        return QUEUE_KEY;
     }
 
     @Override
@@ -27,9 +30,8 @@ public class MissionCreateRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        long userId = Long.parseLong(fields.get("userId"));
+        long userId = Long.parseLong(fields.get(FIELD_USER_ID));
 
-        // assignToday가 기존 배정을 먼저 확인해 멱등하므로 중복 재시도에도 가드가 필요 없다
         missionService.createMission(userId);
     }
 }

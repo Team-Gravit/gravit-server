@@ -1,6 +1,5 @@
 package gravit.code.mission.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.mission.domain.Mission;
@@ -8,7 +7,7 @@ import gravit.code.mission.domain.MissionStatus;
 import gravit.code.mission.domain.UserMission;
 import gravit.code.mission.domain.WeightedMissionPicker;
 import gravit.code.mission.dto.event.FollowMissionEvent;
-import gravit.code.mission.dto.internal.AssignedMission;
+import gravit.code.mission.dto.internal.AssignedMissionDto;
 import gravit.code.mission.dto.response.MissionDetailResponse;
 import gravit.code.mission.repository.MissionRepository;
 import gravit.code.mission.repository.UserMissionRepository;
@@ -27,6 +26,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.MISSION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,15 +41,14 @@ public class MissionService {
     private final UserRepository userRepository;
 
     private final WeightedMissionPicker weightedMissionPicker;
+
     private final Clock clock;
 
     @Transactional
     public MissionDetailResponse getMissionDetail(long userId) {
         LocalDate today = LocalDate.now(clock);
 
-        // 오늘자 배정이 없으면 조회 시점에 채운다 (자정 배정 누락 안전망)
-        // 동시 요청이 먼저 넣었어도 ON CONFLICT가 조용히 넘기므로 재조회 한 번이면 충분하다
-        AssignedMission assigned = userMissionRepository.findAssignedMission(userId, today)
+        AssignedMissionDto assigned = userMissionRepository.findAssignedMission(userId, today)
                 .orElseGet(() -> {
                     assignToday(userId, today);
                     return findTodayMission(userId);
@@ -56,8 +57,6 @@ public class MissionService {
         return MissionDetailResponse.of(assigned.mission(), assigned.userMission());
     }
 
-    // MissionEventListener가 AFTER_COMMIT에서 호출하므로 원본 트랜잭션에 참여해 진행 갱신이
-    // 커밋되지 않는 것을 막기 위해 REQUIRES_NEW로 격리한다
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLessonMission(
             long userId,
@@ -65,7 +64,7 @@ public class MissionService {
             int learningTime,
             int accuracy
     ) {
-        AssignedMission assigned = findTodayMission(userId);
+        AssignedMissionDto assigned = findTodayMission(userId);
         UserMission userMission = assigned.userMission();
         Mission mission = assigned.mission();
 
@@ -86,7 +85,7 @@ public class MissionService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFollowMission(FollowMissionEvent followMissionDto) {
-        AssignedMission assigned = findTodayMission(followMissionDto.userId());
+        AssignedMissionDto assigned = findTodayMission(followMissionDto.userId());
         UserMission userMission = assigned.userMission();
         Mission mission = assigned.mission();
 
@@ -102,14 +101,11 @@ public class MissionService {
         completeIfAchieved(userMission, mission);
     }
 
-    // 온보딩 시 오늘자 UserMission 배정. MissionEventListener가 AFTER_COMMIT에서 호출하므로
-    // 이름을 유지하고, 원본 트랜잭션에 참여해 배정이 커밋되지 않는 것을 막기 위해 REQUIRES_NEW로 격리한다
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createMission(long userId) {
         assignToday(userId, LocalDate.now(clock));
     }
 
-    // 자정 스케줄러가 청크 단위로 호출한다. 한 번의 호출이 트랜잭션 하나다
     @Transactional
     public long assignChunk(
             LocalDate assignedDate,
@@ -145,20 +141,16 @@ public class MissionService {
         return newLastUserId;
     }
 
-    // 오늘자 UserMission을 삽입한다. 이미 있으면 아무 일도 일어나지 않는다
     private void assignToday(
             long userId,
             LocalDate assignedDate
     ) {
-        // 이미 배정이 있으면 미션 선택을 건너뛴다. 재시도로 중복 진입했을 때
-        // 활성 미션이 사라진 사이 pick()이 MISSION_NOT_FOUND를 던지는 것을 막는다
         if (userMissionRepository.existsByUserIdAndAssignedDate(userId, assignedDate))
             return;
 
         List<Mission> activeMissions = missionRepository.findAllByStatus(MissionStatus.ACTIVE);
         Mission picked = weightedMissionPicker.pick(activeMissions);
 
-        // 확인과 삽입 사이의 동시 삽입은 ON CONFLICT DO NOTHING이 흡수한다
         userMissionRepository.insertIfAbsent(
                 userId,
                 picked.getId(),
@@ -167,13 +159,11 @@ public class MissionService {
         );
     }
 
-    // 진행 갱신 경로에는 폴백을 걸지 않는다. 배정 없는 상태의 이벤트는 어차피 진행이 유실되므로 기존대로 예외를 올린다
-    private AssignedMission findTodayMission(long userId) {
+    private AssignedMissionDto findTodayMission(long userId) {
         return userMissionRepository.findAssignedMission(userId, LocalDate.now(clock))
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(MISSION_NOT_FOUND));
     }
 
-    // 목표를 채웠고, 아직 아무도 완료 처리하지 않았을 때만 XP를 지급한다
     private void completeIfAchieved(
             UserMission userMission,
             Mission mission
@@ -181,7 +171,6 @@ public class MissionService {
         if (!mission.isAchieved(userMission.getProgressCount()))
             return;
 
-        // 조건부 UPDATE가 1을 반환한 트랜잭션만 XP를 지급한다. 동시 완료 시 두 번 나가지 않는다
         int completed = userMissionRepository.completeIfNotCompleted(
                 userMission.getId(),
                 LocalDateTime.now(clock)
@@ -197,7 +186,7 @@ public class MissionService {
             int awardXp
     ) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         user.getLevel().updateXp(awardXp);
         userRepository.save(user);

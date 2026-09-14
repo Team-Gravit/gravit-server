@@ -1,8 +1,8 @@
 package gravit.code.userLeague.repository;
 
 import gravit.code.userLeague.domain.UserLeague;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
-import gravit.code.userLeague.dto.internal.LeagueRankKey;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
+import gravit.code.userLeague.dto.internal.LeagueRankKeyDto;
 import gravit.code.userLeague.dto.internal.LeagueRankProfileDto;
 import gravit.code.userLeague.dto.internal.MyLeagueProfileDto;
 import gravit.code.userLeague.repository.custom.LeagueRankQueryRepository;
@@ -17,13 +17,13 @@ import java.util.Optional;
 public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, LeagueRankQueryRepository {
 
     @Query("""
-            SELECT new gravit.code.userLeague.dto.internal.LeagueRankEntry(0, u.id, ul.lp, ul.league.id)
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankEntryDto(0, u.id, ul.lp, ul.league.id)
             FROM UserLeague ul
             JOIN ul.user u
             WHERE ul.season.id = :seasonId
               AND u.deletedAt IS NULL
-            """)
-    List<LeagueRankEntry> findRankEntriesBySeasonId(@Param("seasonId") long seasonId);
+    """)
+    List<LeagueRankEntryDto> findRankEntriesBySeasonId(@Param("seasonId") long seasonId);
 
     @Query("""
             SELECT COUNT(ul)
@@ -31,7 +31,7 @@ public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, Le
             JOIN ul.user u
             WHERE ul.season.id = :seasonId
               AND u.deletedAt IS NULL
-            """)
+    """)
     long countRankEntriesBySeasonId(@Param("seasonId") long seasonId);
 
     @Query("""
@@ -39,15 +39,15 @@ public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, Le
                        u.id, u.nickname, u.profileImgNumber, u.level.xp, u.level.level)
             FROM User u
             WHERE u.id IN :userIds
-            """)
+    """)
     List<LeagueRankProfileDto> findRankProfilesByUserIds(@Param("userIds") List<Long> userIds);
 
     @Query("""
-            SELECT new gravit.code.userLeague.dto.internal.LeagueRankKey(ul.season.id, ul.league.id)
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankKeyDto(ul.season.id, ul.league.id)
             FROM UserLeague ul
             WHERE ul.user.id = :userId
-            """)
-    Optional<LeagueRankKey> findRankKeyByUserId(@Param("userId") long userId);
+    """)
+    Optional<LeagueRankKeyDto> findRankKeyByUserId(@Param("userId") long userId);
 
     @Query("""
             SELECT new gravit.code.userLeague.dto.internal.MyLeagueProfileDto(
@@ -59,25 +59,32 @@ public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, Le
             JOIN ul.league l
             WHERE ul.user.id = :userId
               AND u.deletedAt IS NULL
-            """)
+    """)
     Optional<MyLeagueProfileDto> findLeagueProfile(@Param("userId") long userId);
 
     @Query("""
-        SELECT l.name
-        FROM UserLeague ul
-        JOIN League l ON ul.league.id = l.id
-        WHERE ul.user.id = :userId
+            SELECT l.name
+            FROM UserLeague ul
+            JOIN League l ON ul.league.id = l.id
+            WHERE ul.user.id = :userId
     """)
     Optional<String> findUserLeagueNameByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT ul.league.sortOrder FROM UserLeague ul WHERE ul.user.id = :userId")
+    @Query("""
+            SELECT ul.league.sortOrder
+            FROM UserLeague ul
+            WHERE ul.user.id = :userId
+    """)
     Optional<Integer> findLeagueSortOrderByUserId(@Param("userId") Long userId);
 
     boolean existsByUserId(Long userId);
 
     Optional<UserLeague> findByUserId(Long userId);
 
-    Optional<UserLeague> findByUserIdAndSeasonId(Long userId, Long seasonId);
+    Optional<UserLeague> findByUserIdAndSeasonId(
+            Long userId,
+            Long seasonId
+    );
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
     @Query(value = """
@@ -104,7 +111,7 @@ public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, Le
             WHERE ul.season_id  = :currentSeasonId
               AND ulh.season_id = :currentSeasonId
               AND ulh.user_id   = ul.user_id
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     int softResetForNextSeason(
             @Param("currentSeasonId") long currentSeasonId,
             @Param("nextSeasonId") long nextSeasonId

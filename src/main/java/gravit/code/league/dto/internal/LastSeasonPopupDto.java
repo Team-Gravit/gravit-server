@@ -7,12 +7,17 @@ import jakarta.validation.constraints.NotNull;
 public record LastSeasonPopupDto(
 
         int rank,
+
         int finalLp,
+
         @NotNull
         String leagueName,
+
         long profileImgNumber,
+
         @NotNull
         String nextLeagueName,
+
         int nextStartLp
 ) {
     public static LastSeasonPopupDto from(

@@ -17,10 +17,10 @@ import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND
 @RequiredArgsConstructor
 public class CSNoteService {
 
-    private final UnitRepository unitRepository;
-
     private static final String BASE_PATH = "static/notes";
     private static final String EXTENSION = ".md";
+
+    private final UnitRepository unitRepository;
 
     @Transactional(readOnly = true)
     public CSNoteDto getNoteByUnitId(long unitId) {

@@ -10,7 +10,6 @@ import gravit.code.inquiry.service.InquiryCommandService;
 import gravit.code.inquiry.service.InquiryQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class InquiryController implements InquiryControllerDocs {
             @Valid @RequestBody InquirySubmitRequest request
     ) {
         long inquiryId = inquiryCommandService.submit(loginUser.getId(), request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(inquiryId);
+        return ResponseEntity.status(CREATED).body(inquiryId);
     }
 
     @GetMapping
@@ -43,7 +45,7 @@ public class InquiryController implements InquiryControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(inquiryQueryService.getMyInquiries(loginUser.getId(), page));
+        return ResponseEntity.status(OK).body(inquiryQueryService.getMyInquiries(loginUser.getId(), page));
     }
 
     @GetMapping("/{inquiryId}")
@@ -51,6 +53,6 @@ public class InquiryController implements InquiryControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("inquiryId") long inquiryId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(inquiryQueryService.getMyInquiryDetail(loginUser.getId(), inquiryId));
+        return ResponseEntity.status(OK).body(inquiryQueryService.getMyInquiryDetail(loginUser.getId(), inquiryId));
     }
 }

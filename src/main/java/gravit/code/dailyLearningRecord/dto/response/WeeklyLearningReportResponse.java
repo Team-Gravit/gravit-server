@@ -38,18 +38,18 @@ public record WeeklyLearningReportResponse(
         List<Integer> weekOverWeekDeltas
 ) {
     public static WeeklyLearningReportResponse of(
-            Map<DayOfWeek, Integer> thisWeekCountsByDay,
+            Map<DayOfWeek, Integer> dayOfWeekToCount,
             int thisWeekCompletedLessonCount,
             List<Integer> weekOverWeekDeltas
     ) {
         return WeeklyLearningReportResponse.builder()
-                .MONDAY(thisWeekCountsByDay.getOrDefault(DayOfWeek.MONDAY, 0))
-                .TUESDAY(thisWeekCountsByDay.getOrDefault(DayOfWeek.TUESDAY, 0))
-                .WEDNESDAY(thisWeekCountsByDay.getOrDefault(DayOfWeek.WEDNESDAY, 0))
-                .THURSDAY(thisWeekCountsByDay.getOrDefault(DayOfWeek.THURSDAY, 0))
-                .FRIDAY(thisWeekCountsByDay.getOrDefault(DayOfWeek.FRIDAY, 0))
-                .SATURDAY(thisWeekCountsByDay.getOrDefault(DayOfWeek.SATURDAY, 0))
-                .SUNDAY(thisWeekCountsByDay.getOrDefault(DayOfWeek.SUNDAY, 0))
+                .MONDAY(dayOfWeekToCount.getOrDefault(DayOfWeek.MONDAY, 0))
+                .TUESDAY(dayOfWeekToCount.getOrDefault(DayOfWeek.TUESDAY, 0))
+                .WEDNESDAY(dayOfWeekToCount.getOrDefault(DayOfWeek.WEDNESDAY, 0))
+                .THURSDAY(dayOfWeekToCount.getOrDefault(DayOfWeek.THURSDAY, 0))
+                .FRIDAY(dayOfWeekToCount.getOrDefault(DayOfWeek.FRIDAY, 0))
+                .SATURDAY(dayOfWeekToCount.getOrDefault(DayOfWeek.SATURDAY, 0))
+                .SUNDAY(dayOfWeekToCount.getOrDefault(DayOfWeek.SUNDAY, 0))
                 .thisWeekCompletedLessonCount(thisWeekCompletedLessonCount)
                 .weekOverWeekDeltas(weekOverWeekDeltas)
                 .build();

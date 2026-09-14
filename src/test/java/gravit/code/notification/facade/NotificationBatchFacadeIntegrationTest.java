@@ -2,10 +2,10 @@ package gravit.code.notification.facade;
 
 import gravit.code.fcm.domain.FcmToken;
 import gravit.code.fcm.domain.Platform;
-import gravit.code.fcm.dto.internal.PushMessage;
+import gravit.code.fcm.dto.internal.PushMessageDto;
 import gravit.code.fcm.repository.FcmTokenRepository;
 import gravit.code.fcm.service.FcmService;
-import gravit.code.learning.dto.internal.ConsecutiveAtRiskUser;
+import gravit.code.learning.dto.internal.ConsecutiveAtRiskUserDto;
 import gravit.code.learning.service.LearningQueryService;
 import gravit.code.notification.domain.Notification;
 import gravit.code.notification.domain.NotificationActionType;
@@ -89,8 +89,8 @@ class NotificationBatchFacadeIntegrationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private List<PushMessage> 발송된_메시지_캡처(int timeoutMillis) {
-        ArgumentCaptor<List<PushMessage>> captor = ArgumentCaptor.forClass(List.class);
+    private List<PushMessageDto> 발송된_메시지_캡처(int timeoutMillis) {
+        ArgumentCaptor<List<PushMessageDto>> captor = ArgumentCaptor.forClass(List.class);
         verify(fcmService, timeout(timeoutMillis)).sendNotifications(captor.capture());
         return captor.getValue();
     }
@@ -106,8 +106,8 @@ class NotificationBatchFacadeIntegrationTest {
             User u2 = userFixture.일반_유저(2);
             fcmTokenRepository.save(FcmToken.create(u1.getId(), "device-1", "token-1", Platform.ANDROID));
             when(learningQueryService.getConsecutiveAtRiskUsers()).thenReturn(List.of(
-                    new ConsecutiveAtRiskUser(u1.getId(), 3),
-                    new ConsecutiveAtRiskUser(u2.getId(), 5)
+                    new ConsecutiveAtRiskUserDto(u1.getId(), 3),
+                    new ConsecutiveAtRiskUserDto(u2.getId(), 5)
             ));
 
             // when
@@ -123,7 +123,7 @@ class NotificationBatchFacadeIntegrationTest {
                         .containsExactlyInAnyOrder("3일 연속학습이 끊길 위기예요!", "5일 연속학습이 끊길 위기예요!");
             });
             // 푸시: 토큰을 가진 u1만 대상
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
+            List<PushMessageDto> sent = 발송된_메시지_캡처(1000);
             assertSoftly(softly -> {
                 softly.assertThat(sent).hasSize(1);
                 softly.assertThat(sent.get(0).tokens()).containsExactly("token-1");
@@ -174,7 +174,7 @@ class NotificationBatchFacadeIntegrationTest {
                 softly.assertThat(saved).allMatch(n -> 가능한_문구.contains(n.getMessage()));
             });
             // 푸시: u1만
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
+            List<PushMessageDto> sent = 발송된_메시지_캡처(1000);
             assertThat(sent).hasSize(1);
             assertThat(sent.get(0).tokens()).containsExactly("token-1");
         }
@@ -204,7 +204,7 @@ class NotificationBatchFacadeIntegrationTest {
                 softly.assertThat(saved.get(0).getMessage()).isEqualTo("벌써 일주일이 지났어요 😢 Gravit이 기다리고 있어요!");
             });
             // 푸시: u1
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
+            List<PushMessageDto> sent = 발송된_메시지_캡처(1000);
             assertThat(sent).hasSize(1);
             assertThat(sent.get(0).tokens()).containsExactly("token-1");
         }
@@ -242,7 +242,7 @@ class NotificationBatchFacadeIntegrationTest {
             notificationBatchFacade.sendSeasonEndingReminders();
 
             // then - FCM 발송 (헤드라인)
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
+            List<PushMessageDto> sent = 발송된_메시지_캡처(1000);
             assertSoftly(softly -> {
                 softly.assertThat(sent).hasSize(1);
                 softly.assertThat(sent.get(0).tokens()).containsExactlyInAnyOrderElementsOf(tokens);
@@ -274,7 +274,7 @@ class NotificationBatchFacadeIntegrationTest {
             notificationBatchFacade.sendSeasonEndingReminders();
 
             // then - FCM 발송
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
+            List<PushMessageDto> sent = 발송된_메시지_캡처(1000);
             assertSoftly(softly -> {
                 softly.assertThat(sent.get(0).title()).isEqualTo(종료_임박_헤드라인(3));
                 softly.assertThat(sent.get(0).data())
@@ -332,7 +332,7 @@ class NotificationBatchFacadeIntegrationTest {
             notificationBatchFacade.sendSeasonResetAlerts();
 
             // then - FCM 발송
-            List<PushMessage> sent = 발송된_메시지_캡처(1000);
+            List<PushMessageDto> sent = 발송된_메시지_캡처(1000);
             assertSoftly(softly -> {
                 softly.assertThat(sent).hasSize(1);
                 softly.assertThat(sent.get(0).tokens()).containsExactlyInAnyOrderElementsOf(tokens);

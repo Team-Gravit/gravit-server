@@ -1,12 +1,12 @@
 package gravit.code.learning.listener;
 
-import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.repository.LearningRepository;
 import gravit.code.learning.service.LearningCommandService;
 import gravit.code.mission.service.MissionService;
 import gravit.code.support.TCSpringBootTest;
+import gravit.code.user.dto.event.OnboardingCompletedEvent;
 import gravit.code.userLeague.service.UserLeagueService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

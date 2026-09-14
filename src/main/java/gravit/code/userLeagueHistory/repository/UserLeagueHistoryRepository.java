@@ -14,18 +14,23 @@ import java.util.Optional;
 public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHistory, Long> {
 
     @Query("""
-        SELECT h FROM UserLeagueHistory h
-        JOIN FETCH h.season s
-        JOIN FETCH h.finalLeague l
-        WHERE h.user.id = :userId
-        ORDER BY s.startsAt ASC
+            SELECT h
+            FROM UserLeagueHistory h
+            JOIN FETCH h.season s
+            JOIN FETCH h.finalLeague l
+            WHERE h.user.id = :userId
+            ORDER BY s.startsAt ASC
     """)
     List<UserLeagueHistory> findAllByUserIdOrderBySeason(@Param("userId") long userId);
 
     long countByUserId(long userId);
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
-    @Query("delete from UserLeagueHistory lh where lh.season = :season")
+    @Query("""
+            delete
+            from UserLeagueHistory lh
+            where lh.season = :season
+    """)
     int deleteBySeasonId(@Param("season") Season season);
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
@@ -46,7 +51,7 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
                 :nowKst AS updated_at
             FROM user_league ul
             WHERE ul.season_id = :seasonId
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     int insertFromCurrent(
             @Param("seasonId") long seasonId,
             @Param("nowKst") LocalDateTime nowKst

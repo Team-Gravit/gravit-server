@@ -5,15 +5,14 @@ import gravit.code.admin.dto.request.ChapterUpdateRequest;
 import gravit.code.admin.dto.response.ChapterDetailResponse;
 import gravit.code.admin.dto.response.ChapterListItemResponse;
 import gravit.code.admin.dto.response.ChapterStatsResponse;
-import gravit.code.admin.dto.response.ChapterStatsResponse.UnitStatItemResponse;
 import gravit.code.admin.dto.response.UnitListItemResponse;
+import gravit.code.admin.dto.response.UnitStatItemResponse;
 import gravit.code.admin.repository.AdminStatsRepository;
 import gravit.code.admin.repository.AdminUserRepository;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.repository.ChapterRepository;
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.unit.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.CHAPTER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INVALID_PARAMS;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +45,7 @@ public class AdminChapterService {
     @Transactional(readOnly = true)
     public ChapterDetailResponse getChapter(long chapterId) {
         Chapter chapter = chapterRepository.findById(chapterId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(CHAPTER_NOT_FOUND));
 
         long unitCount = unitRepository.countByChapterId(chapterId);
 
@@ -53,7 +55,7 @@ public class AdminChapterService {
     @Transactional(readOnly = true)
     public ChapterStatsResponse getChapterStats(long chapterId) {
         if (!chapterRepository.existsById(chapterId)) {
-            throw new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND);
+            throw new RestApiException(CHAPTER_NOT_FOUND);
         }
 
         long totalUsers = adminUserRepository.countActiveUsers();
@@ -76,7 +78,7 @@ public class AdminChapterService {
             ChapterUpdateRequest request
     ) {
         Chapter chapter = chapterRepository.findById(chapterId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.CHAPTER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(CHAPTER_NOT_FOUND));
 
         String title = request.title() != null ? request.title() : chapter.getTitle();
         String description = request.description() != null ? request.description() : chapter.getDescription();
@@ -108,7 +110,7 @@ public class AdminChapterService {
 
     private void validateNotBlank(String title) {
         if (title != null && title.isBlank()) {
-            throw new RestApiException(CustomErrorCode.INVALID_PARAMS);
+            throw new RestApiException(INVALID_PARAMS);
         }
     }
 }

@@ -3,6 +3,7 @@ package gravit.code.user.controller.docs;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,8 +56,11 @@ public interface UserDeletionControllerDocs {
             )
     })
     @PostMapping("/request")
-    ResponseEntity<Void> request(@AuthenticationPrincipal LoginUser loginUser,
-                                 @RequestParam String dest);
+    ResponseEntity<Void> request(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Parameter(description = "삭제 확인 링크가 향할 프론트엔드 환경(local, dev, prod)", example = "prod")
+            @RequestParam String dest
+    );
 
     @Operation(
             summary = "계정 삭제 확정(메일 인증 코드 확인)",
@@ -94,5 +98,8 @@ public interface UserDeletionControllerDocs {
             )
     })
     @PostMapping("/confirm")
-    ResponseEntity<Void> confirm(@RequestParam String mailAuthCode);
+    ResponseEntity<Void> confirm(
+            @Parameter(description = "메일로 발급된 계정 삭제 인증 코드")
+            @RequestParam String mailAuthCode
+    );
 }

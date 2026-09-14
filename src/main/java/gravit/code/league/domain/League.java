@@ -19,7 +19,7 @@ public class League {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "varchar(20)", nullable = false)
+    @Column(name = "name", columnDefinition = "varchar(20)", nullable = false)
     private String name;
 
     @Column(name = "max_lp", columnDefinition = "integer", nullable = false)

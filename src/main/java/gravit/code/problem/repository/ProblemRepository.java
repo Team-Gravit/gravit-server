@@ -28,17 +28,17 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     long countByLessonId(long lessonId);
 
     @Query("""
-        SELECT new gravit.code.problem.dto.response.ProblemDetailResponse(
-            p.id,
-            p.problemType,
-            p.instruction,
-            p.content,
-            CASE WHEN b.id IS NOT NULL THEN true ELSE false END
-        )
-        FROM Problem p
-        LEFT JOIN Bookmark b ON b.problemId = p.id AND b.userId = :userId
-        WHERE p.lessonId = :lessonId
-        ORDER BY p.id
+            SELECT new gravit.code.problem.dto.response.ProblemDetailResponse(
+                p.id,
+                p.problemType,
+                p.instruction,
+                p.content,
+                CASE WHEN b.id IS NOT NULL THEN true ELSE false END
+            )
+            FROM Problem p
+            LEFT JOIN Bookmark b ON b.problemId = p.id AND b.userId = :userId
+            WHERE p.lessonId = :lessonId
+            ORDER BY p.id
     """)
     List<ProblemDetailResponse> findAllProblemDetailByLessonIdAndUserId(
             @Param("lessonId") long lessonId,
@@ -46,9 +46,9 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     );
 
     @Query("""
-        SELECT new gravit.code.problem.dto.internal.ProblemTypeDto(p.id, p.problemType)
-        FROM Problem p
-        WHERE p.id IN (:problemIds)
+            SELECT new gravit.code.problem.dto.internal.ProblemTypeDto(p.id, p.problemType)
+            FROM Problem p
+            WHERE p.id IN (:problemIds)
     """)
     List<ProblemTypeDto> findProblemTypesByIds(@Param("problemIds") List<Long> problemIds);
 

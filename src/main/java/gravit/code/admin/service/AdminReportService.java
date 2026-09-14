@@ -5,7 +5,6 @@ import gravit.code.admin.dto.response.ReportListItemResponse;
 import gravit.code.admin.repository.AdminReportRepository;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.report.domain.Report;
 import gravit.code.report.domain.ReportType;
@@ -13,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.REPORT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class AdminReportService {
     @Transactional(readOnly = true)
     public ReportDetailResponse getReport(long reportId) {
         Report report = adminReportRepository.findById(reportId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.REPORT_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(REPORT_NOT_FOUND));
 
         return ReportDetailResponse.from(report);
     }
@@ -48,7 +49,7 @@ public class AdminReportService {
             boolean isResolved
     ) {
         Report report = adminReportRepository.findById(reportId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.REPORT_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(REPORT_NOT_FOUND));
 
         report.changeResolved(isResolved);
     }

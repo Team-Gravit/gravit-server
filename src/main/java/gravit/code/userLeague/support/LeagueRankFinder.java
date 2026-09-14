@@ -1,6 +1,6 @@
 package gravit.code.userLeague.support;
 
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class LeagueRankFinder {
         );
     }
 
-    public List<LeagueRankEntry> findPage(
+    public List<LeagueRankEntryDto> findPage(
             long seasonId,
             long leagueId,
             int offset,

@@ -15,7 +15,6 @@ import gravit.code.interview.service.InterviewSessionCommandService;
 import gravit.code.interview.service.InterviewSessionQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +24,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,7 +47,7 @@ public class InterviewSessionController implements InterviewSessionControllerDoc
     ) {
         InterviewSessionCreateResponse session = interviewSessionFacade.create(loginUser.getId(), request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(session);
+        return ResponseEntity.status(CREATED).body(session);
     }
 
     @GetMapping("/{sessionId}/questions")
@@ -55,7 +58,7 @@ public class InterviewSessionController implements InterviewSessionControllerDoc
         InterviewSessionQuestionsResponse questions = interviewSessionQueryService.getQuestions(
                 loginUser.getId(), sessionId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(questions);
+        return ResponseEntity.status(OK).body(questions);
     }
 
     @PostMapping("/{sessionId}/audio-uploads")
@@ -67,7 +70,7 @@ public class InterviewSessionController implements InterviewSessionControllerDoc
         InterviewAudioUploadResponse upload = interviewAudioUploadService.issueUploadUrl(
                 loginUser.getId(), sessionId, request);
 
-        return ResponseEntity.status(HttpStatus.OK).body(upload);
+        return ResponseEntity.status(OK).body(upload);
     }
 
     @PatchMapping("/{sessionId}/abandon")
@@ -77,7 +80,7 @@ public class InterviewSessionController implements InterviewSessionControllerDoc
     ) {
         InterviewSessionStatusResponse status = interviewSessionCommandService.abandon(loginUser.getId(), sessionId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(status);
+        return ResponseEntity.status(OK).body(status);
     }
 
     @PatchMapping("/{sessionId}/submit")
@@ -91,7 +94,7 @@ public class InterviewSessionController implements InterviewSessionControllerDoc
                 sessionId,
                 request.answers()
         );
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(status);
+        return ResponseEntity.status(ACCEPTED).body(status);
     }
 
     @GetMapping("/{sessionId}/status")
@@ -101,6 +104,6 @@ public class InterviewSessionController implements InterviewSessionControllerDoc
     ) {
         InterviewSessionStatusResponse status = interviewSessionQueryService.getStatus(loginUser.getId(), sessionId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(status);
+        return ResponseEntity.status(OK).body(status);
     }
 }

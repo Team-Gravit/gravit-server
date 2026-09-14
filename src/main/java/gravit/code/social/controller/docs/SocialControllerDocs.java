@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,13 +59,25 @@ public interface SocialControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "🚫 유저 리그 없음",
+                    description = "🚨 유저 리그 없음",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "유저 리그 없음",
                                     value = "{\"error\": \"U_L_4041\", \"message\": \"유저의 리그가 존재하지 않습니다\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )
@@ -88,7 +101,7 @@ public interface SocialControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "🚫 자기 자신 팔로우 불가",
+                    description = "🚨 자기 자신 팔로우 불가",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponse.class),
@@ -100,13 +113,25 @@ public interface SocialControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "🚫 이미 팔로우 중",
+                    description = "🚨 이미 팔로우 중",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "이미 팔로우 중",
                                     value = "{\"error\": \"FRIEND_4091\", \"message\": \"이미 팔로잉을 한 유저입니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )
@@ -180,6 +205,51 @@ public interface SocialControllerDocs {
     );
 
     @Operation(
+            summary = "피드 항목 숨기기",
+            description = """
+                    친구 활동 피드에서 해당 피드 항목을 숨깁니다.<br>
+                    숨긴 항목은 이후 피드 조회에서 제외됩니다.<br>
+                    🔐 <strong>Jwt 필요</strong>
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "✅ 피드 숨기기 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "🚨 피드 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "피드 없음",
+                                    value = "{\"error\": \"SOCIAL_4041\", \"message\": \"피드를 찾을 수 없습니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
+                            )
+                    )
+            )
+    })
+    @DeleteMapping("/feed/{feedId}")
+    ResponseEntity<Void> hideFeed(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Parameter(description = "숨길 피드 ID", example = "1")
+            @PathVariable long feedId
+    );
+
+    @Operation(
             summary = "피드 항목 축하하기",
             description = """
                     친구의 활동 피드 항목에 축하를 보냅니다.<br>
@@ -196,7 +266,7 @@ public interface SocialControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "🚫 오늘 축하 횟수 초과",
+                    description = "🚨 오늘 축하 횟수 초과",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponse.class),
@@ -208,13 +278,25 @@ public interface SocialControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "🚫 피드 없음",
+                    description = "🚨 피드 없음",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "피드 없음",
                                     value = "{\"error\": \"SOCIAL_4041\", \"message\": \"피드를 찾을 수 없습니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )

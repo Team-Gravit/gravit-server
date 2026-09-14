@@ -20,44 +20,44 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     );
 
     @Query("""
-        SELECT new gravit.code.learning.dto.internal.LearningIdsDto(c.id, u.id, l.id)
-        FROM Lesson l
-        INNER JOIN Unit u ON u.id = l.unitId
-        INNER JOIN Chapter c ON c.id = u.chapterId
-        WHERE l.id = :lessonId
+            SELECT new gravit.code.learning.dto.internal.LearningIdsDto(c.id, u.id, l.id)
+            FROM Lesson l
+            INNER JOIN Unit u ON u.id = l.unitId
+            INNER JOIN Chapter c ON c.id = u.chapterId
+            WHERE l.id = :lessonId
     """)
     Optional<LearningIdsDto> findLearningIdsByLessonId(@Param("lessonId")long lessonId);
 
     @Query("""
-        SELECT COUNT(l.id)
-        FROM Chapter c
-        JOIN Unit u ON u.chapterId = c.id
-        JOIN Lesson l ON l.unitId = u.id
-        WHERE c.id = :chapterId
+            SELECT COUNT(l.id)
+            FROM Chapter c
+            JOIN Unit u ON u.chapterId = c.id
+            JOIN Lesson l ON l.unitId = u.id
+            WHERE c.id = :chapterId
     """)
     int countTotalLessonByChapterId(@Param("chapterId") long chapterId);
 
     @Query("""
-        SELECT COUNT(l.id)
-        FROM Unit u
-        JOIN Lesson l ON l.unitId = u.id
-        WHERE u.id = :unitId
+            SELECT COUNT(l.id)
+            FROM Unit u
+            JOIN Lesson l ON l.unitId = u.id
+            WHERE u.id = :unitId
     """)
     int countTotalLessonByUnitId(@Param("unitId") long unitId);
 
     @Query("""
-        SELECT new gravit.code.lesson.dto.response.LessonSummaryResponse(
-          l.id,
-          l.title,
-          (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id),
-          CASE WHEN EXISTS (
-            SELECT 1 FROM LessonSubmission ls
-            WHERE ls.lessonId = l.id AND ls.userId = :userId
-          ) THEN true ELSE false END
-        )
-        FROM Lesson l
-        WHERE l.unitId = :unitId
-  """)
+            SELECT new gravit.code.lesson.dto.response.LessonSummaryResponse(
+              l.id,
+              l.title,
+              (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id),
+              CASE WHEN EXISTS (
+                SELECT 1 FROM LessonSubmission ls
+                WHERE ls.lessonId = l.id AND ls.userId = :userId
+              ) THEN true ELSE false END
+            )
+            FROM Lesson l
+            WHERE l.unitId = :unitId
+    """)
     List<LessonSummaryResponse> findAllLessonSummaryByUnitId(
             @Param("unitId") long unitId,
             @Param("userId") long userId

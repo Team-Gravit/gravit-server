@@ -2,7 +2,6 @@ package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.Provider;
 import gravit.code.global.consts.RedirectHostConst;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -12,9 +11,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.DEST_NOT_VALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROVIDER_INVALID;
+
 @RequiredArgsConstructor
 @Service
 public class OAuthLoginUrlService {
+
+    public static final String REDIRECT_PATH_PREFIX = "/login/oauth2/code/";
 
     private final ClientRegistrationRepository clientRegistrationRepository;
 
@@ -29,8 +33,8 @@ public class OAuthLoginUrlService {
         String authorizationUri = registration.getProviderDetails().getAuthorizationUri();
         String clientId = registration.getClientId();
         String responseType = "code";
-        String redirectUri = baseHost + "/login/oauth2/code/" + validProvider;
-        String scope = String.join(" ", registration.getScopes()); // 공백이 표준
+        String redirectUri = baseHost + REDIRECT_PATH_PREFIX + validProvider;
+        String scope = String.join(" ", registration.getScopes());
 
         return UriComponentsBuilder.fromUriString(authorizationUri)
                 .queryParam("client_id", clientId)
@@ -44,13 +48,13 @@ public class OAuthLoginUrlService {
         String base = RedirectHostConst.DEST_BASE.get(dest);
 
         if(base == null || base.isBlank()){
-            throw new RestApiException(CustomErrorCode.DEST_NOT_VALID);
+            throw new RestApiException(DEST_NOT_VALID);
         }
 
         return base;
     }
 
     private String getValidProvider(Optional<String> provider) {
-        return provider.orElseThrow(() -> new RestApiException(CustomErrorCode.PROVIDER_INVALID));
+        return provider.orElseThrow(() -> new RestApiException(PROVIDER_INVALID));
     }
 }

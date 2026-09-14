@@ -1,11 +1,10 @@
 package gravit.code.mission.listener;
 
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
-import gravit.code.global.event.LessonCompletedEvent;
-import gravit.code.global.event.OnboardingCompletedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.learning.service.LearningCommandService;
 import gravit.code.lesson.domain.LessonSubmission;
+import gravit.code.lesson.dto.event.LessonCompletedEvent;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import gravit.code.mission.domain.Mission;
 import gravit.code.mission.domain.UserMission;
@@ -15,6 +14,7 @@ import gravit.code.mission.repository.MissionRepository;
 import gravit.code.mission.repository.UserMissionRepository;
 import gravit.code.mission.service.MissionService;
 import gravit.code.support.TCSpringBootTest;
+import gravit.code.user.dto.event.OnboardingCompletedEvent;
 import gravit.code.userLeague.service.UserLeaguePointService;
 import gravit.code.userLeague.service.UserLeagueService;
 import org.junit.jupiter.api.DisplayName;

@@ -23,19 +23,18 @@ public class OAuthAndroidUserInfoService {
     private final Map<String, JwtDecoder> jwtDecoderMap;
     private final OAuthAndroidProps androidProps;
 
-    public OAuthUserInfo parseIdToken(String provider, String idToken) {
+    public OAuthUserInfo parseIdToken(
+            String provider,
+            String idToken
+    ) {
         validateNullAndBlankIdToken(idToken);
 
-        // decoder 선택
         JwtDecoder decoder = selectJwtDecoder(provider);
-        // idToken 을 jwt 로 디코딩
         Jwt jwt = decodingIdTokenToJwt(idToken, decoder);
 
-        // 수신자 정보와 비교, client-id 로 유효한 idToken 인지 판단
         validateIssuer(jwt, provider);
         validateAudience(jwt, provider);
-        
-        // idToken 에서 claim 획득
+
         Map<String, Object> claims = jwt.getClaims();
         log.info("IdToken 파싱 성공 provider: {}, subject: {}", provider, jwt.getSubject());
 
@@ -54,7 +53,10 @@ public class OAuthAndroidUserInfoService {
         return decoder;
     }
 
-    private Jwt decodingIdTokenToJwt(String idToken, JwtDecoder decoder) {
+    private Jwt decodingIdTokenToJwt(
+            String idToken,
+            JwtDecoder decoder
+    ) {
         try{
             return decoder.decode(idToken);
         }catch (Exception e) {
@@ -62,7 +64,10 @@ public class OAuthAndroidUserInfoService {
         }
     }
 
-    private void validateIssuer(Jwt jwt, String provider) {
+    private void validateIssuer(
+            Jwt jwt,
+            String provider
+    ) {
         String expectedIssuer = androidProps.getIssuer(provider);
         String targetIssuer = jwt.getIssuer().toString();
 
@@ -72,7 +77,10 @@ public class OAuthAndroidUserInfoService {
         }
     }
 
-    private void validateAudience(Jwt jwt, String provider) {
+    private void validateAudience(
+            Jwt jwt,
+            String provider
+    ) {
         String expectedClientId = androidProps.getClientId(provider);
         List<String> audiences = jwt.getAudience();
 

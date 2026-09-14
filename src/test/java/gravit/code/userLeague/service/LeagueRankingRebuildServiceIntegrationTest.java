@@ -8,7 +8,7 @@ import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.user.repository.UserRepository;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,13 +71,13 @@ class LeagueRankingRebuildServiceIntegrationTest {
             int rebuilt = leagueRankingRebuildService.rebuild(activeSeason.getId());
 
             // then
-            List<LeagueRankEntry> entries =
+            List<LeagueRankEntryDto> entries =
                     leagueRankingStore.findPage(activeSeason.getId(), bronze3.getId(), 0, 10);
 
             assertSoftly(softly -> {
                 softly.assertThat(rebuilt).isEqualTo(2);
                 softly.assertThat(entries)
-                        .extracting(LeagueRankEntry::rank, LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                        .extracting(LeagueRankEntryDto::rank, LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
                         .containsExactly(
                                 tuple(1, second.getId(), 90),
                                 tuple(2, first.getId(), 50)

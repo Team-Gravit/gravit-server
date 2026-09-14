@@ -12,13 +12,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SocialFeedTierPromotionRetryTarget implements RetrySweepTarget {
 
+    public static final String QUEUE_KEY = "social-feed-tier-retry";
+    public static final String FIELD_USER_ID = "userId";
+    public static final String FIELD_TIER_NAME = "tierName";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private final SocialFacade socialFacade;
 
     @Override
     public String queueKey() {
-        return "social-feed-tier-retry";
+        return QUEUE_KEY;
     }
 
     @Override
@@ -28,8 +32,8 @@ public class SocialFeedTierPromotionRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        long userId = Long.parseLong(fields.get("userId"));
-        String tierName = fields.get("tierName");
+        long userId = Long.parseLong(fields.get(FIELD_USER_ID));
+        String tierName = fields.get(FIELD_TIER_NAME);
 
         socialFacade.publishFeed(userId, FeedEventType.TIER_PROMOTION, tierName);
     }

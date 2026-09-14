@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 @Schema(description = "문의 답변 등록 request")
 public record InquiryAnswerCreateRequest(
 
-        @Schema(description = "답변 내용", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "답변 내용",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         @NotBlank
         String content
 ) {

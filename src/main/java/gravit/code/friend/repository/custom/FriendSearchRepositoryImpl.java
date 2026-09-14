@@ -16,9 +16,6 @@ import java.util.List;
 @Repository
 public class FriendSearchRepositoryImpl implements FriendSearchRepository {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final FriendsSearchFactory searchFactory;
-
     private static final int PAGE_SIZE = 10;
 
     private static final RowMapper<SearchUserDto> MAPPER = (rs, i) ->
@@ -26,9 +23,13 @@ public class FriendSearchRepositoryImpl implements FriendSearchRepository {
                     rs.getLong("user_id"),
                     rs.getInt("profile_img_number"),
                     rs.getString("nickname"),
-                    rs.getString("handle"), // SELECT 에서 '@' 붙여 내려옴
+                    rs.getString("handle"),
                     rs.getBoolean("is_following")
             );
+
+    private final FriendsSearchFactory searchFactory;
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public SliceResponse<SearchUserDto> searchUsersByQueryText(
@@ -37,11 +38,9 @@ public class FriendSearchRepositoryImpl implements FriendSearchRepository {
             int page
     ) {
 
-        // 1. nickname, handle 에 맞는 쿼리 가져오기
         SearchPlanDto plan = searchFactory.buildPlan(requesterId, queryText, page, PAGE_SIZE);
         boolean isEmpty = plan.isEmpty();
 
-        // 정규화된 queryText 가 유효한 길이가 아닐때
         if(isEmpty){
             return SliceResponse.empty();
         }
@@ -50,17 +49,13 @@ public class FriendSearchRepositoryImpl implements FriendSearchRepository {
         boolean isQueryNeedContains = plan.isQueryNeedContains();
         String selectSql = plan.selectSql();
 
-        // 2. 매개변수 만들기
         final MapSqlParameterSource params = buildParams(requesterId, cleanText, page, isQueryNeedContains);
 
-        // 3. 10명 페이징 조회(hasNext로 11번째까지 조회)
         List<SearchUserDto> rows = jdbcTemplate.query(selectSql, params, MAPPER);
 
-        // 4. hasNext 를 구하고, true 면 11번째 값 버림
         boolean hasNext = rows.size() > PAGE_SIZE;
         List<SearchUserDto> contents = hasNext ? rows.subList(0, PAGE_SIZE) : rows;
 
-        // 5. contents 가 비어있으면 empty 리턴
         if(contents.isEmpty()){
             return SliceResponse.empty();
         }

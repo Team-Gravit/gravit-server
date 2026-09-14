@@ -2,7 +2,6 @@ package gravit.code.notice.domain;
 
 import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.entity.BaseEntity;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
 import jakarta.persistence.Column;
@@ -25,6 +24,12 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_CONTENT_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_INVALID_STATUS_TRANSITION;
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_PINNED_MUST_BE_PUBLISHED;
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_STATUS_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_SUMMARY_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_TITLE_INVALID;
 import static gravit.code.notice.domain.NoticeStatus.*;
 import static java.time.temporal.ChronoUnit.MICROS;
 
@@ -57,12 +62,13 @@ public class Notice extends BaseEntity {
     private User author;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private NoticeStatus status;
 
-    @Column(nullable = false)
+    @Column(name = "pinned", nullable = false)
     private boolean pinned;
 
+    @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
     @Column(name = "deleted_at")
@@ -137,13 +143,13 @@ public class Notice extends BaseEntity {
         }
 
         boolean allowed = switch (current) {
-            case DRAFT -> next == PUBLISHED;             // DRAFT -> ARCHIVED 차단
-            case PUBLISHED -> next == ARCHIVED;          // PUBLISHED -> DRAFT 차단
-            case ARCHIVED -> false;                      // ARCHIVED -> 무엇이든 차단
+            case DRAFT -> next == PUBLISHED;
+            case PUBLISHED -> next == ARCHIVED;
+            case ARCHIVED -> false;
         };
 
         if (!allowed) {
-            throw new RestApiException(CustomErrorCode.NOTICE_INVALID_STATUS_TRANSITION);
+            throw new RestApiException(NOTICE_INVALID_STATUS_TRANSITION);
         }
 
         if (next == PUBLISHED && this.publishedAt == null) {
@@ -173,34 +179,34 @@ public class Notice extends BaseEntity {
     }
 
     private static void validateCreatableStatus(NoticeStatus status) {
-        if (status == ARCHIVED) {                        // 작성 시 ARCHIVED 불가
-            throw new RestApiException(CustomErrorCode.NOTICE_STATUS_INVALID);
+        if (status == ARCHIVED) {
+            throw new RestApiException(NOTICE_STATUS_INVALID);
         }
     }
 
     private static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new RestApiException(CustomErrorCode.NOTICE_TITLE_INVALID);
+            throw new RestApiException(NOTICE_TITLE_INVALID);
         }
 
         if (title.trim().length() > TITLE_MAX_SIZE) {
-            throw new RestApiException(CustomErrorCode.NOTICE_TITLE_INVALID);
+            throw new RestApiException(NOTICE_TITLE_INVALID);
         }
     }
 
     private static void validateSummary(String summary) {
         if (summary == null || summary.isBlank()) {
-            throw new RestApiException(CustomErrorCode.NOTICE_SUMMARY_INVALID);
+            throw new RestApiException(NOTICE_SUMMARY_INVALID);
         }
 
         if (summary.length() > SUMMARY_MAX_SIZE) {
-            throw new RestApiException(CustomErrorCode.NOTICE_SUMMARY_INVALID);
+            throw new RestApiException(NOTICE_SUMMARY_INVALID);
         }
     }
 
     private static void validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
-            throw new RestApiException(CustomErrorCode.NOTICE_CONTENT_INVALID);
+            throw new RestApiException(NOTICE_CONTENT_INVALID);
         }
     }
 
@@ -209,7 +215,7 @@ public class Notice extends BaseEntity {
             boolean pinned
     ) {
         if (pinned && status == DRAFT) {
-            throw new RestApiException(CustomErrorCode.NOTICE_PINNED_MUST_BE_PUBLISHED);
+            throw new RestApiException(NOTICE_PINNED_MUST_BE_PUBLISHED);
         }
     }
 }

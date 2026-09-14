@@ -1,6 +1,5 @@
 package gravit.code.interview.policy;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewMode;
 import gravit.code.interview.domain.InterviewStack;
@@ -16,6 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_QUESTION_POOL_INSUFFICIENT;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_STACK_NOT_ALLOWED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_STACK_REQUIRED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TOPIC_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TOPIC_NOT_ALLOWED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TOPIC_REQUIRED;
 
 @Component
 public class InterviewQuestionAllocationPolicy {
@@ -60,10 +66,10 @@ public class InterviewQuestionAllocationPolicy {
             List<InterviewTopic> topics
     ) {
         if (stack != null) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_STACK_NOT_ALLOWED);
+            throw new RestApiException(INTERVIEW_STACK_NOT_ALLOWED);
         }
         if (topics == null || topics.isEmpty()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_TOPIC_REQUIRED);
+            throw new RestApiException(INTERVIEW_TOPIC_REQUIRED);
         }
         validateCsTopics(topics);
 
@@ -85,10 +91,10 @@ public class InterviewQuestionAllocationPolicy {
             List<InterviewTopic> topics
     ) {
         if (stack == null) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_STACK_REQUIRED);
+            throw new RestApiException(INTERVIEW_STACK_REQUIRED);
         }
         if (topics != null && !topics.isEmpty()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_TOPIC_NOT_ALLOWED);
+            throw new RestApiException(INTERVIEW_TOPIC_NOT_ALLOWED);
         }
 
         Map<InterviewTopic, Integer> topicToQuota = new LinkedHashMap<>();
@@ -108,7 +114,7 @@ public class InterviewQuestionAllocationPolicy {
                 .anyMatch(topic -> topic.getKind() != InterviewTopicKind.CS);
 
         if (hasDuplicate || exceedsLimit || hasNonCsTopic) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_TOPIC_INVALID);
+            throw new RestApiException(INTERVIEW_TOPIC_INVALID);
         }
     }
 
@@ -130,7 +136,7 @@ public class InterviewQuestionAllocationPolicy {
 
             List<Long> candidates = new ArrayList<>(topicToCandidates.getOrDefault(topic, List.of()));
             if (candidates.size() < quota) {
-                throw new RestApiException(CustomErrorCode.INTERVIEW_QUESTION_POOL_INSUFFICIENT);
+                throw new RestApiException(INTERVIEW_QUESTION_POOL_INSUFFICIENT);
             }
             Collections.shuffle(candidates);
 

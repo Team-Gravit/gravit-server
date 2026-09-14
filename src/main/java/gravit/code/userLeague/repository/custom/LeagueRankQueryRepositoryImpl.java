@@ -1,6 +1,6 @@
 package gravit.code.userLeague.repository.custom;
 
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -41,7 +41,7 @@ public class LeagueRankQueryRepositoryImpl implements LeagueRankQueryRepository 
     }
 
     @Override
-    public List<LeagueRankEntry> findRankPageInLeague(
+    public List<LeagueRankEntryDto> findRankPageInLeague(
             long seasonId,
             long leagueId,
             int offset,
@@ -57,11 +57,11 @@ public class LeagueRankQueryRepositoryImpl implements LeagueRankQueryRepository 
         return jdbcTemplate.query(FIND_RANK_PAGE_IN_LEAGUE_SQL, params, rankEntryMapper(leagueId, offset));
     }
 
-    private RowMapper<LeagueRankEntry> rankEntryMapper(
+    private RowMapper<LeagueRankEntryDto> rankEntryMapper(
             long leagueId,
             int offset
     ) {
-        return (rs, rowNum) -> new LeagueRankEntry(
+        return (rs, rowNum) -> new LeagueRankEntryDto(
                 offset + FIRST_RANK + rowNum,
                 rs.getLong("user_id"),
                 rs.getInt("league_point"),

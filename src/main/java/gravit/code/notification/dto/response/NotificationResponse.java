@@ -11,7 +11,10 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PRIVATE)
 public record NotificationResponse(
 
-        @Schema(description = "알림 ID", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "알림 ID",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         Long id,
 
         @Schema(
@@ -47,10 +50,16 @@ public record NotificationResponse(
         @Schema(description = "축하 완료 여부 (FRIEND_ACTIVITY 알림에서만 값이 있으며, 그 외 알림은 null). true면 소셜 피드와 동일하게 '축하 완료' 상태로 노출한다")
         Boolean congratulated,
 
-        @Schema(description = "읽음 여부", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "읽음 여부",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         boolean read,
 
-        @Schema(description = "생성 시각", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "생성 시각",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         LocalDateTime createdAt,
 
         @Schema(

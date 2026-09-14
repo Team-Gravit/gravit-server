@@ -12,13 +12,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SocialFeedLevelUpRetryTarget implements RetrySweepTarget {
 
+    public static final String QUEUE_KEY = "social-feed-levelup-retry";
+    public static final String FIELD_USER_ID = "userId";
+    public static final String FIELD_NEW_LEVEL = "newLevel";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private final SocialFacade socialFacade;
 
     @Override
     public String queueKey() {
-        return "social-feed-levelup-retry";
+        return QUEUE_KEY;
     }
 
     @Override
@@ -28,8 +32,8 @@ public class SocialFeedLevelUpRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        long userId = Long.parseLong(fields.get("userId"));
-        String newLevel = fields.get("newLevel");
+        long userId = Long.parseLong(fields.get(FIELD_USER_ID));
+        String newLevel = fields.get(FIELD_NEW_LEVEL);
 
         socialFacade.publishFeed(userId, FeedEventType.LEVEL_UP, newLevel);
     }

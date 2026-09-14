@@ -1,11 +1,10 @@
 package gravit.code.interview.service;
 
-import gravit.code.global.event.InterviewCompletedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionTopic;
+import gravit.code.interview.dto.event.InterviewCompletedEvent;
 import gravit.code.interview.dto.event.InterviewSubmittedEvent;
 import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
@@ -28,6 +27,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ORDER_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 
 @Service
 @RequiredArgsConstructor
@@ -141,7 +147,7 @@ public class InterviewSessionCommandService {
 
     private InterviewSession findSession(long sessionId) {
         return interviewSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INTERVIEW_SESSION_NOT_FOUND));
     }
 
     private void validateOwner(
@@ -149,13 +155,13 @@ public class InterviewSessionCommandService {
             long userId
     ) {
         if (!session.isOwnedBy(userId)) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED);
+            throw new RestApiException(INTERVIEW_SESSION_ACCESS_DENIED);
         }
     }
 
     private void validateInProgress(InterviewSession session) {
         if (!session.isInProgress()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS);
+            throw new RestApiException(INTERVIEW_SESSION_NOT_IN_PROGRESS);
         }
     }
 
@@ -165,7 +171,7 @@ public class InterviewSessionCommandService {
                 .collect(Collectors.toSet());
 
         if (displayOrders.size() != InterviewSession.QUESTION_COUNT) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_ANSWER_ORDER_INVALID);
+            throw new RestApiException(INTERVIEW_ANSWER_ORDER_INVALID);
         }
     }
 
@@ -186,7 +192,7 @@ public class InterviewSessionCommandService {
                 .anyMatch(answerRequest -> answerRequest.audioKey() != null);
 
         if (hasAudioKey) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH);
+            throw new RestApiException(INTERVIEW_INPUT_TYPE_MISMATCH);
         }
     }
 
@@ -206,7 +212,7 @@ public class InterviewSessionCommandService {
 
     private void validateAnswerCount(List<InterviewAnswer> answers) {
         if (answers.size() != InterviewSession.QUESTION_COUNT) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_ANSWER_NOT_FOUND);
+            throw new RestApiException(INTERVIEW_ANSWER_NOT_FOUND);
         }
     }
 
@@ -221,7 +227,7 @@ public class InterviewSessionCommandService {
         for (InterviewAnswer answer : answers) {
             InterviewAnswerSubmitRequest answerRequest = displayOrderToRequest.get(answer.getDisplayOrder());
             if (answerRequest == null) {
-                throw new RestApiException(CustomErrorCode.INTERVIEW_ANSWER_ORDER_INVALID);
+                throw new RestApiException(INTERVIEW_ANSWER_ORDER_INVALID);
             }
 
             answer.submit(answerRequest.content(), answerRequest.audioKey(), answeredAt);

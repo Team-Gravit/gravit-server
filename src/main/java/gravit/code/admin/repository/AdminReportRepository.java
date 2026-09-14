@@ -11,11 +11,11 @@ import org.springframework.data.repository.query.Param;
 public interface AdminReportRepository extends JpaRepository<Report, Long> {
 
     @Query("""
-        SELECT r
-        FROM Report r
-        WHERE (:reportType IS NULL OR r.reportType = :reportType)
-          AND (:isResolved IS NULL OR r.isResolved = :isResolved)
-        ORDER BY r.id DESC
+            SELECT r
+            FROM Report r
+            WHERE (:reportType IS NULL OR r.reportType = :reportType)
+              AND (:isResolved IS NULL OR r.isResolved = :isResolved)
+            ORDER BY r.id DESC
     """)
     Page<Report> search(
             @Param("reportType") ReportType reportType,

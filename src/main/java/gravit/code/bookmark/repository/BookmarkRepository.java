@@ -11,13 +11,16 @@ import java.util.List;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
-    boolean existsByProblemIdAndUserId(long problemId, long userId);
+    boolean existsByProblemIdAndUserId(
+            long problemId,
+            long userId
+    );
 
     @Modifying
     @Query("""
-        DELETE
-        FROM Bookmark b
-        WHERE b.problemId = :problemId AND b.userId = :userId
+            DELETE
+            FROM Bookmark b
+            WHERE b.problemId = :problemId AND b.userId = :userId
     """)
     void deleteByProblemIdAndUserId(
             @Param("problemId") long problemId,
@@ -25,18 +28,18 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     );
 
     @Query("""
-        SELECT new gravit.code.problem.dto.response.ProblemDetailResponse(
-            p.id,
-            p.problemType,
-            p.instruction,
-            p.content,
-            true
-        )
-        FROM Bookmark b
-        JOIN Problem p ON p.id = b.problemId
-        JOIN Lesson l ON l.id = p.lessonId
-        WHERE l.unitId = :unitId AND b.userId = :userId
-        ORDER BY b.createdAt ASC
+            SELECT new gravit.code.problem.dto.response.ProblemDetailResponse(
+                p.id,
+                p.problemType,
+                p.instruction,
+                p.content,
+                true
+            )
+            FROM Bookmark b
+            JOIN Problem p ON p.id = b.problemId
+            JOIN Lesson l ON l.id = p.lessonId
+            WHERE l.unitId = :unitId AND b.userId = :userId
+            ORDER BY b.createdAt ASC
     """)
     List<ProblemDetailResponse> findBookmarkedProblemDetailByUnitIdAndUserId(
             @Param("unitId")long unitId,
@@ -44,11 +47,11 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     );
 
     @Query("""
-        SELECT COUNT(b)
-        FROM Bookmark b
-        JOIN Problem p ON p.id = b.problemId
-        JOIN Lesson l ON l.id = p.lessonId
-        WHERE l.unitId = :unitId AND b.userId = :userId
+            SELECT COUNT(b)
+            FROM Bookmark b
+            JOIN Problem p ON p.id = b.problemId
+            JOIN Lesson l ON l.id = p.lessonId
+            WHERE l.unitId = :unitId AND b.userId = :userId
     """)
     int countByUnitIdAndUserId(
             @Param("unitId")long unitId,

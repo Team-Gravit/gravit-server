@@ -2,7 +2,7 @@ package gravit.code.test.notification.facade;
 
 import gravit.code.global.annotation.Facade;
 import gravit.code.notification.domain.NotificationType;
-import gravit.code.notification.dto.internal.SeasonEndingMilestone;
+import gravit.code.notification.dto.internal.SeasonEndingMilestoneDto;
 import gravit.code.notification.service.NotificationService;
 import gravit.code.notification.support.NotificationMessageProvider;
 import gravit.code.notification.support.NotificationPushSender;
@@ -11,18 +11,16 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-// ==================== [QA 전용] 발송 조건과 무관하게 본인에게 알림을 즉시 생성하는 치트 Facade ====================
-// 실제 발송과 동일하게 인앱 알림함에 적재하고, 해당 타입이 푸시를 쓰는 경우 FCM 푸시도 함께 발송한다.
 @Facade
 @RequiredArgsConstructor
 public class TestNotificationQaFacade {
 
     private final NotificationService notificationService;
-    private final NotificationMessageProvider messageProvider;
-    private final NotificationPushSender notificationPushSender;
     private final UserService userService;
 
-    // 지정 유저에게 알림함 적재(+ push=true면 FCM 푸시). 프로덕션 발송 채널을 단일 유저 기준으로 재현한다.
+    private final NotificationMessageProvider messageProvider;
+    private final NotificationPushSender notificationPushSender;
+
     private void createForUser(
             long userId,
             NotificationType type,
@@ -87,8 +85,8 @@ public class TestNotificationQaFacade {
             long userId,
             int daysBefore
     ) {
-        List<SeasonEndingMilestone> milestones = messageProvider.seasonEndingMilestones();
-        SeasonEndingMilestone milestone = milestones.stream()
+        List<SeasonEndingMilestoneDto> milestones = messageProvider.seasonEndingMilestones();
+        SeasonEndingMilestoneDto milestone = milestones.stream()
                 .filter(m -> m.daysBefore() == daysBefore)
                 .findFirst()
                 .orElse(milestones.get(0));

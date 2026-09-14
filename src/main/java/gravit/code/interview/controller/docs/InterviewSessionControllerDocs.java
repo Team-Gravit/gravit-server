@@ -61,6 +61,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 요청 값이 유효하지 않음",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = {
                                     @ExampleObject(
                                             name = "유효성 검사 실패",
@@ -94,6 +95,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 출제할 문제가 부족함",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "문제 풀 부족",
                                     value = "{\"error\": \"INTERVIEW_4009\", \"message\": \"면접 질문 풀이 부족하여 세션을 생성할 수 없습니다.\"}"
@@ -102,12 +104,13 @@ public interface InterviewSessionControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "🚨 서버 내부 오류",
+                    description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "서버 오류",
-                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"서버 내부 오류가 발생했습니다.\"}"
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )
@@ -154,6 +157,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 본인의 세션이 아님",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "접근 거부",
                                     value = "{\"error\": \"INTERVIEW_4004\", \"message\": \"본인의 면접 세션만 접근할 수 있습니다.\"}"
@@ -165,6 +169,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 존재하지 않는 세션",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "세션 없음",
                                     value = "{\"error\": \"INTERVIEW_4003\", \"message\": \"존재하지 않는 면접 세션입니다.\"}"
@@ -173,12 +178,13 @@ public interface InterviewSessionControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "🚨 서버 내부 오류",
+                    description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "서버 오류",
-                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"서버 내부 오류가 발생했습니다.\"}"
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )
@@ -222,6 +228,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 요청 값이 유효하지 않음",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = {
                                     @ExampleObject(
                                             name = "유효성 검사 실패",
@@ -243,6 +250,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 본인의 세션이 아님",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "접근 거부",
                                     value = "{\"error\": \"INTERVIEW_4004\", \"message\": \"본인의 면접 세션만 접근할 수 있습니다.\"}"
@@ -254,6 +262,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 존재하지 않는 세션",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "세션 없음",
                                     value = "{\"error\": \"INTERVIEW_4003\", \"message\": \"존재하지 않는 면접 세션입니다.\"}"
@@ -265,6 +274,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 진행 중인 세션이 아님",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "진행 중 아님",
                                     value = "{\"error\": \"INTERVIEW_4005\", \"message\": \"진행 중인 면접 세션이 아닙니다.\"}"
@@ -273,12 +283,13 @@ public interface InterviewSessionControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "🚨 서버 내부 오류",
+                    description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "서버 오류",
-                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"서버 내부 오류가 발생했습니다.\"}"
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )
@@ -320,6 +331,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 본인의 세션이 아님",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "접근 거부",
                                     value = "{\"error\": \"INTERVIEW_4004\", \"message\": \"본인의 면접 세션만 접근할 수 있습니다.\"}"
@@ -331,6 +343,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 존재하지 않는 세션",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "세션 없음",
                                     value = "{\"error\": \"INTERVIEW_4003\", \"message\": \"존재하지 않는 면접 세션입니다.\"}"
@@ -342,6 +355,7 @@ public interface InterviewSessionControllerDocs {
                     description = "🚨 진행 중인 세션이 아님",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     name = "진행 중 아님",
                                     value = "{\"error\": \"INTERVIEW_4005\", \"message\": \"진행 중인 면접 세션이 아닙니다.\"}"
@@ -350,12 +364,13 @@ public interface InterviewSessionControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "🚨 서버 내부 오류",
+                    description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "서버 오류",
-                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"서버 내부 오류가 발생했습니다.\"}"
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )
@@ -472,6 +487,18 @@ public interface InterviewSessionControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class)
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
+                            )
+                    )
             )
     })
     @PatchMapping("/{sessionId}/submit")
@@ -530,6 +557,18 @@ public interface InterviewSessionControllerDocs {
                                     value = "{\"error\": \"INTERVIEW_4003\", \"message\": \"존재하지 않는 면접 세션입니다.\"}"
                             ),
                             schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
+                            )
                     )
             )
     })

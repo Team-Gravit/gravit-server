@@ -1,7 +1,6 @@
 package gravit.code.notification.infrastructure;
 
 import gravit.code.global.event.retry.RetrySweepTarget;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notification.domain.NotificationType;
@@ -15,24 +14,32 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.Set;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class FollowedRetryTarget implements RetrySweepTarget {
 
+    public static final String QUEUE_KEY = "followed-retry";
+    public static final String FIELD_FOLLOWER_ID = "followerId";
+    public static final String FIELD_FOLLOWEE_ID = "followeeId";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private static final Set<ErrorCode> NON_RETRYABLE_ERRORS = Set.of(
-            CustomErrorCode.USER_NOT_FOUND
+            USER_NOT_FOUND
     );
 
-    private final UserService userService;
-    private final NotificationMessageProvider messageProvider;
     private final NotificationFacade notificationFacade;
+
+    private final UserService userService;
+
+    private final NotificationMessageProvider messageProvider;
 
     @Override
     public String queueKey() {
-        return "followed-retry";
+        return QUEUE_KEY;
     }
 
     @Override
@@ -42,8 +49,8 @@ public class FollowedRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        long followerId = Long.parseLong(fields.get("followerId"));
-        long followeeId = Long.parseLong(fields.get("followeeId"));
+        long followerId = Long.parseLong(fields.get(FIELD_FOLLOWER_ID));
+        long followeeId = Long.parseLong(fields.get(FIELD_FOLLOWEE_ID));
 
         try {
             String nickname = userService.getUser(followerId).getNickname();

@@ -1,7 +1,5 @@
 package gravit.code.userLeague.service;
 
-import gravit.code.global.event.LeagueRankChangedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.dto.response.LeagueDetailResponse;
@@ -11,6 +9,7 @@ import gravit.code.season.service.SeasonService;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.dto.event.LeagueRankChangedEvent;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,31 +20,36 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.LEAGUE_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_LEAGUE_CONFLICT;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_LEAGUE_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserLeagueService {
 
+    private final SeasonService seasonService;
+
     private final UserLeagueRepository userLeagueRepository;
     private final UserRepository userRepository;
     private final LeagueRepository leagueRepository;
-    private final SeasonService seasonService;
 
     private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
     public String getUserLeagueName(Long userId){
         return userLeagueRepository.findUserLeagueNameByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_LEAGUE_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
     public LeagueDetailResponse getUserLeagueDetail(
             long userId
-    ){
-        // lazy로 걸려있어서 .getLeague()에서 추가 쿼리가 나감. 메서드 분리를... 해야할지?
+    ) {
         UserLeague userLeague = userLeagueRepository.findByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_LEAGUE_NOT_FOUND));
 
         return LeagueDetailResponse.of(
                 userLeague.getLeague().getId(),
@@ -59,7 +63,7 @@ public class UserLeagueService {
     @Transactional(readOnly = true)
     public int getLeagueSortOrder(long userId) {
         return userLeagueRepository.findLeagueSortOrderByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_LEAGUE_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -80,13 +84,13 @@ public class UserLeagueService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void initUserLeague(Long userId){
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         if(userLeagueRepository.existsByUserId(userId)) {
-            throw new RestApiException(CustomErrorCode.USER_LEAGUE_CONFLICT);
+            throw new RestApiException(USER_LEAGUE_CONFLICT);
         }
 
-        League startLeague = leagueRepository.findFirstByOrderBySortOrderAsc().orElseThrow(()-> new RestApiException(CustomErrorCode.LEAGUE_NOT_FOUND));
+        League startLeague = leagueRepository.findFirstByOrderBySortOrderAsc().orElseThrow(()-> new RestApiException(LEAGUE_NOT_FOUND));
 
         Season season = seasonService.getOrCreateActiveSeason();
         UserLeague userLeague = userLeagueRepository.save(UserLeague.create(user, season, startLeague));
@@ -98,5 +102,4 @@ public class UserLeagueService {
                 userLeague.getLp()
         ));
     }
-
 }

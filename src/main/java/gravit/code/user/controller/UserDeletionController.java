@@ -4,13 +4,15 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.user.controller.docs.UserDeletionControllerDocs;
 import gravit.code.user.service.UserDeletionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,12 +28,12 @@ public class UserDeletionController implements UserDeletionControllerDocs {
     ){
         Long userId = loginUser.getId();
         userDeleteWithMailService.requestDeleteMailWithMailAuthCode(userId, dest);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(ACCEPTED).build();
     }
 
     @PostMapping("/confirm")
     public ResponseEntity<Void> confirm(@RequestParam String mailAuthCode){
         userDeleteWithMailService.confirmDeleteByMailAuthCode(mailAuthCode);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 }

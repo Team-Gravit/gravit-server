@@ -11,8 +11,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InterviewAudioDeletionRetryTarget implements RetrySweepTarget {
 
-    private static final String QUEUE_KEY = "interview-audio-deletion-retry";
-    private static final String SESSION_ID_FIELD = "sessionId";
+    public static final String QUEUE_KEY = "interview-audio-deletion-retry";
+    public static final String FIELD_SESSION_ID = "sessionId";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private final InterviewAudioDeletionService interviewAudioDeletionService;
@@ -29,7 +30,7 @@ public class InterviewAudioDeletionRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        long sessionId = Long.parseLong(fields.get(SESSION_ID_FIELD));
+        long sessionId = Long.parseLong(fields.get(FIELD_SESSION_ID));
 
         interviewAudioDeletionService.deleteBySessionId(sessionId);
     }

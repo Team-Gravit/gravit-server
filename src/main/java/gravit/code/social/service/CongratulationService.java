@@ -47,7 +47,6 @@ public class CongratulationService {
         }
     }
 
-    // 유저가 이미 축하한 피드 id 집합. 피드/알림함 축하 완료 표시의 단일 원천으로 사용된다.
     @Transactional(readOnly = true)
     public Set<Long> getCongratulatedFeedIds(
             long userId,

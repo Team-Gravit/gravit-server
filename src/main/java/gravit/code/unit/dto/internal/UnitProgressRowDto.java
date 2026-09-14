@@ -6,10 +6,13 @@ import gravit.code.unit.dto.response.UnitProgressSummaryResponse;
 import static gravit.code.unit.domain.UnitProgressStatus.*;
 
 public record UnitProgressRowDto(
-    long unitId,
-    String title,
-    long totalLessons,
-    long solvedLessons
+        long unitId,
+
+        String title,
+
+        long totalLessons,
+
+        long solvedLessons
 ) {
     public UnitProgressSummaryResponse toSummary(){
         UnitProgressStatus unitProgressStatus;

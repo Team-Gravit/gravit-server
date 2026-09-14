@@ -22,7 +22,8 @@ public interface LeagueHistoryControllerDocs {
 
     @Operation(
             summary = "내 리그 히스토리 조회",
-            description = "현재 로그인한 유저의 시즌별 최종 티어 기록을 조회합니다."
+            description = "현재 로그인한 유저의 시즌별 최종 티어 기록을 조회합니다.<br>" +
+                    "🔐 <strong>Jwt 필요</strong><br>"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 내 리그 히스토리 조회 성공"),
@@ -37,6 +38,18 @@ public interface LeagueHistoryControllerDocs {
                                     value = "{\"error\":\"SEASON_4041\",\"message\":\"ACTIVE 시즌이 없습니다.\"}"
                             )
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
+                            )
+                    )
             )
     })
     @GetMapping("/me")
@@ -46,7 +59,8 @@ public interface LeagueHistoryControllerDocs {
 
     @Operation(
             summary = "특정 유저 리그 히스토리 조회",
-            description = "특정 유저의 시즌별 최종 티어 기록을 조회합니다."
+            description = "특정 유저의 시즌별 최종 티어 기록을 조회합니다.<br>" +
+                    "🔐 <strong>Jwt 필요</strong><br>"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 리그 히스토리 조회 성공"),
@@ -59,6 +73,18 @@ public interface LeagueHistoryControllerDocs {
                             examples = @ExampleObject(
                                     name = "ACTIVE 시즌 없음",
                                     value = "{\"error\":\"SEASON_4041\",\"message\":\"ACTIVE 시즌이 없습니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
                             )
                     )
             )

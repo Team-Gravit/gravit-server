@@ -1,7 +1,7 @@
 package gravit.code.social.service;
 
 import gravit.code.social.dto.internal.RecommendCandidateDto;
-import gravit.code.social.repository.RecommendUserRepository;
+import gravit.code.social.repository.custom.RecommendUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

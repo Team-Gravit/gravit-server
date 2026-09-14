@@ -29,7 +29,7 @@ public class Report {
     @Column(name = "report_type", nullable = false)
     private ReportType reportType;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
