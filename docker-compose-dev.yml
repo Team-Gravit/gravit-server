@@ -33,6 +33,16 @@ services:
           cpus: '1'
           memory: 768M
 
+  loki:
+    image: grafana/loki:3.5.5
+    container_name: gravit-loki-dev
+    command: [ "-config.file=/etc/loki/config.yml" ]
+    volumes:
+      - ./infra/loki-config.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+    networks:
+      - gravit-dev
+
   alloy-dev:
     image: grafana/alloy:latest
     container_name: alloy-dev
@@ -49,6 +59,7 @@ services:
 
 volumes:
   redis_data:
+  loki_data:
 
 networks:
   gravit-dev:
