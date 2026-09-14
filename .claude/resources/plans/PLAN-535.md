@@ -269,3 +269,5 @@ docker logs alloy-dev --since 10m 2>&1 | grep -i -E 'error|loki' | tail -5      
 
 ## Deviation Log
 > implement 스킬이 구현 중 계획을 벗어난 지점을 여기에 기록한다. (작성 시점엔 비워둔다)
+
+- `docker-compose-prod.yml`, `docker-compose-dev.yml`: 절 3의 `loki_data` 볼륨에 `name: gravit-loki-prod-data`, `name: gravit-loki-dev-data`를 명시함(#543, 머지 후 수정) — 이유: compose 프로젝트 이름이 배포 디렉터리 이름이라, 서버의 USS 운영 compose(프로젝트 `prod`, `uss-loki`)와 같은 `prod_loki_data` 볼륨을 가리켰다. 계획 단계에서 프로젝트 이름 충돌을 확인하지 않았다.

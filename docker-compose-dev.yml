@@ -59,7 +59,9 @@ services:
 
 volumes:
   redis_data:
+  # compose 프로젝트 이름(배포 디렉터리 이름 dev)은 서버의 다른 서비스와 겹칠 수 있어 이름을 고정한다.
   loki_data:
+    name: gravit-loki-dev-data
 
 networks:
   gravit-dev:
