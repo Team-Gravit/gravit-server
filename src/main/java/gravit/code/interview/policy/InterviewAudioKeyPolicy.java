@@ -10,6 +10,7 @@ public class InterviewAudioKeyPolicy {
 
     private static final String KEY_FORMAT = "interview/%d/%d.%s";
     private static final String KEY_PREFIX_FORMAT = "interview/%d/%d.";
+    private static final String SESSION_PREFIX_FORMAT = "interview/%d/";
 
     public String issue(
             long sessionId,
@@ -34,5 +35,9 @@ public class InterviewAudioKeyPolicy {
         if (!InterviewAudioFormat.hasExtension(extension)) {
             throw new RestApiException(CustomErrorCode.INTERVIEW_AUDIO_KEY_INVALID);
         }
+    }
+
+    public String sessionPrefix(long sessionId) {
+        return String.format(SESSION_PREFIX_FORMAT, sessionId);
     }
 }

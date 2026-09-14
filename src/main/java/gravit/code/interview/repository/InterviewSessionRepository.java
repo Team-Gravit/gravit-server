@@ -1,5 +1,6 @@
 package gravit.code.interview.repository;
 
+import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import gravit.code.interview.domain.InterviewSessionStatus;
@@ -63,4 +64,13 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
             WHERE s.userId = :userId
     """)
     long findMaxAttemptCountByUserId(@Param("userId") long userId);
+
+    @Query("""
+            SELECT s.id FROM InterviewSession s
+            WHERE s.userId = :userId AND s.inputType = :inputType
+    """)
+    List<Long> findIdsByUserIdAndInputType(
+            @Param("userId") long userId,
+            @Param("inputType") InterviewInputType inputType
+    );
 }

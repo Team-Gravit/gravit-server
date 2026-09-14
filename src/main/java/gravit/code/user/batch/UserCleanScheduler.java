@@ -1,7 +1,7 @@
 package gravit.code.user.batch;
 
+import gravit.code.user.facade.UserDeletionFacade;
 import gravit.code.user.infrastructure.RedisUserCleanManager;
-import gravit.code.user.service.UserDeletionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class UserCleanScheduler {
 
-    private final UserDeletionService userDeletionService;
+    private final UserDeletionFacade userDeletionFacade;
     private final RedisUserCleanManager cleanManager;
 
     @Scheduled(
@@ -31,19 +31,25 @@ public class UserCleanScheduler {
         }
 
         int processed = 0;
+        int skipped = 0;
         int failed = 0;
 
         for(Long userId : dueIds){
             try{
-                userDeletionService.cleanUserDeletion(userId);
+                boolean cleaned = userDeletionFacade.cleanUserDeletion(userId);
                 cleanManager.removeUserKey(userId);
-                processed++;
+
+                if (cleaned) {
+                    processed++;
+                } else {
+                    skipped++;
+                }
             }catch (Exception e){
                 failed++;
                 log.warn("[clean] 유저 Clean Deletion 도중 에러 발생. userId : {}, msg : {}", userId,e.getMessage());
             }
         }
 
-        log.info("[clean] 유저 Clean Deletion Batch 작업 종료. processed : {}, failed : {}", processed, failed);
+        log.info("[clean] 유저 Clean Deletion Batch 작업 종료. processed : {}, skipped : {}, failed : {}", processed, skipped, failed);
     }
 }

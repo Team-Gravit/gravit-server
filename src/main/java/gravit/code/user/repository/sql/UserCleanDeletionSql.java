@@ -20,7 +20,8 @@ public class UserCleanDeletionSql {
      * 5. 리그/시즌 (user_league_history, user_league)
      * 6. 미션/리포트 (user_mission, report)
      * 7. 문의 (inquiry_answer → inquiry)
-     * 8. 사용자 (users)
+     * 8. 면접 (interview_feedback, interview_answer, interview_session_topic, interview_session)
+     * 9. 사용자 (users)
      *
      * NOTE: user_badge·user_mission_stat·user_planet_completion·user_qualified_solve_stat 는
      *       V9(drop_badge_tables)에서 삭제된 테이블이라 더 이상 대상에 포함하지 않는다.
@@ -87,6 +88,24 @@ public class UserCleanDeletionSql {
               ),
               d_inquiry AS (
                 DELETE FROM inquiry WHERE user_id = :id
+              ),
+              d_interview_feedback AS (
+                DELETE FROM interview_feedback
+                WHERE answer_id IN (
+                  SELECT id FROM interview_answer
+                  WHERE session_id IN (SELECT id FROM interview_session WHERE user_id = :id)
+                )
+              ),
+              d_interview_answer AS (
+                DELETE FROM interview_answer
+                WHERE session_id IN (SELECT id FROM interview_session WHERE user_id = :id)
+              ),
+              d_interview_session_topic AS (
+                DELETE FROM interview_session_topic
+                WHERE session_id IN (SELECT id FROM interview_session WHERE user_id = :id)
+              ),
+              d_interview_session AS (
+                DELETE FROM interview_session WHERE user_id = :id
               )
             DELETE FROM users WHERE id = :id;
         """;
