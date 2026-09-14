@@ -96,13 +96,14 @@ public class UserDeletionService {
     }
 
     @Transactional
-    public void cleanUserDeletion(long userId){
-        userRepository.cleanUserDeletion(userId);
-    }
+    public boolean cleanUserDeletion(long userId) {
+        if (userRepository.findWithdrawnIdForUpdate(userId).isEmpty()) {
+            return false;
+        }
 
-    @Transactional(readOnly = true)
-    public boolean isWithdrawn(long userId) {
-        return userRepository.existsWithdrawnById(userId);
+        userRepository.cleanUserDeletion(userId);
+
+        return true;
     }
 
     private Optional<LeagueRankChangedEvent> toRankRemovedEvent(long userId) {

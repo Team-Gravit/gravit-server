@@ -36,11 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -168,8 +166,7 @@ class UserDeletionFacadeIntegrationTest {
             boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());
 
             // then
-            verify(userDeletionService, never()).cleanUserDeletion(anyLong());
-            verifyNoInteractions(s3Client);
+            verifyNoInteractions(s3Client, retryEventPublisher);
 
             assertSoftly(softly -> {
                 softly.assertThat(cleaned).isFalse();
@@ -184,8 +181,7 @@ class UserDeletionFacadeIntegrationTest {
             boolean cleaned = userDeletionFacade.cleanUserDeletion(NON_EXISTENT_USER_ID);
 
             // then
-            verify(userDeletionService, never()).cleanUserDeletion(anyLong());
-            verifyNoInteractions(s3Client);
+            verifyNoInteractions(s3Client, retryEventPublisher);
             assertThat(cleaned).isFalse();
         }
     }

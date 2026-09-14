@@ -87,10 +87,9 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDeletionR
     );
 
     @Query(value = """
-            SELECT EXISTS (
-                SELECT 1 FROM users
-                WHERE id = :userId AND deleted_at IS NOT NULL
-            )
+            SELECT id FROM users
+            WHERE id = :userId AND deleted_at IS NOT NULL
+            FOR UPDATE
     """, nativeQuery = true)
-    boolean existsWithdrawnById(@Param("userId") long userId);
+    Optional<Long> findWithdrawnIdForUpdate(@Param("userId") long userId);
 }

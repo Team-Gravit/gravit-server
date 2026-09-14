@@ -1,5 +1,6 @@
 package gravit.code.user.service;
 
+import gravit.code.admin.repository.AdminUserRepository;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewSession;
@@ -17,6 +18,7 @@ import gravit.code.season.domain.Season;
 import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserStatus;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.user.service.port.MailAuthCodeStore;
@@ -28,9 +30,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.*;
 import static gravit.code.interview.fixture.InterviewSessionFixture.미제출_답안;
@@ -57,6 +66,9 @@ class UserDeletionServiceIntegrationTest {
     private static final int STRUCTURE_SCORE = 3;
     private static final int CLARITY_SCORE = 3;
     private static final String IMPROVEMENT_SUGGESTION = "핵심을 먼저 말한 좋은 답변입니다.";
+    private static final String RESTORED_HANDLE = "restored1";
+    private static final long LOCK_WAIT_MILLIS = 500L;
+    private static final long TIMEOUT_SECONDS = 10L;
 
     @Autowired
     private UserDeletionService userDeletionService;
@@ -66,6 +78,12 @@ class UserDeletionServiceIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AdminUserRepository adminUserRepository;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     @Autowired
     private LeagueRankingStore leagueRankingStore;
@@ -99,6 +117,32 @@ class UserDeletionServiceIntegrationTest {
 
     @MockitoBean
     private MailSender mailSender;
+
+    private User 탈퇴_회원(int index) {
+        User user = userFixture.일반_유저(index);
+        userRepository.deleteById(user.getId());
+        return user;
+    }
+
+    private void 대기(CountDownLatch latch) {
+        try {
+            if (!latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("래치 대기 시간 초과");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private boolean 끝나지_않고_대기_중인지(Future<?> future) throws Exception {
+        try {
+            future.get(LOCK_WAIT_MILLIS, TimeUnit.MILLISECONDS);
+            return false;
+        } catch (TimeoutException e) {
+            return true;
+        }
+    }
 
     @Nested
     @DisplayName("회원 탈퇴 메일을 요청할 때")
@@ -149,19 +193,22 @@ class UserDeletionServiceIntegrationTest {
         @DisplayName("연관 데이터가 없어도 전체 삭제 SQL이 실제 스키마에서 정상 실행되고 유저가 삭제된다")
         void 연관데이터_없이_정상_삭제() {
             // given
-            User user = userFixture.일반_유저(1);
+            User user = 탈퇴_회원(1);
 
             // when — 전체 CTE(DELETE 문)를 실제 DB에 실행: 존재하지 않는 테이블/문법 오류가 있으면 여기서 실패한다
-            userDeletionService.cleanUserDeletion(user.getId());
+            boolean cleaned = userDeletionService.cleanUserDeletion(user.getId());
 
             // then
-            assertThat(userRepository.findById(user.getId())).isEmpty();
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isTrue();
+                softly.assertThat(userRepository.findByProviderId(user.getProviderId())).isEmpty();
+            });
         }
 
         @Test
         void 탈퇴_회원의_면접_기록만_삭제하고_다른_회원의_기록은_남긴다() {
             // given
-            User target = userFixture.일반_유저(1);
+            User target = 탈퇴_회원(1);
             User other = userFixture.일반_유저(2);
 
             InterviewSession completedSession = interviewSessionRepository.save(
@@ -208,58 +255,84 @@ class UserDeletionServiceIntegrationTest {
                 softly.assertThat(interviewFeedbackRepository.findById(otherFeedback.getId())).isPresent();
             });
         }
-    }
-
-    @Nested
-    @DisplayName("탈퇴 상태를 확인할 때")
-    class IsWithdrawn {
 
         @Test
-        void 탈퇴한_회원이면_true를_돌려준다() {
+        void 활성_회원이면_지우지_않고_false를_돌려준다() {
             // given
             User user = userFixture.일반_유저(1);
-            userRepository.deleteById(user.getId());
+            InterviewSession session = interviewSessionRepository.save(
+                    상태_세션(user.getId(), InterviewSessionStatus.COMPLETED));
 
             // when
-            boolean withdrawn = userDeletionService.isWithdrawn(user.getId());
+            boolean cleaned = userDeletionService.cleanUserDeletion(user.getId());
 
             // then
-            assertThat(withdrawn).isTrue();
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isFalse();
+                softly.assertThat(userRepository.findById(user.getId())).isPresent();
+                softly.assertThat(interviewSessionRepository.findById(session.getId())).isPresent();
+            });
         }
 
         @Test
-        void 활성_회원이면_false를_돌려준다() {
+        void 탈퇴_후_복구한_회원이면_지우지_않고_false를_돌려준다() {
             // given
-            User user = userFixture.일반_유저(1);
-
-            // when
-            boolean withdrawn = userDeletionService.isWithdrawn(user.getId());
-
-            // then
-            assertThat(withdrawn).isFalse();
-        }
-
-        @Test
-        void 탈퇴_후_복구한_회원이면_false를_돌려준다() {
-            // given
-            User user = userFixture.일반_유저(1);
-            userRepository.deleteById(user.getId());
+            User user = 탈퇴_회원(1);
             userService.restoreUser(user.getProviderId());
 
             // when
-            boolean withdrawn = userDeletionService.isWithdrawn(user.getId());
+            boolean cleaned = userDeletionService.cleanUserDeletion(user.getId());
 
             // then
-            assertThat(withdrawn).isFalse();
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isFalse();
+                softly.assertThat(userRepository.findById(user.getId())).isPresent();
+            });
         }
 
         @Test
         void 없는_회원이면_false를_돌려준다() {
             // when
-            boolean withdrawn = userDeletionService.isWithdrawn(NON_EXISTENT_USER_ID);
+            boolean cleaned = userDeletionService.cleanUserDeletion(NON_EXISTENT_USER_ID);
 
             // then
-            assertThat(withdrawn).isFalse();
+            assertThat(cleaned).isFalse();
+        }
+
+        @Test
+        void 복구가_행을_먼저_잠그면_복구가_커밋된_뒤_삭제를_건너뛴다() throws Exception {
+            // given
+            User user = 탈퇴_회원(1);
+            CountDownLatch restoreLocked = new CountDownLatch(1);
+            CountDownLatch restoreReleased = new CountDownLatch(1);
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+
+            try {
+                Future<?> restore = executor.submit(() -> transactionTemplate.executeWithoutResult(status -> {
+                    adminUserRepository.restoreStatusById(user.getId(), UserStatus.ACTIVE.name(), RESTORED_HANDLE);
+                    restoreLocked.countDown();
+                    대기(restoreReleased);
+                }));
+                대기(restoreLocked);
+
+                // when
+                Future<Boolean> deletion = executor.submit(() -> userDeletionService.cleanUserDeletion(user.getId()));
+                boolean waitedForRestore = 끝나지_않고_대기_중인지(deletion);
+
+                restoreReleased.countDown();
+                restore.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                boolean cleaned = deletion.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+                // then
+                assertSoftly(softly -> {
+                    softly.assertThat(waitedForRestore).isTrue();
+                    softly.assertThat(cleaned).isFalse();
+                    softly.assertThat(userRepository.findById(user.getId())).isPresent();
+                });
+            } finally {
+                restoreReleased.countDown();
+                executor.shutdownNow();
+            }
         }
     }
 

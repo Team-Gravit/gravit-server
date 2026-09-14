@@ -16,13 +16,11 @@ public class UserDeletionFacade {
     private final InterviewAudioDeletionService interviewAudioDeletionService;
 
     public boolean cleanUserDeletion(long userId) {
-        if (!userDeletionService.isWithdrawn(userId)) {
-            return false;
-        }
-
         List<Long> voiceSessionIds = interviewAudioDeletionService.getVoiceSessionIds(userId);
 
-        userDeletionService.cleanUserDeletion(userId);
+        if (!userDeletionService.cleanUserDeletion(userId)) {
+            return false;
+        }
 
         interviewAudioDeletionService.deleteAllBySessionIds(voiceSessionIds);
 
