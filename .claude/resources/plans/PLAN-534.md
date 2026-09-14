@@ -474,9 +474,9 @@ if (cleaned) {
 | DB 삭제 뒤, 적재 전의 유실 (D1) | 막지 않는다. 음성 세션 id가 메모리에만 있어, DB 삭제 뒤 음성 삭제나 적재가 끝나기 전에 프로세스가 종료되거나 적재가 실패하면 음성이 영구히 남는다. 막으려면 DB 삭제 전에 세션 id를 큐에 먼저 적재하고 스위퍼만 지우게 바꾼다. 대신 DB 삭제가 실패해도 음성이 먼저 지워질 수 있다 |
 | DB 삭제 반복 실패 알림 | 없음. 매시간 다시 시도하고 warn 로그만 남는다. 기존 동작 |
 | 목록 조회 권한을 줄 수 없을 때 | 결정적 키 15개(문항 5 × 확장자 3)를 목록 조회 없이 한 번에 지우면 `s3:DeleteObject`만으로 된다. 대신 확장자가 enum에서 빠지면 그 확장자로 올라간 과거 객체를 놓친다 |
-| 확인과 삭제 사이의 복구 (D3) | 막지 않는다. 탈퇴 상태 확인과 삭제 SQL 사이(음성 세션 id 조회 한 번)에 복구하면 지워진다. 창이 짧고 복구는 사람이 누르는 동작이다 |
 
 ## Deviation Log
 > implement 스킬이 구현 중 계획을 벗어난 지점을 여기에 기록한다. (작성 시점엔 비워둔다)
 
 - 테스트: 계획서 "검증"의 신규 테스트 파일 4개와 `UserDeletionServiceIntegrationTest` 시나리오 추가는 작성하지 않음 — 이유: 테스트 작성은 implement 스킬 범위 밖(`write-test`). 기존 테스트는 수정 없이 컴파일된다(`compileJava`, `compileTestJava` 통과).
+- `UserRepository`, `UserDeletionService`, `UserDeletionFacade`: 탈퇴 확인을 삭제와 같은 트랜잭션으로 옮기고 `users` 행을 `FOR UPDATE`로 잠근다. `existsWithdrawnById`는 `findWithdrawnIdForUpdate`로, `isWithdrawn`은 `cleanUserDeletion`의 `boolean` 반환으로 바뀌고, Facade의 사전 확인은 없앴다. "나중에 고려할 문제"의 "확인과 삭제 사이의 복구" 행은 삭제 — 이유: PR #541 리뷰(코드래빗). 확인과 삭제가 다른 트랜잭션이라 그 사이 복구가 커밋되면 복구한 회원이 지워졌다. 두 복구 경로(`User.restoreUser`, `AdminUserRepository.restoreStatusById`)가 모두 같은 행을 UPDATE하므로 행 잠금만으로 순서가 정해져, CTE마다 조건을 거는 제안은 따르지 않았다. 계획서 본문의 `existsWithdrawnById`, `isWithdrawn` 표기는 이 두 메서드로 읽는다.
