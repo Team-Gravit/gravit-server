@@ -38,7 +38,7 @@ effort: xhigh
 
 ## Phase 3: Docs 인터페이스 작성
 
-1. `.claude/spec/api-docs-convention.md`를 읽어 어노테이션 규칙과 작성 컨벤션을 확인하라
+1. `.claude/rules/api-docs-convention.md`를 읽어 어노테이션 규칙과 작성 컨벤션을 확인하라
 2. [template/api-docs-template.md](template/api-docs-template.md)를 읽어 코드 템플릿 구조를 확인하라
 3. 컨벤션과 템플릿에 따라 `controller/docs/{Controller}Docs.java` 파일을 생성하라
 

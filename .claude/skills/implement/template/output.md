@@ -15,4 +15,4 @@
 
 **정책 문서**: {갱신한 service-policy 파일과 바뀐 규칙 · 없으면 "변경 없음"}
 **이슈**: {Deviation Log 한 줄 요약 · 없으면 "없음"}
-**다음**: `write-test` → `run-test` → `open-pr`
+**다음**: `write-test` → `run-test` → `commit-push` → `open-pr`
