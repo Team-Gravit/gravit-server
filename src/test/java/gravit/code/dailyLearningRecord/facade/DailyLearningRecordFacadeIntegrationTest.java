@@ -1,6 +1,7 @@
 package gravit.code.dailyLearningRecord.facade;
 
 import gravit.code.dailyLearningRecord.domain.DailyLearningRecord;
+import gravit.code.dailyLearningRecord.dto.response.DayLearningRecordResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningRecordResponse;
 import gravit.code.dailyLearningRecord.repository.DailyLearningRecordRepository;
 import gravit.code.global.exception.domain.RestApiException;
@@ -13,18 +14,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.util.List;
 
+import static gravit.code.dailyLearningRecord.domain.DayTiming.FUTURE;
+import static gravit.code.dailyLearningRecord.domain.DayTiming.PAST;
+import static gravit.code.dailyLearningRecord.domain.DayTiming.TODAY;
 import static gravit.code.global.exception.domain.CustomErrorCode.LEARNING_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
 class DailyLearningRecordFacadeIntegrationTest {
-
-    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     @Autowired
     private DailyLearningRecordFacade dailyLearningRecordFacade;
@@ -34,6 +37,9 @@ class DailyLearningRecordFacadeIntegrationTest {
 
     @Autowired
     private LearningRepository learningRepository;
+
+    @Autowired
+    private Clock clock;
 
     private Learning saveLearningWithConsecutiveDays(long userId, int consecutiveSolvedDays) {
         Learning learning = Learning.create(userId);
@@ -46,14 +52,13 @@ class DailyLearningRecordFacadeIntegrationTest {
     class GetWeeklyLearningRecord {
 
         @Test
-        void 연속_학습일과_학습한_요일을_함께_반환한다() {
+        void 연속_학습일과_요일별_시점_학습_완료_여부를_함께_반환한다() {
             // given
             long userId = 1L;
             saveLearningWithConsecutiveDays(userId, 7);
 
-            LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
+            LocalDate monday = LocalDate.now(clock).with(DayOfWeek.MONDAY);
             dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, monday));
-            dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, monday.plusDays(2)));
 
             // when
             WeeklyLearningRecordResponse result = dailyLearningRecordFacade.getWeeklyLearningRecord(userId);
@@ -61,13 +66,12 @@ class DailyLearningRecordFacadeIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result.consecutiveSolvedDays()).isEqualTo(7);
-                softly.assertThat(result.MONDAY()).isTrue();
-                softly.assertThat(result.TUESDAY()).isFalse();
-                softly.assertThat(result.WEDNESDAY()).isTrue();
-                softly.assertThat(result.THURSDAY()).isFalse();
-                softly.assertThat(result.FRIDAY()).isFalse();
-                softly.assertThat(result.SATURDAY()).isFalse();
-                softly.assertThat(result.SUNDAY()).isFalse();
+                softly.assertThat(result.MONDAY().dayTiming()).isEqualTo(PAST);
+                softly.assertThat(result.MONDAY().isCompleted()).isTrue();
+                softly.assertThat(result.TUESDAY().dayTiming()).isEqualTo(TODAY);
+                softly.assertThat(result.TUESDAY().isCompleted()).isFalse();
+                softly.assertThat(result.WEDNESDAY().dayTiming()).isEqualTo(FUTURE);
+                softly.assertThat(result.WEDNESDAY().isCompleted()).isFalse();
             });
         }
 
@@ -83,13 +87,17 @@ class DailyLearningRecordFacadeIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result.consecutiveSolvedDays()).isEqualTo(3);
-                softly.assertThat(result.MONDAY()).isFalse();
-                softly.assertThat(result.TUESDAY()).isFalse();
-                softly.assertThat(result.WEDNESDAY()).isFalse();
-                softly.assertThat(result.THURSDAY()).isFalse();
-                softly.assertThat(result.FRIDAY()).isFalse();
-                softly.assertThat(result.SATURDAY()).isFalse();
-                softly.assertThat(result.SUNDAY()).isFalse();
+                softly.assertThat(List.of(
+                                result.MONDAY(),
+                                result.TUESDAY(),
+                                result.WEDNESDAY(),
+                                result.THURSDAY(),
+                                result.FRIDAY(),
+                                result.SATURDAY(),
+                                result.SUNDAY()
+                        ))
+                        .extracting(DayLearningRecordResponse::isCompleted)
+                        .containsOnly(false);
             });
         }
 
