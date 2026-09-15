@@ -1,7 +1,9 @@
 package gravit.code.dailyLearningRecord.service;
 
 import gravit.code.dailyLearningRecord.domain.DailyLearningRecord;
+import gravit.code.dailyLearningRecord.domain.DayTiming;
 import gravit.code.dailyLearningRecord.dto.response.DailySolvedCountResponse;
+import gravit.code.dailyLearningRecord.dto.response.DayLearningRecordResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
 import gravit.code.dailyLearningRecord.repository.DailyLearningRecordRepository;
 import gravit.code.global.consts.TimeZoneConst;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,15 +29,23 @@ public class DailyLearningRecordService {
 
     private final DailyLearningRecordRepository dailyLearningRecordRepository;
 
+    private final Clock clock;
+
     @Transactional(readOnly = true)
-    public Set<DayOfWeek> getWeeklySolvedDays(long userId) {
-        LocalDate today = LocalDate.now(TimeZoneConst.KST);
+    public Map<DayOfWeek, DayLearningRecordResponse> getWeeklyDayRecords(long userId) {
+        LocalDate today = LocalDate.now(clock);
         LocalDate monday = today.with(DayOfWeek.MONDAY);
         LocalDate sunday = today.with(DayOfWeek.SUNDAY);
 
-        return dailyLearningRecordRepository.findSolvedDatesByUserIdAndDateRange(userId, monday, sunday).stream()
-                .map(LocalDate::getDayOfWeek)
-                .collect(Collectors.toUnmodifiableSet());
+        Set<LocalDate> solvedDates = Set.copyOf(
+                dailyLearningRecordRepository.findSolvedDatesByUserIdAndDateRange(userId, monday, sunday)
+        );
+
+        return monday.datesUntil(sunday.plusDays(1))
+                .collect(Collectors.toUnmodifiableMap(
+                        LocalDate::getDayOfWeek,
+                        date -> DayLearningRecordResponse.of(DayTiming.of(date, today), solvedDates.contains(date))
+                ));
     }
 
     @Transactional(readOnly = true)

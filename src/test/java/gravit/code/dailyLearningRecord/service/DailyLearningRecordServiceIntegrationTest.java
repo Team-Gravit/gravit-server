@@ -2,6 +2,7 @@ package gravit.code.dailyLearningRecord.service;
 
 import gravit.code.dailyLearningRecord.domain.DailyLearningRecord;
 import gravit.code.dailyLearningRecord.dto.response.DailySolvedCountResponse;
+import gravit.code.dailyLearningRecord.dto.response.DayLearningRecordResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningReportResponse;
 import gravit.code.dailyLearningRecord.repository.DailyLearningRecordRepository;
 import gravit.code.support.TCSpringBootTest;
@@ -10,13 +11,17 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
+import static gravit.code.dailyLearningRecord.domain.DayTiming.FUTURE;
+import static gravit.code.dailyLearningRecord.domain.DayTiming.PAST;
+import static gravit.code.dailyLearningRecord.domain.DayTiming.TODAY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -32,6 +37,9 @@ class DailyLearningRecordServiceIntegrationTest {
     @Autowired
     private DailyLearningRecordRepository dailyLearningRecordRepository;
 
+    @Autowired
+    private Clock clock;
+
     private DailyLearningRecord saveSolvedRecord(long userId, LocalDate date) {
         DailyLearningRecord record = DailyLearningRecord.create(userId, date);
         record.increaseSolvedLessonCount();
@@ -39,74 +47,94 @@ class DailyLearningRecordServiceIntegrationTest {
     }
 
     @Nested
-    @DisplayName("주간 학습 요일을 조회할 때")
-    class GetWeeklySolvedDays {
+    @DisplayName("주간 요일별 학습 기록을 조회할 때")
+    class GetWeeklyDayRecords {
 
         @Test
-        void 모든_요일에_학습_기록이_있으면_모든_요일을_반환한다() {
+        void 학습_기록이_없으면_7개_요일을_모두_미완료로_반환한다() {
             // given
             long userId = 1L;
-            LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
-            for (int i = 0; i < 7; i++) {
-                dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, monday.plusDays(i)));
-            }
 
             // when
-            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
+            Map<DayOfWeek, DayLearningRecordResponse> result = dailyLearningRecordService.getWeeklyDayRecords(userId);
 
             // then
-            assertThat(result).containsExactlyInAnyOrder(
-                    DayOfWeek.MONDAY,
-                    DayOfWeek.TUESDAY,
-                    DayOfWeek.WEDNESDAY,
-                    DayOfWeek.THURSDAY,
-                    DayOfWeek.FRIDAY,
-                    DayOfWeek.SATURDAY,
-                    DayOfWeek.SUNDAY
-            );
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(7);
+                softly.assertThat(result.values())
+                        .extracting(DayLearningRecordResponse::isCompleted)
+                        .containsOnly(false);
+            });
         }
 
         @Test
-        void 월요일과_수요일만_학습했다면_해당_요일만_반환한다() {
+        void 어제는_PAST_오늘은_TODAY_내일은_FUTURE로_판정한다() {
             // given
             long userId = 1L;
-            LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
-            dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, monday));
-            dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, monday.plusDays(2)));
+            LocalDate today = LocalDate.now(clock);
 
             // when
-            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
+            Map<DayOfWeek, DayLearningRecordResponse> result = dailyLearningRecordService.getWeeklyDayRecords(userId);
 
             // then
-            assertThat(result).containsExactlyInAnyOrder(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY);
+            assertSoftly(softly -> {
+                softly.assertThat(result.get(today.minusDays(1).getDayOfWeek()).dayTiming()).isEqualTo(PAST);
+                softly.assertThat(result.get(today.getDayOfWeek()).dayTiming()).isEqualTo(TODAY);
+                softly.assertThat(result.get(today.plusDays(1).getDayOfWeek()).dayTiming()).isEqualTo(FUTURE);
+            });
         }
 
         @Test
-        void 학습_기록이_없으면_빈_결과를_반환한다() {
+        void 지난_요일에_학습했다면_PAST이면서_완료다() {
             // given
             long userId = 1L;
+            LocalDate yesterday = LocalDate.now(clock).minusDays(1);
+            saveSolvedRecord(userId, yesterday);
 
             // when
-            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
+            Map<DayOfWeek, DayLearningRecordResponse> result = dailyLearningRecordService.getWeeklyDayRecords(userId);
 
             // then
-            assertThat(result).isEmpty();
+            DayLearningRecordResponse yesterdayRecord = result.get(yesterday.getDayOfWeek());
+            assertSoftly(softly -> {
+                softly.assertThat(yesterdayRecord.dayTiming()).isEqualTo(PAST);
+                softly.assertThat(yesterdayRecord.isCompleted()).isTrue();
+            });
+        }
+
+        @Test
+        void 오늘_학습했다면_TODAY이면서_완료다() {
+            // given
+            long userId = 1L;
+            LocalDate today = LocalDate.now(clock);
+            saveSolvedRecord(userId, today);
+
+            // when
+            Map<DayOfWeek, DayLearningRecordResponse> result = dailyLearningRecordService.getWeeklyDayRecords(userId);
+
+            // then
+            DayLearningRecordResponse todayRecord = result.get(today.getDayOfWeek());
+            assertSoftly(softly -> {
+                softly.assertThat(todayRecord.dayTiming()).isEqualTo(TODAY);
+                softly.assertThat(todayRecord.isCompleted()).isTrue();
+            });
         }
 
         @Test
         void 다른_주차의_학습_기록은_무시된다() {
             // given
             long userId = 1L;
-            LocalDate lastMonday = LocalDate.now(KST).with(DayOfWeek.MONDAY).minusWeeks(1);
-            LocalDate nextMonday = LocalDate.now(KST).with(DayOfWeek.MONDAY).plusWeeks(1);
-            dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, lastMonday));
-            dailyLearningRecordRepository.save(DailyLearningRecord.create(userId, nextMonday));
+            LocalDate thisMonday = LocalDate.now(clock).with(DayOfWeek.MONDAY);
+            saveSolvedRecord(userId, thisMonday.minusWeeks(1));
+            saveSolvedRecord(userId, thisMonday.plusWeeks(1));
 
             // when
-            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
+            Map<DayOfWeek, DayLearningRecordResponse> result = dailyLearningRecordService.getWeeklyDayRecords(userId);
 
             // then
-            assertThat(result).isEmpty();
+            assertThat(result.values())
+                    .extracting(DayLearningRecordResponse::isCompleted)
+                    .containsOnly(false);
         }
 
         @Test
@@ -114,14 +142,14 @@ class DailyLearningRecordServiceIntegrationTest {
             // given
             long userId = 1L;
             long otherUserId = 2L;
-            LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
-            dailyLearningRecordRepository.save(DailyLearningRecord.create(otherUserId, monday));
+            LocalDate today = LocalDate.now(clock);
+            saveSolvedRecord(otherUserId, today);
 
             // when
-            Set<DayOfWeek> result = dailyLearningRecordService.getWeeklySolvedDays(userId);
+            Map<DayOfWeek, DayLearningRecordResponse> result = dailyLearningRecordService.getWeeklyDayRecords(userId);
 
             // then
-            assertThat(result).isEmpty();
+            assertThat(result.get(today.getDayOfWeek()).isCompleted()).isFalse();
         }
     }
 

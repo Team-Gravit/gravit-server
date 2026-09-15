@@ -119,7 +119,7 @@ class UserFacadeIntegrationTest {
             org.springframework.test.util.ReflectionTestUtils.setField(learning, "recentSolvedChapterId", chapter.getId());
             learningRepository.save(learning);
 
-            LocalDate monday = LocalDate.now(KST).with(DayOfWeek.MONDAY);
+            LocalDate monday = LocalDate.now(clock).with(DayOfWeek.MONDAY);
             dailyLearningRecordRepository.save(DailyLearningRecord.create(user.getId(), monday));
 
             Mission mission = missionRepository.save(MissionFixture.미션정의_레슨_1개());
@@ -141,7 +141,7 @@ class UserFacadeIntegrationTest {
                 softly.assertThat(result.learningDetailResponse().recentSolvedChapterTitle()).isEqualTo("운영체제");
                 softly.assertThat(result.learningDetailResponse().units()).hasSize(2);
                 softly.assertThat(result.recommendedUnitResponses()).hasSize(2);
-                softly.assertThat(result.weeklyLearningRecordResponse().MONDAY()).isTrue();
+                softly.assertThat(result.weeklyLearningRecordResponse().MONDAY().isCompleted()).isTrue();
                 softly.assertThat(result.missionDetailResponse().missionType()).isEqualTo("COMPLETE_LESSON_ONE");
             });
         }
@@ -172,7 +172,7 @@ class UserFacadeIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(result.weeklyLearningRecordResponse().consecutiveSolvedDays()).isZero();
                 softly.assertThat(result.learningDetailResponse().recentSolvedChapterProgressRate()).isZero();
-                softly.assertThat(result.weeklyLearningRecordResponse().MONDAY()).isFalse();
+                softly.assertThat(result.weeklyLearningRecordResponse().MONDAY().isCompleted()).isFalse();
                 softly.assertThat(result.recommendedUnitResponses()).hasSize(2);
             });
         }
