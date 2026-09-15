@@ -1,5 +1,6 @@
 package gravit.code.dailyLearningRecord.facade;
 
+import gravit.code.dailyLearningRecord.dto.response.DayLearningRecordResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningRecordResponse;
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.global.annotation.Facade;
@@ -8,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
-import java.util.Set;
+import java.util.Map;
 
 @Facade
 @RequiredArgsConstructor
@@ -21,8 +22,8 @@ public class DailyLearningRecordFacade {
     public WeeklyLearningRecordResponse getWeeklyLearningRecord(long userId) {
         int consecutiveSolvedDays = learningQueryService.getLearning(userId).getConsecutiveSolvedDays();
 
-        Set<DayOfWeek> solvedDays = dailyLearningRecordService.getWeeklySolvedDays(userId);
+        Map<DayOfWeek, DayLearningRecordResponse> dayOfWeekToRecord = dailyLearningRecordService.getWeeklyDayRecords(userId);
 
-        return WeeklyLearningRecordResponse.of(consecutiveSolvedDays, solvedDays);
+        return WeeklyLearningRecordResponse.of(consecutiveSolvedDays, dayOfWeekToRecord);
     }
 }

@@ -2,6 +2,7 @@ package gravit.code.user.facade;
 
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.service.ChapterQueryService;
+import gravit.code.dailyLearningRecord.dto.response.DayLearningRecordResponse;
 import gravit.code.dailyLearningRecord.dto.response.WeeklyLearningRecordResponse;
 import gravit.code.dailyLearningRecord.service.DailyLearningRecordService;
 import gravit.code.global.annotation.Facade;
@@ -27,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @Facade
 @RequiredArgsConstructor
@@ -71,9 +72,9 @@ public class UserFacade {
 
         List<RecommendedUnitResponse> recommendedUnitResponses = unitQueryService.getRecommendedUnits(userId);
 
-        Set<DayOfWeek> solvedDays = dailyLearningRecordService.getWeeklySolvedDays(userId);
+        Map<DayOfWeek, DayLearningRecordResponse> dayOfWeekToRecord = dailyLearningRecordService.getWeeklyDayRecords(userId);
         WeeklyLearningRecordResponse weeklyLearningRecordResponse =
-                WeeklyLearningRecordResponse.of(learning.getConsecutiveSolvedDays(), solvedDays);
+                WeeklyLearningRecordResponse.of(learning.getConsecutiveSolvedDays(), dayOfWeekToRecord);
 
         MissionDetailResponse missionDetailResponse = missionService.getMissionDetail(userId);
 

@@ -3,46 +3,46 @@ package gravit.code.dailyLearningRecord.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.DayOfWeek;
-import java.util.Set;
+import java.util.Map;
 
 public record WeeklyLearningRecordResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         int consecutiveSolvedDays,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean MONDAY,
+        DayLearningRecordResponse MONDAY,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean TUESDAY,
+        DayLearningRecordResponse TUESDAY,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean WEDNESDAY,
+        DayLearningRecordResponse WEDNESDAY,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean THURSDAY,
+        DayLearningRecordResponse THURSDAY,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean FRIDAY,
+        DayLearningRecordResponse FRIDAY,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean SATURDAY,
+        DayLearningRecordResponse SATURDAY,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean SUNDAY
+        DayLearningRecordResponse SUNDAY
 ) {
     public static WeeklyLearningRecordResponse of(
             int consecutiveSolvedDays,
-            Set<DayOfWeek> solvedDays
+            Map<DayOfWeek, DayLearningRecordResponse> dayOfWeekToRecord
     ) {
         return new WeeklyLearningRecordResponse(
                 consecutiveSolvedDays,
-                solvedDays.contains(DayOfWeek.MONDAY),
-                solvedDays.contains(DayOfWeek.TUESDAY),
-                solvedDays.contains(DayOfWeek.WEDNESDAY),
-                solvedDays.contains(DayOfWeek.THURSDAY),
-                solvedDays.contains(DayOfWeek.FRIDAY),
-                solvedDays.contains(DayOfWeek.SATURDAY),
-                solvedDays.contains(DayOfWeek.SUNDAY)
+                dayOfWeekToRecord.get(DayOfWeek.MONDAY),
+                dayOfWeekToRecord.get(DayOfWeek.TUESDAY),
+                dayOfWeekToRecord.get(DayOfWeek.WEDNESDAY),
+                dayOfWeekToRecord.get(DayOfWeek.THURSDAY),
+                dayOfWeekToRecord.get(DayOfWeek.FRIDAY),
+                dayOfWeekToRecord.get(DayOfWeek.SATURDAY),
+                dayOfWeekToRecord.get(DayOfWeek.SUNDAY)
         );
     }
 }
