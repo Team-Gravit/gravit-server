@@ -48,7 +48,7 @@ class LessonSubmissionCommandServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(lesson.getId(), 120, 80);
 
@@ -64,7 +64,7 @@ class LessonSubmissionCommandServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
             // when

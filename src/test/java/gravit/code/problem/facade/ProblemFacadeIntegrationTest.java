@@ -73,7 +73,7 @@ class ProblemFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
             answerRepository.save(Answer.create("LIFO", "스택은 Last In First Out 구조입니다.", problem.getId()));
@@ -96,7 +96,7 @@ class ProblemFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Problem problem = problemRepository.save(Problem.create(ProblemType.OBJECTIVE, "다음 중 올바른 것을 고르시오.", "큐의 특성은?", lesson.getId()));
             optionRepository.save(Option.create("FIFO 구조이다.", "큐는 First In First Out 구조입니다.", true, problem.getId()));
@@ -120,7 +120,7 @@ class ProblemFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
             // when
@@ -156,7 +156,7 @@ class ProblemFacadeIntegrationTest {
 
         private Problem 주관식_문제() {
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
             return problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
@@ -164,7 +164,7 @@ class ProblemFacadeIntegrationTest {
 
         private Problem 객관식_문제() {
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
             return problemRepository.save(Problem.create(ProblemType.OBJECTIVE, "다음 중 올바른 것을 고르시오.", "큐의 특성은?", lesson.getId()));

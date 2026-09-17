@@ -47,7 +47,7 @@ class ChapterFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));

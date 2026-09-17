@@ -46,8 +46,8 @@ class UnitFacadeUnitTest {
             long chapterId = 1L;
             ChapterSummaryResponse chapterSummaryResponse = new ChapterSummaryResponse(chapterId, "운영체제", "운영체제 기초 개념");
             List<UnitSummaryResponse> unitSummaries = List.of(
-                    new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"),
-                    new UnitSummaryResponse(2L, "스레드", "스레드 개념")
+                    new UnitSummaryResponse(1L, 1, "프로세스", "프로세스 개념"),
+                    new UnitSummaryResponse(2L, 2, "스레드", "스레드 개념")
             );
 
             List<UnitProgressRowDto> progressRows = List.of(

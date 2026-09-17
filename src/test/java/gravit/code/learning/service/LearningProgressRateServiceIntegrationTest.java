@@ -50,7 +50,7 @@ class LearningProgressRateServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
 
@@ -66,7 +66,7 @@ class LearningProgressRateServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             lessonRepository.save(Lesson.create("레슨3", unit.getId()));
@@ -84,7 +84,7 @@ class LearningProgressRateServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
@@ -107,7 +107,7 @@ class LearningProgressRateServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
 
@@ -123,7 +123,7 @@ class LearningProgressRateServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             lessonRepository.save(Lesson.create("레슨3", unit.getId()));
@@ -141,7 +141,7 @@ class LearningProgressRateServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
@@ -167,7 +167,7 @@ class LearningProgressRateServiceIntegrationTest {
             User user3 = userRepository.save(User.create("c@c.com", "p3", "유저3", "user3", 1, Role.USER));
 
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             Lesson lesson3 = lessonRepository.save(Lesson.create("레슨3", unit.getId()));

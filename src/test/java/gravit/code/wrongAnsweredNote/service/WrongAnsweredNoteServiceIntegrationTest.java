@@ -56,7 +56,7 @@ class WrongAnsweredNoteServiceIntegrationTest {
     @BeforeEach
     void setUp() {
         Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-        unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+        unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
         Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
         problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
     }

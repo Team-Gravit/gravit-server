@@ -98,7 +98,7 @@ class LessonFacadeUnitTest {
             long userId = 1L;
             long unitId = 1L;
             ChapterBriefResponse chapterSummary = new ChapterBriefResponse(10L, "운영체제");
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "프로세스", "프로세스 개념");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, 1, "프로세스", "프로세스 개념");
             List<LessonSummaryResponse> lessons = List.of(
                     new LessonSummaryResponse(1L, "레슨1", 5, true)
             );
@@ -128,7 +128,7 @@ class LessonFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "프로세스", "프로세스 개념");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, 1, "프로세스", "프로세스 개념");
 
             when(chapterQueryService.getChapterBriefByUnitId(unitId)).thenReturn(new ChapterBriefResponse(10L, "운영체제"));
             when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummaryResponse);

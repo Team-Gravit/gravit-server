@@ -35,7 +35,7 @@ class AdminUnitServiceIntegrationTest {
     @Test
     @DisplayName("유닛 상세: lessonCount 포함")
     void getUnit_withLessonCount() {
-        Unit unit = unitRepository.save(Unit.create("유닛", "설명", CHAPTER_ID));
+        Unit unit = unitRepository.save(Unit.create("유닛", "설명", CHAPTER_ID, 1));
         lessonRepository.save(Lesson.create("레슨1", unit.getId()));
         lessonRepository.save(Lesson.create("레슨2", unit.getId()));
 
@@ -58,7 +58,7 @@ class AdminUnitServiceIntegrationTest {
     @Test
     @DisplayName("유닛 부분 수정: 미제공 필드 유지")
     void updateUnit_partial() {
-        Unit unit = unitRepository.save(Unit.create("원제목", "원설명", CHAPTER_ID));
+        Unit unit = unitRepository.save(Unit.create("원제목", "원설명", CHAPTER_ID, 1));
 
         adminUnitService.updateUnit(unit.getId(), new UnitUpdateRequest(null, "새설명"));
 
@@ -70,7 +70,7 @@ class AdminUnitServiceIntegrationTest {
     @Test
     @DisplayName("유닛의 레슨 목록 조회")
     void getLessons() {
-        Unit unit = unitRepository.save(Unit.create("유닛", "설명", CHAPTER_ID));
+        Unit unit = unitRepository.save(Unit.create("유닛", "설명", CHAPTER_ID, 1));
         lessonRepository.save(Lesson.create("레슨1", unit.getId()));
         lessonRepository.save(Lesson.create("레슨2", unit.getId()));
 

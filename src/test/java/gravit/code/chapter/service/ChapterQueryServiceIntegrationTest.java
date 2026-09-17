@@ -131,7 +131,7 @@ class ChapterQueryServiceIntegrationTest {
         void 챕터_아이디와_이름을_반환한다() {
             // given
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             // when
             ChapterBriefResponse result = chapterQueryService.getChapterBriefByUnitId(unit.getId());
