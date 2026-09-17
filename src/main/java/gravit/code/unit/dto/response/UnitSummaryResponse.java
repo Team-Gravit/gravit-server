@@ -12,8 +12,15 @@ public record UnitSummaryResponse(
         long unitId,
 
         @Schema(
+                description = "챕터 안에서의 유닛 순서 (1부터 시작)",
+                example = "2",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        int displayOrder,
+
+        @Schema(
                 description = "유닛명",
-                example = "Unit01 - 연결리스트",
+                example = "연결리스트",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         String title,

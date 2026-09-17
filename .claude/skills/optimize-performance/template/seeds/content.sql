@@ -19,11 +19,12 @@ FROM generate_series(1, :chapter_count) AS c
 ON CONFLICT DO NOTHING;
 
 -- unit: 챕터당 :units_per_chapter 건
-INSERT INTO unit (id, chapter_id, title, description)
+INSERT INTO unit (id, chapter_id, title, description, display_order)
 SELECT :content_id_base + u,
        :content_id_base + ((u - 1) / :units_per_chapter + 1),
        'perf-unit-' || u,
-       'perf unit ' || u
+       'perf unit ' || u,
+       (u - 1) % :units_per_chapter + 1
 FROM generate_series(1, :chapter_count * :units_per_chapter) AS u
 ON CONFLICT DO NOTHING;
 

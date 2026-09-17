@@ -25,14 +25,15 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     long countByChapterId(long chapterId);
 
     @Query("""
-            SELECT new gravit.code.unit.dto.response.UnitSummaryResponse(u.id, u.title, u.description)
+            SELECT new gravit.code.unit.dto.response.UnitSummaryResponse(u.id, u.displayOrder, u.title, u.description)
             FROM Unit u
             WHERE u.chapterId = :chapterId
+            ORDER BY u.displayOrder ASC
     """)
     List<UnitSummaryResponse> findAllUnitSummaryByChapterId(@Param("chapterId") long chapterId);
 
     @Query("""
-            SELECT new gravit.code.unit.dto.response.UnitSummaryResponse(u.id, u.title, u.description)
+            SELECT new gravit.code.unit.dto.response.UnitSummaryResponse(u.id, u.displayOrder, u.title, u.description)
             FROM Unit u
             JOIN Lesson l ON l.unitId = u.id
             WHERE l.id = :lessonId
@@ -40,7 +41,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     Optional<UnitSummaryResponse> findUnitSummaryByLessonId(@Param("lessonId") long lessonId);
 
     @Query("""
-            SELECT new gravit.code.unit.dto.response.UnitSummaryResponse(u.id, u.title, u.description)
+            SELECT new gravit.code.unit.dto.response.UnitSummaryResponse(u.id, u.displayOrder, u.title, u.description)
             FROM Unit u
             WHERE u.id = :unitId
     """)
