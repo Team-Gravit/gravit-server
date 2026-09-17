@@ -1,6 +1,5 @@
 package gravit.code.interview.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAudioFormat;
 import gravit.code.interview.domain.InterviewSession;
@@ -13,6 +12,11 @@ import gravit.code.interview.repository.InterviewSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 
 @Service
 @RequiredArgsConstructor
@@ -30,16 +34,16 @@ public class InterviewAudioUploadService {
             InterviewAudioUploadRequest request
     ) {
         InterviewSession session = interviewSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INTERVIEW_SESSION_NOT_FOUND));
 
         if (!session.isOwnedBy(userId)) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED);
+            throw new RestApiException(INTERVIEW_SESSION_ACCESS_DENIED);
         }
         if (session.isTextInput()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH);
+            throw new RestApiException(INTERVIEW_INPUT_TYPE_MISMATCH);
         }
         if (!session.isInProgress()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS);
+            throw new RestApiException(INTERVIEW_SESSION_NOT_IN_PROGRESS);
         }
 
         InterviewAudioFormat format = InterviewAudioFormat.from(request.contentType());

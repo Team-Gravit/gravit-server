@@ -10,13 +10,14 @@ import gravit.code.auth.service.oauth.android.NaverAndroidUserInfoService;
 import gravit.code.auth.service.oauth.android.OAuthAndroidUserInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
 
     private final OAuthAndroidUserInfoService oAuthAndroidClientService;
     private final NaverAndroidUserInfoService naverAndroidUserInfoService;
+
     private final OAuthLoginProcessor oAuthLoginProcessor;
 
     @PostMapping
@@ -36,7 +38,7 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
         OAuthUserInfo userInfo = oAuthAndroidClientService.parseIdToken(provider, idToken);
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+        return ResponseEntity.status(OK).body(loginResponse);
     }
 
     @PostMapping("/naver")
@@ -47,6 +49,6 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
 
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+        return ResponseEntity.status(OK).body(loginResponse);
     }
 }

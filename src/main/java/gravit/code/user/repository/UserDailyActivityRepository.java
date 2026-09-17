@@ -15,7 +15,7 @@ public interface UserDailyActivityRepository extends JpaRepository<UserDailyActi
             INSERT INTO user_daily_activity (user_id, activity_date)
             VALUES (:userId, :activityDate)
             ON CONFLICT (activity_date, user_id) DO NOTHING
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     int insertIfAbsent(
             @Param("userId") long userId,
             @Param("activityDate") LocalDate activityDate

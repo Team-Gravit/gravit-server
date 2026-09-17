@@ -38,6 +38,13 @@ public interface InquiryControllerDocs {
                             examples = @ExampleObject(
                                     name = "문의 유형 오류",
                                     value = "{\"error\":\"INQUIRY_4001\",\"message\":\"문의 제목이 유효하지 않습니다.\"}"
+                            ))),
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\":\"GLOBAL_5001\",\"message\":\"예기치 못한 예외 발생\"}"
                             )))
     })
     @PostMapping
@@ -72,6 +79,13 @@ public interface InquiryControllerDocs {
                                       ]
                                     }
                                     """
+                            ))),
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\":\"GLOBAL_5001\",\"message\":\"예기치 못한 예외 발생\"}"
                             )))
     })
     @GetMapping
@@ -100,11 +114,19 @@ public interface InquiryControllerDocs {
                             examples = @ExampleObject(
                                     name = "문의 없음",
                                     value = "{\"error\":\"INQUIRY_4041\",\"message\":\"존재하지 않는 문의입니다.\"}"
+                            ))),
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\":\"GLOBAL_5001\",\"message\":\"예기치 못한 예외 발생\"}"
                             )))
     })
     @GetMapping("/{inquiryId}")
     ResponseEntity<InquiryDetailResponse> getMyInquiryDetail(
             @AuthenticationPrincipal LoginUser loginUser,
+            @Parameter(description = "문의 ID", example = "12")
             @PathVariable("inquiryId") long inquiryId
     );
 }

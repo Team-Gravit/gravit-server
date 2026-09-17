@@ -41,7 +41,7 @@ effort: xhigh
 
 ## Phase 3: 테스트 코드 작성
 
-1. `.claude/spec/test-convention.md`를 읽어 테스트 작성 컨벤션을 확인하라
+1. `.claude/rules/test-convention.md`를 읽어 테스트 작성 컨벤션을 확인하라
 2. [template/test-code-template.md](template/test-code-template.md)에서 통합 테스트 코드 템플릿을 확인하라
 3. 컨벤션과 템플릿에 따라 테스트 코드를 작성하라
 4. Phase 1에서 파악한 각 메서드에 대해 다음 테스트 케이스를 작성하라:

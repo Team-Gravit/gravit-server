@@ -23,10 +23,9 @@ public class ProblemFacade {
 
     private final ProblemQueryService problemQueryService;
     private final ProblemSubmissionCommandService problemSubmissionCommandService;
-
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
-
     private final UnitQueryService unitQueryService;
+
     private final ProblemFactory problemFactory;
 
     private final TransactionTemplate transactionTemplate;
@@ -35,7 +34,7 @@ public class ProblemFacade {
     public LessonResponse getAllProblemInLesson(
             long userId,
             long lessonId
-    ){
+    ) {
         UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(lessonId);
 
         List<ProblemDetailResponse> problemDetailResponses = problemQueryService.getAllProblemInLesson(userId, lessonId);

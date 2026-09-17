@@ -8,7 +8,6 @@ import gravit.code.admin.repository.AdminUserRepository;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.admin.support.AuditLogRecorder;
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.UserStatus;
@@ -18,11 +17,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class AdminUserService {
 
     private final AdminUserRepository adminUserRepository;
+
     private final AuditLogRecorder auditLogRecorder;
     private final RandomHandleGenerator handleGenerator;
 
@@ -47,7 +49,7 @@ public class AdminUserService {
     @Transactional(readOnly = true)
     public UserDetailResponse getUser(long userId) {
         AdminUser user = adminUserRepository.findRowById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         return UserDetailResponse.from(user);
     }
@@ -59,12 +61,11 @@ public class AdminUserService {
             UserStatus status
     ) {
         AdminUser user = adminUserRepository.findRowById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         String before = user.getStatus();
 
         if (isRestore(before, status)) {
-            // soft delete 시 NULL 로 비운 handle 을 새로 발급해 무결성 복원
             String newHandle = handleGenerator.generateUniqueHandle();
             adminUserRepository.restoreStatusById(userId, status.name(), newHandle);
         } else {
@@ -81,7 +82,7 @@ public class AdminUserService {
             Role role
     ) {
         AdminUser user = adminUserRepository.findRowById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         String before = user.getRole();
 

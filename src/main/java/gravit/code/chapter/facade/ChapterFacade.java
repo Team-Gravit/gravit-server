@@ -26,7 +26,7 @@ public class ChapterFacade {
     public List<ChapterDetailResponse> getAllChapter(long userId){
         List<ChapterSummaryResponse> chapters = chapterQueryService.getAllChapter();
 
-        Map<Long, Double> progressRates = chapterQueryService.getAllChapterProgress(userId)
+        Map<Long, Double> chapterIdToProgressRate = chapterQueryService.getAllChapterProgress(userId)
                 .stream()
                 .collect(Collectors.toMap(
                         ChapterProgressRowDto::chapterId,
@@ -36,7 +36,7 @@ public class ChapterFacade {
         return chapters.stream()
                 .map(chapter -> ChapterDetailResponse.create(
                         chapter,
-                        progressRates.getOrDefault(chapter.chapterId(), NOT_STARTED_PROGRESS_RATE)
+                        chapterIdToProgressRate.getOrDefault(chapter.chapterId(), NOT_STARTED_PROGRESS_RATE)
                 )).toList();
     }
 }

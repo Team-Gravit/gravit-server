@@ -34,12 +34,13 @@ assignees:
 - [ ] Learning / Answer / DailyLearningRecord
 - [ ] Bookmark / WrongAnsweredNote
 - [ ] CS Note
+- [ ] Interview / InterviewQuestion / InterviewFeedback
 - [ ] League / Season / UserLeague / LeagueHistory
-- [ ] Mission / Badge
+- [ ] Mission
 - [ ] Notification / FCM
 - [ ] Notice
 - [ ] Inquiry
 - [ ] Admin / Report
 - [ ] Version
-- [ ] Infra / CI·CD
+- [ ] Infra / CICD
 - [ ] Global (공통 모듈)

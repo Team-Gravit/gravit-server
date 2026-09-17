@@ -11,9 +11,9 @@ import gravit.code.admin.dto.request.StagingLessonUpdateRequest;
 import gravit.code.admin.dto.request.StagingOptionUpdateRequest;
 import gravit.code.admin.dto.request.StagingProblemUpdateRequest;
 import gravit.code.admin.dto.response.StagingLabelDetailResponse;
-import gravit.code.admin.dto.response.StagingLabelDetailResponse.StagingLessonResponse;
-import gravit.code.admin.dto.response.StagingLabelDetailResponse.StagingProblemResponse;
 import gravit.code.admin.dto.response.StagingLabelListItemResponse;
+import gravit.code.admin.dto.response.StagingLessonResponse;
+import gravit.code.admin.dto.response.StagingProblemResponse;
 import gravit.code.admin.repository.AnswerStagingRepository;
 import gravit.code.admin.repository.LessonStagingRepository;
 import gravit.code.admin.repository.OptionStagingRepository;
@@ -21,7 +21,6 @@ import gravit.code.admin.repository.ProblemStagingRepository;
 import gravit.code.admin.repository.StagingLabelRepository;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.problem.domain.ProblemType;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_LABEL_ALREADY_COMPLETED;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_LABEL_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_LESSON_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_OPTION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_PROBLEM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -62,22 +68,22 @@ public class AdminStagingService {
     @Transactional(readOnly = true)
     public StagingLabelDetailResponse getLabelDetail(String label) {
         StagingLabel stagingLabel = stagingLabelRepository.findByLabel(label)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_LABEL_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_LABEL_NOT_FOUND));
 
         LessonStaging lesson = lessonStagingRepository.findByLabel(label)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_LESSON_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_LESSON_NOT_FOUND));
 
         List<ProblemStaging> problems = problemStagingRepository.findByLabelOrderById(label);
 
-        Map<Long, List<OptionStaging>> optionsByProblem = optionStagingRepository.findByLabelOrderById(label).stream()
+        Map<Long, List<OptionStaging>> problemIdToOptions = optionStagingRepository.findByLabelOrderById(label).stream()
                 .collect(Collectors.groupingBy(OptionStaging::getProblemId));
 
-        Map<Long, List<AnswerStaging>> answersByProblem = answerStagingRepository.findByLabelOrderById(label).stream()
+        Map<Long, List<AnswerStaging>> problemIdToAnswers = answerStagingRepository.findByLabelOrderById(label).stream()
                 .filter(answer -> answer.getProblemId() != null)
                 .collect(Collectors.groupingBy(AnswerStaging::getProblemId));
 
         List<StagingProblemResponse> problemResponses = problems.stream()
-                .map(problem -> toProblemResponse(problem, optionsByProblem, answersByProblem))
+                .map(problem -> toProblemResponse(problem, problemIdToOptions, problemIdToAnswers))
                 .toList();
 
         return StagingLabelDetailResponse.of(stagingLabel, StagingLessonResponse.from(lesson), problemResponses);
@@ -89,7 +95,7 @@ public class AdminStagingService {
             StagingLessonUpdateRequest request
     ) {
         LessonStaging lesson = lessonStagingRepository.findById(lessonId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_LESSON_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_LESSON_NOT_FOUND));
 
         guardNotCompleted(lesson.getLabel());
 
@@ -102,7 +108,7 @@ public class AdminStagingService {
             StagingProblemUpdateRequest request
     ) {
         ProblemStaging problem = problemStagingRepository.findById(problemId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_PROBLEM_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_PROBLEM_NOT_FOUND));
 
         guardNotCompleted(problem.getLabel());
 
@@ -118,7 +124,7 @@ public class AdminStagingService {
             StagingOptionUpdateRequest request
     ) {
         OptionStaging option = optionStagingRepository.findById(optionId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_OPTION_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_OPTION_NOT_FOUND));
 
         guardNotCompleted(option.getLabel());
 
@@ -135,7 +141,7 @@ public class AdminStagingService {
             StagingAnswerUpdateRequest request
     ) {
         AnswerStaging answer = answerStagingRepository.findById(answerId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_ANSWER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_ANSWER_NOT_FOUND));
 
         guardNotCompleted(answer.getLabel());
 
@@ -147,25 +153,25 @@ public class AdminStagingService {
 
     private StagingProblemResponse toProblemResponse(
             ProblemStaging problem,
-            Map<Long, List<OptionStaging>> optionsByProblem,
-            Map<Long, List<AnswerStaging>> answersByProblem
+            Map<Long, List<OptionStaging>> problemIdToOptions,
+            Map<Long, List<AnswerStaging>> problemIdToAnswers
     ) {
         if (problem.getProblemType() == ProblemType.OBJECTIVE) {
-            return StagingProblemResponse.objective(problem, optionsByProblem.getOrDefault(problem.getId(), List.of()));
+            return StagingProblemResponse.objective(problem, problemIdToOptions.getOrDefault(problem.getId(), List.of()));
         }
 
-        List<AnswerStaging> answers = answersByProblem.getOrDefault(problem.getId(), List.of());
+        List<AnswerStaging> answers = problemIdToAnswers.getOrDefault(problem.getId(), List.of());
         AnswerStaging answer = answers.isEmpty() ? null : answers.get(0);
-        
+
         return StagingProblemResponse.subjective(problem, answer);
     }
 
     private void guardNotCompleted(String label) {
         StagingLabel stagingLabel = stagingLabelRepository.findByLabel(label)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_LABEL_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_LABEL_NOT_FOUND));
 
         if (stagingLabel.isCompleted()) {
-            throw new RestApiException(CustomErrorCode.STAGING_LABEL_ALREADY_COMPLETED);
+            throw new RestApiException(STAGING_LABEL_ALREADY_COMPLETED);
         }
     }
 }

@@ -7,7 +7,6 @@ import gravit.code.social.dto.response.RecommendUserResponse;
 import gravit.code.social.dto.response.SocialFeedResponse;
 import gravit.code.social.facade.SocialFacade;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/v1/social")
@@ -32,7 +34,7 @@ public class SocialController implements SocialControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser
     ) {
         List<RecommendUserResponse> result = socialFacade.getRecommendedUsers(loginUser.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(OK).body(result);
     }
 
     @PostMapping("/follow/{userId}")
@@ -41,7 +43,7 @@ public class SocialController implements SocialControllerDocs {
             @PathVariable long userId
     ) {
         socialFacade.follow(loginUser.getId(), userId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @GetMapping("/feed")
@@ -50,7 +52,7 @@ public class SocialController implements SocialControllerDocs {
             @RequestParam(defaultValue = "0") int page
     ) {
         SliceResponse<SocialFeedResponse> feed = socialFacade.getFeed(loginUser.getId(), page);
-        return ResponseEntity.status(HttpStatus.OK).body(feed);
+        return ResponseEntity.status(OK).body(feed);
     }
 
     @DeleteMapping("/feed/{feedId}")
@@ -59,7 +61,7 @@ public class SocialController implements SocialControllerDocs {
             @PathVariable long feedId
     ) {
         socialFacade.hideFeed(loginUser.getId(), feedId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @PostMapping("/feed/{feedId}/congratulate")
@@ -68,6 +70,6 @@ public class SocialController implements SocialControllerDocs {
             @PathVariable long feedId
     ) {
         socialFacade.congratulateFeed(loginUser.getId(), feedId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 }

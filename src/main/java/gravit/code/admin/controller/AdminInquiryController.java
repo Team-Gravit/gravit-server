@@ -11,7 +11,6 @@ import gravit.code.global.dto.response.PageResponse;
 import gravit.code.inquiry.domain.InquiryStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,12 +39,12 @@ public class AdminInquiryController implements AdminInquiryControllerDocs {
             @RequestParam(value = "status", required = false) InquiryStatus status,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminInquiryService.getInquiries(status, page));
+        return ResponseEntity.status(OK).body(adminInquiryService.getInquiries(status, page));
     }
 
     @GetMapping("/{inquiryId}")
     public ResponseEntity<InquiryDetailResponse> getInquiry(@PathVariable("inquiryId") long inquiryId) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminInquiryService.getInquiry(inquiryId));
+        return ResponseEntity.status(OK).body(adminInquiryService.getInquiry(inquiryId));
     }
 
     @PostMapping("/{inquiryId}/answer")
@@ -51,7 +54,7 @@ public class AdminInquiryController implements AdminInquiryControllerDocs {
             @Valid @RequestBody InquiryAnswerCreateRequest request
     ) {
         InquiryDetailResponse response = adminInquiryService.answer(loginUser.getId(), inquiryId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(CREATED).body(response);
     }
 
     @PutMapping("/{inquiryId}/answer")
@@ -59,12 +62,12 @@ public class AdminInquiryController implements AdminInquiryControllerDocs {
             @PathVariable("inquiryId") long inquiryId,
             @Valid @RequestBody InquiryAnswerUpdateRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminInquiryService.updateAnswer(inquiryId, request));
+        return ResponseEntity.status(OK).body(adminInquiryService.updateAnswer(inquiryId, request));
     }
 
     @DeleteMapping("/{inquiryId}/answer")
     public ResponseEntity<Void> deleteAnswer(@PathVariable("inquiryId") long inquiryId) {
         adminInquiryService.deleteAnswer(inquiryId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 }

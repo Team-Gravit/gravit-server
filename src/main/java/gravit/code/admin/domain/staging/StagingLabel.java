@@ -14,10 +14,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * 스테이징 라벨. PK(id)·status·created_at 은 generator 적재 시 DB 가 발번/기본값 처리한다.
- * admin 은 조회와 promote(상태 전이)만 수행한다.
- */
 @Entity
 @Table(name = "staging_label")
 @Getter

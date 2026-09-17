@@ -8,11 +8,10 @@ import gravit.code.admin.dto.response.NoticeListItemResponse;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.admin.support.AuditLogRecorder;
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.event.NoticeCreatedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notice.domain.Notice;
 import gravit.code.notice.domain.NoticeStatus;
+import gravit.code.notice.dto.event.NoticeCreatedEvent;
 import gravit.code.notice.repository.NoticeRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
@@ -22,13 +21,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.NOTICE_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class AdminNoticeService {
 
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
+
     private final AuditLogRecorder auditLogRecorder;
+
     private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
@@ -41,7 +45,7 @@ public class AdminNoticeService {
     @Transactional(readOnly = true)
     public NoticeDetailResponse getNotice(long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(NOTICE_NOT_FOUND));
 
         return NoticeDetailResponse.from(notice);
     }
@@ -52,7 +56,7 @@ public class AdminNoticeService {
             NoticeCreateRequest request
     ) {
         User author = userRepository.findById(adminId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         Notice notice = Notice.create(
                 request.title(),
@@ -78,7 +82,7 @@ public class AdminNoticeService {
             NoticeUpdateRequest request
     ) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(NOTICE_NOT_FOUND));
         NoticeStatus beforeStatus = notice.getStatus();
 
         String title = request.title() != null ? request.title() : notice.getTitle();
@@ -102,7 +106,7 @@ public class AdminNoticeService {
             long noticeId
     ) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(NOTICE_NOT_FOUND));
 
         noticeRepository.delete(notice);
 

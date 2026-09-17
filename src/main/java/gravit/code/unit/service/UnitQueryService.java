@@ -1,7 +1,6 @@
 package gravit.code.unit.service;
 
 import gravit.code.global.consts.TimeZoneConst;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.unit.dto.internal.UnitProgressRowDto;
 import gravit.code.unit.dto.response.RecommendedUnitResponse;
@@ -16,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,18 +30,18 @@ public class UnitQueryService {
 
     public UnitSummaryResponse getUnitSummaryByUnitId(long unitId){
         return unitRepository.findUnitSummaryById(unitId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(UNIT_NOT_FOUND));
     }
 
     public UnitSummaryResponse getUnitSummaryByLessonId(long lessonId) {
         return unitRepository.findUnitSummaryByLessonId(lessonId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.UNIT_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(UNIT_NOT_FOUND));
     }
 
     public List<UnitProgressSummaryResponse> getAllUnitProgressSummariesInChapter(
             long chapterId,
             long userId
-    ){
+    ) {
         return unitRepository.findUnitProgressByChapterIdAndUserId(chapterId, userId)
                 .stream()
                 .map(UnitProgressRowDto::toSummary)
@@ -50,15 +51,15 @@ public class UnitQueryService {
     public List<UnitProgressRowDto> getAllUnitProgressInChapter(
             long chapterId,
             long userId
-    ){
+    ) {
         return unitRepository.findUnitProgressByChapterIdAndUserId(chapterId, userId);
     }
 
     public List<RecommendedUnitResponse> getRecommendedUnits(long userId) {
         List<Long> allUnitIds = unitRepository.findAllUnitIdsOrderById();
 
-        if (allUnitIds.size() < 2) {
-            throw new RestApiException(CustomErrorCode.UNIT_NOT_FOUND);
+        if (allUnitIds.size() < RandomUnitIdGenerator.PICK_COUNT) {
+            throw new RestApiException(UNIT_NOT_FOUND);
         }
 
         long seed = userId * 31L + LocalDate.now(TimeZoneConst.KST).toEpochDay();

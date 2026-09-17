@@ -12,13 +12,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NoticeCreatedRetryTarget implements RetrySweepTarget {
 
+    public static final String QUEUE_KEY = "notice-created-retry";
+    public static final String FIELD_HEADLINE = "headline";
+    public static final String FIELD_TITLE = "title";
+    public static final String FIELD_NOTICE_ID = "noticeId";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private final NotificationService notificationService;
 
     @Override
     public String queueKey() {
-        return "notice-created-retry";
+        return QUEUE_KEY;
     }
 
     @Override
@@ -28,9 +33,9 @@ public class NoticeCreatedRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        String headline = fields.get("headline");
-        String title = fields.get("title");
-        Long noticeId = Long.valueOf(fields.get("noticeId"));
+        String headline = fields.get(FIELD_HEADLINE);
+        String title = fields.get(FIELD_TITLE);
+        Long noticeId = Long.valueOf(fields.get(FIELD_NOTICE_ID));
 
         notificationService.notifyAllUsers(NotificationType.NOTICE, headline, title, noticeId);
     }

@@ -7,9 +7,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-// 생성 시각을 상대 표현으로 변환한다. 알림함·소셜 피드 공통 사용(표기 규칙 단일화).
-// 1시간 이내 → N분 전 / 1~24시간 → N시간 전 / 어제 → 어제 / 2~6일 → N일 전 / 7일 이상 → N주 전
-// 시각 기준은 주입된 Clock(Asia/Seoul)을 따른다 — 서버 타임존과 무관하게 KST로 처리된다.
 @Component
 @RequiredArgsConstructor
 public class TimeAgoFormatter {

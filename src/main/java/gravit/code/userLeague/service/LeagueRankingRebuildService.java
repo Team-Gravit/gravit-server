@@ -1,6 +1,6 @@
 package gravit.code.userLeague.service;
 
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class LeagueRankingRebuildService {
 
     @Transactional(readOnly = true)
     public int rebuild(long seasonId) {
-        List<LeagueRankEntry> entries = userLeagueRepository.findRankEntriesBySeasonId(seasonId);
+        List<LeagueRankEntryDto> entries = userLeagueRepository.findRankEntriesBySeasonId(seasonId);
 
         leagueRankingStore.replaceAll(seasonId, entries);
         log.info("랭킹 재구축 완료: seasonId={}, 반영 인원={}", seasonId, entries.size());

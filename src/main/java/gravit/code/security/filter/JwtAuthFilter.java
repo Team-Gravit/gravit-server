@@ -1,6 +1,7 @@
 package gravit.code.security.filter;
 
 import gravit.code.auth.service.AuthTokenProvider;
+import gravit.code.global.consts.AuthHeaderConst;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.security.exception.CustomAuthenticationEntryPoint;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final String USER_ID_ATTRIBUTE = "user_id";
+    public static final String USER_ID_ATTRIBUTE = "user_id";
 
     private static final List<HttpEndpoint> EXCLUDE_ENDPOINTS = List.of(
             /* swagger */
@@ -35,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpEndpoint.prefix("/api/v1/oauth", HttpMethod.GET, HttpMethod.POST),
             HttpEndpoint.exact("/api/v1/auth/reissue", HttpMethod.POST),
 
-            /* test (단, /api/v1/test/notifications 는 인증 주체 식별이 필요해 제외하지 않는다) */
+            /* test */
             HttpEndpoint.exact("/api/v1/test/users/create", HttpMethod.POST),
             HttpEndpoint.exact("/api/v1/test/users/login", HttpMethod.POST),
             HttpEndpoint.exact("/api/v1/test/users/clean", HttpMethod.POST),
@@ -71,10 +73,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try{
-            String token = request.getHeader("Authorization");
+            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
             if (checkTokenNotNullAndBearer(token)) {
-                String jwtToken = token.substring(7);
+                String jwtToken = token.substring(AuthHeaderConst.BEARER_PREFIX.length());
 
                 authTokenProvider.validateToken(jwtToken);
 
@@ -94,7 +96,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private boolean checkTokenNotNullAndBearer(String token) {
-        return token != null && token.startsWith("Bearer ");
+        return token != null && token.startsWith(AuthHeaderConst.BEARER_PREFIX);
     }
 
     @Override

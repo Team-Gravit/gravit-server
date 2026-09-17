@@ -8,7 +8,6 @@ import gravit.code.fcm.service.FcmTokenCommandService;
 import gravit.code.fcm.service.FcmTokenQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class FcmTokenController implements FcmTokenControllerDocs {
             @Valid @RequestBody RegisterFcmTokenRequest request
     ){
         fcmTokenCommandService.registerFcmToken(loginUser.getId(), request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
     @GetMapping("/exists")
@@ -42,7 +43,7 @@ public class FcmTokenController implements FcmTokenControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam("deviceId") String deviceId
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(fcmTokenQueryService.checkFcmTokenExist(loginUser.getId(), deviceId));
+        return ResponseEntity.status(OK).body(fcmTokenQueryService.checkFcmTokenExist(loginUser.getId(), deviceId));
     }
 
 }

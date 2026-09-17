@@ -25,10 +25,10 @@ public class Problem {
     @Column(name = "problem_type", nullable = false)
     private ProblemType problemType;
 
-    @Column(nullable = false)
+    @Column(name = "instruction", nullable = false)
     private String instruction;
 
-    @Column(columnDefinition = "text", nullable = false)
+    @Column(name = "content", columnDefinition = "text", nullable = false)
     private String content;
 
     @Column(name = "lesson_id", nullable = false)

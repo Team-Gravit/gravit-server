@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OAuthLoginProcessor {
 
     private final UserRepository userRepository;
+
     private final AuthTokenProvider authTokenProvider;
     private final RandomHandleGenerator handleGenerator;
     private final AdminPromotionPolicy adminPromotionPolicy;
@@ -41,13 +42,13 @@ public class OAuthLoginProcessor {
         String providerId = oAuthUserInfo.getProvider() + "_" + oAuthUserInfo.getProviderId();
 
         return userRepository.findByProviderId(providerId)
-                .map(u -> {  // 유저가 존재하면 삭제 여부 확인 후, admin 승격 가능성 확인
+                .map(u -> {
                     if(u.isDeleted()){
                         throw new AccountSoftDeletedException(u.getProviderId());
                     }
                     return promoteToAdminByWhitelist(u, oAuthUserInfo);
                 })
-                .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId)); // 유저가 존재하지 않으면 생성
+                .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId));
     }
 
     private User registerNewUser(

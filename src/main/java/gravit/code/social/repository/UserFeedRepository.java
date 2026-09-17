@@ -1,7 +1,7 @@
 package gravit.code.social.repository;
 
 import gravit.code.social.domain.UserFeed;
-import gravit.code.social.dto.internal.SocialFeedProjection;
+import gravit.code.social.dto.internal.SocialFeedDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface UserFeedRepository extends JpaRepository<UserFeed, Long> {
 
     @Query("""
-            SELECT new gravit.code.social.dto.internal.SocialFeedProjection(
+            SELECT new gravit.code.social.dto.internal.SocialFeedDto(
                 sf.id, sf.actorId, u.nickname, u.profileImgNumber, u.handle,
                 sf.eventType, sf.eventValue, sf.createdAt
             )
@@ -22,8 +22,8 @@ public interface UserFeedRepository extends JpaRepository<UserFeed, Long> {
             JOIN User u ON u.id = sf.actorId
             WHERE uf.userId = :userId AND uf.hidden = false
             ORDER BY sf.createdAt DESC, sf.id DESC
-            """)
-    Slice<SocialFeedProjection> findVisibleFeedsByUserId(
+    """)
+    Slice<SocialFeedDto> findVisibleFeedsByUserId(
             @Param("userId") long userId,
             Pageable pageable
     );

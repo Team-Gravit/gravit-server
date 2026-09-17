@@ -11,8 +11,11 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisSeasonPopupSeenStore implements SeasonPopupSeenStore {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    public static final String SEEN_KEY_PATTERN = "season:seen:*";
+
     private static final String KEY = "season:seen:%d:%d";
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public boolean markSeenIfFirst(
@@ -23,6 +26,6 @@ public class RedisSeasonPopupSeenStore implements SeasonPopupSeenStore {
         String key = KEY.formatted(seasonId, userId);
         String seenFlag = "1";
         Boolean isNotSeen = redisTemplate.opsForValue().setIfAbsent(key, seenFlag, ttl);
-        return Boolean.TRUE.equals(isNotSeen); // 키를 처음 만들면 true, 아니면 false
+        return Boolean.TRUE.equals(isNotSeen);
     }
 }

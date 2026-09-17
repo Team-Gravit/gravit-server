@@ -1,11 +1,10 @@
 package gravit.code.userLeague.service;
 
 import gravit.code.global.dto.response.SliceResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.season.domain.SeasonStatus;
 import gravit.code.season.repository.SeasonRepository;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.dto.internal.LeagueRankProfileDto;
 import gravit.code.userLeague.dto.internal.LeagueRankRowDto;
 import gravit.code.userLeague.dto.internal.MyLeagueProfileDto;
@@ -21,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_LEAGUE_NOT_FOUND;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class UserLeagueQueryService {
     public MyLeagueRankWithProfileResponse getMyLeagueRankWithProfile(long userId) {
 
         MyLeagueProfileDto profile = userLeagueRepository.findLeagueProfile(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_LEAGUE_NOT_FOUND));
 
         int rank = leagueRankFinder.findRank(
                 profile.seasonId(),
@@ -56,7 +57,7 @@ public class UserLeagueQueryService {
     public SliceResponse<LeagueRankRowDto> findLeagueRanking(
             long leagueId,
             int page
-    ){
+    ) {
         int safePage = Math.max(FIRST_PAGE, page);
 
         return seasonRepository.findByStatus(SeasonStatus.ACTIVE)
@@ -68,7 +69,7 @@ public class UserLeagueQueryService {
     public SliceResponse<LeagueRankRowDto> findLeagueRankingByUser(
             long userId,
             int page
-    ){
+    ) {
         int safePage = Math.max(FIRST_PAGE, page);
 
         return userLeagueRepository.findLeagueProfile(userId)
@@ -81,7 +82,7 @@ public class UserLeagueQueryService {
             long leagueId,
             int safePage
     ) {
-        List<LeagueRankEntry> entries = leagueRankFinder.findPage(
+        List<LeagueRankEntryDto> entries = leagueRankFinder.findPage(
                 seasonId,
                 leagueId,
                 safePage * PAGE_SIZE,
@@ -89,7 +90,7 @@ public class UserLeagueQueryService {
         );
 
         boolean hasNextPage = entries.size() > PAGE_SIZE;
-        List<LeagueRankEntry> pageEntries = hasNextPage ? entries.subList(FIRST_PAGE, PAGE_SIZE) : entries;
+        List<LeagueRankEntryDto> pageEntries = hasNextPage ? entries.subList(FIRST_PAGE, PAGE_SIZE) : entries;
 
         List<LeagueRankRowDto> contents = toRankRows(pageEntries);
 
@@ -100,26 +101,26 @@ public class UserLeagueQueryService {
         return SliceResponse.of(hasNextPage, contents);
     }
 
-    private List<LeagueRankRowDto> toRankRows(List<LeagueRankEntry> entries) {
+    private List<LeagueRankRowDto> toRankRows(List<LeagueRankEntryDto> entries) {
         if (entries.isEmpty()) {
             return List.of();
         }
 
         List<Long> userIds = entries.stream()
-                .map(LeagueRankEntry::userId)
+                .map(LeagueRankEntryDto::userId)
                 .toList();
 
-        Map<Long, LeagueRankProfileDto> profiles = userLeagueRepository.findRankProfilesByUserIds(userIds).stream()
+        Map<Long, LeagueRankProfileDto> userIdToProfile = userLeagueRepository.findRankProfilesByUserIds(userIds).stream()
                 .collect(Collectors.toMap(LeagueRankProfileDto::userId, Function.identity()));
 
         return entries.stream()
-                .filter(entry -> profiles.containsKey(entry.userId()))
-                .map(entry -> toRankRow(entry, profiles.get(entry.userId())))
+                .filter(entry -> userIdToProfile.containsKey(entry.userId()))
+                .map(entry -> toRankRow(entry, userIdToProfile.get(entry.userId())))
                 .toList();
     }
 
     private LeagueRankRowDto toRankRow(
-            LeagueRankEntry entry,
+            LeagueRankEntryDto entry,
             LeagueRankProfileDto profile
     ) {
         return new LeagueRankRowDto(
@@ -137,7 +138,7 @@ public class UserLeagueQueryService {
             MyLeagueProfileDto profile,
             int rank
     ) {
-        return new MyLeagueRankWithProfileResponse(
+        return MyLeagueRankWithProfileResponse.of(
                 profile.leagueId(),
                 profile.leagueName(),
                 rank,

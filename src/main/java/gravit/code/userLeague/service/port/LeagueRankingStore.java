@@ -1,7 +1,6 @@
 package gravit.code.userLeague.service.port;
 
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
-
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +33,7 @@ public interface LeagueRankingStore {
             long userId
     );
 
-    List<LeagueRankEntry> findPage(
+    List<LeagueRankEntryDto> findPage(
             long seasonId,
             long leagueId,
             int offset,
@@ -43,7 +42,7 @@ public interface LeagueRankingStore {
 
     void replaceAll(
             long seasonId,
-            List<LeagueRankEntry> entries
+            List<LeagueRankEntryDto> entries
     );
 
     void deleteSeason(long seasonId);

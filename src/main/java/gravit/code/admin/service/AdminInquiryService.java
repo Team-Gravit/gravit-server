@@ -6,12 +6,11 @@ import gravit.code.admin.dto.response.InquiryDetailResponse;
 import gravit.code.admin.dto.response.InquiryListItemResponse;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.global.dto.response.PageResponse;
-import gravit.code.global.event.InquiryAnsweredEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.inquiry.domain.Inquiry;
 import gravit.code.inquiry.domain.InquiryAnswer;
 import gravit.code.inquiry.domain.InquiryStatus;
+import gravit.code.inquiry.dto.event.InquiryAnsweredEvent;
 import gravit.code.inquiry.repository.InquiryAnswerRepository;
 import gravit.code.inquiry.repository.InquiryRepository;
 import gravit.code.user.domain.User;
@@ -30,16 +29,21 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INQUIRY_ALREADY_ANSWERED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INQUIRY_ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INQUIRY_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class AdminInquiryService {
 
+    private static final Sort INQUIRY_LIST_SORT = Sort.by(Sort.Order.desc("id"));
+
     private final InquiryRepository inquiryRepository;
     private final InquiryAnswerRepository inquiryAnswerRepository;
     private final UserRepository userRepository;
-    private final ApplicationEventPublisher publisher;
 
-    private static final Sort INQUIRY_LIST_SORT = Sort.by(Sort.Order.desc("id"));
+    private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
     public PageResponse<InquiryListItemResponse> getInquiries(
@@ -51,17 +55,17 @@ public class AdminInquiryService {
                 ? inquiryRepository.findAll(pageable)
                 : inquiryRepository.findAllByStatus(status, pageable);
 
-        Map<Long, User> submittersById = loadSubmitters(inquiries.getContent());
+        Map<Long, User> userIdToSubmitter = loadSubmitters(inquiries.getContent());
 
         return PageResponse.from(
-                inquiries.map(inquiry -> InquiryListItemResponse.of(inquiry, submittersById.get(inquiry.getUserId())))
+                inquiries.map(inquiry -> InquiryListItemResponse.of(inquiry, userIdToSubmitter.get(inquiry.getUserId())))
         );
     }
 
     @Transactional(readOnly = true)
     public InquiryDetailResponse getInquiry(long inquiryId) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INQUIRY_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INQUIRY_NOT_FOUND));
 
         InquiryAnswer answer = inquiryAnswerRepository.findByInquiryId(inquiryId).orElse(null);
 
@@ -77,10 +81,10 @@ public class AdminInquiryService {
             InquiryAnswerCreateRequest request
     ) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INQUIRY_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INQUIRY_NOT_FOUND));
 
         if (inquiryAnswerRepository.findByInquiryId(inquiryId).isPresent()) {
-            throw new RestApiException(CustomErrorCode.INQUIRY_ALREADY_ANSWERED);
+            throw new RestApiException(INQUIRY_ALREADY_ANSWERED);
         }
 
         InquiryAnswer answer = inquiryAnswerRepository.save(
@@ -101,10 +105,10 @@ public class AdminInquiryService {
             InquiryAnswerUpdateRequest request
     ) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INQUIRY_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INQUIRY_NOT_FOUND));
 
         InquiryAnswer answer = inquiryAnswerRepository.findByInquiryId(inquiryId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INQUIRY_ANSWER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INQUIRY_ANSWER_NOT_FOUND));
 
         answer.update(request.content());
 
@@ -116,10 +120,10 @@ public class AdminInquiryService {
     @Transactional
     public void deleteAnswer(long inquiryId) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INQUIRY_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INQUIRY_NOT_FOUND));
 
         InquiryAnswer answer = inquiryAnswerRepository.findByInquiryId(inquiryId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INQUIRY_ANSWER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INQUIRY_ANSWER_NOT_FOUND));
 
         inquiryAnswerRepository.delete(answer);
 

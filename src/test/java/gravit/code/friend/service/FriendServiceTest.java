@@ -107,7 +107,7 @@ class FriendServiceTest {
         User me = userFixture.일반_유저(1);
 
         // when & then
-        assertThatThrownBy(() -> friendService.following(me.getId(), me.getId()))
+        assertThatThrownBy(() -> friendService.follow(me.getId(), me.getId()))
                 .isInstanceOf(RestApiException.class);
     }
 
@@ -119,7 +119,7 @@ class FriendServiceTest {
         friendFixture.팔로우(me, target);
 
         // when & then
-        assertThatThrownBy(() -> friendService.following(me.getId(), target.getId()))
+        assertThatThrownBy(() -> friendService.follow(me.getId(), target.getId()))
                 .isInstanceOf(RestApiException.class);
     }
 
@@ -131,7 +131,7 @@ class FriendServiceTest {
         friendFixture.팔로우(me, follower);
 
         // when
-        friendService.unFollowing(me.getId(), follower.getId());
+        friendService.unfollow(me.getId(), follower.getId());
 
         // then
         SliceResponse<FollowerResponse> result = friendService.getFollowers(follower.getId(), 0);

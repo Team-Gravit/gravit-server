@@ -29,7 +29,7 @@ effort: xhigh
    - 왜(배경, 문제 상황)
    - 제약사항(있는 경우에)
 3. 아래 다섯 요소가 확정되면 다음 Phase로 이동하라
-   - 종류: feat / fix / refactor / hotfix / docs / test / cicd / analysis 중 하나
+   - 종류: feat / fix / refactor / hotfix / docs / test / cicd / chore / analysis 중 하나
    - 제목: 작업을 한 줄로 표현하는 명사형.
      `.claude/spec/git-convention.md`의 제목 규칙을 따른다 - 40자 이내, 클래스명 나열과 괄호 중첩 금지,
      대상을 나열하지 말고 무엇을 해결하는지를 남긴다.

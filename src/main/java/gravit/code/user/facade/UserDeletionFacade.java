@@ -12,7 +12,6 @@ import java.util.List;
 public class UserDeletionFacade {
 
     private final UserDeletionService userDeletionService;
-
     private final InterviewAudioDeletionService interviewAudioDeletionService;
 
     public boolean cleanUserDeletion(long userId) {

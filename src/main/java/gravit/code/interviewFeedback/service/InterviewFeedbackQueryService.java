@@ -1,7 +1,6 @@
 package gravit.code.interviewFeedback.service;
 
 import gravit.code.global.dto.response.SliceResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionSort;
@@ -40,6 +39,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_FEEDBACK_NOT_READY;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -190,14 +193,14 @@ public class InterviewFeedbackQueryService {
             long sessionId
     ) {
         InterviewSession session = interviewSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(INTERVIEW_SESSION_NOT_FOUND));
 
         if (!session.isOwnedBy(userId)) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED);
+            throw new RestApiException(INTERVIEW_SESSION_ACCESS_DENIED);
         }
 
         if (!session.isCompleted()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_FEEDBACK_NOT_READY);
+            throw new RestApiException(INTERVIEW_FEEDBACK_NOT_READY);
         }
 
         return session;

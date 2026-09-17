@@ -19,10 +19,10 @@ public class Option {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "explanation", nullable = false)
     private String explanation;
 
     @Column(name = "is_answer", nullable = false)

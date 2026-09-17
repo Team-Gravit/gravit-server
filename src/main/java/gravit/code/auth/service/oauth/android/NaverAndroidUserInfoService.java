@@ -25,9 +25,10 @@ public class NaverAndroidUserInfoService {
     private static final String RESULT_CODE_SUCCESS = "00";
     private static final String RESPONSE_KEY = "response";
 
-    private final ClientRegistrationRepository clientRegistrationRepository;
-    private final OAuthClient oAuthClient;
     private final OAuthResponseFactory oAuthResponseFactory;
+    private final OAuthClient oAuthClient;
+
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
     public OAuthUserInfo getUserInfo(String accessToken) {
         validateAccessToken(accessToken);

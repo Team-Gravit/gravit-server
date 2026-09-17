@@ -4,21 +4,25 @@ import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.dto.oauth.android.GoogleAndroidUserInfo;
 import gravit.code.auth.dto.oauth.android.KakaoAndroidUserInfo;
 import gravit.code.auth.strategy.support.OAuthUserInfoValidator;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.PROVIDER_INVALID;
+
 @Slf4j
 public final class AndroidUserInfoFactory {
     private AndroidUserInfoFactory() {}
 
-    public static OAuthUserInfo fromClaims(String provider, Map<String, Object> claims) {
+    public static OAuthUserInfo fromClaims(
+            String provider,
+            Map<String, Object> claims
+    ) {
         OAuthUserInfo userInfo = switch (provider){
             case "kakao" -> new KakaoAndroidUserInfo(claims);
             case "google" -> new GoogleAndroidUserInfo(claims);
-            default -> throw new RestApiException(CustomErrorCode.PROVIDER_INVALID);
+            default -> throw new RestApiException(PROVIDER_INVALID);
         };
 
         OAuthUserInfoValidator.validate(userInfo);

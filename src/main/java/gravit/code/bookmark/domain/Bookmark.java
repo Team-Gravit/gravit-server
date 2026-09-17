@@ -32,13 +32,19 @@ public class Bookmark {
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Bookmark(long problemId, long userId) {
+    private Bookmark(
+            long problemId,
+            long userId
+    ) {
         this.problemId = problemId;
         this.userId = userId;
         this.createdAt = LocalDateTime.now(TimeZoneConst.KST);
     }
 
-    public static Bookmark create(long problemId, long userId) {
+    public static Bookmark create(
+            long problemId,
+            long userId
+    ) {
         return Bookmark.builder()
                 .problemId(problemId)
                 .userId(userId)

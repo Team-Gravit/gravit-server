@@ -1,12 +1,11 @@
 package gravit.code.userLeague.service;
 
-import gravit.code.global.event.LeagueRankChangedEvent;
-import gravit.code.global.event.TierPromotionFeedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.repository.LeagueRepository;
 import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.dto.event.LeagueRankChangedEvent;
+import gravit.code.userLeague.dto.event.TierPromotionFeedEvent;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_LEAGUE_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserLeaguePointService {
+
     private final UserLeagueRepository userLeagueRepository;
     private final LeagueRepository leagueRepository;
+
     private final ApplicationEventPublisher publisher;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -52,11 +56,11 @@ public class UserLeaguePointService {
             long userId,
             int earnedPoints
     ) {
-        UserLeague userLeague = userLeagueRepository.findByUserId(userId).orElseThrow(() -> new RestApiException(CustomErrorCode.USER_LEAGUE_NOT_FOUND));
+        UserLeague userLeague = userLeagueRepository.findByUserId(userId).orElseThrow(() -> new RestApiException(USER_LEAGUE_NOT_FOUND));
 
         League oldLeague = userLeague.getLeague();
         int updatedLp = userLeague.addLeaguePoints(earnedPoints);
-        League newLeague = leagueRepository.findByLpBetween(updatedLp).orElseThrow(() -> new RestApiException(CustomErrorCode.LEAGUE_NOT_MATCH_LEAGUE_POINT));
+        League newLeague = leagueRepository.findByLpBetween(updatedLp).orElseThrow(() -> new RestApiException(LEAGUE_NOT_MATCH_LEAGUE_POINT));
 
         boolean isPromotion = !newLeague.getId().equals(oldLeague.getId())
                 && newLeague.getSortOrder() > oldLeague.getSortOrder();

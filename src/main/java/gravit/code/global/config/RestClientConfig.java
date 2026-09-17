@@ -11,16 +11,17 @@ import java.time.Duration;
 @Configuration
 public class RestClientConfig {
 
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(3);
+    private static final Duration READ_TIMEOUT = Duration.ofSeconds(5);
+
     @Bean
     public RestClient restClient() {
-        // 자바 내장 Http 클라이언트 사용
         HttpClient httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(3)) // TCP 연결 맺기까지 3초 
+                .connectTimeout(CONNECT_TIMEOUT)
                 .build();
 
-        // HttpClient를 Spring 에 맞게 어댑터 패턴으로 연결
         JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(httpClient);
-        factory.setReadTimeout(Duration.ofSeconds(5)); // TCP 연결 이후 실제 응답 데이터 받기까지 5초
+        factory.setReadTimeout(READ_TIMEOUT);
 
         return RestClient.builder()
                 .requestFactory(factory)

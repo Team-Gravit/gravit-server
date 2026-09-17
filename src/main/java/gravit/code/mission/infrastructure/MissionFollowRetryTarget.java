@@ -1,7 +1,6 @@
 package gravit.code.mission.infrastructure;
 
 import gravit.code.global.event.retry.RetrySweepTarget;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.dto.event.FollowMissionEvent;
@@ -13,23 +12,29 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.Set;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.MISSION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class MissionFollowRetryTarget implements RetrySweepTarget {
 
+    public static final String QUEUE_KEY = "mission-follow-retry";
+    public static final String FIELD_USER_ID = "userId";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private static final Set<ErrorCode> NON_RETRYABLE_ERRORS = Set.of(
-            CustomErrorCode.MISSION_NOT_FOUND,
-            CustomErrorCode.USER_NOT_FOUND
+            MISSION_NOT_FOUND,
+            USER_NOT_FOUND
     );
 
     private final MissionService missionService;
 
     @Override
     public String queueKey() {
-        return "mission-follow-retry";
+        return QUEUE_KEY;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class MissionFollowRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        long userId = Long.parseLong(fields.get("userId"));
+        long userId = Long.parseLong(fields.get(FIELD_USER_ID));
 
         try {
             missionService.handleFollowMission(new FollowMissionEvent(userId));

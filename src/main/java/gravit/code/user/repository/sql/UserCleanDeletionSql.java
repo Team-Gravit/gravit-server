@@ -5,27 +5,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class UserCleanDeletionSql {
 
-    /**
-     * 사용자 및 관련 데이터를 완전 삭제하는 SQL
-     *
-     * 단일 {@code WITH ... DELETE} 문이므로 FK 제약은 문장 종료 시점에 일괄 검사된다.
-     * (CTE 실행 순서와 무관하게 참조/피참조 행이 모두 사라진 상태로 검사되므로 순서 이슈가 없다.)
-     *
-     * 삭제 대상:
-     * 1. 소셜/알림 (congratulation, notification, fcm_token, social_feed, user_feed)
-     *    - congratulation·notification 은 users 를 참조하는 FK 보유 → users 삭제 전 제거 필수
-     * 2. 친구 관계 (friends, 양방향)
-     * 3. 공지사항 (notice)
-     * 4. 학습 관련 (learning, lesson_submission, problem_submission, bookmark, wrong_answered_note, daily_learning_record)
-     * 5. 리그/시즌 (user_league_history, user_league)
-     * 6. 미션/리포트 (user_mission, report)
-     * 7. 문의 (inquiry_answer → inquiry)
-     * 8. 면접 (interview_feedback, interview_answer, interview_session_topic, interview_session)
-     * 9. 사용자 (users)
-     *
-     * NOTE: user_badge·user_mission_stat·user_planet_completion·user_qualified_solve_stat 는
-     *       V9(drop_badge_tables)에서 삭제된 테이블이라 더 이상 대상에 포함하지 않는다.
-     */
     public static final String CLEAN_USER_DELETION_SQL = """
             WITH
               d_congratulation AS (

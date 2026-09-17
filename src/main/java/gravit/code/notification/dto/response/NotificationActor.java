@@ -1,7 +1,10 @@
 package gravit.code.notification.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
+import lombok.Builder;
 
+@Builder(access = AccessLevel.PRIVATE)
 public record NotificationActor(
 
         @Schema(
@@ -25,4 +28,15 @@ public record NotificationActor(
         )
         int profileImgNumber
 ) {
+    public static NotificationActor of(
+            Long profileId,
+            String nickname,
+            int profileImgNumber
+    ) {
+        return NotificationActor.builder()
+                .profileId(profileId)
+                .nickname(nickname)
+                .profileImgNumber(profileImgNumber)
+                .build();
+    }
 }

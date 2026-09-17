@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public record DailyActiveUserCountDto(
         LocalDate activityDate,
+
         Long activeUserCount
 ) {
 }

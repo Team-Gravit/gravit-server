@@ -12,7 +12,6 @@ import gravit.code.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -30,12 +31,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserControllerDocs {
 
     private final UserFacade userFacade;
+
     private final UserService userService;
 
     @GetMapping
     public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal LoginUser loginUser) {
         UserResponse userResponse = userService.findById(loginUser.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
+        return ResponseEntity.status(OK).body(userResponse);
     }
 
     @PostMapping("/onboarding")
@@ -43,8 +45,8 @@ public class UserController implements UserControllerDocs {
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid @RequestBody OnboardingRequest request
     ) {
-        UserResponse userResponse = userService.onboarding(loginUser.getId(), request);
-        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
+        UserResponse userResponse = userService.onboard(loginUser.getId(), request);
+        return ResponseEntity.status(OK).body(userResponse);
     }
 
     @PatchMapping
@@ -53,24 +55,24 @@ public class UserController implements UserControllerDocs {
             @Valid @RequestBody UserProfileUpdateRequest request
     ) {
         UserResponse userResponse = userService.updateUserProfile(loginUser.getId(), request);
-        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
+        return ResponseEntity.status(OK).body(userResponse);
     }
 
     @GetMapping("/my-page")
     public ResponseEntity<MyPageResponse> getMyPage(@AuthenticationPrincipal LoginUser loginUser) {
         MyPageResponse myPageResponse = userService.getMyPage(loginUser.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(myPageResponse);
+        return ResponseEntity.status(OK).body(myPageResponse);
     }
 
     @PatchMapping("/restore")
     public ResponseEntity<Void> restoreUser(@RequestParam("providerId") String providerId) {
         userService.restoreUser(providerId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(OK).build();
     }
 
     @Deprecated(forRemoval = true)
     @GetMapping("/main-page")
     public ResponseEntity<MainPageResponse> getMainPage(@AuthenticationPrincipal LoginUser loginUser){
-        return ResponseEntity.status(HttpStatus.OK).body(userFacade.getMainPage(loginUser.getId()));
+        return ResponseEntity.status(OK).body(userFacade.getMainPage(loginUser.getId()));
     }
 }

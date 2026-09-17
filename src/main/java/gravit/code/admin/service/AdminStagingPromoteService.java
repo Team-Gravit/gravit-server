@@ -15,7 +15,6 @@ import gravit.code.admin.repository.StagingLabelRepository;
 import gravit.code.admin.support.AuditLogRecorder;
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.repository.LessonRepository;
@@ -34,6 +33,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_INVALID_STRUCTURE;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_LABEL_ALREADY_COMPLETED;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_LABEL_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_LESSON_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.STAGING_STATUS_INVALID;
+
 @Service
 @RequiredArgsConstructor
 public class AdminStagingPromoteService {
@@ -48,7 +53,6 @@ public class AdminStagingPromoteService {
     private final ProblemStagingRepository problemStagingRepository;
     private final OptionStagingRepository optionStagingRepository;
     private final AnswerStagingRepository answerStagingRepository;
-
     private final LessonRepository lessonRepository;
     private final ProblemRepository problemRepository;
     private final OptionRepository optionRepository;
@@ -63,18 +67,18 @@ public class AdminStagingPromoteService {
             LabelStatus targetStatus
     ) {
         if (targetStatus != LabelStatus.COMPLETED) {
-            throw new RestApiException(CustomErrorCode.STAGING_STATUS_INVALID);
+            throw new RestApiException(STAGING_STATUS_INVALID);
         }
 
         StagingLabel stagingLabel = stagingLabelRepository.findByLabel(label)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_LABEL_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_LABEL_NOT_FOUND));
 
         if (stagingLabel.isCompleted()) {
-            throw new RestApiException(CustomErrorCode.STAGING_LABEL_ALREADY_COMPLETED);
+            throw new RestApiException(STAGING_LABEL_ALREADY_COMPLETED);
         }
 
         LessonStaging lessonStaging = lessonStagingRepository.findByLabel(label)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.STAGING_LESSON_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(STAGING_LESSON_NOT_FOUND));
 
         List<ProblemStaging> problemStagings = problemStagingRepository.findByLabelOrderById(label);
         List<OptionStaging> optionStagings = optionStagingRepository.findByLabelOrderById(label);
@@ -82,23 +86,20 @@ public class AdminStagingPromoteService {
 
         validateStructure(problemStagings, optionStagings, answerStagings);
 
-        // 1) lesson (신규 prod id 발번)
         Lesson prodLesson = lessonRepository.save(Lesson.create(lessonStaging.getTitle(), lessonStaging.getUnitId()));
 
-        // 2) problems (staging id -> prod id 리매핑)
-        Map<Long, Long> problemIdMap = new HashMap<>();
+        Map<Long, Long> stagingProblemIdToProblemId = new HashMap<>();
         for (ProblemStaging problemStaging : problemStagings) {
             Problem prodProblem = problemRepository.save(Problem.create(
                     problemStaging.getProblemType(),
                     problemStaging.getInstruction(),
                     problemStaging.getContent(),
                     prodLesson.getId()));
-            problemIdMap.put(problemStaging.getId(), prodProblem.getId());
+            stagingProblemIdToProblemId.put(problemStaging.getId(), prodProblem.getId());
         }
 
-        // 3) options (child FK 재기록)
         for (OptionStaging optionStaging : optionStagings) {
-            long prodProblemId = problemIdMap.get(optionStaging.getProblemId());
+            long prodProblemId = stagingProblemIdToProblemId.get(optionStaging.getProblemId());
             optionRepository.save(Option.create(
                     optionStaging.getContent(),
                     optionStaging.getExplanation(),
@@ -106,19 +107,16 @@ public class AdminStagingPromoteService {
                     prodProblemId));
         }
 
-        // 4) answers (child FK 재기록)
         for (AnswerStaging answerStaging : answerStagings) {
-            long prodProblemId = problemIdMap.get(answerStaging.getProblemId());
+            long prodProblemId = stagingProblemIdToProblemId.get(answerStaging.getProblemId());
             answerRepository.save(Answer.create(
                     answerStaging.getContent(),
                     answerStaging.getExplanation(),
                     prodProblemId));
         }
 
-        // 5) 라벨 완료 (staging 행은 보존)
         stagingLabel.complete();
 
-        // 6) 감사 로그
         auditLogRecorder.record(adminId, AuditAction.STAGING_PROMOTE, label, null, LabelStatus.COMPLETED.name());
     }
 
@@ -128,17 +126,16 @@ public class AdminStagingPromoteService {
             List<AnswerStaging> answers
     ) {
         if (problems.size() != EXPECTED_PROBLEM_COUNT) {
-            throw new RestApiException(CustomErrorCode.STAGING_INVALID_STRUCTURE);
+            throw new RestApiException(STAGING_INVALID_STRUCTURE);
         }
 
         long objectiveCount = problems.stream().filter(p -> p.getProblemType() == ProblemType.OBJECTIVE).count();
         long subjectiveCount = problems.stream().filter(p -> p.getProblemType() == ProblemType.SUBJECTIVE).count();
 
         if (objectiveCount != EXPECTED_OBJECTIVE_COUNT || subjectiveCount != EXPECTED_SUBJECTIVE_COUNT) {
-            throw new RestApiException(CustomErrorCode.STAGING_INVALID_STRUCTURE);
+            throw new RestApiException(STAGING_INVALID_STRUCTURE);
         }
 
-        // option/answer 의 problemId 가 라벨 문제 목록을 벗어나면 promote 단계에서 NPE 가 발생하므로 사전 차단
         Set<Long> problemIds = problems.stream()
                 .map(ProblemStaging::getId)
                 .collect(Collectors.toSet());
@@ -149,30 +146,30 @@ public class AdminStagingPromoteService {
                 .allMatch(answer -> answer.getProblemId() != null && problemIds.contains(answer.getProblemId()));
 
         if (!optionsReferenceValid || !answersReferenceValid) {
-            throw new RestApiException(CustomErrorCode.STAGING_INVALID_STRUCTURE);
+            throw new RestApiException(STAGING_INVALID_STRUCTURE);
         }
 
-        Map<Long, List<OptionStaging>> optionsByProblem = options.stream()
+        Map<Long, List<OptionStaging>> problemIdToOptions = options.stream()
                 .collect(Collectors.groupingBy(OptionStaging::getProblemId));
 
-        Map<Long, List<AnswerStaging>> answersByProblem = answers.stream()
+        Map<Long, List<AnswerStaging>> problemIdToAnswers = answers.stream()
                 .filter(answer -> answer.getProblemId() != null)
                 .collect(Collectors.groupingBy(AnswerStaging::getProblemId));
 
         for (ProblemStaging problem : problems) {
             if (problem.getProblemType() == ProblemType.OBJECTIVE) {
-                List<OptionStaging> problemOptions = optionsByProblem.getOrDefault(problem.getId(), List.of());
+                List<OptionStaging> problemOptions = problemIdToOptions.getOrDefault(problem.getId(), List.of());
                 long answerOptionCount = problemOptions.stream().filter(OptionStaging::isAnswer).count();
 
                 if (problemOptions.size() != EXPECTED_OPTION_COUNT || answerOptionCount != 1) {
-                    throw new RestApiException(CustomErrorCode.STAGING_INVALID_STRUCTURE);
+                    throw new RestApiException(STAGING_INVALID_STRUCTURE);
                 }
 
             } else {
-                List<AnswerStaging> problemAnswers = answersByProblem.getOrDefault(problem.getId(), List.of());
+                List<AnswerStaging> problemAnswers = problemIdToAnswers.getOrDefault(problem.getId(), List.of());
 
                 if (problemAnswers.size() != 1) {
-                    throw new RestApiException(CustomErrorCode.STAGING_INVALID_STRUCTURE);
+                    throw new RestApiException(STAGING_INVALID_STRUCTURE);
                 }
             }
         }

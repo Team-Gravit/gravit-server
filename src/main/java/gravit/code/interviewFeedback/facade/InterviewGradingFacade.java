@@ -44,35 +44,26 @@ public class InterviewGradingFacade {
 
     public void grade(long sessionId) {
         try {
-            // 채점할 세션 조회
             interviewSessionQueryService.getGradingSession(sessionId);
 
-            // 답변 조회
             List<InterviewAnswer> answers = interviewAnswerQueryService.getAllBySessionId(sessionId);
 
-            // 문제 아이디 추출
             Set<Long> questionIds = answers.stream()
                     .map(InterviewAnswer::getQuestionId)
                     .collect(Collectors.toSet());
 
-            // 문제 아이디 - 문제 매핑
             Map<Long, InterviewQuestion> questionIdToQuestion = interviewQuestionQueryService.getQuestionIdToQuestion(questionIds);
 
-            // 문제 아이디 - 문제 개념 매핑
             Map<Long, List<InterviewQuestionConcept>> questionIdToConcepts = interviewQuestionQueryService.getQuestionIdToConcepts(questionIds);
 
-            // 문항별 판정과 점수 계산 (무응답은 AI 호출 없이 0점)
             List<InterviewGradedAnswerDto> gradedAnswers = gradeAnswers(answers, questionIdToQuestion, questionIdToConcepts);
 
-            // 문항 점수 추출
             List<InterviewScoreDto> scores = gradedAnswers.stream()
                     .map(InterviewGradedAnswerDto::score)
                     .toList();
 
-            // 세션 점수 합산 (정확도 합, 전달력 합)
             InterviewSessionScoreDto sessionScore = interviewScoringPolicy.aggregate(scores);
 
-            // 피드백 5건과 세션 점수를 단일 트랜잭션으로 저장, COMPLETED 전이
             save(sessionId, gradedAnswers, sessionScore);
         } catch (RuntimeException e) {
             log.error("면접 채점 실패 - sessionId: {}", sessionId, e);

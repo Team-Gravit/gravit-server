@@ -13,9 +13,9 @@ import java.util.List;
 public class NotificationFacade {
 
     private final NotificationService notificationService;
+
     private final NotificationPushSender notificationPushSender;
 
-    // 인앱 알림함에만 적재 (푸시 미발송) — 팔로우 / 축하하기 / 친구 활동
     public void notifyUserInApp(
             long userId,
             NotificationType type,
@@ -34,7 +34,6 @@ public class NotificationFacade {
         notificationService.notifyUsers(userIds, type, message, targetId);
     }
 
-    // 특정 유저에게 인앱 알림 저장 + FCM 푸시 발송 (인앱 + 푸시 모두 쓰는 알림용)
     public void notifyUser(
             long userId,
             NotificationType type,

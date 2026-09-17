@@ -2,12 +2,12 @@ package gravit.code.wrongAnsweredNote.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.problem.dto.response.WrongAnsweredProblemsResponse;
+import gravit.code.wrongAnsweredNote.controller.docs.WrongAnsweredNoteControllerDocs;
 import gravit.code.wrongAnsweredNote.dto.request.WrongAnsweredNoteDeleteRequest;
 import gravit.code.wrongAnsweredNote.facade.WrongAnsweredNoteFacade;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,28 +17,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/wrong-answered-notes")
 public class WrongAnsweredNoteController implements WrongAnsweredNoteControllerDocs {
 
     private final WrongAnsweredNoteFacade wrongAnsweredNoteFacade;
+
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
 
     @GetMapping("/{unitId}")
     public ResponseEntity<WrongAnsweredProblemsResponse> getAllWrongAnsweredProblemInUnit(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("unitId") Long unitId
-    ){
-        return ResponseEntity.status(HttpStatus.OK).body(wrongAnsweredNoteFacade.getAllWrongAnsweredProblemInUnit(loginUser.getId(), unitId));
+    ) {
+        return ResponseEntity.status(OK).body(wrongAnsweredNoteFacade.getAllWrongAnsweredProblemInUnit(loginUser.getId(), unitId));
     }
 
     @DeleteMapping
     public ResponseEntity<Void> deleteWrongAnsweredProblem(
             @AuthenticationPrincipal LoginUser loginUser,
             @Valid @RequestBody WrongAnsweredNoteDeleteRequest request
-    ){
+    ) {
         wrongAnsweredNoteService.resolveWrongAnsweredNote(loginUser.getId(), request.problemId());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 }

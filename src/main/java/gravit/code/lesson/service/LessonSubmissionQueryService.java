@@ -3,8 +3,8 @@ package gravit.code.lesson.service;
 import gravit.code.chapter.dto.internal.ChapterSolvedStatDto;
 import gravit.code.chapter.dto.response.TopChapterResponse;
 import gravit.code.global.consts.TimeZoneConst;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.global.util.DecimalRounding;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -17,13 +17,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class LessonSubmissionQueryService {
 
     private static final int TOP_CHAPTERS_LIMIT = 3;
     private static final int SECONDS_PER_HOUR = 60 * 60;
-    private static final double LEARNING_HOURS_ROUNDING_SCALE = 10.0;
+    private static final int NO_PEAK_LEARNING_HOUR = -1;
 
     private final LessonSubmissionRepository lessonSubmissionRepository;
 
@@ -49,7 +51,7 @@ public class LessonSubmissionQueryService {
             long lessonSubmissionId
     ) {
         return lessonSubmissionRepository.findLessonIdByIdAndUserId(lessonSubmissionId, userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(LESSON_SUBMISSION_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +65,7 @@ public class LessonSubmissionQueryService {
 
         double learningHours = (double) learningSeconds / SECONDS_PER_HOUR;
 
-        return Math.round(learningHours * LEARNING_HOURS_ROUNDING_SCALE) / LEARNING_HOURS_ROUNDING_SCALE;
+        return DecimalRounding.roundToFirstDecimal(learningHours);
     }
 
     @Transactional(readOnly = true)
@@ -74,7 +76,7 @@ public class LessonSubmissionQueryService {
     @Transactional(readOnly = true)
     public int getPeakLearningHour(long userId) {
         return lessonSubmissionRepository.getPeakLearningHour(userId)
-                .orElse(-1);
+                .orElse(NO_PEAK_LEARNING_HOUR);
     }
 
     @Transactional(readOnly = true)

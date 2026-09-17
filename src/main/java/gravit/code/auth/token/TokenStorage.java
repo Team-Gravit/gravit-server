@@ -11,5 +11,8 @@ public interface TokenStorage {
             T token
     );
 
-    <T extends Token> Optional<String> findToken(Subject subject, Class<T> tokenClass);
+    <T extends Token> Optional<String> findToken(
+            Subject subject,
+            Class<T> tokenClass
+    );
 }

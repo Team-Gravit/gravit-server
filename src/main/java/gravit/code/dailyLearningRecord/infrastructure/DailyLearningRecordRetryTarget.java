@@ -11,13 +11,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DailyLearningRecordRetryTarget implements RetrySweepTarget {
 
+    public static final String QUEUE_KEY = "daily-learning-record-retry";
+    public static final String FIELD_USER_ID = "userId";
+
     private static final int MAX_ATTEMPTS = 10;
 
     private final DailyLearningRecordService dailyLearningRecordService;
 
     @Override
     public String queueKey() {
-        return "daily-learning-record-retry";
+        return QUEUE_KEY;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class DailyLearningRecordRetryTarget implements RetrySweepTarget {
 
     @Override
     public void reprocess(Map<String, String> fields) {
-        long userId = Long.parseLong(fields.get("userId"));
+        long userId = Long.parseLong(fields.get(FIELD_USER_ID));
 
         dailyLearningRecordService.handleDailyLearningRecord(userId);
     }

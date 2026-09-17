@@ -11,7 +11,7 @@ import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.userLeague.domain.UserLeague;
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
@@ -137,7 +137,7 @@ class SeasonBatchServiceTest {
                 softly.assertThat(leagueRankingStore.hasRanking(currentSeason.getId())).isFalse();
                 softly.assertThat(leagueRankingStore.findPage(nextSeason.getId(), bronze2.getId(), 0, 10))
                         .singleElement()
-                        .extracting(LeagueRankEntry::userId, LeagueRankEntry::leaguePoint)
+                        .extracting(LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
                         .containsExactly(user.getId(), 101);
             });
         }

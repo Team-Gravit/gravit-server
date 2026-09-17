@@ -15,10 +15,11 @@ import java.util.List;
 public class UserCleanScheduler {
 
     private final UserDeletionFacade userDeletionFacade;
+
     private final RedisUserCleanManager cleanManager;
 
     @Scheduled(
-            cron = "0 0 * * * *", // 매 시간마다 한번씩
+            cron = "0 0 * * * *",
             zone = "Asia/Seoul"
     )
     public void cleanUsers(){

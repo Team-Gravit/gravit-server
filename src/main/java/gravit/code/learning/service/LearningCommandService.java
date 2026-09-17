@@ -1,6 +1,5 @@
 package gravit.code.learning.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
@@ -11,13 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.LEARNING_CONFLICT;
+import static gravit.code.global.exception.domain.CustomErrorCode.LEARNING_NOT_FOUND;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LearningCommandService {
 
-    private final LearningRepository learningRepository;
     private final LearningProgressRateService learningProgressRateService;
+
+    private final LearningRepository learningRepository;
 
     @Transactional
     public void updateConsecutiveDays(){
@@ -29,7 +32,7 @@ public class LearningCommandService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createLearning(long userId){
         if (learningRepository.existsByUserId(userId)) {
-            throw new RestApiException(CustomErrorCode.LEARNING_CONFLICT);
+            throw new RestApiException(LEARNING_CONFLICT);
         }
 
         Learning learning = Learning.create(userId);
@@ -40,9 +43,9 @@ public class LearningCommandService {
     public ConsecutiveSolvedDto updateLearningStatus(
             long userId,
             long chapterId
-    ){
+    ) {
         Learning learning = learningRepository.findByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.LEARNING_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(LEARNING_NOT_FOUND));
 
         int planetConquestRate = learningProgressRateService.getPlanetConquestRate(userId);
 

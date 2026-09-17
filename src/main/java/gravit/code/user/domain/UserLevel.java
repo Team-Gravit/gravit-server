@@ -1,5 +1,6 @@
 package gravit.code.user.domain;
 
+import gravit.code.global.util.DecimalRounding;
 import gravit.code.user.dto.response.UserLevelDetailResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -69,6 +70,6 @@ public class UserLevel {
 
         int startXp = currentLevel.getStartXp();
         double rate = ((double)(xp - startXp) / (currentLevel.getEndXp() - startXp)) * MAX_RATE;
-        return Math.round(rate * 10) / 10.0;
+        return DecimalRounding.roundToFirstDecimal(rate);
     }
 }

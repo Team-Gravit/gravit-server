@@ -38,8 +38,8 @@ public class UserFacade {
     private final UserLeagueService userLeagueService;
     private final UnitQueryService unitQueryService;
     private final LearningQueryService learningQueryService;
-    private final ChapterQueryService chapterQueryService;
     private final LearningProgressRateService learningProgressRateService;
+    private final ChapterQueryService chapterQueryService;
     private final MissionService missionService;
     private final DailyLearningRecordService dailyLearningRecordService;
 

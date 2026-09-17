@@ -1,11 +1,12 @@
 package gravit.code.season.batch;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.ACTIVE_SEASON_NOT_FOUND;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class SeasonBatchScheduler {
             seasonBatchService.finalizeAndRollover();
             log.info("Season Rollover 실행");
         }catch (RestApiException e){
-            if(e.getErrorCode() == CustomErrorCode.ACTIVE_SEASON_NOT_FOUND){
+            if(e.getErrorCode() == ACTIVE_SEASON_NOT_FOUND){
                 log.warn("시즌 변경 작업 도중 ACTIVE 인 시즌이 존재하지 않아 예외 발생");
                 return;
             }

@@ -5,14 +5,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class MailHtmlRenderer {
 
-    public static String buildAccountDeletionEmail(String deleteLink) {
-        String safeDeleteLink = escapeHtml(deleteLink);
-
-        return TEMPLATE
-                .replace("${DELETE_LINK}", deleteLink)
-                .replace("${DELETE_LINK_PLAIN}", safeDeleteLink);
-    }
-
     private static final String TEMPLATE = """
             <!doctype html>
             <html lang="ko">
@@ -101,6 +93,13 @@ public class MailHtmlRenderer {
             </html>
             """;
 
+    public static String buildAccountDeletionEmail(String deleteLink) {
+        String safeDeleteLink = escapeHtml(deleteLink);
+
+        return TEMPLATE
+                .replace("${DELETE_LINK}", deleteLink)
+                .replace("${DELETE_LINK_PLAIN}", safeDeleteLink);
+    }
 
     private static String escapeHtml(String s) {
         if (s == null) return "";

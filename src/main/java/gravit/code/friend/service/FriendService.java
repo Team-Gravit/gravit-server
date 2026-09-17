@@ -1,7 +1,7 @@
 package gravit.code.friend.service;
 
-
 import gravit.code.friend.domain.Friend;
+import gravit.code.friend.dto.event.FollowedEvent;
 import gravit.code.friend.dto.internal.SearchUserDto;
 import gravit.code.friend.dto.response.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
@@ -9,8 +9,6 @@ import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
 import gravit.code.friend.repository.FriendRepository;
 import gravit.code.global.dto.response.SliceResponse;
-import gravit.code.global.event.FollowedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.mission.dto.event.FollowMissionEvent;
 import gravit.code.user.repository.UserRepository;
@@ -28,36 +26,37 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.FRIEND_CONFLICT;
+import static gravit.code.global.exception.domain.CustomErrorCode.FRIEND_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.UNABLE_FOLLOWING_YOURSELF;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendService {
 
-    private final ApplicationEventPublisher publisher;
-    private final FriendRepository friendRepository;
-    private final UserRepository userRepository;
-
     private static final int PAGE_SIZE = 10;
     private static final Sort FOLLOW_SORT = Sort.by(Sort.Order.desc("createdAt"));
 
+    private final FriendRepository friendRepository;
+    private final UserRepository userRepository;
+
+    private final ApplicationEventPublisher publisher;
+
     @Transactional
-    public FriendResponse following(
+    public FriendResponse follow(
             long followerId,
             long followeeId
     ) {
-        // 자기 자신에게 팔로잉 불가능
         if(followeeId == followerId){
-            throw new RestApiException(CustomErrorCode.UNABLE_FOLLOWING_YOURSELF);
+            throw new RestApiException(UNABLE_FOLLOWING_YOURSELF);
         }
 
-        // 팔로잉 대상 유저가 존재하는지 확인
         userRepository.findById(followeeId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.FRIEND_NOT_FOUND));
+                .orElseThrow(()-> new RestApiException(FRIEND_NOT_FOUND));
 
-        // 이미 팔로우 중인지 중복 체크
         if(friendRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)){
-            throw new RestApiException(CustomErrorCode.FRIEND_CONFLICT);
+            throw new RestApiException(FRIEND_CONFLICT);
         }
 
         Friend friend = Friend.create(followerId, followeeId);
@@ -71,15 +70,14 @@ public class FriendService {
     }
 
     @Transactional
-    public void unFollowing(
+    public void unfollow(
             long followerId,
             long followeeId
     ) {
         Optional<Friend> friend = friendRepository.findByFolloweeIdAndFollowerId(followeeId, followerId);
 
-        // 만약 팔로우 한 내역이 존재하지 않는다면
         if(friend.isEmpty()){
-            throw new RestApiException(CustomErrorCode.FRIEND_NOT_FOUND);
+            throw new RestApiException(FRIEND_NOT_FOUND);
         }
 
         friendRepository.delete(friend.get());
@@ -93,7 +91,7 @@ public class FriendService {
         Optional<Friend> friend = friendRepository.findByFolloweeIdAndFollowerId(followeeId, followerId);
 
         if(friend.isEmpty()){
-            throw new RestApiException(CustomErrorCode.FRIEND_NOT_FOUND);
+            throw new RestApiException(FRIEND_NOT_FOUND);
         }
 
         friendRepository.delete(friend.get());
@@ -129,7 +127,7 @@ public class FriendService {
         long followerCount = friendRepository.countByFolloweeId(userId);
         long followeeCount = friendRepository.countByFollowerId(userId);
 
-        return new FollowCountsResponse(followerCount, followeeCount);
+        return FollowCountsResponse.of(followerCount, followeeCount);
     }
 
     @Transactional(readOnly = true)
@@ -138,7 +136,7 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public Set<Long> followingIdsAmong(
+    public Set<Long> findFollowingIdsAmong(
             long followerId,
             Set<Long> followeeIds
     ) {

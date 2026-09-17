@@ -1,7 +1,6 @@
 package gravit.code.interview.domain;
 
 import gravit.code.global.consts.TimeZoneConst;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.global.entity.BaseEntity;
 import gravit.code.interviewQuestion.domain.InterviewDifficulty;
@@ -19,6 +18,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_GRADING;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID;
 
 @Getter
 @Entity
@@ -220,13 +223,13 @@ public class InterviewSession extends BaseEntity {
 
     private void validateInProgress() {
         if (!isInProgress()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS);
+            throw new RestApiException(INTERVIEW_SESSION_NOT_IN_PROGRESS);
         }
     }
 
     private void validateGrading() {
         if (!isGrading()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_NOT_GRADING);
+            throw new RestApiException(INTERVIEW_SESSION_NOT_GRADING);
         }
     }
 
@@ -235,10 +238,10 @@ public class InterviewSession extends BaseEntity {
             int deliveryScore
     ) {
         if (accuracyScore < INITIAL_SCORE || accuracyScore > accuracyMaxScore) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID);
+            throw new RestApiException(INTERVIEW_SESSION_SCORE_INVALID);
         }
         if (deliveryScore < INITIAL_SCORE || deliveryScore > getDeliveryMaxScore()) {
-            throw new RestApiException(CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID);
+            throw new RestApiException(INTERVIEW_SESSION_SCORE_INVALID);
         }
     }
 }

@@ -23,7 +23,6 @@ public class UnitFacade {
     private static final double NOT_STARTED_PROGRESS_RATE = 0.0;
 
     private final UnitQueryService unitQueryService;
-
     private final ChapterQueryService chapterQueryService;
     private final LearningProgressRateService learningProgressRateService;
 
@@ -31,12 +30,12 @@ public class UnitFacade {
     public UnitPageResponse getAllUnitInChapter(
             long userId,
             long chapterId
-    ){
+    ) {
         ChapterSummaryResponse chapterSummaryResponse = chapterQueryService.getChapterSummary(chapterId);
 
         List<UnitSummaryResponse> unitSummaries = unitQueryService.getAllUnitSummaryByChapterId(chapterId);
 
-        Map<Long, Double> progressRates = unitQueryService.getAllUnitProgressInChapter(chapterId, userId)
+        Map<Long, Double> unitIdToProgressRate = unitQueryService.getAllUnitProgressInChapter(chapterId, userId)
                 .stream()
                 .collect(Collectors.toMap(
                         UnitProgressRowDto::unitId,
@@ -46,7 +45,7 @@ public class UnitFacade {
         List<UnitDetailResponse> unitDetailResponses = unitSummaries.stream()
                 .map(unitSummary -> UnitDetailResponse.create(
                         unitSummary,
-                        progressRates.getOrDefault(unitSummary.unitId(), NOT_STARTED_PROGRESS_RATE)
+                        unitIdToProgressRate.getOrDefault(unitSummary.unitId(), NOT_STARTED_PROGRESS_RATE)
                 )).toList();
 
         return UnitPageResponse.create(

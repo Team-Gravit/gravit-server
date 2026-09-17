@@ -1,6 +1,5 @@
 package gravit.code.social.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.social.domain.UserFeed;
 import gravit.code.social.repository.UserFeedRepository;
@@ -9,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_FEED_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class UserFeedService {
             long feedId
     ) {
         UserFeed userFeed = userFeedRepository.findByUserIdAndFeedId(userId, feedId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_FEED_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_FEED_NOT_FOUND));
         userFeed.hide();
     }
 
@@ -46,7 +47,7 @@ public class UserFeedService {
             long feedId
     ) {
         UserFeed userFeed = userFeedRepository.findByUserIdAndFeedId(userId, feedId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_FEED_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_FEED_NOT_FOUND));
         userFeed.congratulate();
     }
 }

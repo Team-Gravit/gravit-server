@@ -2,12 +2,11 @@ package gravit.code.social.service;
 
 import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.dto.response.SliceResponse;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.global.util.TimeAgoFormatter;
 import gravit.code.social.domain.FeedEventType;
 import gravit.code.social.domain.SocialFeed;
-import gravit.code.social.dto.internal.SocialFeedProjection;
+import gravit.code.social.dto.internal.SocialFeedDto;
 import gravit.code.social.dto.response.SocialFeedResponse;
 import gravit.code.social.repository.CongratulationRepository;
 import gravit.code.social.repository.SocialFeedRepository;
@@ -25,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.SOCIAL_FEED_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class SocialFeedService {
@@ -34,6 +35,7 @@ public class SocialFeedService {
     private final SocialFeedRepository socialFeedRepository;
     private final UserFeedRepository userFeedRepository;
     private final CongratulationRepository congratulationRepository;
+
     private final TimeAgoFormatter timeAgoFormatter;
 
     @Transactional
@@ -52,24 +54,26 @@ public class SocialFeedService {
     ) {
         int safePage = Math.max(0, page);
         Pageable pageable = PageRequest.of(safePage, PAGE_SIZE);
-        Slice<SocialFeedProjection> projections = userFeedRepository.findVisibleFeedsByUserId(userId, pageable);
+        Slice<SocialFeedDto> projections = userFeedRepository.findVisibleFeedsByUserId(userId, pageable);
 
         Set<Long> limitReachedActorIds = resolveActorIdsWithLimitReached(userId, projections.getContent());
         Set<Long> congratulatedFeedIds = resolveCongratulatedFeedIds(userId, projections.getContent());
+
         Slice<SocialFeedResponse> responses = projections.map(p -> {
             boolean congratulated = congratulatedFeedIds.contains(p.id());
             boolean canCongratulate = !congratulated && !limitReachedActorIds.contains(p.actorId());
             return SocialFeedResponse.of(p, congratulated, canCongratulate, timeAgoFormatter.format(p.createdAt()));
         });
+
         return SliceResponse.of(responses);
     }
 
     private Set<Long> resolveActorIdsWithLimitReached(
             long userId,
-            List<SocialFeedProjection> projections
+            List<SocialFeedDto> projections
     ) {
         List<Long> actorIds = projections.stream()
-                .map(SocialFeedProjection::actorId)
+                .map(SocialFeedDto::actorId)
                 .distinct()
                 .toList();
         if (actorIds.isEmpty()) {
@@ -79,14 +83,12 @@ public class SocialFeedService {
         return new HashSet<>(congratulationRepository.findActorIdsWithLimitReached(userId, actorIds, startOfDay));
     }
 
-    // 이 페이지의 피드 중 유저가 이미 축하한 피드 id 집합. Congratulation 테이블을 원천으로 하며,
-    // 알림함(NotificationFacade)도 같은 데이터를 읽어 축하 완료 상태를 양쪽에서 동기화한다.
     private Set<Long> resolveCongratulatedFeedIds(
             long userId,
-            List<SocialFeedProjection> projections
+            List<SocialFeedDto> projections
     ) {
         List<Long> feedIds = projections.stream()
-                .map(SocialFeedProjection::id)
+                .map(SocialFeedDto::id)
                 .toList();
         if (feedIds.isEmpty()) {
             return Set.of();
@@ -97,7 +99,7 @@ public class SocialFeedService {
     @Transactional(readOnly = true)
     public long getActorId(long feedId) {
         SocialFeed feed = socialFeedRepository.findById(feedId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.SOCIAL_FEED_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(SOCIAL_FEED_NOT_FOUND));
         return feed.getActorId();
     }
 }

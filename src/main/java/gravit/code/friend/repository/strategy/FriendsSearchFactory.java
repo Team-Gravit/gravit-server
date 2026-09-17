@@ -1,12 +1,13 @@
 package gravit.code.friend.repository.strategy;
 
 import gravit.code.friend.dto.internal.SearchPlanDto;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.FRIEND_QUERY_STRATEGY_TYPE_INVALID;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +27,6 @@ public class FriendsSearchFactory {
         return strategies.stream()
                 .filter(s -> s.supports(queryText))
                 .findFirst()
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.FRIEND_QUERY_STRATEGY_TYPE_INVALID));
+                .orElseThrow(() -> new RestApiException(FRIEND_QUERY_STRATEGY_TYPE_INVALID));
     }
 }

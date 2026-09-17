@@ -5,7 +5,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import gravit.code.fcm.dto.internal.PushMessage;
+import gravit.code.fcm.dto.internal.PushMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class FcmService {
 
     private final FirebaseMessaging firebaseMessaging;
 
-    public void sendNotifications(List<PushMessage> messages) {
+    public void sendNotifications(List<PushMessageDto> messages) {
         List<Message> fcmMessages = messages.stream()
                 .flatMap(message -> message.tokens().stream()
                         .map(token -> toMessage(token, message.title(), message.body(), message.data())))

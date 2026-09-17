@@ -11,7 +11,6 @@ import gravit.code.interviewFeedback.dto.response.InterviewSessionSummaryRespons
 import gravit.code.interviewFeedback.dto.response.InterviewTopicAccuracyResponse;
 import gravit.code.interviewFeedback.service.InterviewFeedbackQueryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class InterviewFeedbackController implements InterviewFeedbackControllerD
                 page,
                 sort
         );
-        return ResponseEntity.status(HttpStatus.OK).body(history);
+        return ResponseEntity.status(OK).body(history);
     }
 
     @GetMapping("/{sessionId}/summary")
@@ -49,7 +50,7 @@ public class InterviewFeedbackController implements InterviewFeedbackControllerD
             @PathVariable long sessionId
     ) {
         InterviewSessionSummaryResponse summary = interviewFeedbackQueryService.getSessionSummary(loginUser.getId(), sessionId);
-        return ResponseEntity.status(HttpStatus.OK).body(summary);
+        return ResponseEntity.status(OK).body(summary);
     }
 
     @GetMapping("/{sessionId}/answers")
@@ -58,7 +59,7 @@ public class InterviewFeedbackController implements InterviewFeedbackControllerD
             @PathVariable long sessionId
     ) {
         InterviewSessionAnswersResponse answers = interviewFeedbackQueryService.getSessionAnswers(loginUser.getId(), sessionId);
-        return ResponseEntity.status(HttpStatus.OK).body(answers);
+        return ResponseEntity.status(OK).body(answers);
     }
 
     @GetMapping("/dashboard")
@@ -66,7 +67,7 @@ public class InterviewFeedbackController implements InterviewFeedbackControllerD
             @AuthenticationPrincipal LoginUser loginUser
     ) {
         InterviewDashboardResponse dashboard = interviewFeedbackQueryService.getDashboard(loginUser.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(dashboard);
+        return ResponseEntity.status(OK).body(dashboard);
     }
 
     @GetMapping("/weak-topics")
@@ -74,6 +75,6 @@ public class InterviewFeedbackController implements InterviewFeedbackControllerD
             @AuthenticationPrincipal LoginUser loginUser
     ) {
         List<InterviewTopicAccuracyResponse> weakTopics = interviewFeedbackQueryService.getWeakTopics(loginUser.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(weakTopics);
+        return ResponseEntity.status(OK).body(weakTopics);
     }
 }

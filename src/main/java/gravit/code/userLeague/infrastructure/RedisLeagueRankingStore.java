@@ -1,6 +1,6 @@
 package gravit.code.userLeague.infrastructure;
 
-import gravit.code.userLeague.dto.internal.LeagueRankEntry;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.Cursor;
@@ -84,7 +84,7 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     }
 
     @Override
-    public List<LeagueRankEntry> findPage(
+    public List<LeagueRankEntryDto> findPage(
             long seasonId,
             long leagueId,
             int offset,
@@ -97,11 +97,11 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
             return List.of();
         }
 
-        List<LeagueRankEntry> entries = new ArrayList<>(tuples.size());
+        List<LeagueRankEntryDto> entries = new ArrayList<>(tuples.size());
 
         int rank = offset + FIRST_RANK;
         for (ZSetOperations.TypedTuple<String> tuple : tuples) {
-            entries.add(new LeagueRankEntry(
+            entries.add(new LeagueRankEntryDto(
                     rank++,
                     Long.parseLong(tuple.getValue()),
                     LeagueRankScore.toLeaguePoint(tuple.getScore()),
@@ -115,7 +115,7 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     @Override
     public void replaceAll(
             long seasonId,
-            List<LeagueRankEntry> entries
+            List<LeagueRankEntryDto> entries
     ) {
         deleteSeason(seasonId);
 
@@ -193,18 +193,18 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
                 .build();
     }
 
-    private Map<Long, Set<ZSetOperations.TypedTuple<String>>> groupByLeague(List<LeagueRankEntry> entries) {
-        Map<Long, Set<ZSetOperations.TypedTuple<String>>> byLeague = new LinkedHashMap<>();
+    private Map<Long, Set<ZSetOperations.TypedTuple<String>>> groupByLeague(List<LeagueRankEntryDto> entries) {
+        Map<Long, Set<ZSetOperations.TypedTuple<String>>> leagueIdToTuples = new LinkedHashMap<>();
 
-        for (LeagueRankEntry entry : entries) {
-            byLeague.computeIfAbsent(entry.leagueId(), leagueId -> new LinkedHashSet<>())
+        for (LeagueRankEntryDto entry : entries) {
+            leagueIdToTuples.computeIfAbsent(entry.leagueId(), leagueId -> new LinkedHashSet<>())
                     .add(ZSetOperations.TypedTuple.of(
                             member(entry.userId()),
                             LeagueRankScore.encode(entry.leaguePoint(), entry.userId())
                     ));
         }
 
-        return byLeague;
+        return leagueIdToTuples;
     }
 
     private static String key(

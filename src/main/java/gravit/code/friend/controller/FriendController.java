@@ -11,7 +11,6 @@ import gravit.code.friend.service.FriendService;
 import gravit.code.global.dto.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -30,35 +31,33 @@ public class FriendController implements FriendControllerDocs {
     private final FriendService friendService;
 
     @PostMapping("/following/{followeeId}")
-    public ResponseEntity<FriendResponse> following(
+    public ResponseEntity<FriendResponse> follow(
             @PathVariable("followeeId")Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser
     ) {
         long followerId = loginUser.getId();
-        FriendResponse friendResponse = friendService.following(followerId, followeeId);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).body(friendResponse);
+        FriendResponse friendResponse = friendService.follow(followerId, followeeId);
+        return ResponseEntity.status(OK).body(friendResponse);
     }
 
     @PostMapping("/unfollowing/{followeeId}")
-    public ResponseEntity<Void> unFollowing(
+    public ResponseEntity<Void> unfollow(
             @PathVariable("followeeId")Long followeeId,
             @AuthenticationPrincipal LoginUser loginUser
     ) {
         long userId = loginUser.getId();
-        friendService.unFollowing(userId, followeeId);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).build();
+        friendService.unfollow(userId, followeeId);
+        return ResponseEntity.status(OK).build();
     }
 
     @PostMapping("/reject-following/{followerId}")
     public ResponseEntity<Void> rejectFollowing(
             @PathVariable("followerId") Long followerId,
-            @AuthenticationPrincipal LoginUser loginUser) {
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
         long userId = loginUser.getId();
         friendService.rejectFollowing(userId, followerId);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).build();
+        return ResponseEntity.status(OK).build();
     }
 
     @GetMapping("/follower")
@@ -68,8 +67,7 @@ public class FriendController implements FriendControllerDocs {
     ){
         Long followeeId = loginUser.getId();
         SliceResponse<FollowerResponse> followers = friendService.getFollowers(followeeId, page);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).body(followers);
+        return ResponseEntity.status(OK).body(followers);
     }
 
     @GetMapping("/following")
@@ -79,16 +77,14 @@ public class FriendController implements FriendControllerDocs {
     ){
         Long followerId = loginUser.getId();
         SliceResponse<FollowingResponse> followings = friendService.getFollowings(followerId, page);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).body(followings);
+        return ResponseEntity.status(OK).body(followings);
     }
 
     @GetMapping("/count")
     public ResponseEntity<FollowCountsResponse> getFollowAndFollowingCount(@AuthenticationPrincipal LoginUser loginUser){
         long userId = loginUser.getId();
         FollowCountsResponse followAndFollowingCounts = friendService.getFollowAndFollowingCounts(userId);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).body(followAndFollowingCounts);
+        return ResponseEntity.status(OK).body(followAndFollowingCounts);
     }
 
     @GetMapping("/search")
@@ -98,6 +94,6 @@ public class FriendController implements FriendControllerDocs {
             @RequestParam(defaultValue = "0") int page
     ){
         SliceResponse<SearchUserDto> pageResponse = friendService.searchUsersForFollowing(loginUser.getId(), queryText, page);
-        return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
+        return ResponseEntity.status(OK).body(pageResponse);
     }
 }

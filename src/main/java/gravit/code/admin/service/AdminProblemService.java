@@ -1,13 +1,12 @@
 package gravit.code.admin.service;
 
+import gravit.code.admin.dto.request.ObjectiveOptionUpdateRequest;
 import gravit.code.admin.dto.request.ObjectiveProblemUpdateRequest;
-import gravit.code.admin.dto.request.ObjectiveProblemUpdateRequest.ObjectiveOptionUpdateRequest;
+import gravit.code.admin.dto.request.SubjectiveAnswerUpdateRequest;
 import gravit.code.admin.dto.request.SubjectiveProblemUpdateRequest;
-import gravit.code.admin.dto.request.SubjectiveProblemUpdateRequest.SubjectiveAnswerUpdateRequest;
 import gravit.code.admin.dto.response.ProblemDetailResponse;
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.option.domain.Option;
 import gravit.code.option.repository.OptionRepository;
@@ -19,6 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.OBJECTIVE_OPTIONS_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.OPTION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.OPTION_NOT_IN_PROBLEM;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_TYPE_MISMATCH;
 
 @Service
 @RequiredArgsConstructor
@@ -33,20 +39,20 @@ public class AdminProblemService {
     @Transactional(readOnly = true)
     public ProblemDetailResponse getProblem(long problemId) {
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(PROBLEM_NOT_FOUND));
 
         if (problem.getProblemType() == ProblemType.OBJECTIVE) {
             List<Option> options = optionRepository.findByProblemIdOrderById(problemId);
 
             if (options.isEmpty()) {
-                throw new RestApiException(CustomErrorCode.OPTION_NOT_FOUND);
+                throw new RestApiException(OPTION_NOT_FOUND);
             }
 
             return ProblemDetailResponse.objective(problem, options);
         }
 
         Answer answer = answerRepository.findByProblemId(problemId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.ANSWER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(ANSWER_NOT_FOUND));
 
         return ProblemDetailResponse.subjective(problem, answer);
     }
@@ -57,10 +63,10 @@ public class AdminProblemService {
             ObjectiveProblemUpdateRequest request
     ) {
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(PROBLEM_NOT_FOUND));
 
         if (problem.getProblemType() != ProblemType.OBJECTIVE) {
-            throw new RestApiException(CustomErrorCode.PROBLEM_TYPE_MISMATCH);
+            throw new RestApiException(PROBLEM_TYPE_MISMATCH);
         }
 
         String instruction = request.instruction() != null ? request.instruction() : problem.getInstruction();
@@ -79,10 +85,10 @@ public class AdminProblemService {
             SubjectiveProblemUpdateRequest request
     ) {
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(PROBLEM_NOT_FOUND));
 
         if (problem.getProblemType() != ProblemType.SUBJECTIVE) {
-            throw new RestApiException(CustomErrorCode.PROBLEM_TYPE_MISMATCH);
+            throw new RestApiException(PROBLEM_TYPE_MISMATCH);
         }
 
         String instruction = request.instruction() != null ? request.instruction() : problem.getInstruction();
@@ -93,7 +99,7 @@ public class AdminProblemService {
         SubjectiveAnswerUpdateRequest answerRequest = request.answer();
         if (answerRequest != null) {
             Answer answer = answerRepository.findByProblemId(problemId)
-                    .orElseThrow(() -> new RestApiException(CustomErrorCode.ANSWER_NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(ANSWER_NOT_FOUND));
 
             answer.update(answerRequest.content(), answerRequest.explanation());
         }
@@ -107,10 +113,10 @@ public class AdminProblemService {
 
         for (ObjectiveOptionUpdateRequest optionRequest : options) {
             Option option = optionRepository.findById(optionRequest.optionId())
-                    .orElseThrow(() -> new RestApiException(CustomErrorCode.OPTION_NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(OPTION_NOT_FOUND));
 
             if (option.getProblemId() != problemId) {
-                throw new RestApiException(CustomErrorCode.OPTION_NOT_IN_PROBLEM);
+                throw new RestApiException(OPTION_NOT_IN_PROBLEM);
             }
 
             option.update(optionRequest.content(), optionRequest.explanation(), optionRequest.isAnswer());
@@ -123,7 +129,7 @@ public class AdminProblemService {
                 .count();
 
         if (options.size() != OBJECTIVE_OPTION_COUNT || answerCount != 1) {
-            throw new RestApiException(CustomErrorCode.OBJECTIVE_OPTIONS_INVALID);
+            throw new RestApiException(OBJECTIVE_OPTIONS_INVALID);
         }
     }
 }

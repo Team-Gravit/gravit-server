@@ -1,20 +1,19 @@
 package gravit.code.user.service;
 
-import gravit.code.global.event.LeagueRankChangedEvent;
-import gravit.code.global.event.LevelUpFeedEvent;
-import gravit.code.global.event.OnboardingCompletedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.user.domain.User;
+import gravit.code.user.dto.event.LevelUpFeedEvent;
+import gravit.code.user.dto.event.OnboardingCompletedEvent;
+import gravit.code.user.dto.internal.UserSummaryDto;
 import gravit.code.user.dto.request.OnboardingRequest;
 import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
-import gravit.code.user.dto.response.UserSummaryResponse;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.user.support.RandomHandleGenerator;
+import gravit.code.userLeague.dto.event.LeagueRankChangedEvent;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,6 +27,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_PAGE_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -37,23 +39,24 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserLeagueRepository userLeagueRepository;
 
-    private final ApplicationEventPublisher publisher;
     private final RandomHandleGenerator handleGenerator;
+
+    private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
     public UserResponse findById(long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()-> new RestApiException(USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 
     @Transactional
-    public UserResponse onboarding(
+    public UserResponse onboard(
             long userId,
             OnboardingRequest request
     ) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()-> new RestApiException(USER_NOT_FOUND));
 
         user.onboard(request.nickname(), request.profilePhotoNumber());
         publisher.publishEvent(new OnboardingCompletedEvent(user.getId()));
@@ -67,7 +70,7 @@ public class UserService {
             UserProfileUpdateRequest request
     ){
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()-> new RestApiException(USER_NOT_FOUND));
 
         user.updateProfile(request.nickname(), request.profilePhotoNumber());
 
@@ -77,13 +80,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public MyPageResponse getMyPage(long userId) {
         return userRepository.findMyPageByUserId(userId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_PAGE_NOT_FOUND));
+                .orElseThrow(()-> new RestApiException(USER_PAGE_NOT_FOUND));
     }
 
     @Transactional
     public void restoreUser(String providerId){
         User user = userRepository.findByProviderId(providerId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()-> new RestApiException(USER_NOT_FOUND));
         String newHandle = handleGenerator.generateUniqueHandle();
         user.restoreUser(newHandle);
 
@@ -123,7 +126,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserLevelResponse getUserLevel(long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         return UserLevelResponse.create(user.getLevel().getLevel(), user.getLevel().getXp());
     }
@@ -131,18 +134,17 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(()-> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()-> new RestApiException(USER_NOT_FOUND));
     }
 
-    // 탈퇴 유저는 조회 결과에서 제외되므로 반환 Map에 키가 존재하지 않는다
     @Transactional(readOnly = true)
-    public Map<Long, UserSummaryResponse> getUserSummaries(Set<Long> userIds) {
+    public Map<Long, UserSummaryDto> getUserSummaries(Set<Long> userIds) {
         if (userIds.isEmpty()) {
             return Collections.emptyMap();
         }
 
         return userRepository.findSummariesByIds(userIds).stream()
-                .collect(Collectors.toMap(UserSummaryResponse::id, Function.identity()));
+                .collect(Collectors.toMap(UserSummaryDto::id, Function.identity()));
     }
 
     private boolean updateUserLevelAndXp(
@@ -158,7 +160,7 @@ public class UserService {
             int earnedXp
     ) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         int oldLevel = user.getLevel().getLevel();
         user.getLevel().updateXp(earnedXp);

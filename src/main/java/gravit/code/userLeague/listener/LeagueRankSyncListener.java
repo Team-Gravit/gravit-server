@@ -1,6 +1,6 @@
 package gravit.code.userLeague.listener;
 
-import gravit.code.global.event.LeagueRankChangedEvent;
+import gravit.code.userLeague.dto.event.LeagueRankChangedEvent;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

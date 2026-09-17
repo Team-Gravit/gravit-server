@@ -1,5 +1,6 @@
 package gravit.code.global.filter;
 
+import gravit.code.security.filter.JwtAuthFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,7 +38,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
             "token", "accessToken", "refreshToken", "password", "authorization", "apiKey"
     );
     private static final String MASK_VALUE = "****";
-    private static final String USER_ID_ATTRIBUTE = "user_id";
+    private static final int TRACE_ID_LENGTH = 16;
 
     @Override
     protected void doFilterInternal(
@@ -45,13 +46,10 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
-        // 1) traceId 부여 (MDC)
         MDC.put("traceId", generateTraceId());
 
         boolean excluded = isExcluded(request);
 
-        // 2) 로깅 제외 대상이면 그냥 통과 (traceId는 유지: 추후 하위 레이어 로그에도 붙음)
         if (excluded) {
             try {
                 filterChain.doFilter(request, response);
@@ -82,7 +80,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
     }
 
     private String generateTraceId() {
-        return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        return UUID.randomUUID().toString().replace("-", "").substring(0, TRACE_ID_LENGTH);
     }
 
     private void printRequestUri(HttpServletRequest request) {
@@ -91,8 +89,11 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
         log.info("[REQUEST] {} {}", methodType, uri);
     }
 
-    private void printResponse(HttpServletRequest request, HttpServletResponse response) {
-        Long userId = (Long) request.getAttribute(USER_ID_ATTRIBUTE);
+    private void printResponse(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        Long userId = (Long) request.getAttribute(JwtAuthFilter.USER_ID_ATTRIBUTE);
         String uri = buildDecodedRequestUri(request);
         HttpStatus status = HttpStatus.valueOf(response.getStatus());
 

@@ -11,7 +11,8 @@ import java.util.List;
 public interface InterviewQuestionConceptRepository extends JpaRepository<InterviewQuestionConcept, Long> {
 
     @Query("""
-            SELECT c FROM InterviewQuestionConcept c
+            SELECT c
+            FROM InterviewQuestionConcept c
             WHERE c.questionId IN :questionIds
             ORDER BY c.questionId ASC, c.displayOrder ASC
     """)

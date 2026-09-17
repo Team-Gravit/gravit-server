@@ -20,23 +20,33 @@ public interface AuthTokenControllerDocs {
 
     @Operation(summary = "리프레시 토큰으로 엑세스 토큰 재발급", description = "유효한 리프레시 토큰으로 엑세스 토큰을 재발급합니다. <br> 만약 리프레시 토큰이 유효하지 않다면 재 로그인이 필요합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "엑세스 토큰 재발급 성공"),
-            @ApiResponse(responseCode = "401", description = "만료된 리프레시 토큰입니다.",
+            @ApiResponse(responseCode = "200", description = "✅ 엑세스 토큰 재발급 성공"),
+            @ApiResponse(responseCode = "401", description = "🚨 만료된 리프레시 토큰",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유효하지 않은 OAuth 제공자",
+                                            name = "만료된 리프레시 토큰",
                                             value = "{\"error\" : \"JWT_4016\", \"message\" : \"만료된 리프레시 토큰입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 유저입니다.",
+            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유저 조회 실패",
+                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
                                             name = "예기치 못한 예외 발생",
-                                            value = "{\"error\" : \"USER_4001\", \"message\" : \"존재하지 않는 유저입니다\"}"
+                                            value = "{\"error\" : \"GLOBAL_5001\", \"message\" : \"예기치 못한 예외 발생\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -44,6 +54,4 @@ public interface AuthTokenControllerDocs {
     })
     @PostMapping("/reissue")
     ResponseEntity<ReissueResponse> reissueToken(@RequestBody RefreshTokenRequest request);
-
-
 }

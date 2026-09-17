@@ -1,11 +1,12 @@
 package gravit.code.mission.domain;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Random;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.MISSION_NOT_FOUND;
 
 @Component
 public class WeightedMissionPicker {
@@ -19,7 +20,7 @@ public class WeightedMissionPicker {
         }
 
         if (totalWeight <= 0)
-            throw new RestApiException(CustomErrorCode.MISSION_NOT_FOUND);
+            throw new RestApiException(MISSION_NOT_FOUND);
 
         int point = random.nextInt(totalWeight);
         for (Mission mission : missions) {
@@ -28,6 +29,6 @@ public class WeightedMissionPicker {
                 return mission;
         }
 
-        throw new RestApiException(CustomErrorCode.MISSION_NOT_FOUND);
+        throw new RestApiException(MISSION_NOT_FOUND);
     }
 }
