@@ -39,7 +39,7 @@ class CSNoteServiceIntegrationTest {
         @Test
         void 노트가_지정된_유닛이면_해당_문서를_반환한다() {
             // given
-            Unit unit = unitRepository.save(Unit.create("배열", "배열 개념", CHAPTER_ID, EXISTING_NOTE_PATH));
+            Unit unit = unitRepository.save(Unit.create("배열", "배열 개념", CHAPTER_ID, 1, EXISTING_NOTE_PATH));
 
             // when
             CSNoteDto note = csNoteService.getNoteByUnitId(unit.getId());
@@ -63,7 +63,7 @@ class CSNoteServiceIntegrationTest {
         @Test
         void 노트가_지정되지_않은_유닛이면_CS_NOTE_NOT_FOUND_예외가_발생한다() {
             // given
-            Unit unit = unitRepository.save(Unit.create("노트 없는 유닛", "설명", CHAPTER_ID));
+            Unit unit = unitRepository.save(Unit.create("노트 없는 유닛", "설명", CHAPTER_ID, 1));
 
             // when & then
             assertThat(unit.getNotePath()).isNull();
@@ -76,7 +76,7 @@ class CSNoteServiceIntegrationTest {
         @Test
         void 지정된_경로에_문서가_없으면_CS_NOTE_NOT_FOUND_예외가_발생한다() {
             // given
-            Unit unit = unitRepository.save(Unit.create("유닛", "설명", CHAPTER_ID, "test-chapter/unit99"));
+            Unit unit = unitRepository.save(Unit.create("유닛", "설명", CHAPTER_ID, 1, "test-chapter/unit99"));
 
             // when & then
             assertThatThrownBy(() -> csNoteService.getNoteByUnitId(unit.getId()))

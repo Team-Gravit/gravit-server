@@ -110,8 +110,8 @@ class UserFacadeIntegrationTest {
             userLeagueRepository.save(userLeague);
 
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
-            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), user.getId()));
 
@@ -156,8 +156,8 @@ class UserFacadeIntegrationTest {
             userLeagueRepository.save(UserLeague.create(user, season, league));
 
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
-            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId()));
+            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
 
             learningRepository.save(Learning.create(user.getId()));
 
@@ -187,8 +187,8 @@ class UserFacadeIntegrationTest {
             userLeagueRepository.save(UserLeague.create(user, season, league));
 
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
-            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId()));
+            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
 
             learningRepository.save(Learning.create(user.getId()));
 

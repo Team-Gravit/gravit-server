@@ -8,6 +8,7 @@ import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.unit.domain.Unit;
+import gravit.code.unit.dto.response.UnitDetailResponse;
 import gravit.code.unit.dto.response.UnitPageResponse;
 import gravit.code.unit.repository.UnitRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +46,7 @@ class UnitFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
@@ -63,11 +64,41 @@ class UnitFacadeIntegrationTest {
         }
 
         @Test
+        void 저장_순서와_달라도_챕터_내_순서대로_진행도와_함께_반환한다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+
+            Unit thread = unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
+            Lesson threadLesson = lessonRepository.save(Lesson.create("스레드 레슨", thread.getId()));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, threadLesson.getId(), userId));
+
+            Unit process = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+            lessonRepository.save(Lesson.create("프로세스 레슨", process.getId()));
+
+            // when
+            UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.unitDetailResponses())
+                        .extracting(detail -> detail.unitSummaryResponse().title())
+                        .containsExactly("프로세스", "스레드");
+                softly.assertThat(result.unitDetailResponses())
+                        .extracting(detail -> detail.unitSummaryResponse().displayOrder())
+                        .containsExactly(1, 2);
+                softly.assertThat(result.unitDetailResponses())
+                        .extracting(UnitDetailResponse::progressRate)
+                        .containsExactly(0.0, 100.0);
+            });
+        }
+
+        @Test
         void 학습_기록이_없으면_진행도가_0이다() {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             lessonRepository.save(Lesson.create("레슨1", unit.getId())); // 레슨은 존재하지만 제출 기록 없음
 
             // when

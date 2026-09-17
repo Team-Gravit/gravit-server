@@ -65,8 +65,8 @@ class AdminChapterServiceIntegrationTest {
     @DisplayName("챕터 상세: unitCount 포함")
     void getChapter_withUnitCount() {
         Chapter chapter = chapterRepository.save(Chapter.create("챕터", "설명"));
-        unitRepository.save(Unit.create("유닛1", "설명", chapter.getId()));
-        unitRepository.save(Unit.create("유닛2", "설명", chapter.getId()));
+        unitRepository.save(Unit.create("유닛1", "설명", chapter.getId(), 1));
+        unitRepository.save(Unit.create("유닛2", "설명", chapter.getId(), 2));
 
         ChapterDetailResponse detail = adminChapterService.getChapter(chapter.getId());
 
@@ -87,8 +87,8 @@ class AdminChapterServiceIntegrationTest {
     @DisplayName("챕터 통계: participantCount=유닛 레슨 제출 distinct user, averageProgress=참여자/전체유저*100")
     void getChapterStats() {
         Chapter chapter = chapterRepository.save(Chapter.create("챕터", "설명"));
-        Unit unit1 = unitRepository.save(Unit.create("유닛1", "설명", chapter.getId()));
-        Unit unit2 = unitRepository.save(Unit.create("유닛2", "설명", chapter.getId()));
+        Unit unit1 = unitRepository.save(Unit.create("유닛1", "설명", chapter.getId(), 1));
+        Unit unit2 = unitRepository.save(Unit.create("유닛2", "설명", chapter.getId(), 2));
         Lesson l1 = lessonRepository.save(Lesson.create("레슨1", unit1.getId()));
         Lesson l2 = lessonRepository.save(Lesson.create("레슨2", unit1.getId()));
         lessonRepository.save(Lesson.create("레슨3", unit2.getId()));
@@ -145,8 +145,8 @@ class AdminChapterServiceIntegrationTest {
     @DisplayName("챕터의 유닛 목록 조회")
     void getUnits() {
         Chapter chapter = chapterRepository.save(Chapter.create("챕터", "설명"));
-        unitRepository.save(Unit.create("유닛1", "설명", chapter.getId()));
-        unitRepository.save(Unit.create("유닛2", "설명", chapter.getId()));
+        unitRepository.save(Unit.create("유닛1", "설명", chapter.getId(), 1));
+        unitRepository.save(Unit.create("유닛2", "설명", chapter.getId(), 2));
 
         PageResponse<UnitListItemResponse> result = adminChapterService.getUnits(chapter.getId(), 1);
 

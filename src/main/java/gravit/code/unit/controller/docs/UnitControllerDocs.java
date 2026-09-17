@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface UnitControllerDocs {
 
     @Operation(summary = "유닛 조회", description = "유저의 유닛 진행도를 포함한 유닛 목록을 조회합니다.<br>" +
+            "유닛 목록은 챕터 내 순서(<strong>displayOrder</strong>) 오름차순입니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 유닛 목록 조회 성공"),

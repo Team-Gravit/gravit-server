@@ -58,7 +58,7 @@ class WrongAnsweredNoteFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
             answerRepository.save(Answer.create("LIFO", "스택은 Last In First Out 구조입니다.", problem.getId()));
@@ -81,7 +81,7 @@ class WrongAnsweredNoteFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
 
             // when
             WrongAnsweredProblemsResponse result = wrongAnsweredNoteFacade.getAllWrongAnsweredProblemInUnit(userId, unit.getId());

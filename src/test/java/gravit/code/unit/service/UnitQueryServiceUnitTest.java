@@ -37,8 +37,8 @@ class UnitQueryServiceUnitTest {
             // given
             long chapterId = 1L;
             List<UnitSummaryResponse> expected = List.of(
-                    new UnitSummaryResponse(1L, "프로세스", "프로세스 개념"),
-                    new UnitSummaryResponse(2L, "스레드", "스레드 개념")
+                    new UnitSummaryResponse(1L, 1, "프로세스", "프로세스 개념"),
+                    new UnitSummaryResponse(2L, 2, "스레드", "스레드 개념")
             );
             when(unitRepository.findAllUnitSummaryByChapterId(chapterId)).thenReturn(expected);
 
@@ -72,7 +72,7 @@ class UnitQueryServiceUnitTest {
         void 성공한다() {
             // given
             long unitId = 1L;
-            UnitSummaryResponse expected = new UnitSummaryResponse(unitId, "프로세스", "프로세스 개념");
+            UnitSummaryResponse expected = new UnitSummaryResponse(unitId, 1, "프로세스", "프로세스 개념");
             when(unitRepository.findUnitSummaryById(unitId)).thenReturn(Optional.of(expected));
 
             // when
@@ -104,7 +104,7 @@ class UnitQueryServiceUnitTest {
         void 성공한다() {
             // given
             long lessonId = 1L;
-            UnitSummaryResponse expected = new UnitSummaryResponse(1L, "프로세스", "프로세스 개념");
+            UnitSummaryResponse expected = new UnitSummaryResponse(1L, 1, "프로세스", "프로세스 개념");
             when(unitRepository.findUnitSummaryByLessonId(lessonId)).thenReturn(Optional.of(expected));
 
             // when

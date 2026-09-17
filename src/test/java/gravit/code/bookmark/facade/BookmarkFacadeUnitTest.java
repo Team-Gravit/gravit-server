@@ -48,7 +48,7 @@ class BookmarkFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "연결리스트", "배열과 연결리스트");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, 1, "연결리스트", "배열과 연결리스트");
             List<ProblemDetailResponse> problemDetailResponses = List.of(
                     new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", true)
             );
@@ -76,7 +76,7 @@ class BookmarkFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "연결리스트", "배열과 연결리스트");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, 1, "연결리스트", "배열과 연결리스트");
 
             when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummaryResponse);
             when(bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId)).thenReturn(List.of());

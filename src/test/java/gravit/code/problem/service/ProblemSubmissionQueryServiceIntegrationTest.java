@@ -57,14 +57,14 @@ class ProblemSubmissionQueryServiceIntegrationTest {
             long userId = 1L;
             Chapter chapter = chapterRepository.save(새_챕터("자료구조"));
 
-            Unit weakUnit = unitRepository.save(새_유닛("연결리스트", chapter.getId()));
+            Unit weakUnit = unitRepository.save(새_유닛("연결리스트", chapter.getId(), 1));
             Lesson weakLesson = lessonRepository.save(새_레슨("취약레슨", weakUnit.getId()));
             for (int sequence = 1; sequence <= 5; sequence++) {
                 Problem problem = problemRepository.save(새_주관식_문제("취약문제" + sequence, weakLesson.getId()));
                 problemSubmissionRepository.save(주관식_제출(problem.getId(), userId, sequence > 2, "제출"));
             }
 
-            Unit strongUnit = unitRepository.save(새_유닛("배열", chapter.getId()));
+            Unit strongUnit = unitRepository.save(새_유닛("배열", chapter.getId(), 2));
             Lesson strongLesson = lessonRepository.save(새_레슨("강한레슨", strongUnit.getId()));
             for (int sequence = 1; sequence <= 10; sequence++) {
                 Problem problem = problemRepository.save(새_주관식_문제("강한문제" + sequence, strongLesson.getId()));
@@ -97,7 +97,7 @@ class ProblemSubmissionQueryServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(새_챕터("자료구조"));
-            Unit unit = unitRepository.save(새_유닛("연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(새_유닛("연결리스트", chapter.getId(), 1));
 
             Lesson firstLesson = lessonRepository.save(새_레슨("레슨1", unit.getId()));
             Problem firstWrong = problemRepository.save(새_주관식_문제("문제1", firstLesson.getId()));
@@ -128,7 +128,7 @@ class ProblemSubmissionQueryServiceIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(새_챕터("자료구조"));
-            Unit unit = unitRepository.save(새_유닛("연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(새_유닛("연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(새_레슨("레슨1", unit.getId()));
 
             Problem repeatedlyWrong = problemRepository.save(새_주관식_문제("문제1", lesson.getId()));
@@ -155,12 +155,12 @@ class ProblemSubmissionQueryServiceIntegrationTest {
             long userId = 1L;
             Chapter chapter = chapterRepository.save(새_챕터("자료구조"));
 
-            Unit allCorrectUnit = unitRepository.save(새_유닛("배열", chapter.getId()));
+            Unit allCorrectUnit = unitRepository.save(새_유닛("배열", chapter.getId(), 1));
             Lesson allCorrectLesson = lessonRepository.save(새_레슨("다맞힌레슨", allCorrectUnit.getId()));
             Problem correct = problemRepository.save(새_주관식_문제("문제1", allCorrectLesson.getId()));
             problemSubmissionRepository.save(주관식_제출(correct.getId(), userId, true, "정답"));
 
-            Unit wrongUnit = unitRepository.save(새_유닛("연결리스트", chapter.getId()));
+            Unit wrongUnit = unitRepository.save(새_유닛("연결리스트", chapter.getId(), 2));
             Lesson wrongLesson = lessonRepository.save(새_레슨("틀린레슨", wrongUnit.getId()));
             Problem wrong = problemRepository.save(새_주관식_문제("문제2", wrongLesson.getId()));
             problemSubmissionRepository.save(주관식_제출(wrong.getId(), userId, false, "오답"));
@@ -181,14 +181,14 @@ class ProblemSubmissionQueryServiceIntegrationTest {
             long userId = 1L;
             Chapter chapter = chapterRepository.save(새_챕터("자료구조"));
 
-            Unit fewWrongUnit = unitRepository.save(새_유닛("배열", chapter.getId()));
+            Unit fewWrongUnit = unitRepository.save(새_유닛("배열", chapter.getId(), 1));
             Lesson fewWrongLesson = lessonRepository.save(새_레슨("레슨1", fewWrongUnit.getId()));
             for (int sequence = 1; sequence <= 2; sequence++) {
                 Problem problem = problemRepository.save(새_주관식_문제("적게틀린문제" + sequence, fewWrongLesson.getId()));
                 problemSubmissionRepository.save(주관식_제출(problem.getId(), userId, sequence > 1, "제출"));
             }
 
-            Unit manyWrongUnit = unitRepository.save(새_유닛("연결리스트", chapter.getId()));
+            Unit manyWrongUnit = unitRepository.save(새_유닛("연결리스트", chapter.getId(), 2));
             Lesson manyWrongLesson = lessonRepository.save(새_레슨("레슨2", manyWrongUnit.getId()));
             for (int sequence = 1; sequence <= 4; sequence++) {
                 Problem problem = problemRepository.save(새_주관식_문제("많이틀린문제" + sequence, manyWrongLesson.getId()));
@@ -217,7 +217,7 @@ class ProblemSubmissionQueryServiceIntegrationTest {
             Chapter chapter = chapterRepository.save(새_챕터("자료구조"));
 
             for (int sequence = 1; sequence <= 8; sequence++) {
-                Unit unit = unitRepository.save(새_유닛("유닛" + sequence, chapter.getId()));
+                Unit unit = unitRepository.save(새_유닛("유닛" + sequence, chapter.getId(), sequence));
                 Lesson lesson = lessonRepository.save(새_레슨("레슨" + sequence, unit.getId()));
                 Problem problem = problemRepository.save(새_주관식_문제("문제" + sequence, lesson.getId()));
                 problemSubmissionRepository.save(주관식_제출(problem.getId(), userId, false, "오답"));
@@ -248,7 +248,7 @@ class ProblemSubmissionQueryServiceIntegrationTest {
             long userId = 1L;
             long otherUserId = 2L;
             Chapter chapter = chapterRepository.save(새_챕터("자료구조"));
-            Unit unit = unitRepository.save(새_유닛("연결리스트", chapter.getId()));
+            Unit unit = unitRepository.save(새_유닛("연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(새_레슨("레슨1", unit.getId()));
             Problem problem = problemRepository.save(새_주관식_문제("문제1", lesson.getId()));
             problemSubmissionRepository.save(주관식_제출(problem.getId(), otherUserId, false, "오답"));

@@ -150,7 +150,7 @@ class LessonFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 3));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
@@ -163,6 +163,7 @@ class LessonFacadeIntegrationTest {
                 softly.assertThat(result.chapterSummary().chapterId()).isEqualTo(chapter.getId());
                 softly.assertThat(result.chapterSummary().title()).isEqualTo("운영체제");
                 softly.assertThat(result.unitSummaryResponse().title()).isEqualTo("프로세스");
+                softly.assertThat(result.unitSummaryResponse().displayOrder()).isEqualTo(3);
                 softly.assertThat(result.lessonSummaries()).hasSize(2);
                 softly.assertThat(result.lessonSummaries().get(0).isSolved()).isTrue();
                 softly.assertThat(result.lessonSummaries().get(1).isSolved()).isFalse();
@@ -174,7 +175,7 @@ class LessonFacadeIntegrationTest {
             // given
             long userId = 1L;
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             // when
             LessonDetailResponse result = lessonFacade.getAllLessonInUnit(userId, unit.getId());
@@ -193,7 +194,7 @@ class LessonFacadeIntegrationTest {
 
         private Lesson 레슨() {
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             return lessonRepository.save(Lesson.create("레슨1", unit.getId()));
         }
@@ -383,7 +384,7 @@ class LessonFacadeIntegrationTest {
 
         private Lesson 레슨() {
             Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             return lessonRepository.save(Lesson.create("레슨1", unit.getId()));
         }
