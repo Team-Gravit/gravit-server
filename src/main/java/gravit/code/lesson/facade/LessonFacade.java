@@ -10,6 +10,7 @@ import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
 import gravit.code.learning.service.LearningCommandService;
 import gravit.code.lesson.dto.event.LessonCompletedEvent;
 import gravit.code.lesson.dto.internal.LessonSubmissionSavedDto;
+import gravit.code.lesson.dto.internal.SubmittedLessonDto;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResultResponse;
@@ -137,16 +138,18 @@ public class LessonFacade {
             long userId,
             long lessonSubmissionId
     ) {
-        long lessonId = lessonSubmissionQueryService.getSubmittedLessonId(userId, lessonSubmissionId);
+        SubmittedLessonDto submittedLesson = lessonSubmissionQueryService.getSubmittedLesson(userId, lessonSubmissionId);
 
         String leagueName = userLeagueService.getUserLeagueName(userId);
         UserLevelResponse userLevelResponse = userService.getUserLevel(userId);
-        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(lessonId);
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(submittedLesson.lessonId());
 
         return LessonResultResponse.create(
                 leagueName,
                 userLevelResponse,
-                unitSummaryResponse
+                unitSummaryResponse,
+                submittedLesson.accuracy(),
+                submittedLesson.learningTime()
         );
     }
 

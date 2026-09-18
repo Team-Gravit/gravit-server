@@ -2,6 +2,7 @@ package gravit.code.lesson.repository;
 
 import gravit.code.chapter.dto.internal.ChapterSolvedStatDto;
 import gravit.code.lesson.domain.LessonSubmission;
+import gravit.code.lesson.dto.internal.SubmittedLessonDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -48,11 +49,13 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
     );
 
     @Query("""
-            SELECT ls.lessonId
+            SELECT new gravit.code.lesson.dto.internal.SubmittedLessonDto(
+                ls.lessonId, ls.accuracy, ls.learningTime
+            )
             FROM LessonSubmission ls
             WHERE ls.id = :lessonSubmissionId AND ls.userId = :userId
     """)
-    Optional<Long> findLessonIdByIdAndUserId(
+    Optional<SubmittedLessonDto> findSubmittedLessonByIdAndUserId(
             @Param("lessonSubmissionId") long lessonSubmissionId,
             @Param("userId") long userId
     );

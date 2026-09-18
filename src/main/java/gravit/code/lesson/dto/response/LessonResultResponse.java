@@ -27,17 +27,35 @@ public record LessonResultResponse(
                 description = "유닛 요약 정보",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        UnitSummaryResponse unitSummaryResponse
+        UnitSummaryResponse unitSummaryResponse,
+
+        @Schema(
+                description = "정답률(단위 : 정수, 0~100)",
+                example = "79",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        int accuracy,
+
+        @Schema(
+                description = "풀이 시간(단위 : 정수 초) / 1분 20초가 걸렸다면 80",
+                example = "80",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        int learningTime
 ) {
     public static LessonResultResponse create(
             String leagueName,
             UserLevelResponse userLevelResponse,
-            UnitSummaryResponse unitSummaryResponse
+            UnitSummaryResponse unitSummaryResponse,
+            int accuracy,
+            int learningTime
     ){
         return LessonResultResponse.builder()
                 .leagueName(leagueName)
                 .userLevelResponse(userLevelResponse)
                 .unitSummaryResponse(unitSummaryResponse)
+                .accuracy(accuracy)
+                .learningTime(learningTime)
                 .build();
     }
 }
