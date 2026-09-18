@@ -24,19 +24,37 @@ public record UserLevelResponse(
 
         @Schema(
                 description = "경험치",
-                example = "100",
+                example = "250",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        int xp
+        int xp,
+
+        @Schema(
+                description = "현재 레벨 시작 경험치",
+                example = "200",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        int minXp,
+
+        @Schema(
+                description = "다음 레벨 시작 경험치 (최고 레벨이면 현재 경험치와 동일)",
+                example = "400",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        int maxXp
 ){
     public static UserLevelResponse create(
             int level,
             int xp
     ){
+        Level currentLevel = Level.fromLevel(level);
+
         return UserLevelResponse.builder()
                 .currentLevel(level)
-                .nextLevel(Level.fromLevel(level).next().getLevel())
+                .nextLevel(currentLevel.next().getLevel())
                 .xp(xp)
+                .minXp(currentLevel.getStartXp())
+                .maxXp(currentLevel.isMax() ? xp : currentLevel.getEndXp())
                 .build();
     }
 }

@@ -410,6 +410,25 @@ class LessonFacadeIntegrationTest {
         }
 
         @Test
+        void 같은_레슨을_다시_제출했어도_조회한_제출의_정답률과_풀이_시간을_반환한다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 승급_직전_LP);
+            Lesson lesson = 레슨();
+            LessonSubmission first = lessonSubmissionRepository.save(LessonSubmission.create(80, 60, lesson.getId(), user.getId()));
+            lessonSubmissionRepository.save(LessonSubmission.create(45, 100, lesson.getId(), user.getId()));
+
+            // when
+            LessonResultResponse result = lessonFacade.getLessonResult(user.getId(), first.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.accuracy()).isEqualTo(60);
+                softly.assertThat(result.learningTime()).isEqualTo(80);
+            });
+        }
+
+        @Test
         void 같은_레슨을_다시_제출하면_서로_다른_제출_아이디를_반환한다() {
             // given
             User user = 유저();

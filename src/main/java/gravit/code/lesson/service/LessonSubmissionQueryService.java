@@ -5,6 +5,7 @@ import gravit.code.chapter.dto.response.TopChapterResponse;
 import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.global.util.DecimalRounding;
+import gravit.code.lesson.dto.internal.SubmittedLessonDto;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -46,11 +47,11 @@ public class LessonSubmissionQueryService {
     }
 
     @Transactional(readOnly = true)
-    public long getSubmittedLessonId(
+    public SubmittedLessonDto getSubmittedLesson(
             long userId,
             long lessonSubmissionId
     ) {
-        return lessonSubmissionRepository.findLessonIdByIdAndUserId(lessonSubmissionId, userId)
+        return lessonSubmissionRepository.findSubmittedLessonByIdAndUserId(lessonSubmissionId, userId)
                 .orElseThrow(() -> new RestApiException(LESSON_SUBMISSION_NOT_FOUND));
     }
 
