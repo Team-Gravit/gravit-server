@@ -429,6 +429,23 @@ class LessonFacadeIntegrationTest {
         }
 
         @Test
+        void 레슨이_속한_챕터_아이디를_반환한다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 승급_직전_LP);
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초 개념"));
+            Unit unit = unitRepository.save(Unit.create("연결리스트", "연결리스트 개념", chapter.getId(), 1));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            LessonSubmission submission = lessonSubmissionRepository.save(LessonSubmission.create(80, 60, lesson.getId(), user.getId()));
+
+            // when
+            LessonResultResponse result = lessonFacade.getLessonResult(user.getId(), submission.getId());
+
+            // then
+            assertThat(result.chapterId()).isEqualTo(chapter.getId());
+        }
+
+        @Test
         void 같은_레슨을_다시_제출하면_서로_다른_제출_아이디를_반환한다() {
             // given
             User user = 유저();
