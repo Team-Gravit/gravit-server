@@ -50,9 +50,11 @@ public interface LessonSubmissionRepository extends JpaRepository<LessonSubmissi
 
     @Query("""
             SELECT new gravit.code.lesson.dto.internal.SubmittedLessonDto(
-                ls.lessonId, ls.accuracy, ls.learningTime
+                ls.lessonId, u.chapterId, ls.accuracy, ls.learningTime
             )
             FROM LessonSubmission ls
+            JOIN Lesson l ON l.id = ls.lessonId
+            JOIN Unit u ON u.id = l.unitId
             WHERE ls.id = :lessonSubmissionId AND ls.userId = :userId
     """)
     Optional<SubmittedLessonDto> findSubmittedLessonByIdAndUserId(

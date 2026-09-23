@@ -41,14 +41,22 @@ public record LessonResultResponse(
                 example = "80",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        int learningTime
+        int learningTime,
+
+        @Schema(
+                description = "레슨이 속한 챕터 아이디",
+                example = "1",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        long chapterId
 ) {
     public static LessonResultResponse create(
             String leagueName,
             UserLevelResponse userLevelResponse,
             UnitSummaryResponse unitSummaryResponse,
             int accuracy,
-            int learningTime
+            int learningTime,
+            long chapterId
     ){
         return LessonResultResponse.builder()
                 .leagueName(leagueName)
@@ -56,6 +64,7 @@ public record LessonResultResponse(
                 .unitSummaryResponse(unitSummaryResponse)
                 .accuracy(accuracy)
                 .learningTime(learningTime)
+                .chapterId(chapterId)
                 .build();
     }
 }

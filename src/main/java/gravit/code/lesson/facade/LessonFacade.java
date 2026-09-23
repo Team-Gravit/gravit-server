@@ -149,7 +149,8 @@ public class LessonFacade {
                 userLevelResponse,
                 unitSummaryResponse,
                 submittedLesson.accuracy(),
-                submittedLesson.learningTime()
+                submittedLesson.learningTime(),
+                submittedLesson.chapterId()
         );
     }
 
