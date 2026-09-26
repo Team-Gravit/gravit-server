@@ -3,6 +3,7 @@ package gravit.code.interview.policy;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewMode;
 import gravit.code.interview.domain.InterviewStack;
+import gravit.code.interview.dto.internal.InterviewQuestionHistoryDto;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
 import gravit.code.interviewQuestion.domain.InterviewTopicKind;
 import gravit.code.interviewQuestion.dto.internal.InterviewQuestionPoolDto;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,13 @@ public class InterviewQuestionAllocationPolicy {
     private static final int JOB_LANGUAGE_QUOTA = 2;
     private static final int JOB_FRAMEWORK_QUOTA = 2;
     private static final int MAX_CS_TOPIC_COUNT = 5;
+    private static final Comparator<InterviewQuestionHistoryDto> RESELECTION_ORDER = Comparator.nullsFirst(
+            Comparator.comparing(
+                            InterviewQuestionHistoryDto::accuracyScore,
+                            Comparator.nullsLast(Comparator.<Integer>naturalOrder())
+                    )
+                    .thenComparing(InterviewQuestionHistoryDto::presentedAt)
+    );
 
     public Map<InterviewTopic, Integer> allocate(
             InterviewMode mode,
@@ -54,9 +63,10 @@ public class InterviewQuestionAllocationPolicy {
     public List<Long> select(
             InterviewMode mode,
             Map<InterviewTopic, Integer> topicToQuota,
-            List<InterviewQuestionPoolDto> pool
+            List<InterviewQuestionPoolDto> pool,
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory
     ) {
-        Map<InterviewTopic, List<Long>> topicToQuestionIds = pickByQuota(topicToQuota, pool);
+        Map<InterviewTopic, List<Long>> topicToQuestionIds = pickByQuota(topicToQuota, pool, questionIdToHistory);
 
         return orderByMode(mode, topicToQuestionIds);
     }
@@ -120,7 +130,8 @@ public class InterviewQuestionAllocationPolicy {
 
     private Map<InterviewTopic, List<Long>> pickByQuota(
             Map<InterviewTopic, Integer> topicToQuota,
-            List<InterviewQuestionPoolDto> pool
+            List<InterviewQuestionPoolDto> pool,
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory
     ) {
         Map<InterviewTopic, List<Long>> topicToCandidates = pool.stream()
                 .collect(Collectors.groupingBy(
@@ -139,6 +150,7 @@ public class InterviewQuestionAllocationPolicy {
                 throw new RestApiException(INTERVIEW_QUESTION_POOL_INSUFFICIENT);
             }
             Collections.shuffle(candidates);
+            candidates.sort(Comparator.comparing(questionIdToHistory::get, RESELECTION_ORDER));
 
             topicToQuestionIds.put(topic, List.copyOf(candidates.subList(0, quota)));
         }

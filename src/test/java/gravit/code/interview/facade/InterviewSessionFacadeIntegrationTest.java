@@ -14,6 +14,7 @@ import gravit.code.interview.dto.response.InterviewSessionCreateResponse;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
 import gravit.code.interview.repository.InterviewSessionTopicRepository;
+import gravit.code.interview.service.InterviewSessionCommandService;
 import gravit.code.interviewQuestion.domain.InterviewDifficulty;
 import gravit.code.interviewQuestion.domain.InterviewQuestion;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
@@ -55,6 +56,9 @@ class InterviewSessionFacadeIntegrationTest {
     private InterviewSessionFacade interviewSessionFacade;
 
     @Autowired
+    private InterviewSessionCommandService interviewSessionCommandService;
+
+    @Autowired
     private InterviewSessionRepository interviewSessionRepository;
 
     @Autowired
@@ -78,6 +82,12 @@ class InterviewSessionFacadeIntegrationTest {
 
     private List<InterviewAnswer> 답안들(long sessionId) {
         return interviewAnswerRepository.findAllBySessionIdOrderByDisplayOrderAsc(sessionId);
+    }
+
+    private List<Long> 출제_문제들(long sessionId) {
+        return 답안들(sessionId).stream()
+                .map(InterviewAnswer::getQuestionId)
+                .toList();
     }
 
     private List<InterviewTopic> 세션_주제들(long sessionId) {
@@ -311,6 +321,44 @@ class InterviewSessionFacadeIntegrationTest {
                     .isEqualTo(INTERVIEW_STACK_NOT_ALLOWED);
 
             assertThat(interviewSessionRepository.findAll()).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("이전 출제 이력이 있는 사용자의 세션을 생성할 때")
+    class CreateWithHistory {
+
+        @Test
+        void 이전_세션에_나온_문제를_피해_출제한다() {
+            // given
+            문제를_채운다(InterviewDifficulty.NORMAL, ENOUGH_QUESTIONS, InterviewTopic.ALGORITHM);
+            InterviewSessionCreateRequest request = 생성_요청_공통CS(
+                    InterviewDifficulty.NORMAL, InterviewTopic.ALGORITHM);
+            InterviewSessionCreateResponse first = interviewSessionFacade.create(USER_ID, request);
+
+            // when
+            InterviewSessionCreateResponse second = interviewSessionFacade.create(USER_ID, request);
+
+            // then
+            assertThat(출제_문제들(second.sessionId())).doesNotContainAnyElementsOf(출제_문제들(first.sessionId()));
+        }
+
+        @Test
+        void 취소한_세션의_문제는_안_본_문제로_돌아가_먼저_출제된다() {
+            // given
+            문제를_채운다(InterviewDifficulty.NORMAL, ENOUGH_QUESTIONS, InterviewTopic.ALGORITHM);
+            InterviewSessionCreateRequest request = 생성_요청_공통CS(
+                    InterviewDifficulty.NORMAL, InterviewTopic.ALGORITHM);
+            interviewSessionFacade.create(USER_ID, request);
+            InterviewSessionCreateResponse abandoned = interviewSessionFacade.create(USER_ID, request);
+            interviewSessionCommandService.abandon(USER_ID, abandoned.sessionId());
+
+            // when
+            InterviewSessionCreateResponse third = interviewSessionFacade.create(USER_ID, request);
+
+            // then
+            assertThat(출제_문제들(third.sessionId()))
+                    .containsExactlyInAnyOrderElementsOf(출제_문제들(abandoned.sessionId()));
         }
     }
 }

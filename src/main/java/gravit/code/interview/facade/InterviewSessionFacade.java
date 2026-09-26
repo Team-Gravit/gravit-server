@@ -1,10 +1,12 @@
 package gravit.code.interview.facade;
 
 import gravit.code.global.annotation.Facade;
+import gravit.code.interview.dto.internal.InterviewQuestionHistoryDto;
 import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
 import gravit.code.interview.dto.request.InterviewSessionCreateRequest;
 import gravit.code.interview.dto.response.InterviewSessionCreateResponse;
 import gravit.code.interview.policy.InterviewQuestionAllocationPolicy;
+import gravit.code.interview.service.InterviewAnswerQueryService;
 import gravit.code.interview.service.InterviewSessionCommandService;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
 import gravit.code.interviewQuestion.dto.internal.InterviewQuestionPoolDto;
@@ -20,6 +22,7 @@ public class InterviewSessionFacade {
 
     private final InterviewQuestionQueryService interviewQuestionQueryService;
     private final InterviewSessionCommandService interviewSessionCommandService;
+    private final InterviewAnswerQueryService interviewAnswerQueryService;
 
     private final InterviewQuestionAllocationPolicy interviewQuestionAllocationPolicy;
 
@@ -33,8 +36,14 @@ public class InterviewSessionFacade {
         List<InterviewQuestionPoolDto> pool = interviewQuestionQueryService.getPool(
                 topicToQuota.keySet(), request.difficulty());
 
+        List<Long> poolQuestionIds = pool.stream()
+                .map(InterviewQuestionPoolDto::questionId)
+                .toList();
+        Map<Long, InterviewQuestionHistoryDto> questionIdToHistory = interviewAnswerQueryService.getQuestionIdToLatestHistory(
+                userId, poolQuestionIds);
+
         List<Long> orderedQuestionIds = interviewQuestionAllocationPolicy.select(
-                request.mode(), topicToQuota, pool);
+                request.mode(), topicToQuota, pool, questionIdToHistory);
 
         long sessionId = interviewSessionCommandService.create(
                 userId, InterviewSessionCreateDto.of(request, topicToQuota.keySet(), orderedQuestionIds));
