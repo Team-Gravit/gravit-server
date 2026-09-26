@@ -3,6 +3,7 @@ package gravit.code.interview.policy;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewMode;
 import gravit.code.interview.domain.InterviewStack;
+import gravit.code.interview.dto.internal.InterviewQuestionHistoryDto;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
 import gravit.code.interviewQuestion.dto.internal.InterviewQuestionPoolDto;
 import gravit.code.support.TCSpringBootTest;
@@ -13,12 +14,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_QUESTION_POOL_INSUFFICIENT;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_STACK_NOT_ALLOWED;
@@ -36,6 +41,7 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
     private static final int QUESTION_COUNT = 5;
     private static final int SHUFFLE_ATTEMPTS = 30;
     private static final int ORDER_ATTEMPTS = 50;
+    private static final LocalDateTime BASE_TIME = LocalDateTime.of(2025, 8, 1, 12, 0);
 
     private static final List<InterviewTopic> CS_TOPICS = List.of(
             InterviewTopic.DATA_STRUCTURE,
@@ -57,6 +63,19 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
             }
         }
         return pool;
+    }
+
+    private static InterviewQuestionHistoryDto 이력(
+            long questionId,
+            LocalDateTime presentedAt,
+            Integer accuracyScore
+    ) {
+        return new InterviewQuestionHistoryDto(questionId, presentedAt, accuracyScore);
+    }
+
+    private static Map<Long, InterviewQuestionHistoryDto> 이력_맵(InterviewQuestionHistoryDto... histories) {
+        return Arrays.stream(histories)
+                .collect(Collectors.toMap(InterviewQuestionHistoryDto::questionId, Function.identity()));
     }
 
     private static Map<InterviewTopic, Integer> 몫이_같은_풀_크기(
@@ -273,7 +292,7 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
 
             // when
             List<Long> orderedQuestionIds =
-                    interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool);
+                    interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool, Map.of());
 
             // then
             assertSoftly(softly -> {
@@ -291,7 +310,7 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
 
             // when
             List<Long> orderedQuestionIds =
-                    interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool);
+                    interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool, Map.of());
 
             // then
             assertThat(orderedQuestionIds).hasSize(QUESTION_COUNT).doesNotHaveDuplicates();
@@ -308,7 +327,7 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
 
             // when & then
             assertThatThrownBy(() -> interviewQuestionAllocationPolicy.select(
-                    InterviewMode.COMMON_CS, topicToQuota, 문제_풀(poolSizes)))
+                    InterviewMode.COMMON_CS, topicToQuota, 문제_풀(poolSizes), Map.of()))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(INTERVIEW_QUESTION_POOL_INSUFFICIENT);
@@ -322,7 +341,7 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
 
             // when & then
             assertThatThrownBy(() -> interviewQuestionAllocationPolicy.select(
-                    InterviewMode.COMMON_CS, topicToQuota, List.of()))
+                    InterviewMode.COMMON_CS, topicToQuota, List.of(), Map.of()))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(INTERVIEW_QUESTION_POOL_INSUFFICIENT);
@@ -338,11 +357,161 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
             // when
             Set<List<Long>> results = new HashSet<>();
             for (int attempt = 0; attempt < SHUFFLE_ATTEMPTS; attempt++) {
-                results.add(interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool));
+                results.add(interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool, Map.of()));
             }
 
             // then
             assertThat(results).hasSizeGreaterThan(1);
+        }
+
+        @Test
+        void 안_본_문제가_몫_이상이면_이력이_있는_문제는_뽑지_않는다() {
+            // given
+            Map<InterviewTopic, Integer> topicToQuota = interviewQuestionAllocationPolicy.allocate(
+                    InterviewMode.COMMON_CS, null, List.of(InterviewTopic.ALGORITHM));
+            List<InterviewQuestionPoolDto> pool = 문제_풀(Map.of(InterviewTopic.ALGORITHM, 10));
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory = 이력_맵(
+                    이력(1L, BASE_TIME, 0),
+                    이력(2L, BASE_TIME, 0),
+                    이력(3L, BASE_TIME, 0),
+                    이력(4L, BASE_TIME, 0),
+                    이력(5L, BASE_TIME, 0)
+            );
+
+            // when
+            List<Long> orderedQuestionIds = interviewQuestionAllocationPolicy.select(
+                    InterviewMode.COMMON_CS, topicToQuota, pool, questionIdToHistory);
+
+            // then
+            assertThat(orderedQuestionIds).containsExactlyInAnyOrder(6L, 7L, 8L, 9L, 10L);
+        }
+
+        @Test
+        void 안_본_문제가_모자라면_정확성_점수가_낮은_순으로_채운다() {
+            // given
+            Map<InterviewTopic, Integer> topicToQuota = interviewQuestionAllocationPolicy.allocate(
+                    InterviewMode.COMMON_CS, null, List.of(InterviewTopic.ALGORITHM));
+            List<InterviewQuestionPoolDto> pool = 문제_풀(Map.of(InterviewTopic.ALGORITHM, 8));
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory = 이력_맵(
+                    이력(1L, BASE_TIME, 10),
+                    이력(2L, BASE_TIME, 3),
+                    이력(3L, BASE_TIME, 7),
+                    이력(4L, BASE_TIME, 0),
+                    이력(5L, BASE_TIME, 14),
+                    이력(6L, BASE_TIME, 5)
+            );
+
+            // when
+            List<Long> orderedQuestionIds = interviewQuestionAllocationPolicy.select(
+                    InterviewMode.COMMON_CS, topicToQuota, pool, questionIdToHistory);
+
+            // then
+            assertThat(orderedQuestionIds).containsExactlyInAnyOrder(7L, 8L, 4L, 2L, 6L);
+        }
+
+        @Test
+        void 점수가_같으면_오래전에_나온_문제를_먼저_뽑는다() {
+            // given
+            Map<InterviewTopic, Integer> topicToQuota = interviewQuestionAllocationPolicy.allocate(
+                    InterviewMode.COMMON_CS, null, List.of(InterviewTopic.ALGORITHM));
+            List<InterviewQuestionPoolDto> pool = 문제_풀(Map.of(InterviewTopic.ALGORITHM, 6));
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory = 이력_맵(
+                    이력(1L, BASE_TIME.minusDays(1), 5),
+                    이력(2L, BASE_TIME.minusDays(2), 5),
+                    이력(3L, BASE_TIME.minusDays(3), 5),
+                    이력(4L, BASE_TIME.minusDays(4), 5),
+                    이력(5L, BASE_TIME.minusDays(5), 5),
+                    이력(6L, BASE_TIME.minusDays(6), 5)
+            );
+
+            // when
+            List<Long> orderedQuestionIds = interviewQuestionAllocationPolicy.select(
+                    InterviewMode.COMMON_CS, topicToQuota, pool, questionIdToHistory);
+
+            // then
+            assertThat(orderedQuestionIds).containsExactlyInAnyOrder(2L, 3L, 4L, 5L, 6L);
+        }
+
+        @Test
+        void 점수_없는_이력은_점수_있는_이력보다_뒤에_오래된_순으로_뽑는다() {
+            // given
+            Map<InterviewTopic, Integer> topicToQuota = interviewQuestionAllocationPolicy.allocate(
+                    InterviewMode.COMMON_CS, null, List.of(InterviewTopic.ALGORITHM));
+            List<InterviewQuestionPoolDto> pool = 문제_풀(Map.of(InterviewTopic.ALGORITHM, 6));
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory = 이력_맵(
+                    이력(1L, BASE_TIME.minusDays(1), null),
+                    이력(2L, BASE_TIME.minusDays(2), null),
+                    이력(3L, BASE_TIME.minusDays(3), null),
+                    이력(4L, BASE_TIME.minusDays(4), null),
+                    이력(5L, BASE_TIME.minusDays(5), null),
+                    이력(6L, BASE_TIME, 14)
+            );
+
+            // when
+            List<Long> orderedQuestionIds = interviewQuestionAllocationPolicy.select(
+                    InterviewMode.COMMON_CS, topicToQuota, pool, questionIdToHistory);
+
+            // then
+            assertThat(orderedQuestionIds).containsExactlyInAnyOrder(6L, 2L, 3L, 4L, 5L);
+        }
+
+        @Test
+        void 안_본_문제가_몫보다_많으면_그_안에서는_매번_같은_조합이_나오지_않는다() {
+            // given
+            Map<InterviewTopic, Integer> topicToQuota = interviewQuestionAllocationPolicy.allocate(
+                    InterviewMode.COMMON_CS, null, List.of(InterviewTopic.ALGORITHM));
+            List<InterviewQuestionPoolDto> pool = 문제_풀(Map.of(InterviewTopic.ALGORITHM, 20));
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory = 이력_맵(
+                    이력(1L, BASE_TIME, 0),
+                    이력(2L, BASE_TIME, 0),
+                    이력(3L, BASE_TIME, 0),
+                    이력(4L, BASE_TIME, 0),
+                    이력(5L, BASE_TIME, 0)
+            );
+
+            // when
+            Set<List<Long>> results = new HashSet<>();
+            for (int attempt = 0; attempt < SHUFFLE_ATTEMPTS; attempt++) {
+                results.add(interviewQuestionAllocationPolicy.select(
+                        InterviewMode.COMMON_CS, topicToQuota, pool, questionIdToHistory));
+            }
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(results).hasSizeGreaterThan(1);
+                softly.assertThat(results).allSatisfy(result ->
+                        assertThat(result).doesNotContainAnyElementsOf(questionIdToHistory.keySet()));
+            });
+        }
+
+        @Test
+        void 우선순위는_태그_안에서만_비교한다() {
+            // given
+            Map<InterviewTopic, Integer> topicToQuota = interviewQuestionAllocationPolicy.allocate(
+                    InterviewMode.JOB_SPECIFIC, InterviewStack.JAVA_SPRING_BOOT, null);
+            List<InterviewQuestionPoolDto> pool = List.of(
+                    new InterviewQuestionPoolDto(InterviewTopic.SERVER_COMMON, 101L),
+                    new InterviewQuestionPoolDto(InterviewTopic.SERVER_COMMON, 102L),
+                    new InterviewQuestionPoolDto(InterviewTopic.JAVA, 201L),
+                    new InterviewQuestionPoolDto(InterviewTopic.JAVA, 202L),
+                    new InterviewQuestionPoolDto(InterviewTopic.SPRING_BOOT, 301L),
+                    new InterviewQuestionPoolDto(InterviewTopic.SPRING_BOOT, 302L)
+            );
+            Map<Long, InterviewQuestionHistoryDto> questionIdToHistory = 이력_맵(
+                    이력(101L, BASE_TIME, 14),
+                    이력(102L, BASE_TIME, 2)
+            );
+
+            // when
+            List<Long> orderedQuestionIds = interviewQuestionAllocationPolicy.select(
+                    InterviewMode.JOB_SPECIFIC, topicToQuota, pool, questionIdToHistory);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(orderedQuestionIds.get(0)).isEqualTo(102L);
+                softly.assertThat(orderedQuestionIds.subList(1, 3)).containsExactlyInAnyOrder(201L, 202L);
+                softly.assertThat(orderedQuestionIds.subList(3, 5)).containsExactlyInAnyOrder(301L, 302L);
+            });
         }
     }
 
@@ -360,7 +529,7 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
             // when
             Set<List<Long>> orders = new HashSet<>();
             for (int attempt = 0; attempt < ORDER_ATTEMPTS; attempt++) {
-                orders.add(interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool));
+                orders.add(interviewQuestionAllocationPolicy.select(InterviewMode.COMMON_CS, topicToQuota, pool, Map.of()));
             }
 
             // then
@@ -387,7 +556,7 @@ class InterviewQuestionAllocationPolicyIntegrationTest {
             // when & then
             for (int attempt = 0; attempt < ORDER_ATTEMPTS; attempt++) {
                 List<Long> orderedQuestionIds =
-                        interviewQuestionAllocationPolicy.select(InterviewMode.JOB_SPECIFIC, topicToQuota, pool);
+                        interviewQuestionAllocationPolicy.select(InterviewMode.JOB_SPECIFIC, topicToQuota, pool, Map.of());
 
                 assertSoftly(softly -> {
                     softly.assertThat(orderedQuestionIds).hasSize(QUESTION_COUNT);
