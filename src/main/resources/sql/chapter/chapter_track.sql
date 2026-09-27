@@ -2,7 +2,7 @@
 --
 -- 기존 CS 기본 챕터(id 1~5)에 이어지는 신규 챕터다.
 -- 실행 전제: chapter 테이블에 id 1~5가 이미 존재하고, 6 이상은 비어 있어야 한다.
--- 실행 후 resync_sequences.sql 을 반드시 함께 실행하라 (IDENTITY 시퀀스 재동기화).
+-- 실행 후 sync/resync_sequences.sql 을 반드시 함께 실행하라 (IDENTITY 시퀀스 재동기화).
 
 INSERT INTO chapter (id, title, description)
 VALUES (6, 'Common · Server', '서버 개발에 공통으로 필요한 데이터와 트래픽 처리 지식'),

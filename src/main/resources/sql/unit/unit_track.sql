@@ -8,8 +8,8 @@
 -- 18: Language · Java       19: Language · Kotlin  20: Language · TypeScript
 -- 21: Language · Python     22: Language · Swift
 --
--- 실행 전제: chapter_track.sql 이 먼저 실행되어 chapter id 6~22 가 존재해야 한다.
--- 실행 후 resync_sequences.sql 을 반드시 함께 실행하라 (IDENTITY 시퀀스 재동기화).
+-- 실행 전제: chapter/chapter_track.sql 이 먼저 실행되어 chapter id 6~22 가 존재해야 한다.
+-- 실행 후 sync/resync_sequences.sql 을 반드시 함께 실행하라 (IDENTITY 시퀀스 재동기화).
 
 -- Chapter 6: Common · Server
 INSERT INTO unit (id, chapter_id, title, description, note_path, display_order)

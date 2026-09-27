@@ -11,7 +11,7 @@
 --   - learning    : 유저당 1건 (온보딩 시 생성되는 기본 학습 진행도)
 --
 -- 전제 조건:
---   1) 리그 시드(sql/league.sql)가 적용되어 있어야 함 → league.id 1~6 = 브론즈3~실버1
+--   1) 리그 시드(sql/league/league.sql)가 적용되어 있어야 함 → league.id 1~6 = 브론즈3~실버1
 --   2) status='ACTIVE' 인 season 이 1건 이상 존재해야 함 (user_league.season_id FK)
 --
 -- 식별 / 정리:
