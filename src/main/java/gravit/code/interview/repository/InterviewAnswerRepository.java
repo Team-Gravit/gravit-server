@@ -16,7 +16,7 @@ public interface InterviewAnswerRepository extends JpaRepository<InterviewAnswer
     List<InterviewAnswer> findAllBySessionIdOrderByDisplayOrderAsc(long sessionId);
 
     @Query("""
-            SELECT new gravit.code.interview.dto.internal.InterviewSessionQuestionDto(a.displayOrder, q.content)
+            SELECT new gravit.code.interview.dto.internal.InterviewSessionQuestionDto(a.displayOrder, q.content, q.audioKey)
             FROM InterviewAnswer a JOIN InterviewQuestion q ON q.id = a.questionId
             WHERE a.sessionId = :sessionId
             ORDER BY a.displayOrder ASC

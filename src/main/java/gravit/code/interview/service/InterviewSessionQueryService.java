@@ -6,6 +6,7 @@ import gravit.code.interview.dto.internal.InterviewSessionQuestionDto;
 import gravit.code.interview.dto.response.InterviewSessionQuestionResponse;
 import gravit.code.interview.dto.response.InterviewSessionQuestionsResponse;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
+import gravit.code.interview.infrastructure.InterviewAudioStorage;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ public class InterviewSessionQueryService {
 
     private final InterviewSessionRepository interviewSessionRepository;
     private final InterviewAnswerRepository interviewAnswerRepository;
+
+    private final InterviewAudioStorage interviewAudioStorage;
 
     @Transactional(readOnly = true)
     public InterviewSessionStatusResponse getStatus(
@@ -52,12 +55,11 @@ public class InterviewSessionQueryService {
 
         List<InterviewSessionQuestionDto> questions = interviewAnswerRepository.findQuestionsBySessionId(sessionId);
 
-        return InterviewSessionQuestionsResponse.of(
-                sessionId,
-                questions.stream()
-                        .map(InterviewSessionQuestionResponse::from)
-                        .toList()
-        );
+        List<InterviewSessionQuestionResponse> responses = questions.stream()
+                .map(question -> InterviewSessionQuestionResponse.of(question, issueAudioUrl(question.audioKey())))
+                .toList();
+
+        return InterviewSessionQuestionsResponse.of(sessionId, responses);
     }
 
     @Transactional(readOnly = true)
@@ -69,6 +71,14 @@ public class InterviewSessionQueryService {
         }
 
         return session;
+    }
+
+    private String issueAudioUrl(String audioKey) {
+        if (audioKey == null) {
+            return null;
+        }
+
+        return interviewAudioStorage.presignDownload(audioKey);
     }
 
     private InterviewSession findSession(long sessionId) {

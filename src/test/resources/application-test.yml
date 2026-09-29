@@ -132,3 +132,4 @@ aws:
     access-key: test-access-key
     secret-key: test-secret-key
     upload-expiry: 10m
+    download-expiry: 30m

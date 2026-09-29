@@ -4,6 +4,8 @@ public record InterviewSessionQuestionDto(
 
         Integer displayOrder,
 
-        String content
+        String content,
+
+        String audioKey
 ) {
 }
