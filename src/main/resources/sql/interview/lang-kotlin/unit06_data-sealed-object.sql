@@ -4,23 +4,28 @@
 -- Source: gravit-interview-contents-generator/output/2026-09-24/lang-kotlin-unit06 (note_commit 4d6a66c)
 
 -- 면접 질문 생성
-INSERT INTO interview_question (id, topic, unit_id, difficulty, is_active, content, model_answer)
+INSERT INTO interview_question (id, topic, unit_id, difficulty, is_active, content, model_answer, audio_key)
 VALUES
 (1001, 'KOTLIN', 201, 'HARD', true,
  '화면 상태를 isLoading 같은 Boolean 플래그 여러 개 대신 sealed 계층으로 모델링하면 무엇을 얻을 수 있고, when으로 분기하거나 라이브러리의 공개 API로 노출할 때는 각각 무엇을 주의해야 하나요?',
- 'Boolean 플래그를 여러 개 두어 상태를 표현하면 isLoading이 true인데 data가 null이 아닌 것처럼 불가능한 조합이 생길 수 있습니다. sealed 계층은 하위 타입의 집합이 컴파일 시점에 고정되므로, Loading·Success(data)·Error(cause)처럼 상태를 sealed 하위 타입 하나로 나타내면 ''상태는 이 중 하나''라는 사실이 타입으로 표현되어 불가능한 상태가 애초에 생길 수 없습니다. 이때 값을 담는 하위 타입은 data class로, 값이 없는 하위 타입은 data object로 통일하면 toString과 equals가 일관됩니다. 또 when의 대상이 sealed 타입이면 컴파일러가 모든 경우가 처리되었는지 검사하고, Kotlin 1.7부터는 문장 형태의 when도 누락 시 컴파일 에러가 됩니다. 각 분기에서는 is 검사와 스마트 캐스트가 결합되어 하위 타입의 프로퍼티에 바로 접근할 수 있습니다. 주의할 점은 첫째, when에 else 분기를 두면 완전성 검사가 꺼져서 나중에 Empty 같은 하위 타입을 추가해도 컴파일러가 알려주지 않고, Error가 스피너로 처리되는 식의 버그가 숨을 수 있으므로 모든 하위 타입을 나열해야 한다는 것입니다. 둘째, 다른 모듈의 사용자가 그 sealed 타입을 when으로 분기하고 있다면 하위 타입 추가는 사용자 코드를 깨뜨리는 변경이 되므로, 공개 API의 sealed 계층 확장은 호환성 관점에서 신중해야 합니다.'),
+ 'Boolean 플래그를 여러 개 두어 상태를 표현하면 isLoading이 true인데 data가 null이 아닌 것처럼 불가능한 조합이 생길 수 있습니다. sealed 계층은 하위 타입의 집합이 컴파일 시점에 고정되므로, Loading·Success(data)·Error(cause)처럼 상태를 sealed 하위 타입 하나로 나타내면 ''상태는 이 중 하나''라는 사실이 타입으로 표현되어 불가능한 상태가 애초에 생길 수 없습니다. 이때 값을 담는 하위 타입은 data class로, 값이 없는 하위 타입은 data object로 통일하면 toString과 equals가 일관됩니다. 또 when의 대상이 sealed 타입이면 컴파일러가 모든 경우가 처리되었는지 검사하고, Kotlin 1.7부터는 문장 형태의 when도 누락 시 컴파일 에러가 됩니다. 각 분기에서는 is 검사와 스마트 캐스트가 결합되어 하위 타입의 프로퍼티에 바로 접근할 수 있습니다. 주의할 점은 첫째, when에 else 분기를 두면 완전성 검사가 꺼져서 나중에 Empty 같은 하위 타입을 추가해도 컴파일러가 알려주지 않고, Error가 스피너로 처리되는 식의 버그가 숨을 수 있으므로 모든 하위 타입을 나열해야 한다는 것입니다. 둘째, 다른 모듈의 사용자가 그 sealed 타입을 when으로 분기하고 있다면 하위 타입 추가는 사용자 코드를 깨뜨리는 변경이 되므로, 공개 API의 sealed 계층 확장은 호환성 관점에서 신중해야 합니다.',
+ 'interview-question/1001.mp3'),
 (1002, 'KOTLIN', 201, 'NORMAL', true,
  'Kotlin에서 enum class와 sealed class의 차이는 무엇이고, 어떤 상황에서 sealed class를 선택하나요?',
- 'enum class는 각 상수가 단일 인스턴스이고 모든 상수가 같은 프로퍼티 집합을 가집니다. 반면 sealed class나 sealed interface는 하위 타입의 집합이 컴파일 시점에 고정된 계층으로, 하위 타입마다 여러 인스턴스를 생성할 수 있고 하위 타입마다 서로 다른 프로퍼티를 보유할 수 있습니다. 또 enum은 상속이 불가능하고 인터페이스 구현만 되지만 sealed interface는 다중 구현이 가능합니다. 두 방식 모두 when의 완전성 검사를 지원합니다. 따라서 요일이나 색상처럼 값만 다른 상수 집합에는 enum이 적합하고, Loading, Success(data), Error(cause)처럼 상태마다 담는 데이터의 형태가 다른 경우에는 sealed를 선택합니다.'),
+ 'enum class는 각 상수가 단일 인스턴스이고 모든 상수가 같은 프로퍼티 집합을 가집니다. 반면 sealed class나 sealed interface는 하위 타입의 집합이 컴파일 시점에 고정된 계층으로, 하위 타입마다 여러 인스턴스를 생성할 수 있고 하위 타입마다 서로 다른 프로퍼티를 보유할 수 있습니다. 또 enum은 상속이 불가능하고 인터페이스 구현만 되지만 sealed interface는 다중 구현이 가능합니다. 두 방식 모두 when의 완전성 검사를 지원합니다. 따라서 요일이나 색상처럼 값만 다른 상수 집합에는 enum이 적합하고, Loading, Success(data), Error(cause)처럼 상태마다 담는 데이터의 형태가 다른 경우에는 sealed를 선택합니다.',
+ 'interview-question/1002.mp3'),
 (1003, 'KOTLIN', 201, 'NORMAL', true,
  'Kotlin의 object 선언, companion object, object 표현식은 생성 시점과 용도 면에서 각각 어떻게 다른가요?',
- 'object 선언은 object Config처럼 선언하며, 최초 접근 시 JVM 클래스 초기화로 인스턴스가 만들어집니다. 그래서 별도의 동기화 없이도 스레드 안전한 지연 초기화 싱글턴이 되고, 싱글턴 외에도 상태 없는 유틸리티나 sealed의 하위 상태로 쓰입니다. companion object는 클래스 안에 선언하며 바깥 클래스 초기화 시 생성되고, 팩토리 메서드나 상수를 두는 용도, 즉 자바의 static을 대체하는 용도로 씁니다. 예를 들어 생성자를 private으로 숨기고 companion object의 of 같은 이름 있는 팩토리로 생성하게 할 수 있습니다. companion object는 하나만 가질 수 있고 이름을 생략하면 Companion으로 접근합니다. object 표현식은 object : Listener처럼 쓰는 익명 클래스로, 자바의 익명 내부 클래스에 해당하며 표현식이 평가될 때마다 새 인스턴스가 생성됩니다.'),
+ 'object 선언은 object Config처럼 선언하며, 최초 접근 시 JVM 클래스 초기화로 인스턴스가 만들어집니다. 그래서 별도의 동기화 없이도 스레드 안전한 지연 초기화 싱글턴이 되고, 싱글턴 외에도 상태 없는 유틸리티나 sealed의 하위 상태로 쓰입니다. companion object는 클래스 안에 선언하며 바깥 클래스 초기화 시 생성되고, 팩토리 메서드나 상수를 두는 용도, 즉 자바의 static을 대체하는 용도로 씁니다. 예를 들어 생성자를 private으로 숨기고 companion object의 of 같은 이름 있는 팩토리로 생성하게 할 수 있습니다. companion object는 하나만 가질 수 있고 이름을 생략하면 Companion으로 접근합니다. object 표현식은 object : Listener처럼 쓰는 익명 클래스로, 자바의 익명 내부 클래스에 해당하며 표현식이 평가될 때마다 새 인스턴스가 생성됩니다.',
+ 'interview-question/1003.mp3'),
 (1004, 'KOTLIN', 201, 'EASY', true,
  'Kotlin에서 클래스에 data 변경자를 붙이면 컴파일러가 무엇을 자동으로 만들어 주며, 그 결과 두 인스턴스의 == 결과는 어떻게 달라지나요?',
- 'data 변경자를 붙이면 컴파일러가 주 생성자의 프로퍼티를 기준으로 equals, hashCode, toString, copy, componentN을 자동 생성합니다. 목적은 동일성(identity)이 아니라 값(value)으로 비교되는 객체를 만드는 것입니다. 그래서 Point(1, 2)를 두 번 만들면 서로 다른 인스턴스지만 == 결과는 true이고, hashCode도 같아서 HashSet이나 HashMap 키로 안전하게 쓸 수 있습니다. 반면 ===는 참조 비교이므로 서로 다른 인스턴스인 경우 false입니다. toString은 Point(x=1, y=2) 형태로 출력되고, componentN 덕분에 구조 분해를 할 수 있으며, copy로 일부 값만 바꾼 새 객체를 만들 수 있습니다. 제약으로는 주 생성자에 파라미터가 최소 1개 있어야 하고 모두 val이나 var여야 하며, abstract·open·sealed·inner가 될 수 없습니다.'),
+ 'data 변경자를 붙이면 컴파일러가 주 생성자의 프로퍼티를 기준으로 equals, hashCode, toString, copy, componentN을 자동 생성합니다. 목적은 동일성(identity)이 아니라 값(value)으로 비교되는 객체를 만드는 것입니다. 그래서 Point(1, 2)를 두 번 만들면 서로 다른 인스턴스지만 == 결과는 true이고, hashCode도 같아서 HashSet이나 HashMap 키로 안전하게 쓸 수 있습니다. 반면 ===는 참조 비교이므로 서로 다른 인스턴스인 경우 false입니다. toString은 Point(x=1, y=2) 형태로 출력되고, componentN 덕분에 구조 분해를 할 수 있으며, copy로 일부 값만 바꾼 새 객체를 만들 수 있습니다. 제약으로는 주 생성자에 파라미터가 최소 1개 있어야 하고 모두 val이나 var여야 하며, abstract·open·sealed·inner가 될 수 없습니다.',
+ 'interview-question/1004.mp3'),
 (1005, 'KOTLIN', 201, 'EASY', true,
  'data class에서 주 생성자가 아니라 클래스 본문에 선언한 프로퍼티는 equals와 copy()에서 어떻게 다뤄지나요?',
- 'data class의 equals, hashCode, toString, copy는 주 생성자의 프로퍼티만을 대상으로 자동 생성되기 때문에, 클래스 본문에 선언한 프로퍼티는 이들 모두에서 제외됩니다. 예를 들어 User(val id: Long) 본문에 var nickname을 두고 nickname만 다른 두 객체를 만들면, nickname은 무시되어 == 결과가 true가 됩니다. 또 copy()는 본문 프로퍼티를 복사하지 않으므로 복사본의 nickname은 초기값인 빈 문자열이 됩니다. 따라서 값 비교에 포함할 프로퍼티는 반드시 주 생성자에 두어야 합니다. 반대로 ID처럼 일부 필드만으로 동일성을 정의하고 싶다면 equals를 직접 오버라이드하거나 data class를 쓰지 않는 것이 맞습니다.');
+ 'data class의 equals, hashCode, toString, copy는 주 생성자의 프로퍼티만을 대상으로 자동 생성되기 때문에, 클래스 본문에 선언한 프로퍼티는 이들 모두에서 제외됩니다. 예를 들어 User(val id: Long) 본문에 var nickname을 두고 nickname만 다른 두 객체를 만들면, nickname은 무시되어 == 결과가 true가 됩니다. 또 copy()는 본문 프로퍼티를 복사하지 않으므로 복사본의 nickname은 초기값인 빈 문자열이 됩니다. 따라서 값 비교에 포함할 프로퍼티는 반드시 주 생성자에 두어야 합니다. 반대로 ID처럼 일부 필드만으로 동일성을 정의하고 싶다면 equals를 직접 오버라이드하거나 data class를 쓰지 않는 것이 맞습니다.',
+ 'interview-question/1005.mp3');
 
 -- 핵심 개념 생성
 INSERT INTO interview_question_concept (id, question_id, name, type, display_order)

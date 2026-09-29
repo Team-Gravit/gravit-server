@@ -4,23 +4,28 @@
 -- Source: gravit-interview-contents-generator/output/2026-09-23/cs-database-unit07 (note_commit 4d6a66c)
 
 -- 면접 질문 생성
-INSERT INTO interview_question (id, topic, unit_id, difficulty, is_active, content, model_answer)
+INSERT INTO interview_question (id, topic, unit_id, difficulty, is_active, content, model_answer, audio_key)
 VALUES
 (236, 'DATABASE', 48, 'HARD', true,
  'students 테이블에서 특정 학생 한 명의 행만 지우려 했는데 WHERE 절을 빠뜨린 채 DELETE 문을 실행하면 어떤 결과가 되나요? UPDATE 문에서 같은 실수를 했을 때는 어떻게 되는지, 그리고 대상 행을 정확히 한정하려면 SQL을 어떻게 작성해야 하는지 함께 설명해 주세요.',
- 'WHERE 절은 조건을 지정해 특정 행만 조회·수정·삭제하는 데 쓰입니다. 따라서 WHERE 절 없이 `DELETE FROM students;`를 실행하면 특정 행이 아니라 students 테이블의 전체 행이 삭제됩니다. 한 명만 지우려면 `DELETE FROM students WHERE student_id = 1;`처럼 조건을 붙여 삭제 대상을 그 행으로 한정해야 합니다. UPDATE도 마찬가지로 `UPDATE students SET email = ''newhong@example.com'' WHERE student_id = 1;`처럼 WHERE 절로 대상을 지정하는데, WHERE 절을 생략하면 수정 대상 행이 한정되지 않습니다. 대상 범위를 넓게 잡아야 할 때는 `WHERE student_id BETWEEN 1 AND 10`처럼 범위 지정을 써서 의도한 행들만 대상에 들어오게 하면 됩니다.'),
+ 'WHERE 절은 조건을 지정해 특정 행만 조회·수정·삭제하는 데 쓰입니다. 따라서 WHERE 절 없이 `DELETE FROM students;`를 실행하면 특정 행이 아니라 students 테이블의 전체 행이 삭제됩니다. 한 명만 지우려면 `DELETE FROM students WHERE student_id = 1;`처럼 조건을 붙여 삭제 대상을 그 행으로 한정해야 합니다. UPDATE도 마찬가지로 `UPDATE students SET email = ''newhong@example.com'' WHERE student_id = 1;`처럼 WHERE 절로 대상을 지정하는데, WHERE 절을 생략하면 수정 대상 행이 한정되지 않습니다. 대상 범위를 넓게 잡아야 할 때는 `WHERE student_id BETWEEN 1 AND 10`처럼 범위 지정을 써서 의도한 행들만 대상에 들어오게 하면 됩니다.',
+ 'interview-question/236.mp3'),
 (237, 'DATABASE', 48, 'NORMAL', true,
  'students 테이블에 새로운 학생 정보를 추가할 때와 이미 저장된 학생의 이메일을 다른 값으로 바꿀 때는 각각 어떤 DML 명령어를 사용하나요? 두 경우의 SQL 작성 방식이 어떻게 다른지 예시와 함께 설명해 주세요.',
- '새로운 학생 정보를 추가할 때는 테이블에 새로운 행을 삽입하는 INSERT를 쓰고, 이미 저장된 학생의 이메일 값을 바꿀 때는 테이블의 기존 데이터를 수정하는 UPDATE를 씁니다. INSERT는 `INSERT INTO students (student_id, name, email) VALUES (1, ''홍길동'', ''hong@example.com'');`처럼 INSERT INTO 뒤에 테이블명과 컬럼 목록을 적고, VALUES 뒤에 그 컬럼 순서대로 넣을 값을 적습니다. `VALUES (2, ''김철수'', ''kim@example.com''), (3, ''이영희'', ''lee@example.com'');`처럼 값 묶음을 여러 개 나열하면 다중행 삽입이 됩니다. 반면 UPDATE는 `UPDATE students SET email = ''newhong@example.com'' WHERE student_id = 1;`처럼 UPDATE 뒤에 테이블명을 쓰고 SET 절에 바꿀 컬럼과 새 값을 지정합니다. `SET name = ''홍길동수정'', email = ''updated@example.com''`처럼 SET 절에 컬럼을 여러 개 나열하면 다중 컬럼을 한 번에 수정할 수 있습니다. 정리하면 INSERT는 컬럼 목록과 VALUES 값 묶음으로 행 하나를 통째로 만들어 넣고, UPDATE는 SET 절로 이미 있는 행의 특정 컬럼 값만 바꾼다는 점이 다릅니다.'),
+ '새로운 학생 정보를 추가할 때는 테이블에 새로운 행을 삽입하는 INSERT를 쓰고, 이미 저장된 학생의 이메일 값을 바꿀 때는 테이블의 기존 데이터를 수정하는 UPDATE를 씁니다. INSERT는 `INSERT INTO students (student_id, name, email) VALUES (1, ''홍길동'', ''hong@example.com'');`처럼 INSERT INTO 뒤에 테이블명과 컬럼 목록을 적고, VALUES 뒤에 그 컬럼 순서대로 넣을 값을 적습니다. `VALUES (2, ''김철수'', ''kim@example.com''), (3, ''이영희'', ''lee@example.com'');`처럼 값 묶음을 여러 개 나열하면 다중행 삽입이 됩니다. 반면 UPDATE는 `UPDATE students SET email = ''newhong@example.com'' WHERE student_id = 1;`처럼 UPDATE 뒤에 테이블명을 쓰고 SET 절에 바꿀 컬럼과 새 값을 지정합니다. `SET name = ''홍길동수정'', email = ''updated@example.com''`처럼 SET 절에 컬럼을 여러 개 나열하면 다중 컬럼을 한 번에 수정할 수 있습니다. 정리하면 INSERT는 컬럼 목록과 VALUES 값 묶음으로 행 하나를 통째로 만들어 넣고, UPDATE는 SET 절로 이미 있는 행의 특정 컬럼 값만 바꾼다는 점이 다릅니다.',
+ 'interview-question/237.mp3'),
 (238, 'DATABASE', 48, 'NORMAL', true,
  '조회할 때 특정 행만 가져오는 것과 특정 컬럼만 가져오는 것은 SELECT 문의 어느 부분으로 제어하나요? 두 방식의 차이를 예시와 함께 설명해 주세요.',
- '가져올 컬럼은 SELECT 뒤의 목록으로, 가져올 행은 WHERE 절로 제어합니다. `SELECT * FROM students;`는 전체 컬럼을 조회하고, `SELECT student_id FROM students;`처럼 컬럼명을 적으면 그 컬럼만 조회합니다. 반면 행을 한정하려면 `SELECT * FROM students WHERE student_id = 1;`처럼 WHERE 절에 조건을 지정합니다. WHERE 절은 조건을 지정해 특정 행만 조회·수정·삭제하는 데 사용하는 부분이므로, 컬럼 선택과는 역할이 다릅니다. SELECT 자체는 테이블의 데이터를 조회하는 DML 명령어입니다.'),
+ '가져올 컬럼은 SELECT 뒤의 목록으로, 가져올 행은 WHERE 절로 제어합니다. `SELECT * FROM students;`는 전체 컬럼을 조회하고, `SELECT student_id FROM students;`처럼 컬럼명을 적으면 그 컬럼만 조회합니다. 반면 행을 한정하려면 `SELECT * FROM students WHERE student_id = 1;`처럼 WHERE 절에 조건을 지정합니다. WHERE 절은 조건을 지정해 특정 행만 조회·수정·삭제하는 데 사용하는 부분이므로, 컬럼 선택과는 역할이 다릅니다. SELECT 자체는 테이블의 데이터를 조회하는 DML 명령어입니다.',
+ 'interview-question/238.mp3'),
 (239, 'DATABASE', 48, 'EASY', true,
  'DML이 무엇인지 설명하고, DML에 해당하는 대표 명령어와 각각의 기능을 말씀해 주세요.',
- 'DML(Data Manipulation Language)은 데이터베이스에 저장된 데이터를 조작하는 언어로, 테이블의 행을 조회·삽입·수정·삭제하는 역할을 합니다. 대표 명령어는 SELECT, INSERT, UPDATE, DELETE 네 가지입니다. SELECT는 데이터 조회, INSERT는 데이터 삽입, UPDATE는 데이터 수정, DELETE는 데이터 삭제 기능을 담당합니다. 예를 들어 `SELECT * FROM students;`로 조회하고, `INSERT INTO students (student_id, name, email) VALUES (1, ''홍길동'', ''hong@example.com'');`으로 삽입하며, `UPDATE students SET email = ''newhong@example.com'' WHERE student_id = 1;`로 수정하고, `DELETE FROM students WHERE student_id = 1;`로 삭제합니다.'),
+ 'DML(Data Manipulation Language)은 데이터베이스에 저장된 데이터를 조작하는 언어로, 테이블의 행을 조회·삽입·수정·삭제하는 역할을 합니다. 대표 명령어는 SELECT, INSERT, UPDATE, DELETE 네 가지입니다. SELECT는 데이터 조회, INSERT는 데이터 삽입, UPDATE는 데이터 수정, DELETE는 데이터 삭제 기능을 담당합니다. 예를 들어 `SELECT * FROM students;`로 조회하고, `INSERT INTO students (student_id, name, email) VALUES (1, ''홍길동'', ''hong@example.com'');`으로 삽입하며, `UPDATE students SET email = ''newhong@example.com'' WHERE student_id = 1;`로 수정하고, `DELETE FROM students WHERE student_id = 1;`로 삭제합니다.',
+ 'interview-question/239.mp3'),
 (240, 'DATABASE', 48, 'EASY', true,
  'WHERE 절은 어떤 역할을 하나요? WHERE 절에 쓸 수 있는 조건에는 어떤 종류가 있는지 예시와 함께 설명해 주세요.',
- 'WHERE 절은 조건을 지정하여 특정 행만 조회, 수정, 삭제하는 데 사용합니다. 조건에는 먼저 `student_id = 1`, `student_id > 5`, `student_id != 3`처럼 =, >, != 연산자로 값의 일치나 대소를 따지는 비교 연산이 있습니다. 또 `student_id BETWEEN 1 AND 10`으로 범위를 지정하고, `name LIKE ''홍%''`, `name LIKE ''%동''`, `name LIKE ''%길%''`처럼 패턴 매칭으로 시작·끝·포함 문자열을 찾으며, `department_id IN (1, 2, 3)`으로 목록 조건을 걸고, `email IS NULL` / `email IS NOT NULL`로 NULL 여부를 조건에 쓸 수 있습니다. 여기에 `department_id = 1 AND name = ''홍길동''`, `department_id = 1 OR department_id = 2`, `NOT department_id = 1`처럼 AND·OR·NOT 논리 연산으로 여러 조건을 결합할 수도 있습니다.');
+ 'WHERE 절은 조건을 지정하여 특정 행만 조회, 수정, 삭제하는 데 사용합니다. 조건에는 먼저 `student_id = 1`, `student_id > 5`, `student_id != 3`처럼 =, >, != 연산자로 값의 일치나 대소를 따지는 비교 연산이 있습니다. 또 `student_id BETWEEN 1 AND 10`으로 범위를 지정하고, `name LIKE ''홍%''`, `name LIKE ''%동''`, `name LIKE ''%길%''`처럼 패턴 매칭으로 시작·끝·포함 문자열을 찾으며, `department_id IN (1, 2, 3)`으로 목록 조건을 걸고, `email IS NULL` / `email IS NOT NULL`로 NULL 여부를 조건에 쓸 수 있습니다. 여기에 `department_id = 1 AND name = ''홍길동''`, `department_id = 1 OR department_id = 2`, `NOT department_id = 1`처럼 AND·OR·NOT 논리 연산으로 여러 조건을 결합할 수도 있습니다.',
+ 'interview-question/240.mp3');
 
 -- 핵심 개념 생성
 INSERT INTO interview_question_concept (id, question_id, name, type, display_order)
