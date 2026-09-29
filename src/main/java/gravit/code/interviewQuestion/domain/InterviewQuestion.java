@@ -44,6 +44,9 @@ public class InterviewQuestion extends BaseEntity {
     @Column(name = "is_active", nullable = false)
     private boolean active;
 
+    @Column(name = "audio_key")
+    private String audioKey;
+
     @Builder(access = AccessLevel.PRIVATE)
     private InterviewQuestion(
             InterviewTopic topic,
