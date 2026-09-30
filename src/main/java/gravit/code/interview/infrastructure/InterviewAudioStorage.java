@@ -9,10 +9,12 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Delete;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -34,19 +36,22 @@ public class InterviewAudioStorage {
     private final Clock clock;
     private final String bucket;
     private final Duration uploadExpiry;
+    private final Duration downloadExpiry;
 
     public InterviewAudioStorage(
             S3Presigner s3Presigner,
             S3Client s3Client,
             Clock clock,
             @Value("${aws.s3.bucket}") String bucket,
-            @Value("${aws.s3.upload-expiry}") Duration uploadExpiry
+            @Value("${aws.s3.upload-expiry}") Duration uploadExpiry,
+            @Value("${aws.s3.download-expiry}") Duration downloadExpiry
     ) {
         this.s3Presigner = s3Presigner;
         this.s3Client = s3Client;
         this.clock = clock;
         this.bucket = bucket;
         this.uploadExpiry = uploadExpiry;
+        this.downloadExpiry = downloadExpiry;
     }
 
     public InterviewAudioUploadDto presignUpload(
@@ -70,6 +75,20 @@ public class InterviewAudioStorage {
                 presignedRequest.url().toString(),
                 LocalDateTime.now(clock).plus(uploadExpiry)
         );
+    }
+
+    public String presignDownload(String audioKey) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(audioKey)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(downloadExpiry)
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        return s3Presigner.presignGetObject(presignRequest).url().toString();
     }
 
     public void deleteAllByPrefix(String prefix) {

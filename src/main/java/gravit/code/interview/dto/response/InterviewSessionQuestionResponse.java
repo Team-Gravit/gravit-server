@@ -20,12 +20,23 @@ public record InterviewSessionQuestionResponse(
                 example = "퀵 정렬의 동작 방식과 평균 시간복잡도를 설명해 주세요.",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        String content
+        String content,
+
+        @Schema(
+                description = "질문 음성 재생 URL(presigned GET). 음성이 없는 문항은 null. 발급 후 30분 동안 유효",
+                example = "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview-question/1.mp3?X-Amz-Algorithm=...",
+                nullable = true
+        )
+        String audioUrl
 ) {
-    public static InterviewSessionQuestionResponse from(InterviewSessionQuestionDto question) {
+    public static InterviewSessionQuestionResponse of(
+            InterviewSessionQuestionDto question,
+            String audioUrl
+    ) {
         return InterviewSessionQuestionResponse.builder()
                 .displayOrder(question.displayOrder())
                 .content(question.content())
+                .audioUrl(audioUrl)
                 .build();
     }
 }

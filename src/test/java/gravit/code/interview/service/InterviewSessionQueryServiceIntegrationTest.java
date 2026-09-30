@@ -2,6 +2,7 @@ package gravit.code.interview.service;
 
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
+import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.dto.response.InterviewSessionQuestionResponse;
 import gravit.code.interview.dto.response.InterviewSessionQuestionsResponse;
 import gravit.code.interview.repository.InterviewAnswerRepository;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,6 +144,17 @@ class InterviewSessionQueryServiceIntegrationTest {
 
         private static final int QUESTION_COUNT = 5;
         private static final int FIRST_DISPLAY_ORDER = 1;
+        private static final String AUDIO_KEY_FIELD = "audioKey";
+        private static final String AUDIO_KEY_FORMAT = "interview-question/%d.mp3";
+        private static final int DOWNLOAD_EXPIRY_SECONDS = 1800;
+        private static final int QUESTION_WITHOUT_AUDIO_INDEX = 4;
+
+        private String 음성을_붙인다(InterviewQuestion question) {
+            String audioKey = AUDIO_KEY_FORMAT.formatted(question.getId());
+            ReflectionTestUtils.setField(question, AUDIO_KEY_FIELD, audioKey);
+            interviewQuestionRepository.save(question);
+            return audioKey;
+        }
 
         private List<InterviewQuestion> 출제한다(long sessionId) {
             List<InterviewTopic> topics = List.of(
@@ -200,6 +213,60 @@ class InterviewSessionQueryServiceIntegrationTest {
 
             // then
             assertThat(response.questions()).hasSize(QUESTION_COUNT);
+        }
+
+        @ParameterizedTest
+        @EnumSource(InterviewInputType.class)
+        void 입력_방식과_관계없이_음성_키로_서명한_재생_URL을_돌려준다(InterviewInputType inputType) {
+            // given
+            InterviewSession session = interviewSessionRepository.save(
+                    상태_세션(USER_ID, InterviewSessionStatus.IN_PROGRESS, inputType));
+            List<String> audioKeys = 출제한다(session.getId()).stream()
+                    .map(this::음성을_붙인다)
+                    .toList();
+
+            // when
+            InterviewSessionQuestionsResponse response =
+                    interviewSessionQueryService.getQuestions(USER_ID, session.getId());
+
+            // then
+            List<String> audioUrls = response.questions().stream()
+                    .map(InterviewSessionQuestionResponse::audioUrl)
+                    .toList();
+            assertSoftly(softly -> {
+                for (int index = 0; index < QUESTION_COUNT; index++) {
+                    softly.assertThat(audioUrls.get(index)).contains(audioKeys.get(index));
+                    softly.assertThat(audioUrls.get(index)).contains("X-Amz-Signature=");
+                    softly.assertThat(audioUrls.get(index)).contains("X-Amz-Expires=" + DOWNLOAD_EXPIRY_SECONDS);
+                }
+            });
+        }
+
+        @Test
+        void 음성_키가_없는_문항은_재생_URL이_null이다() {
+            // given
+            InterviewSession session = interviewSessionRepository.save(
+                    상태_세션(USER_ID, InterviewSessionStatus.IN_PROGRESS));
+            List<InterviewQuestion> questions = 출제한다(session.getId());
+            List<String> audioKeys = new ArrayList<>();
+            for (int index = 0; index < QUESTION_COUNT; index++) {
+                audioKeys.add(index == QUESTION_WITHOUT_AUDIO_INDEX ? null : 음성을_붙인다(questions.get(index)));
+            }
+
+            // when
+            InterviewSessionQuestionsResponse response =
+                    interviewSessionQueryService.getQuestions(USER_ID, session.getId());
+
+            // then
+            List<String> audioUrls = response.questions().stream()
+                    .map(InterviewSessionQuestionResponse::audioUrl)
+                    .toList();
+            assertSoftly(softly -> {
+                softly.assertThat(audioUrls.get(QUESTION_WITHOUT_AUDIO_INDEX)).isNull();
+                for (int index = 0; index < QUESTION_WITHOUT_AUDIO_INDEX; index++) {
+                    softly.assertThat(audioUrls.get(index)).contains(audioKeys.get(index));
+                }
+            });
         }
 
         @Test
