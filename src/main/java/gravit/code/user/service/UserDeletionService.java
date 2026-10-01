@@ -30,7 +30,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND
 public class UserDeletionService {
 
     private static final String MAIL_SUBJECT = "[Gravit!] 회원 탈퇴 확인";
-    private static final String DELETE_CONFIRM_PAGE_PATH = "/user/me/delete/page";
+    private static final String DELETE_CONFIRM_PAGE_PATH = "/withdraw";
 
     private final UserRepository userRepository;
     private final UserLeagueRepository userLeagueRepository;
