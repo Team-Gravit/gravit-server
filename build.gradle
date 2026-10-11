@@ -139,6 +139,9 @@ tasks.named('test') {
     useJUnitPlatform {
         excludeTags 'experiment'
     }
+
+    // 목 조합마다 Spring 컨텍스트가 따로 캐시돼 기본 힙(512m)에서 OOM이 난다
+    maxHeapSize = '1g'
 }
 
 tasks.register('experimentTest', Test) {
