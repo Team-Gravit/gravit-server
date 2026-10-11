@@ -6,6 +6,7 @@ import gravit.code.interview.domain.InterviewAnswerStatus;
 import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionStatus;
+import gravit.code.interview.domain.InterviewTranscriptionStatus;
 import gravit.code.interview.dto.event.InterviewCompletedEvent;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
@@ -46,6 +47,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESS
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_GRADING;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_IN_PROGRESS;
 import static gravit.code.interview.fixture.InterviewSessionFixture.답안_요청;
 import static gravit.code.interview.fixture.InterviewSessionFixture.미제출_답안;
 import static gravit.code.interview.fixture.InterviewSessionFixture.상태_세션;
@@ -74,6 +76,9 @@ class InterviewSessionCommandServiceIntegrationTest {
     private static final String AUDIO_KEY_FORMAT = "interview/%d/%d.m4a";
     private static final String INVALID_AUDIO_KEY = "interview/1/1.m4a";
     private static final Duration GRADING_TIMEOUT = Duration.ofSeconds(10);
+    private static final long IN_PROGRESS_ELAPSED_MINUTES = 1L;
+    private static final long TRANSCRIPTION_TIMEOUT_MINUTES = 5L;
+    private static final String TRANSCRIPT = "변환된 답변";
     private static final List<InterviewTopic> TOPICS = List.of(
             InterviewTopic.DATA_STRUCTURE,
             InterviewTopic.ALGORITHM,
@@ -128,6 +133,14 @@ class InterviewSessionCommandServiceIntegrationTest {
             int displayOrder
     ) {
         return String.format(AUDIO_KEY_FORMAT, sessionId, displayOrder);
+    }
+
+    private List<InterviewAnswerSubmitRequest> 음성_제출_요청(long sessionId) {
+        List<InterviewAnswerSubmitRequest> requests = new ArrayList<>();
+        for (int displayOrder = 1; displayOrder <= QUESTION_COUNT; displayOrder++) {
+            requests.add(음성_답안_요청(displayOrder, "답변 " + displayOrder, 음성_키(sessionId, displayOrder)));
+        }
+        return requests;
     }
 
     private InterviewSession 준비된_세션(InterviewInputType inputType) {
@@ -373,6 +386,74 @@ class InterviewSessionCommandServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(INTERVIEW_AUDIO_KEY_INVALID);
+        }
+
+        @Test
+        void 음성_세션에_변환_중인_답안이_있으면_예외를_던지고_아무것도_바뀌지_않는다() {
+            // given
+            InterviewSession session = 준비된_세션(InterviewInputType.VOICE);
+            InterviewAnswer pending = 답안들(session.getId()).get(1);
+            pending.requestTranscription(LocalDateTime.now(clock).minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
+            interviewAnswerRepository.save(pending);
+
+            // when & then
+            assertThatThrownBy(() -> interviewSessionCommandService.submit(USER_ID, session.getId(), 음성_제출_요청(session.getId())))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_TRANSCRIPTION_IN_PROGRESS);
+
+            assertSoftly(softly -> {
+                softly.assertThat(세션(session.getId()).getStatus()).isEqualTo(InterviewSessionStatus.IN_PROGRESS);
+                softly.assertThat(답안들(session.getId()))
+                        .allSatisfy(answer -> {
+                            assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.PENDING);
+                            assertThat(answer.getContent()).isNull();
+                            assertThat(answer.getAudioKey()).isNull();
+                        });
+                softly.assertThat(stubInterviewGradingClient.callCount()).isZero();
+            });
+        }
+
+        @Test
+        void 변환이_끝났거나_요청_후_5분이_지난_답안만_있으면_제출하고_변환_결과는_따로_남긴다() {
+            // given
+            InterviewSession session = 준비된_세션(InterviewInputType.VOICE);
+            LocalDateTime now = LocalDateTime.now(clock);
+            List<InterviewAnswer> answers = 답안들(session.getId());
+
+            answers.get(0).requestTranscription(now.minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
+            answers.get(0).completeTranscription(TRANSCRIPT);
+            answers.get(1).requestTranscription(now.minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
+            answers.get(1).failTranscription();
+            answers.get(2).requestTranscription(now.minusMinutes(TRANSCRIPTION_TIMEOUT_MINUTES));
+            answers.get(3).requestTranscription(now.minusMinutes(TRANSCRIPTION_TIMEOUT_MINUTES + 1));
+            interviewAnswerRepository.saveAll(answers);
+
+            // when
+            InterviewSessionStatusResponse response = interviewSessionCommandService.submit(
+                    USER_ID, session.getId(), 음성_제출_요청(session.getId()));
+            채점_완료를_기다린다(session.getId());
+
+            // then
+            List<InterviewAnswer> submitted = 답안들(session.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(response.status()).isEqualTo(InterviewSessionStatus.GRADING);
+                softly.assertThat(세션(session.getId()).getStatus()).isEqualTo(InterviewSessionStatus.COMPLETED);
+                softly.assertThat(submitted).allSatisfy(answer -> {
+                    assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.ANSWERED);
+                    assertThat(answer.getContent()).isEqualTo("답변 " + answer.getDisplayOrder());
+                });
+                softly.assertThat(submitted)
+                        .extracting(InterviewAnswer::getTranscriptionStatus)
+                        .containsExactly(
+                                InterviewTranscriptionStatus.COMPLETED,
+                                InterviewTranscriptionStatus.FAILED,
+                                InterviewTranscriptionStatus.PENDING,
+                                InterviewTranscriptionStatus.PENDING,
+                                null
+                        );
+                softly.assertThat(submitted.get(0).getTranscript()).isEqualTo(TRANSCRIPT);
+            });
         }
 
         @Test

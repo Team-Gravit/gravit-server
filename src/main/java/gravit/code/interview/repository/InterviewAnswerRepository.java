@@ -10,10 +10,16 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface InterviewAnswerRepository extends JpaRepository<InterviewAnswer, Long> {
 
     List<InterviewAnswer> findAllBySessionIdOrderByDisplayOrderAsc(long sessionId);
+
+    Optional<InterviewAnswer> findBySessionIdAndDisplayOrder(
+            long sessionId,
+            int displayOrder
+    );
 
     @Query("""
             SELECT new gravit.code.interview.dto.internal.InterviewSessionQuestionDto(a.displayOrder, q.content, q.audioKey)

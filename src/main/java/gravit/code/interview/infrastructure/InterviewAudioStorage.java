@@ -10,9 +10,12 @@ import software.amazon.awssdk.services.s3.model.Delete;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -30,6 +33,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDI
 public class InterviewAudioStorage {
 
     private static final String DELETE_ERROR_FORMAT = "%s(%s)";
+    private static final int OBJECT_NOT_FOUND_STATUS = 404;
 
     private final S3Presigner s3Presigner;
     private final S3Client s3Client;
@@ -89,6 +93,34 @@ public class InterviewAudioStorage {
                 .build();
 
         return s3Presigner.presignGetObject(presignRequest).url().toString();
+    }
+
+    public boolean exists(String audioKey) {
+        HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                .bucket(bucket)
+                .key(audioKey)
+                .build();
+
+        try {
+            s3Client.headObject(headObjectRequest);
+            return true;
+        } catch (NoSuchKeyException e) {
+            return false;
+        } catch (S3Exception e) {
+            if (e.statusCode() == OBJECT_NOT_FOUND_STATUS) {
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    public byte[] download(String audioKey) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(audioKey)
+                .build();
+
+        return s3Client.getObjectAsBytes(getObjectRequest).asByteArray();
     }
 
     public void deleteAllByPrefix(String prefix) {
