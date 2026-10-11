@@ -34,6 +34,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPU
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_IN_PROGRESS;
 
 @Service
 @RequiredArgsConstructor
@@ -117,6 +118,8 @@ public class InterviewSessionCommandService {
         validateAnswerCount(answers);
 
         LocalDateTime now = LocalDateTime.now(clock);
+        validateTranscriptionsSettled(answers, now);
+
         submitAnswers(answers, answerRequests, now);
         session.startGrading(now);
 
@@ -213,6 +216,18 @@ public class InterviewSessionCommandService {
     private void validateAnswerCount(List<InterviewAnswer> answers) {
         if (answers.size() != InterviewSession.QUESTION_COUNT) {
             throw new RestApiException(INTERVIEW_ANSWER_NOT_FOUND);
+        }
+    }
+
+    private void validateTranscriptionsSettled(
+            List<InterviewAnswer> answers,
+            LocalDateTime now
+    ) {
+        boolean inProgress = answers.stream()
+                .anyMatch(answer -> answer.isTranscriptionInProgress(now));
+
+        if (inProgress) {
+            throw new RestApiException(INTERVIEW_TRANSCRIPTION_IN_PROGRESS);
         }
     }
 

@@ -5,10 +5,12 @@ import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.interview.dto.request.InterviewAudioUploadRequest;
 import gravit.code.interview.dto.request.InterviewSessionCreateRequest;
 import gravit.code.interview.dto.request.InterviewSubmitRequest;
+import gravit.code.interview.dto.request.InterviewTranscriptionRequest;
 import gravit.code.interview.dto.response.InterviewAudioUploadResponse;
 import gravit.code.interview.dto.response.InterviewSessionCreateResponse;
 import gravit.code.interview.dto.response.InterviewSessionQuestionsResponse;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
+import gravit.code.interview.dto.response.InterviewTranscriptionsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "Interview Session API", description = "AI 면접 세션 생성, 문제 조회, 음성 업로드 URL 발급, 답안 제출, 상태 조회, 중단 API")
+@Tag(name = "Interview Session API", description = "AI 면접 세션 생성, 문제 조회, 음성 업로드 URL 발급, 음성 변환 요청과 조회, 답안 제출, 상태 조회, 중단 API")
 public interface InterviewSessionControllerDocs {
 
     @Operation(
@@ -303,6 +305,227 @@ public interface InterviewSessionControllerDocs {
     );
 
     @Operation(
+            summary = "면접 음성 변환 요청",
+            description = """
+                    업로드를 마친 문항의 음성을 텍스트로 변환하도록 요청합니다.<br>
+                    음성 업로드(PUT)가 성공한 직후 호출하고, 변환은 백그라운드에서 진행됩니다.<br>
+                    결과는 음성 변환 조회 API로 확인합니다.<br>
+                    변환에 실패(FAILED)했거나 요청 후 5분이 지나도 변환 중(PENDING)이면 다시 요청할 수 있습니다.<br>
+                    🔐 <strong>Jwt 필요</strong>
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "202",
+                    description = "✅ 변환 요청 접수 (본문 없음)"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "🚨 요청 값이 유효하지 않음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "유효성 검사 실패",
+                                            value = "{\"error\": \"GLOBAL_4001\", \"message\": \"유효성 검사 실패\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "텍스트 세션에 변환 요청",
+                                            value = "{\"error\": \"INTERVIEW_4006\", \"message\": \"면접 세션의 답변 입력 방식과 일치하지 않습니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "음성 키 오류",
+                                            value = "{\"error\": \"INTERVIEW_4020\", \"message\": \"서버가 발급한 음성 키가 아닙니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "음성 미업로드",
+                                            value = "{\"error\": \"INTERVIEW_4021\", \"message\": \"음성 파일이 업로드되지 않았습니다.\"}"
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "🚨 본인의 세션이 아님",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "접근 거부",
+                                    value = "{\"error\": \"INTERVIEW_4004\", \"message\": \"본인의 면접 세션만 접근할 수 있습니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "🚨 세션 또는 답안을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "세션 없음",
+                                            value = "{\"error\": \"INTERVIEW_4003\", \"message\": \"존재하지 않는 면접 세션입니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "답안 없음",
+                                            value = "{\"error\": \"INTERVIEW_4010\", \"message\": \"존재하지 않는 면접 답변입니다.\"}"
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "🚨 변환을 요청할 수 없는 상태",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "진행 중 세션 아님",
+                                            value = "{\"error\": \"INTERVIEW_4005\", \"message\": \"진행 중인 면접 세션이 아닙니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "이미 제출된 답안",
+                                            value = "{\"error\": \"INTERVIEW_4013\", \"message\": \"이미 제출된 면접 답안입니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "이미 변환을 요청함",
+                                            value = "{\"error\": \"INTERVIEW_4022\", \"message\": \"이미 변환을 요청한 답안입니다.\"}"
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
+                            )
+                    )
+            )
+    })
+    ResponseEntity<Void> requestTranscription(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Parameter(description = "면접 세션 아이디", example = "12") @PathVariable long sessionId,
+            @Valid @RequestBody InterviewTranscriptionRequest request
+    );
+
+    @Operation(
+            summary = "면접 음성 변환 조회",
+            description = """
+                    음성 세션의 5문항 변환 상태와 텍스트를 문항 순서대로 조회합니다.<br>
+                    PENDING이면 3초 간격으로 다시 조회하고, COMPLETED면 transcript를 사용자에게 보여 주고 수정받습니다.<br>
+                    COMPLETED인데 transcript가 null이면 말이 없었던 문항입니다.<br>
+                    FAILED면 변환을 다시 요청하거나 사용자가 직접 입력합니다. 변환을 요청하지 않은 문항은 status가 null입니다.<br>
+                    변환 중(PENDING)인 문항이 있으면 답안 제출이 거부됩니다.<br>
+                    🔐 <strong>Jwt 필요</strong>
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "✅ 음성 변환 조회 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = InterviewTranscriptionsResponse.class),
+                            examples = @ExampleObject(
+                                    name = "음성 변환 조회 예시",
+                                    value = """
+                                            {
+                                              "sessionId": 12,
+                                              "transcriptions": [
+                                                {
+                                                  "displayOrder": 1,
+                                                  "status": "COMPLETED",
+                                                  "transcript": "트랜잭션 격리 수준은 동시에 실행되는 트랜잭션이 서로의 변경을 어디까지 볼 수 있는지 정합니다."
+                                                },
+                                                {
+                                                  "displayOrder": 2,
+                                                  "status": "COMPLETED",
+                                                  "transcript": null
+                                                },
+                                                {
+                                                  "displayOrder": 3,
+                                                  "status": "FAILED",
+                                                  "transcript": null
+                                                },
+                                                {
+                                                  "displayOrder": 4,
+                                                  "status": "PENDING",
+                                                  "transcript": null
+                                                },
+                                                {
+                                                  "displayOrder": 5,
+                                                  "status": null,
+                                                  "transcript": null
+                                                }
+                                              ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "🚨 텍스트 세션에 조회 요청",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "입력 방식 불일치",
+                                    value = "{\"error\": \"INTERVIEW_4006\", \"message\": \"면접 세션의 답변 입력 방식과 일치하지 않습니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "🚨 본인의 세션이 아님",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "접근 거부",
+                                    value = "{\"error\": \"INTERVIEW_4004\", \"message\": \"본인의 면접 세션만 접근할 수 있습니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "🚨 존재하지 않는 세션",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "세션 없음",
+                                    value = "{\"error\": \"INTERVIEW_4003\", \"message\": \"존재하지 않는 면접 세션입니다.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "🚨 예기치 못한 예외 발생",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "예기치 못한 예외 발생",
+                                    value = "{\"error\": \"GLOBAL_5001\", \"message\": \"예기치 못한 예외 발생\"}"
+                            )
+                    )
+            )
+    })
+    ResponseEntity<InterviewTranscriptionsResponse> getTranscriptions(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Parameter(description = "면접 세션 아이디", example = "12") @PathVariable long sessionId
+    );
+
+    @Operation(
             summary = "면접 세션 중단",
             description = """
                     진행 중(IN_PROGRESS)인 세션을 취소(ABANDONED)합니다.<br>
@@ -389,6 +612,7 @@ public interface InterviewSessionControllerDocs {
                     문항 번호(displayOrder) 1~5를 각각 정확히 한 번씩 담아야 하며, 재제출은 불가능합니다.<br>
                     content가 null이거나 공백이면 무응답으로 저장됩니다.<br>
                     audioKey는 VOICE 세션에서만 담고, TEXT 세션은 null이어야 합니다.<br>
+                    음성 세션은 변환 중(PENDING)인 문항이 있으면 거부됩니다.<br>
                     제출이 받아들여지면 세션이 채점 중(GRADING)이 되고 채점은 백그라운드에서 진행됩니다.
                     채점 완료 여부는 세션 상태 조회 API로 확인하세요.<br>
                     🔐 <strong>Jwt 필요</strong>
@@ -485,6 +709,10 @@ public interface InterviewSessionControllerDocs {
                                     @ExampleObject(
                                             name = "이미 제출된 답안",
                                             value = "{\"error\": \"INTERVIEW_4013\", \"message\": \"이미 제출된 면접 답안입니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "음성 변환 진행 중",
+                                            value = "{\"error\": \"INTERVIEW_4023\", \"message\": \"음성 변환이 끝나지 않은 답안이 있어 제출할 수 없습니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class)

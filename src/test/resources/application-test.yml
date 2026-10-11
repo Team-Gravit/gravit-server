@@ -22,6 +22,12 @@ spring:
       chat:
         options:
           model: codex-terra
+      audio:
+        transcription:
+          options:
+            model: gpt-transcribe
+            language: ko
+            temperature: 0
 
   data:
     redis:

@@ -15,13 +15,17 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ALREADY_SUBMITTED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_ALREADY_REQUESTED;
 
 @Getter
 @Entity
+@DynamicUpdate
 @Table(
         name = "interview_answer",
         uniqueConstraints = {
@@ -37,6 +41,8 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSW
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewAnswer extends BaseEntity {
+
+    private static final Duration TRANSCRIPTION_PENDING_TIMEOUT = Duration.ofMinutes(5);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,6 +70,16 @@ public class InterviewAnswer extends BaseEntity {
     @Column(name = "answered_at")
     private LocalDateTime answeredAt;
 
+    @Column(name = "transcript", columnDefinition = "TEXT")
+    private String transcript;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transcription_status")
+    private InterviewTranscriptionStatus transcriptionStatus;
+
+    @Column(name = "transcription_requested_at")
+    private LocalDateTime transcriptionRequestedAt;
+
     @Builder(access = AccessLevel.PRIVATE)
     private InterviewAnswer(
             long sessionId,
@@ -77,6 +93,9 @@ public class InterviewAnswer extends BaseEntity {
         this.content = null;
         this.audioKey = null;
         this.answeredAt = null;
+        this.transcript = null;
+        this.transcriptionStatus = null;
+        this.transcriptionRequestedAt = null;
     }
 
     public static InterviewAnswer create(
@@ -114,9 +133,48 @@ public class InterviewAnswer extends BaseEntity {
         this.answeredAt = answeredAt;
     }
 
+    public boolean isTranscriptionInProgress(LocalDateTime now) {
+        return transcriptionStatus == InterviewTranscriptionStatus.PENDING
+                && now.isBefore(transcriptionRequestedAt.plus(TRANSCRIPTION_PENDING_TIMEOUT));
+    }
+
+    public void requestTranscription(LocalDateTime requestedAt) {
+        validatePending();
+        validateTranscriptionRequestable(requestedAt);
+
+        this.transcriptionStatus = InterviewTranscriptionStatus.PENDING;
+        this.transcript = null;
+        this.transcriptionRequestedAt = requestedAt;
+    }
+
+    public void completeTranscription(String transcript) {
+        if (transcriptionStatus != InterviewTranscriptionStatus.PENDING) {
+            return;
+        }
+
+        boolean empty = transcript == null || transcript.isBlank();
+
+        this.transcriptionStatus = InterviewTranscriptionStatus.COMPLETED;
+        this.transcript = empty ? null : transcript.strip();
+    }
+
+    public void failTranscription() {
+        if (transcriptionStatus != InterviewTranscriptionStatus.PENDING) {
+            return;
+        }
+
+        this.transcriptionStatus = InterviewTranscriptionStatus.FAILED;
+    }
+
     private void validatePending() {
         if (!isPending()) {
             throw new RestApiException(INTERVIEW_ANSWER_ALREADY_SUBMITTED);
+        }
+    }
+
+    private void validateTranscriptionRequestable(LocalDateTime now) {
+        if (transcriptionStatus == InterviewTranscriptionStatus.COMPLETED || isTranscriptionInProgress(now)) {
+            throw new RestApiException(INTERVIEW_TRANSCRIPTION_ALREADY_REQUESTED);
         }
     }
 }
