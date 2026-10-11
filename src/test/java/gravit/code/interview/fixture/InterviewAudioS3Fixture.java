@@ -1,8 +1,12 @@
 package gravit.code.interview.fixture;
 
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.S3Error;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.S3Object;
@@ -18,6 +22,8 @@ public class InterviewAudioS3Fixture {
     private static final String ACCESS_DENIED_CODE = "AccessDenied";
     private static final String ACCESS_DENIED_MESSAGE = "Access Denied";
     private static final int FORBIDDEN_STATUS = 403;
+    private static final String NOT_FOUND_MESSAGE = "Not Found";
+    private static final int NOT_FOUND_STATUS = 404;
 
     public static String 세션_접두사(long sessionId) {
         return String.format(SESSION_PREFIX_FORMAT, sessionId);
@@ -55,6 +61,28 @@ public class InterviewAudioS3Fixture {
                         .message(ACCESS_DENIED_MESSAGE)
                         .build())
                 .build();
+    }
+
+    public static HeadObjectResponse 음성_있음() {
+        return HeadObjectResponse.builder().build();
+    }
+
+    public static NoSuchKeyException 음성_없음() {
+        return (NoSuchKeyException) NoSuchKeyException.builder()
+                .statusCode(NOT_FOUND_STATUS)
+                .message(NOT_FOUND_MESSAGE)
+                .build();
+    }
+
+    public static S3Exception 본문_없는_404() {
+        return (S3Exception) S3Exception.builder()
+                .statusCode(NOT_FOUND_STATUS)
+                .message(NOT_FOUND_MESSAGE)
+                .build();
+    }
+
+    public static ResponseBytes<GetObjectResponse> 음성_내용(byte[] audio) {
+        return ResponseBytes.fromByteArray(GetObjectResponse.builder().build(), audio);
     }
 
     public static S3Exception 권한_거부() {

@@ -12,6 +12,7 @@ import gravit.code.interviewQuestion.domain.InterviewDifficulty;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,6 +97,40 @@ public class InterviewSessionFixture {
             answers.add(InterviewAnswer.create(sessionId, questionIds.get(index), FIRST_DISPLAY_ORDER + index));
         }
         return answers;
+    }
+
+    public static InterviewAnswer 변환_중_답안(
+            long sessionId,
+            long questionId,
+            int displayOrder,
+            LocalDateTime requestedAt
+    ) {
+        InterviewAnswer answer = InterviewAnswer.create(sessionId, questionId, displayOrder);
+        answer.requestTranscription(requestedAt);
+        return answer;
+    }
+
+    public static InterviewAnswer 변환_완료_답안(
+            long sessionId,
+            long questionId,
+            int displayOrder,
+            LocalDateTime requestedAt,
+            String transcript
+    ) {
+        InterviewAnswer answer = 변환_중_답안(sessionId, questionId, displayOrder, requestedAt);
+        answer.completeTranscription(transcript);
+        return answer;
+    }
+
+    public static InterviewAnswer 변환_실패_답안(
+            long sessionId,
+            long questionId,
+            int displayOrder,
+            LocalDateTime requestedAt
+    ) {
+        InterviewAnswer answer = 변환_중_답안(sessionId, questionId, displayOrder, requestedAt);
+        answer.failTranscription();
+        return answer;
     }
 
     public static InterviewAnswerSubmitRequest 답안_요청(
