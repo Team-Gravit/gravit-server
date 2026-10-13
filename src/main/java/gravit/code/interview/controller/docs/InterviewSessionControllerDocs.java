@@ -126,6 +126,7 @@ public interface InterviewSessionControllerDocs {
             summary = "면접 세션 문제 목록 조회",
             description = """
                     세션에 확정된 5문항을 문항 번호 오름차순으로 반환합니다.<br>
+                    세션 생성 시 선택한 답변 입력 방식(inputType, TEXT 또는 VOICE)을 함께 내려줍니다.<br>
                     진행 중, 채점 중, 완료, 채점 실패, 취소 어느 상태에서도 조회할 수 있습니다.<br>
                     각 문항에 질문 음성 재생 URL(audioUrl, presigned GET)을 함께 내려줍니다. 음성이 없는 문항은 null이며 이때는 텍스트만 보여 줍니다.<br>
                     URL은 30분 동안 유효하므로 만료 후에는 문제 목록을 다시 조회해 새 URL을 받습니다.<br>
@@ -144,6 +145,7 @@ public interface InterviewSessionControllerDocs {
                                     value = """
                                             {
                                               "sessionId": 12,
+                                              "inputType": "VOICE",
                                               "questions": [
                                                 { "displayOrder": 1, "content": "퀵 정렬의 동작 방식과 평균 시간복잡도를 설명해 주세요.", "audioUrl": "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview-question/18.mp3?X-Amz-Algorithm=..." },
                                                 { "displayOrder": 2, "content": "해시 충돌이 발생하는 이유와 해결 방법을 설명해 주세요.", "audioUrl": "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview-question/42.mp3?X-Amz-Algorithm=..." },

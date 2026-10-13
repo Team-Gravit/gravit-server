@@ -217,6 +217,22 @@ class InterviewSessionQueryServiceIntegrationTest {
 
         @ParameterizedTest
         @EnumSource(InterviewInputType.class)
+        void 세션의_입력_방식을_돌려준다(InterviewInputType inputType) {
+            // given
+            InterviewSession session = interviewSessionRepository.save(
+                    상태_세션(USER_ID, InterviewSessionStatus.IN_PROGRESS, inputType));
+            출제한다(session.getId());
+
+            // when
+            InterviewSessionQuestionsResponse response =
+                    interviewSessionQueryService.getQuestions(USER_ID, session.getId());
+
+            // then
+            assertThat(response.inputType()).isEqualTo(inputType);
+        }
+
+        @ParameterizedTest
+        @EnumSource(InterviewInputType.class)
         void 입력_방식과_관계없이_음성_키로_서명한_재생_URL을_돌려준다(InterviewInputType inputType) {
             // given
             InterviewSession session = interviewSessionRepository.save(

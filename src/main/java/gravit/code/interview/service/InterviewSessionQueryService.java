@@ -59,7 +59,7 @@ public class InterviewSessionQueryService {
                 .map(question -> InterviewSessionQuestionResponse.of(question, issueAudioUrl(question.audioKey())))
                 .toList();
 
-        return InterviewSessionQuestionsResponse.of(sessionId, responses);
+        return InterviewSessionQuestionsResponse.of(sessionId, session.getInputType(), responses);
     }
 
     @Transactional(readOnly = true)
