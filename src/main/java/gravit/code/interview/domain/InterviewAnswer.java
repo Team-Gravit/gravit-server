@@ -138,10 +138,14 @@ public class InterviewAnswer extends BaseEntity {
                 && now.isBefore(transcriptionRequestedAt.plus(TRANSCRIPTION_PENDING_TIMEOUT));
     }
 
-    public void requestTranscription(LocalDateTime requestedAt) {
+    public void requestTranscription(
+            String audioKey,
+            LocalDateTime requestedAt
+    ) {
         validatePending();
         validateTranscriptionRequestable(requestedAt);
 
+        this.audioKey = audioKey;
         this.transcriptionStatus = InterviewTranscriptionStatus.PENDING;
         this.transcript = null;
         this.transcriptionRequestedAt = requestedAt;

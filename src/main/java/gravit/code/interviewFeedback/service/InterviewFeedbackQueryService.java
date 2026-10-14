@@ -1,6 +1,5 @@
 package gravit.code.interviewFeedback.service;
 
-import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionSort;
@@ -10,6 +9,8 @@ import gravit.code.interview.dto.internal.InterviewSessionAverageDto;
 import gravit.code.interview.dto.response.InterviewRecentSessionResponse;
 import gravit.code.interview.dto.response.InterviewScoreTrendResponse;
 import gravit.code.interview.dto.response.InterviewSessionHistoryResponse;
+import gravit.code.interview.dto.response.InterviewSessionHistoryPageResponse;
+import gravit.code.interview.infrastructure.InterviewAudioStorage;
 import gravit.code.interview.repository.InterviewSessionRepository;
 import gravit.code.interview.repository.InterviewSessionTopicRepository;
 import gravit.code.interviewFeedback.dto.internal.InterviewAnswerDetailDto;
@@ -28,9 +29,9 @@ import gravit.code.interviewQuestion.domain.InterviewTopic;
 import gravit.code.interviewQuestion.dto.response.InterviewConceptResponse;
 import gravit.code.interviewQuestion.repository.InterviewQuestionConceptRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,15 +63,17 @@ public class InterviewFeedbackQueryService {
     private final InterviewQuestionConceptRepository interviewQuestionConceptRepository;
     private final InterviewFeedbackRepository interviewFeedbackRepository;
 
+    private final InterviewAudioStorage interviewAudioStorage;
+
     @Transactional(readOnly = true)
-    public SliceResponse<InterviewSessionHistoryResponse> getSessionHistory(
+    public InterviewSessionHistoryPageResponse getSessionHistory(
             long userId,
             int page,
             InterviewSessionSort sort
     ) {
         Pageable pageable = PageRequest.of(Math.max(0, page), PAGE_SIZE, sort.toSort());
 
-        Slice<InterviewSession> sessions = interviewSessionRepository.findAllByUserIdAndStatus(
+        Page<InterviewSession> sessions = interviewSessionRepository.findAllByUserIdAndStatus(
                 userId,
                 InterviewSessionStatus.COMPLETED,
                 pageable
@@ -78,7 +81,7 @@ public class InterviewFeedbackQueryService {
 
         List<InterviewSessionHistoryResponse> contents = toHistoryResponses(sessions.getContent());
 
-        return SliceResponse.of(sessions.hasNext(), contents);
+        return InterviewSessionHistoryPageResponse.of(sessions.hasNext(), sessions.getTotalPages(), contents);
     }
 
     @Transactional(readOnly = true)
@@ -137,11 +140,12 @@ public class InterviewFeedbackQueryService {
                 .map(detail -> InterviewAnswerDetailResponse.of(
                         detail,
                         questionIdToConcepts.getOrDefault(detail.questionId(), List.of()),
-                        session
+                        session,
+                        issueAudioUrl(detail.audioKey())
                 ))
                 .toList();
 
-        return InterviewSessionAnswersResponse.of(sessionId, answers);
+        return InterviewSessionAnswersResponse.of(session, answers);
     }
 
     @Transactional(readOnly = true)
@@ -204,6 +208,14 @@ public class InterviewFeedbackQueryService {
         }
 
         return session;
+    }
+
+    private String issueAudioUrl(String audioKey) {
+        if (audioKey == null) {
+            return null;
+        }
+
+        return interviewAudioStorage.presignDownload(audioKey);
     }
 
     private List<InterviewSessionHistoryResponse> toHistoryResponses(List<InterviewSession> sessions) {

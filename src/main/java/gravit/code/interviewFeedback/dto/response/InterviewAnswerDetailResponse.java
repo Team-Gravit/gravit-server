@@ -41,10 +41,11 @@ public record InterviewAnswerDetailResponse(
         String answerContent,
 
         @Schema(
-                description = "음성 세션의 음성 키. 텍스트 세션이거나 무응답이면 null",
+                description = "답변 음성 재생 URL(presigned GET). 텍스트 세션이거나 음성이 없으면 null. 발급 후 30분 동안 유효",
+                example = "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview/12/1.m4a?X-Amz-Algorithm=...",
                 nullable = true
         )
-        String audioKey,
+        String audioUrl,
 
         @Schema(
                 description = "모범답안 (Markdown)",
@@ -110,14 +111,15 @@ public record InterviewAnswerDetailResponse(
     public static InterviewAnswerDetailResponse of(
             InterviewAnswerDetailDto detail,
             List<InterviewConceptResponse> concepts,
-            InterviewSession session
+            InterviewSession session,
+            String audioUrl
     ) {
         return InterviewAnswerDetailResponse.builder()
                 .displayOrder(detail.displayOrder())
                 .topic(InterviewTopicResponse.from(detail.topic()))
                 .questionContent(detail.questionContent())
                 .answerContent(detail.answerContent())
-                .audioKey(detail.audioKey())
+                .audioUrl(audioUrl)
                 .modelAnswer(detail.modelAnswer())
                 .concepts(concepts)
                 .improvementSuggestion(detail.improvementSuggestion())

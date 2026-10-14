@@ -4,6 +4,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.dto.response.InterviewTranscriptionResponse;
 import gravit.code.interview.dto.response.InterviewTranscriptionsResponse;
+import gravit.code.interview.infrastructure.InterviewAudioStorage;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class InterviewTranscriptionQueryService {
     private final InterviewSessionRepository interviewSessionRepository;
     private final InterviewAnswerRepository interviewAnswerRepository;
 
+    private final InterviewAudioStorage interviewAudioStorage;
+
     @Transactional(readOnly = true)
     public InterviewTranscriptionsResponse getTranscriptions(
             long userId,
@@ -39,9 +42,17 @@ public class InterviewTranscriptionQueryService {
         }
 
         List<InterviewTranscriptionResponse> transcriptions = interviewAnswerRepository.findAllBySessionIdOrderByDisplayOrderAsc(sessionId).stream()
-                .map(InterviewTranscriptionResponse::from)
+                .map(answer -> InterviewTranscriptionResponse.of(answer, issueAudioUrl(answer.getAudioKey())))
                 .toList();
 
         return InterviewTranscriptionsResponse.of(sessionId, transcriptions);
+    }
+
+    private String issueAudioUrl(String audioKey) {
+        if (audioKey == null) {
+            return null;
+        }
+
+        return interviewAudioStorage.presignDownload(audioKey);
     }
 }

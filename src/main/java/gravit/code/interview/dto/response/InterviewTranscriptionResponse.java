@@ -26,13 +26,24 @@ public record InterviewTranscriptionResponse(
                 description = "변환된 텍스트. COMPLETED가 아니거나 말이 없었으면 null",
                 example = "트랜잭션 격리 수준은 동시에 실행되는 트랜잭션이 서로의 변경을 어디까지 볼 수 있는지 정합니다."
         )
-        String transcript
+        String transcript,
+
+        @Schema(
+                description = "답변 음성 재생 URL(presigned GET). 변환을 요청하지 않았으면 null. 발급 후 30분 동안 유효",
+                example = "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview/12/1.m4a?X-Amz-Algorithm=...",
+                nullable = true
+        )
+        String audioUrl
 ) {
-    public static InterviewTranscriptionResponse from(InterviewAnswer answer) {
+    public static InterviewTranscriptionResponse of(
+            InterviewAnswer answer,
+            String audioUrl
+    ) {
         return InterviewTranscriptionResponse.builder()
                 .displayOrder(answer.getDisplayOrder())
                 .status(answer.getTranscriptionStatus())
                 .transcript(answer.getTranscript())
+                .audioUrl(audioUrl)
                 .build();
     }
 }
