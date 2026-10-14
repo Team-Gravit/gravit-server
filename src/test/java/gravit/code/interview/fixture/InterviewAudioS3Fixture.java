@@ -24,6 +24,7 @@ public class InterviewAudioS3Fixture {
     private static final int FORBIDDEN_STATUS = 403;
     private static final String NOT_FOUND_MESSAGE = "Not Found";
     private static final int NOT_FOUND_STATUS = 404;
+    private static final long AUDIO_CONTENT_LENGTH = 14_279L;
 
     public static String 세션_접두사(long sessionId) {
         return String.format(SESSION_PREFIX_FORMAT, sessionId);
@@ -64,7 +65,15 @@ public class InterviewAudioS3Fixture {
     }
 
     public static HeadObjectResponse 음성_있음() {
-        return HeadObjectResponse.builder().build();
+        return HeadObjectResponse.builder()
+                .contentLength(AUDIO_CONTENT_LENGTH)
+                .build();
+    }
+
+    public static HeadObjectResponse 빈_음성() {
+        return HeadObjectResponse.builder()
+                .contentLength(0L)
+                .build();
     }
 
     public static NoSuchKeyException 음성_없음() {
