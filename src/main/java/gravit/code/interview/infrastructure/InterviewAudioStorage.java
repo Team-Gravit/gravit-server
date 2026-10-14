@@ -25,6 +25,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_DELETE_FAILED;
 
@@ -95,20 +96,19 @@ public class InterviewAudioStorage {
         return s3Presigner.presignGetObject(presignRequest).url().toString();
     }
 
-    public boolean exists(String audioKey) {
+    public Optional<Long> findContentLength(String audioKey) {
         HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                 .bucket(bucket)
                 .key(audioKey)
                 .build();
 
         try {
-            s3Client.headObject(headObjectRequest);
-            return true;
+            return Optional.of(s3Client.headObject(headObjectRequest).contentLength());
         } catch (NoSuchKeyException e) {
-            return false;
+            return Optional.empty();
         } catch (S3Exception e) {
             if (e.statusCode() == OBJECT_NOT_FOUND_STATUS) {
-                return false;
+                return Optional.empty();
             }
             throw e;
         }

@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ALREADY_SUBMITTED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_EMPTY;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_KEY_INVALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_NOT_UPLOADED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
@@ -44,6 +45,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESS
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_ALREADY_REQUESTED;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.권한_거부;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.본문_없는_404;
+import static gravit.code.interview.fixture.InterviewAudioS3Fixture.빈_음성;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.음성_없음;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.음성_있음;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.음성_키;
@@ -264,6 +266,22 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(INTERVIEW_AUDIO_NOT_UPLOADED);
+            assertThat(답안(answer.getId()).getTranscriptionStatus()).isNull();
+        }
+
+        @Test
+        void 업로드된_음성이_비어_있으면_예외를_던지고_답안은_그대로다() {
+            // given
+            InterviewSession session = 음성_세션();
+            InterviewAnswer answer = 미요청_답안_저장(session.getId(), DISPLAY_ORDER);
+            when(s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(빈_음성());
+
+            // when & then
+            assertThatThrownBy(() -> interviewTranscriptionCommandService.request(
+                    USER_ID, session.getId(), 요청(session.getId())))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_AUDIO_EMPTY);
             assertThat(답안(answer.getId()).getTranscriptionStatus()).isNull();
         }
 
