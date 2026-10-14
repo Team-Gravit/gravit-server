@@ -106,7 +106,7 @@ public class InterviewSessionFixture {
             LocalDateTime requestedAt
     ) {
         InterviewAnswer answer = InterviewAnswer.create(sessionId, questionId, displayOrder);
-        answer.requestTranscription(requestedAt);
+        answer.requestTranscription(InterviewAudioS3Fixture.음성_키(sessionId, displayOrder), requestedAt);
         return answer;
     }
 

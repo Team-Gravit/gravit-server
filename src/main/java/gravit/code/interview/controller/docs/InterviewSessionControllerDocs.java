@@ -426,6 +426,8 @@ public interface InterviewSessionControllerDocs {
                     COMPLETED인데 transcript가 null이면 말이 없었던 문항입니다.<br>
                     FAILED면 변환을 다시 요청하거나 사용자가 직접 입력합니다. 변환을 요청하지 않은 문항은 status가 null입니다.<br>
                     변환 중(PENDING)인 문항이 있으면 답안 제출이 거부됩니다.<br>
+                    audioUrl은 변환을 요청한 문항의 답변 음성 재생 URL입니다. 새로고침 뒤에도 이 URL로 다시 재생할 수 있습니다.<br>
+                    audioUrl은 조회할 때마다 새로 서명되므로 이미 재생 중인 문항의 플레이어는 URL이 바뀌어도 다시 불러오지 마세요. 발급 후 30분 동안 유효합니다.<br>
                     🔐 <strong>Jwt 필요</strong>
                     """
     )
@@ -445,27 +447,32 @@ public interface InterviewSessionControllerDocs {
                                                 {
                                                   "displayOrder": 1,
                                                   "status": "COMPLETED",
-                                                  "transcript": "트랜잭션 격리 수준은 동시에 실행되는 트랜잭션이 서로의 변경을 어디까지 볼 수 있는지 정합니다."
+                                                  "transcript": "트랜잭션 격리 수준은 동시에 실행되는 트랜잭션이 서로의 변경을 어디까지 볼 수 있는지 정합니다.",
+                                                  "audioUrl": "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview/12/1.m4a?X-Amz-Algorithm=..."
                                                 },
                                                 {
                                                   "displayOrder": 2,
                                                   "status": "COMPLETED",
-                                                  "transcript": null
+                                                  "transcript": null,
+                                                  "audioUrl": "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview/12/2.m4a?X-Amz-Algorithm=..."
                                                 },
                                                 {
                                                   "displayOrder": 3,
                                                   "status": "FAILED",
-                                                  "transcript": null
+                                                  "transcript": null,
+                                                  "audioUrl": "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview/12/3.m4a?X-Amz-Algorithm=..."
                                                 },
                                                 {
                                                   "displayOrder": 4,
                                                   "status": "PENDING",
-                                                  "transcript": null
+                                                  "transcript": null,
+                                                  "audioUrl": "https://gravit-interview-audio.s3.ap-northeast-2.amazonaws.com/interview/12/4.m4a?X-Amz-Algorithm=..."
                                                 },
                                                 {
                                                   "displayOrder": 5,
                                                   "status": null,
-                                                  "transcript": null
+                                                  "transcript": null,
+                                                  "audioUrl": null
                                                 }
                                               ]
                                             }

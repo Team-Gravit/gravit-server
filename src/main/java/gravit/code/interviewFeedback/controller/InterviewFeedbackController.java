@@ -1,9 +1,8 @@
 package gravit.code.interviewFeedback.controller;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.interview.domain.InterviewSessionSort;
-import gravit.code.interview.dto.response.InterviewSessionHistoryResponse;
+import gravit.code.interview.dto.response.InterviewSessionHistoryPageResponse;
 import gravit.code.interviewFeedback.controller.docs.InterviewFeedbackControllerDocs;
 import gravit.code.interviewFeedback.dto.response.InterviewDashboardResponse;
 import gravit.code.interviewFeedback.dto.response.InterviewSessionAnswersResponse;
@@ -31,12 +30,12 @@ public class InterviewFeedbackController implements InterviewFeedbackControllerD
     private final InterviewFeedbackQueryService interviewFeedbackQueryService;
 
     @GetMapping
-    public ResponseEntity<SliceResponse<InterviewSessionHistoryResponse>> getSessionHistory(
+    public ResponseEntity<InterviewSessionHistoryPageResponse> getSessionHistory(
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "LATEST") InterviewSessionSort sort
     ) {
-        SliceResponse<InterviewSessionHistoryResponse> history = interviewFeedbackQueryService.getSessionHistory(
+        InterviewSessionHistoryPageResponse history = interviewFeedbackQueryService.getSessionHistory(
                 loginUser.getId(),
                 page,
                 sort

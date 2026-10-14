@@ -141,7 +141,7 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
     class Request {
 
         @Test
-        void 답안을_변환_중으로_바꾸고_커밋_후_변환을_시작한다() {
+        void 답안을_변환_중으로_바꾸고_음성_키를_기록한_뒤_커밋_후_변환을_시작한다() {
             // given
             InterviewSession session = 음성_세션();
             InterviewAnswer answer = 미요청_답안_저장(session.getId(), DISPLAY_ORDER);
@@ -155,7 +155,7 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
                 softly.assertThat(requested.getTranscriptionStatus()).isEqualTo(InterviewTranscriptionStatus.PENDING);
                 softly.assertThat(requested.getTranscriptionRequestedAt()).isEqualTo(지금());
                 softly.assertThat(requested.getTranscript()).isNull();
-                softly.assertThat(requested.getAudioKey()).isNull();
+                softly.assertThat(requested.getAudioKey()).isEqualTo(음성_키(session.getId(), DISPLAY_ORDER));
             });
             verify(interviewTranscriptionFacade, timeout(ASYNC_TIMEOUT_MILLIS))
                     .transcribe(answer.getId(), 음성_키(session.getId(), DISPLAY_ORDER));

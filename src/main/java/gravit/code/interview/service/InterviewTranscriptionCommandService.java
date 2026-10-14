@@ -66,7 +66,7 @@ public class InterviewTranscriptionCommandService {
         InterviewAnswer answer = interviewAnswerRepository.findBySessionIdAndDisplayOrder(sessionId, request.displayOrder())
                 .orElseThrow(() -> new RestApiException(INTERVIEW_ANSWER_NOT_FOUND));
 
-        answer.requestTranscription(LocalDateTime.now(clock));
+        answer.requestTranscription(audioKey, LocalDateTime.now(clock));
 
         publisher.publishEvent(InterviewTranscriptionRequestedEvent.of(answer.getId(), audioKey));
     }

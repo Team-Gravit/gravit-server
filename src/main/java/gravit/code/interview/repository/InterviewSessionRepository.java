@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.dto.internal.InterviewSessionAverageDto;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface InterviewSessionRepository extends JpaRepository<InterviewSession, Long> {
 
-    Slice<InterviewSession> findAllByUserIdAndStatus(
+    Page<InterviewSession> findAllByUserIdAndStatus(
             long userId,
             InterviewSessionStatus status,
             Pageable pageable

@@ -1,11 +1,9 @@
 package gravit.code.interviewFeedback.controller.docs;
 
 import gravit.code.auth.domain.LoginUser;
-import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.interview.domain.InterviewSessionSort;
-import gravit.code.interview.dto.response.InterviewSessionHistoryResponse;
-import gravit.code.interview.dto.response.InterviewSessionHistorySliceResponse;
+import gravit.code.interview.dto.response.InterviewSessionHistoryPageResponse;
 import gravit.code.interviewFeedback.dto.response.InterviewDashboardResponse;
 import gravit.code.interviewFeedback.dto.response.InterviewSessionAnswersResponse;
 import gravit.code.interviewFeedback.dto.response.InterviewSessionSummaryResponse;
@@ -46,12 +44,13 @@ public interface InterviewFeedbackControllerDocs {
                     description = "✅ 응시 이력 조회 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = InterviewSessionHistorySliceResponse.class),
+                            schema = @Schema(implementation = InterviewSessionHistoryPageResponse.class),
                             examples = @ExampleObject(
                                     name = "응시 이력 조회 성공 예시",
                                     value = """
                                             {
                                               "hasNextPage": false,
+                                              "totalPages": 1,
                                               "contents": [
                                                 {
                                                   "sessionId": 12,
@@ -100,7 +99,7 @@ public interface InterviewFeedbackControllerDocs {
             )
     })
     @GetMapping
-    ResponseEntity<SliceResponse<InterviewSessionHistoryResponse>> getSessionHistory(
+    ResponseEntity<InterviewSessionHistoryPageResponse> getSessionHistory(
             @AuthenticationPrincipal LoginUser loginUser,
             @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0")
             @RequestParam(defaultValue = "0") int page,
@@ -217,7 +216,8 @@ public interface InterviewFeedbackControllerDocs {
             summary = "면접 문항별 상세 조회",
             description = """
                     완료된 세션의 5문항 상세를 문항 순서대로 조회합니다.<br>
-                    질문, 주제, 사용자 답변(음성 세션은 음성 키 포함), 모범답안, 핵심 개념 목록, 점수 분해(정확도 14, 구조성 3, 명료성 3), 개선 제안을 담습니다.<br>
+                    질문, 주제, 사용자 답변(음성 세션은 답변 음성 재생 URL 포함), 모범답안, 핵심 개념 목록, 점수 분해(정확도 14, 구조성 3, 명료성 3), 개선 제안을 담습니다.<br>
+                    audioUrl은 발급 후 30분 동안 유효하며, 만료되면 다시 조회해 새 URL을 받습니다.<br>
                     핵심 개념 목록에는 개념별 전달 여부가 없습니다. 무응답 문항은 answerContent와 improvementSuggestion이 null이고 세 점수가 0입니다.<br>
                     본인 세션이 아니면 403, 완료되지 않은 세션이면 409입니다.<br>
                     🔐 <strong>Jwt 필요</strong>
@@ -235,13 +235,14 @@ public interface InterviewFeedbackControllerDocs {
                                     value = """
                                             {
                                               "sessionId": 12,
+                                              "startedAt": "2026-09-04T10:15:30",
                                               "answers": [
                                                 {
                                                   "displayOrder": 1,
                                                   "topic": {"topic": "ALGORITHM", "displayName": "알고리즘"},
                                                   "questionContent": "퀵 정렬의 동작 방식과 시간복잡도를 설명해주세요.",
                                                   "answerContent": "피벗을 기준으로 분할하며 정렬합니다. 평균 O(n log n)입니다.",
-                                                  "audioKey": null,
+                                                  "audioUrl": null,
                                                   "modelAnswer": "퀵 정렬은 피벗을 기준으로 작은 값과 큰 값을 나누며 재귀적으로 정렬합니다. 평균 O(n log n), 최악 O(n^2)입니다.",
                                                   "concepts": [
                                                     {"name": "피벗 기준 분할을 설명", "type": "ESSENTIAL"},
@@ -261,7 +262,7 @@ public interface InterviewFeedbackControllerDocs {
                                                   "topic": {"topic": "NETWORK", "displayName": "네트워크"},
                                                   "questionContent": "TCP 3-way handshake 과정을 설명해주세요.",
                                                   "answerContent": null,
-                                                  "audioKey": null,
+                                                  "audioUrl": null,
                                                   "modelAnswer": "SYN, SYN-ACK, ACK 세 단계로 연결을 수립합니다.",
                                                   "concepts": [
                                                     {"name": "SYN, SYN-ACK, ACK 순서를 설명", "type": "ESSENTIAL"}
