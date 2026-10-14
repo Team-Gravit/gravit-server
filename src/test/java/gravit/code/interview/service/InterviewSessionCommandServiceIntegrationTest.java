@@ -393,7 +393,7 @@ class InterviewSessionCommandServiceIntegrationTest {
             // given
             InterviewSession session = 준비된_세션(InterviewInputType.VOICE);
             InterviewAnswer pending = 답안들(session.getId()).get(1);
-            pending.requestTranscription(LocalDateTime.now(clock).minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
+            pending.requestTranscription(음성_키(session.getId(), pending.getDisplayOrder()), LocalDateTime.now(clock).minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
             interviewAnswerRepository.save(pending);
 
             // when & then
@@ -408,8 +408,10 @@ class InterviewSessionCommandServiceIntegrationTest {
                         .allSatisfy(answer -> {
                             assertThat(answer.getStatus()).isEqualTo(InterviewAnswerStatus.PENDING);
                             assertThat(answer.getContent()).isNull();
-                            assertThat(answer.getAudioKey()).isNull();
                         });
+                softly.assertThat(답안들(session.getId()))
+                        .extracting(InterviewAnswer::getAudioKey)
+                        .containsExactly(null, 음성_키(session.getId(), pending.getDisplayOrder()), null, null, null);
                 softly.assertThat(stubInterviewGradingClient.callCount()).isZero();
             });
         }
@@ -421,12 +423,12 @@ class InterviewSessionCommandServiceIntegrationTest {
             LocalDateTime now = LocalDateTime.now(clock);
             List<InterviewAnswer> answers = 답안들(session.getId());
 
-            answers.get(0).requestTranscription(now.minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
+            answers.get(0).requestTranscription(음성_키(session.getId(), answers.get(0).getDisplayOrder()), now.minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
             answers.get(0).completeTranscription(TRANSCRIPT);
-            answers.get(1).requestTranscription(now.minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
+            answers.get(1).requestTranscription(음성_키(session.getId(), answers.get(1).getDisplayOrder()), now.minusMinutes(IN_PROGRESS_ELAPSED_MINUTES));
             answers.get(1).failTranscription();
-            answers.get(2).requestTranscription(now.minusMinutes(TRANSCRIPTION_TIMEOUT_MINUTES));
-            answers.get(3).requestTranscription(now.minusMinutes(TRANSCRIPTION_TIMEOUT_MINUTES + 1));
+            answers.get(2).requestTranscription(음성_키(session.getId(), answers.get(2).getDisplayOrder()), now.minusMinutes(TRANSCRIPTION_TIMEOUT_MINUTES));
+            answers.get(3).requestTranscription(음성_키(session.getId(), answers.get(3).getDisplayOrder()), now.minusMinutes(TRANSCRIPTION_TIMEOUT_MINUTES + 1));
             interviewAnswerRepository.saveAll(answers);
 
             // when

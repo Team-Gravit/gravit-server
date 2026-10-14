@@ -23,6 +23,7 @@ import java.util.List;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
+import static gravit.code.interview.fixture.InterviewAudioS3Fixture.음성_키;
 import static gravit.code.interview.fixture.InterviewSessionFixture.변환_실패_답안;
 import static gravit.code.interview.fixture.InterviewSessionFixture.변환_완료_답안;
 import static gravit.code.interview.fixture.InterviewSessionFixture.변환_중_답안;
@@ -40,6 +41,7 @@ class InterviewTranscriptionQueryServiceIntegrationTest {
     private static final long UNKNOWN_SESSION_ID = 999L;
     private static final long QUESTION_ID = 100L;
     private static final long REQUESTED_MINUTES_AGO = 1L;
+    private static final int REQUESTED_ANSWER_COUNT = 4;
     private static final String TRANSCRIPT = "트랜잭션 격리 수준은 동시성 제어 방식입니다.";
 
     @Autowired
@@ -100,6 +102,29 @@ class InterviewTranscriptionQueryServiceIntegrationTest {
                 softly.assertThat(transcriptions)
                         .extracting(InterviewTranscriptionResponse::transcript)
                         .containsExactly(TRANSCRIPT, null, null, null, null);
+            });
+        }
+
+        @Test
+        void 변환을_요청한_문항만_답변_음성_재생_URL을_돌려준다() {
+            // given
+            InterviewSession session = interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.VOICE));
+            상태가_섞인_답안_저장(session.getId());
+
+            // when
+            InterviewTranscriptionsResponse response = interviewTranscriptionQueryService.getTranscriptions(
+                    USER_ID, session.getId());
+
+            // then
+            List<String> audioUrls = response.transcriptions().stream()
+                    .map(InterviewTranscriptionResponse::audioUrl)
+                    .toList();
+            assertSoftly(softly -> {
+                for (int index = 0; index < REQUESTED_ANSWER_COUNT; index++) {
+                    softly.assertThat(audioUrls.get(index)).contains(음성_키(session.getId(), index + 1));
+                    softly.assertThat(audioUrls.get(index)).contains("X-Amz-Signature=");
+                }
+                softly.assertThat(audioUrls.get(REQUESTED_ANSWER_COUNT)).isNull();
             });
         }
 

@@ -1,6 +1,5 @@
 package gravit.code.interviewFeedback.service;
 
-import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewMode;
@@ -11,6 +10,7 @@ import gravit.code.interview.domain.InterviewStack;
 import gravit.code.interview.dto.response.InterviewRecentSessionResponse;
 import gravit.code.interview.dto.response.InterviewScoreTrendResponse;
 import gravit.code.interview.dto.response.InterviewSessionHistoryResponse;
+import gravit.code.interview.dto.response.InterviewSessionHistoryPageResponse;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
 import gravit.code.interview.repository.InterviewSessionTopicRepository;
@@ -35,6 +35,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -109,7 +110,7 @@ class InterviewFeedbackQueryServiceIntegrationTest {
             saveCompletedSession(OTHER_USER_ID, 1, daysAfter(5), 70, 30);
 
             // when
-            SliceResponse<InterviewSessionHistoryResponse> result = interviewFeedbackQueryService.getSessionHistory(
+            InterviewSessionHistoryPageResponse result = interviewFeedbackQueryService.getSessionHistory(
                     USER_ID,
                     0,
                     InterviewSessionSort.LATEST
@@ -118,6 +119,7 @@ class InterviewFeedbackQueryServiceIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result.hasNextPage()).isFalse();
+                softly.assertThat(result.totalPages()).isEqualTo(1);
                 softly.assertThat(result.contents()).hasSize(2);
 
                 InterviewSessionHistoryResponse latest = result.contents().get(0);
@@ -152,7 +154,7 @@ class InterviewFeedbackQueryServiceIntegrationTest {
             InterviewSession second = saveCompletedSession(USER_ID, 2, daysAfter(2), 47, 18);
 
             // when
-            SliceResponse<InterviewSessionHistoryResponse> result = interviewFeedbackQueryService.getSessionHistory(
+            InterviewSessionHistoryPageResponse result = interviewFeedbackQueryService.getSessionHistory(
                     USER_ID,
                     0,
                     InterviewSessionSort.OLDEST
@@ -164,19 +166,19 @@ class InterviewFeedbackQueryServiceIntegrationTest {
         }
 
         @Test
-        void 완료_세션이_10건을_넘으면_다음_페이지가_있다() {
+        void 완료_세션이_10건을_넘으면_다음_페이지가_있고_전체_페이지_수는_2다() {
             // given
             for (int attempt = 1; attempt <= 11; attempt++) {
                 saveCompletedSession(USER_ID, attempt, daysAfter(attempt), 40, 18);
             }
 
             // when
-            SliceResponse<InterviewSessionHistoryResponse> firstPage = interviewFeedbackQueryService.getSessionHistory(
+            InterviewSessionHistoryPageResponse firstPage = interviewFeedbackQueryService.getSessionHistory(
                     USER_ID,
                     0,
                     InterviewSessionSort.LATEST
             );
-            SliceResponse<InterviewSessionHistoryResponse> secondPage = interviewFeedbackQueryService.getSessionHistory(
+            InterviewSessionHistoryPageResponse secondPage = interviewFeedbackQueryService.getSessionHistory(
                     USER_ID,
                     1,
                     InterviewSessionSort.LATEST
@@ -185,9 +187,11 @@ class InterviewFeedbackQueryServiceIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(firstPage.hasNextPage()).isTrue();
+                softly.assertThat(firstPage.totalPages()).isEqualTo(2);
                 softly.assertThat(firstPage.contents()).hasSize(10);
                 softly.assertThat(firstPage.contents().get(0).sequence()).isEqualTo(11L);
                 softly.assertThat(secondPage.hasNextPage()).isFalse();
+                softly.assertThat(secondPage.totalPages()).isEqualTo(2);
                 softly.assertThat(secondPage.contents()).hasSize(1);
                 softly.assertThat(secondPage.contents().get(0).sequence()).isEqualTo(1L);
             });
@@ -199,7 +203,7 @@ class InterviewFeedbackQueryServiceIntegrationTest {
             saveCompletedSession(USER_ID, 1, daysAfter(1), 40, 18);
 
             // when
-            SliceResponse<InterviewSessionHistoryResponse> result = interviewFeedbackQueryService.getSessionHistory(
+            InterviewSessionHistoryPageResponse result = interviewFeedbackQueryService.getSessionHistory(
                     USER_ID,
                     -1,
                     InterviewSessionSort.LATEST
@@ -210,17 +214,20 @@ class InterviewFeedbackQueryServiceIntegrationTest {
         }
 
         @Test
-        void 완료_세션이_없으면_빈_목록이다() {
+        void 완료_세션이_없으면_빈_목록이고_전체_페이지_수는_0이다() {
             // when
-            SliceResponse<InterviewSessionHistoryResponse> result = interviewFeedbackQueryService.getSessionHistory(
+            InterviewSessionHistoryPageResponse result = interviewFeedbackQueryService.getSessionHistory(
                     USER_ID,
                     0,
                     InterviewSessionSort.LATEST
             );
 
             // then
-            assertThat(result.hasNextPage()).isFalse();
-            assertThat(result.contents()).isEmpty();
+            assertSoftly(softly -> {
+                softly.assertThat(result.hasNextPage()).isFalse();
+                softly.assertThat(result.totalPages()).isZero();
+                softly.assertThat(result.contents()).isEmpty();
+            });
         }
     }
 
@@ -366,6 +373,9 @@ class InterviewFeedbackQueryServiceIntegrationTest {
     @DisplayName("문항별 상세를 조회할 때")
     class GetSessionAnswers {
 
+        private static final String AUDIO_KEY_FIELD = "audioKey";
+        private static final String AUDIO_KEY_FORMAT = "interview/%d/1.m4a";
+
         private InterviewSession gradedSession;
         private InterviewSession inProgressSession;
         private InterviewSession otherUserSession;
@@ -395,6 +405,7 @@ class InterviewFeedbackQueryServiceIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result.sessionId()).isEqualTo(gradedSession.getId());
+                softly.assertThat(result.startedAt()).isEqualTo(daysAfter(1));
                 softly.assertThat(result.answers()).extracting(InterviewAnswerDetailResponse::displayOrder)
                         .containsExactly(1, 2, 3, 4, 5);
 
@@ -402,7 +413,7 @@ class InterviewFeedbackQueryServiceIntegrationTest {
                 softly.assertThat(first.topic().topic()).isEqualTo(InterviewTopic.DATA_STRUCTURE);
                 softly.assertThat(first.questionContent()).isEqualTo("자료구조 질문");
                 softly.assertThat(first.answerContent()).isEqualTo("답변 1");
-                softly.assertThat(first.audioKey()).isNull();
+                softly.assertThat(first.audioUrl()).isNull();
                 softly.assertThat(first.modelAnswer()).isEqualTo("자료구조 모범답안");
                 softly.assertThat(first.concepts()).extracting(InterviewConceptResponse::name)
                         .containsExactly("필수 개념", "보조 개념");
@@ -417,6 +428,29 @@ class InterviewFeedbackQueryServiceIntegrationTest {
                 softly.assertThat(first.clarityMaxScore()).isEqualTo(3);
 
                 softly.assertThat(result.answers().get(1).concepts()).isEmpty();
+            });
+        }
+
+        @Test
+        void 음성_키가_있는_문항은_재생_URL을_발급한다() {
+            // given
+            String audioKey = AUDIO_KEY_FORMAT.formatted(gradedSession.getId());
+            InterviewAnswer answer = interviewAnswerRepository.findBySessionIdAndDisplayOrder(gradedSession.getId(), 1)
+                    .orElseThrow();
+            ReflectionTestUtils.setField(answer, AUDIO_KEY_FIELD, audioKey);
+            interviewAnswerRepository.save(answer);
+
+            // when
+            InterviewSessionAnswersResponse result = interviewFeedbackQueryService.getSessionAnswers(
+                    USER_ID,
+                    gradedSession.getId()
+            );
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.answers().get(0).audioUrl()).contains(audioKey);
+                softly.assertThat(result.answers().get(0).audioUrl()).contains("X-Amz-Signature=");
+                softly.assertThat(result.answers().get(1).audioUrl()).isNull();
             });
         }
 
