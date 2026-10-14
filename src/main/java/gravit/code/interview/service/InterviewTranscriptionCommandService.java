@@ -18,6 +18,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_EMPTY;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_NOT_UPLOADED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
@@ -59,8 +60,11 @@ public class InterviewTranscriptionCommandService {
         String audioKey = request.audioKey();
         interviewAudioKeyPolicy.validate(sessionId, request.displayOrder(), audioKey);
 
-        if (!interviewAudioStorage.exists(audioKey)) {
-            throw new RestApiException(INTERVIEW_AUDIO_NOT_UPLOADED);
+        long audioContentLength = interviewAudioStorage.findContentLength(audioKey)
+                .orElseThrow(() -> new RestApiException(INTERVIEW_AUDIO_NOT_UPLOADED));
+
+        if (audioContentLength == 0) {
+            throw new RestApiException(INTERVIEW_AUDIO_EMPTY);
         }
 
         InterviewAnswer answer = interviewAnswerRepository.findBySessionIdAndDisplayOrder(sessionId, request.displayOrder())

@@ -312,6 +312,7 @@ public interface InterviewSessionControllerDocs {
                     업로드를 마친 문항의 음성을 텍스트로 변환하도록 요청합니다.<br>
                     음성 업로드(PUT)가 성공한 직후 호출하고, 변환은 백그라운드에서 진행됩니다.<br>
                     결과는 음성 변환 조회 API로 확인합니다.<br>
+                    업로드된 파일이 0바이트면 변환을 접수하지 않고 거부합니다.<br>
                     변환에 실패(FAILED)했거나 요청 후 5분이 지나도 변환 중(PENDING)이면 다시 요청할 수 있습니다.<br>
                     🔐 <strong>Jwt 필요</strong>
                     """
@@ -343,6 +344,10 @@ public interface InterviewSessionControllerDocs {
                                     @ExampleObject(
                                             name = "음성 미업로드",
                                             value = "{\"error\": \"INTERVIEW_4021\", \"message\": \"음성 파일이 업로드되지 않았습니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "빈 음성 파일",
+                                            value = "{\"error\": \"INTERVIEW_4024\", \"message\": \"업로드된 음성 파일이 비어 있습니다.\"}"
                                     )
                             }
                     )
