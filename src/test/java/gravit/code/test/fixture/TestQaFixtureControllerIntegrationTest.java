@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.ACTIVE_SEASON_NOT_FOUND;
 import static gravit.code.global.exception.domain.CustomErrorCode.QA_FIXTURE_PREREQUISITE_MISSING;
@@ -84,6 +85,19 @@ class TestQaFixtureControllerIntegrationTest {
             INSERT INTO season (season_key, status, starts_at, ends_at, tz)
             VALUES ('QA-ACTIVE', 'ACTIVE', now() - INTERVAL '10 days', now() + INTERVAL '110 days', 'Asia/Seoul')
             """;
+    private static final String USER_REFERENCE_COLUMNS_SQL = """
+            SELECT table_name, column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND column_name IN ('user_id', 'follower_id', 'followee_id', 'actor_id', 'author_id', 'admin_id')
+            ORDER BY table_name, column_name
+            """;
+    private static final Map<String, String> ORPHAN_ROW_SQLS = Map.of(
+            "interview_session_topic", "SELECT count(*) FROM interview_session_topic t WHERE NOT EXISTS (SELECT 1 FROM interview_session s WHERE s.id = t.session_id)",
+            "interview_answer", "SELECT count(*) FROM interview_answer a WHERE NOT EXISTS (SELECT 1 FROM interview_session s WHERE s.id = a.session_id)",
+            "interview_feedback", "SELECT count(*) FROM interview_feedback f WHERE NOT EXISTS (SELECT 1 FROM interview_answer a WHERE a.id = f.answer_id)",
+            "user_feed", "SELECT count(*) FROM user_feed uf WHERE NOT EXISTS (SELECT 1 FROM social_feed sf WHERE sf.id = uf.feed_id)"
+    );
 
     @Autowired
     private MockMvc mockMvc;
@@ -382,6 +396,38 @@ class TestQaFixtureControllerIntegrationTest {
                 softly.assertThat(redisTemplate.opsForZSet().score(CLEAN_DUE_KEY, String.valueOf(previousWithdrawing))).isNull();
                 softly.assertThat(redisTemplate.opsForZSet().score(CLEAN_DUE_KEY, String.valueOf(유저_id(AUTO, "withdrawing")))).isNotNull();
                 softly.assertThat(랭킹_대상(AUTO)).hasSize(SET_USER_COUNT - 2);
+            });
+        }
+
+        @Test
+        void 이전_세트_userId를_참조하는_행과_하위_고아_행이_남지_않는다() throws Exception {
+            // given
+            마이그레이션과_기준_데이터를_적재한다();
+            재적재한다(AUTO);
+            jdbcTemplate.update(
+                    "INSERT INTO user_daily_activity (user_id, activity_date) VALUES (?, current_date)",
+                    유저_id(AUTO, "fresh")
+            );
+            String previousUserIds = 세트_유저_id(AUTO).stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(", "));
+
+            // when
+            재적재한다(AUTO);
+
+            // then
+            List<Map<String, Object>> userReferenceColumns = jdbcTemplate.queryForList(USER_REFERENCE_COLUMNS_SQL);
+
+            assertSoftly(softly -> {
+                softly.assertThat(userReferenceColumns).isNotEmpty();
+                userReferenceColumns.forEach(column -> {
+                    String table = (String) column.get("table_name");
+                    String columnName = (String) column.get("column_name");
+                    softly.assertThat(건수("SELECT count(*) FROM %s WHERE %s IN (%s)".formatted(table, columnName, previousUserIds)))
+                            .as(table + "." + columnName)
+                            .isZero();
+                });
+                ORPHAN_ROW_SQLS.forEach((table, sql) -> softly.assertThat(건수(sql)).as(table + " 고아 행").isZero());
             });
         }
     }
