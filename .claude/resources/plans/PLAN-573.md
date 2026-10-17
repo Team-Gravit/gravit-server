@@ -259,6 +259,8 @@ POST /api/v1/test/fixtures/qa/reload?set=auto
 - `TestQaFixtureControllerIntegrationTest`: 마이그레이션과 콘텐츠 적재를 `@BeforeEach`가 아니라 성공 경로 테스트의 given(`마이그레이션과_기준_데이터를_적재한다()`)에서 한다. 실패 경로 4건은 `DatabaseClearExtension`이 비운 스키마에서 바로 검증한다 — 이유: 실패 경로는 콘텐츠가 필요 없거나(400, 409 락) 오히려 없어야 해서(404 시즌, 409 기준 데이터) 테스트마다 수 초씩 드는 적재를 건너뛴다
 - `QaPersona`: 설명에 providerId를 넣을 때 `String.formatted` 대신 `{providerId}` 문자열 치환을 쓴다 — 이유: `league-edge` 설명의 "28% 이상"이 형식 지정자로 읽혀 `UnknownFormatConversionException`(500)이 났다. 설명 문구에 `%`가 들어가도 깨지지 않게 한다
 - `07_inquiry.sql`: 문의 제목을 `[QA] ...` 대신 `QA ...`로 한다 — 이유: 답변 알림 문구가 `[{제목}]에 답변이 달렸어요!`라 `[[QA] ...]`로 겹친다
+- `TestQaFixtureControllerIntegrationTest`: 페르소나 상태 검증에 "오늘 제출 시각이 KST 벽시계"인지 확인하는 단언을 추가한다 — 이유: CI는 JVM 기본 시간대가 UTC일 수 있어, `SET LOCAL TIME ZONE`이 스크립트와 같은 트랜잭션에 적용되지 않으면 날짜가 9시간 어긋나는 것을 잡는다. `-Duser.timezone=UTC`로도 통과를 확인했다
+- `TestQaFixtureControllerIntegrationTest`: 가드 테스트 `이전_세트_userId를_참조하는_행과_하위_고아_행이_남지_않는다`를 추가한다 — 이유: 리뷰 요청. 유저 참조 컬럼을 `information_schema`에서 동적으로 모아 이전 세트 userId 참조 0건을 확인하고, FK가 없는 하위 테이블(면접 세션 주제, 답안, 피드백, `user_feed`)의 고아 행 0건을 확인한다. QA 접속으로 생기는 `user_daily_activity` 1건을 given에 넣어 그 삭제도 검증한다. 삭제를 빼면 이 테스트가 실패하는 것을 확인했다
 
 ## 조사 중 발견 (이번 범위 밖, 보고만)
 1. `TestScenarioController.java:80-84`: `new LessonSubmissionSaveRequest(lessonId, FULL_ACCURACY, LEARNING_TIME_SECONDS)`의 인자 순서가 record `(lessonId, learningTime, accuracy)`와 어긋난다. 그래서 정확도 60, 학습 시간 100초로 제출된다
