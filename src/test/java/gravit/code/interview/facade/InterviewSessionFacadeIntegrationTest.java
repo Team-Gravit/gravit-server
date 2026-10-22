@@ -24,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -78,6 +79,12 @@ class InterviewSessionFacadeIntegrationTest {
         for (InterviewTopic topic : topics) {
             interviewQuestionRepository.saveAll(문제_여러건(topic, difficulty, countPerTopic));
         }
+    }
+
+    private void 제출한_것으로_만든다(long sessionId) {
+        InterviewSession session = interviewSessionRepository.findById(sessionId).orElseThrow();
+        ReflectionTestUtils.setField(session, "status", InterviewSessionStatus.GRADING);
+        interviewSessionRepository.save(session);
     }
 
     private List<InterviewAnswer> 답안들(long sessionId) {
@@ -335,6 +342,7 @@ class InterviewSessionFacadeIntegrationTest {
             InterviewSessionCreateRequest request = 생성_요청_공통CS(
                     InterviewDifficulty.NORMAL, InterviewTopic.ALGORITHM);
             InterviewSessionCreateResponse first = interviewSessionFacade.create(USER_ID, request);
+            제출한_것으로_만든다(first.sessionId());
 
             // when
             InterviewSessionCreateResponse second = interviewSessionFacade.create(USER_ID, request);
@@ -344,12 +352,35 @@ class InterviewSessionFacadeIntegrationTest {
         }
 
         @Test
+        void 이탈한_세션의_문제는_다음_출제에서_본_문제로_치지_않는다() {
+            // given
+            문제를_채운다(InterviewDifficulty.NORMAL, ENOUGH_QUESTIONS, InterviewTopic.ALGORITHM);
+            InterviewSessionCreateRequest request = 생성_요청_공통CS(
+                    InterviewDifficulty.NORMAL, InterviewTopic.ALGORITHM);
+            InterviewSessionCreateResponse submitted = interviewSessionFacade.create(USER_ID, request);
+            제출한_것으로_만든다(submitted.sessionId());
+            InterviewSessionCreateResponse left = interviewSessionFacade.create(USER_ID, request);
+
+            // when
+            InterviewSessionCreateResponse next = interviewSessionFacade.create(USER_ID, request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(interviewSessionRepository.findById(left.sessionId()).orElseThrow().getStatus())
+                        .isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(출제_문제들(next.sessionId()))
+                        .doesNotContainAnyElementsOf(출제_문제들(submitted.sessionId()));
+            });
+        }
+
+        @Test
         void 취소한_세션의_문제는_안_본_문제로_돌아가_먼저_출제된다() {
             // given
             문제를_채운다(InterviewDifficulty.NORMAL, ENOUGH_QUESTIONS, InterviewTopic.ALGORITHM);
             InterviewSessionCreateRequest request = 생성_요청_공통CS(
                     InterviewDifficulty.NORMAL, InterviewTopic.ALGORITHM);
-            interviewSessionFacade.create(USER_ID, request);
+            InterviewSessionCreateResponse submitted = interviewSessionFacade.create(USER_ID, request);
+            제출한_것으로_만든다(submitted.sessionId());
             InterviewSessionCreateResponse abandoned = interviewSessionFacade.create(USER_ID, request);
             interviewSessionCommandService.abandon(USER_ID, abandoned.sessionId());
 
