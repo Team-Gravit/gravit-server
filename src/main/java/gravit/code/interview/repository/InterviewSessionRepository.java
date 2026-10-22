@@ -3,6 +3,7 @@ package gravit.code.interview.repository;
 import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewSession;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.dto.internal.InterviewSessionAverageDto;
 import org.springframework.data.domain.Pageable;
@@ -75,5 +76,18 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
     List<Long> findIdsByUserIdAndInputType(
             @Param("userId") long userId,
             @Param("inputType") InterviewInputType inputType
+    );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            UPDATE InterviewSession s
+            SET s.status = :abandonedStatus, s.endedAt = :endedAt, s.updatedAt = :endedAt
+            WHERE s.userId = :userId AND s.status = :inProgressStatus
+    """)
+    int abandonInProgressByUserId(
+            @Param("userId") long userId,
+            @Param("inProgressStatus") InterviewSessionStatus inProgressStatus,
+            @Param("abandonedStatus") InterviewSessionStatus abandonedStatus,
+            @Param("endedAt") LocalDateTime endedAt
     );
 }

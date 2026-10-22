@@ -53,6 +53,8 @@ public class InterviewSessionQueryService {
             throw new RestApiException(INTERVIEW_SESSION_ACCESS_DENIED);
         }
 
+        session.validateInProgress();
+
         List<InterviewSessionQuestionDto> questions = interviewAnswerRepository.findQuestionsBySessionId(sessionId);
 
         List<InterviewSessionQuestionResponse> responses = questions.stream()
