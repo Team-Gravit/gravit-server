@@ -4,6 +4,7 @@ import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.global.event.badge.MissionCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Profile("!prod")
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
