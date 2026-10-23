@@ -203,6 +203,11 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_AUDIO_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5002", "면접 음성 파일 삭제에 실패했습니다."),
     INTERVIEW_TRANSCRIPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5003", "면접 답변 음성 변환 요청이 실패했습니다."),
 
+    // QA Fixture
+    QA_FIXTURE_SET_INVALID(BAD_REQUEST, "QA_FIXTURE_4001", "지원하지 않는 QA 페르소나 세트입니다."),
+    QA_FIXTURE_RELOAD_IN_PROGRESS(CONFLICT, "QA_FIXTURE_4091", "같은 세트의 재적재가 진행 중입니다."),
+    QA_FIXTURE_PREREQUISITE_MISSING(CONFLICT, "QA_FIXTURE_4092", "QA 페르소나 적재에 필요한 기준 데이터가 없습니다."),
+
     // Global
     INVALID_PARAMS(BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),
     DATABASE_EXCEPTION(BAD_REQUEST, "DB_4001", "데이터베이스 작업 중 예외 발생"),
