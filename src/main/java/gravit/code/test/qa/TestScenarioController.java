@@ -13,6 +13,7 @@ import gravit.code.unit.repository.UnitRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Profile("!prod")
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
