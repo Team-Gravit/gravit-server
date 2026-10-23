@@ -19,8 +19,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ABANDONED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ALREADY_SUBMITTED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_GRADING;
-import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID;
 
 @Getter
@@ -184,6 +185,10 @@ public class InterviewSession extends BaseEntity {
         return status == InterviewSessionStatus.GRADING;
     }
 
+    public boolean isAbandoned() {
+        return status == InterviewSessionStatus.ABANDONED;
+    }
+
     public boolean isTextInput() {
         return inputType == InterviewInputType.TEXT;
     }
@@ -221,9 +226,12 @@ public class InterviewSession extends BaseEntity {
         this.endedAt = endedAt;
     }
 
-    private void validateInProgress() {
+    public void validateInProgress() {
+        if (isAbandoned()) {
+            throw new RestApiException(INTERVIEW_SESSION_ABANDONED);
+        }
         if (!isInProgress()) {
-            throw new RestApiException(INTERVIEW_SESSION_NOT_IN_PROGRESS);
+            throw new RestApiException(INTERVIEW_SESSION_ALREADY_SUBMITTED);
         }
     }
 
