@@ -5,7 +5,6 @@ import gravit.code.interview.domain.InterviewSession;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.dto.internal.InterviewSessionAverageDto;
 import org.springframework.data.domain.Pageable;
@@ -89,16 +88,14 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
             @Param("inputType") InterviewInputType inputType
     );
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
-            UPDATE InterviewSession s
-            SET s.status = :abandonedStatus, s.endedAt = :endedAt, s.updatedAt = :endedAt
-            WHERE s.userId = :userId AND s.status = :inProgressStatus
+            SELECT s
+            FROM InterviewSession s
+            WHERE s.userId = :userId AND s.status = :status
     """)
-    int abandonInProgressByUserId(
+    List<InterviewSession> findAllByUserIdAndStatusForUpdate(
             @Param("userId") long userId,
-            @Param("inProgressStatus") InterviewSessionStatus inProgressStatus,
-            @Param("abandonedStatus") InterviewSessionStatus abandonedStatus,
-            @Param("endedAt") LocalDateTime endedAt
+            @Param("status") InterviewSessionStatus status
     );
 }

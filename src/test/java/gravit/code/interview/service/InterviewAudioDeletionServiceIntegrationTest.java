@@ -270,4 +270,32 @@ class InterviewAudioDeletionServiceIntegrationTest {
             verifyNoInteractions(s3Client, retryEventPublisher);
         }
     }
+
+    @Nested
+    @DisplayName("세션 음성 삭제를 큐에 적재할 때")
+    class QueueAllBySessionIds {
+
+        @Test
+        void 세션마다_삭제_큐에_적재하고_S3는_바로_호출하지_않는다() {
+            // when
+            interviewAudioDeletionService.queueAllBySessionIds(List.of(SESSION_ID, OTHER_SESSION_ID));
+
+            // then
+            verify(retryEventPublisher).publish(RETRY_QUEUE_KEY, 재시도_페이로드(SESSION_ID));
+            verify(retryEventPublisher).publish(RETRY_QUEUE_KEY, 재시도_페이로드(OTHER_SESSION_ID));
+            verifyNoInteractions(s3Client);
+        }
+
+        @Test
+        void 적재가_실패해도_예외_없이_다음_세션을_적재한다() {
+            // given
+            doThrow(new RuntimeException(PUBLISH_ERROR_MESSAGE))
+                    .when(retryEventPublisher).publish(RETRY_QUEUE_KEY, 재시도_페이로드(SESSION_ID));
+
+            // when & then
+            assertThatCode(() -> interviewAudioDeletionService.queueAllBySessionIds(List.of(SESSION_ID, OTHER_SESSION_ID)))
+                    .doesNotThrowAnyException();
+            verify(retryEventPublisher).publish(RETRY_QUEUE_KEY, 재시도_페이로드(OTHER_SESSION_ID));
+        }
+    }
 }

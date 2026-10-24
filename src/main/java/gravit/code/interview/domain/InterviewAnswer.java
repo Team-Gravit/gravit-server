@@ -133,8 +133,12 @@ public class InterviewAnswer extends BaseEntity {
         this.answeredAt = answeredAt;
     }
 
+    public boolean isTranscriptionPending() {
+        return transcriptionStatus == InterviewTranscriptionStatus.PENDING;
+    }
+
     public boolean isTranscriptionInProgress(LocalDateTime now) {
-        return transcriptionStatus == InterviewTranscriptionStatus.PENDING
+        return isTranscriptionPending()
                 && now.isBefore(transcriptionRequestedAt.plus(TRANSCRIPTION_PENDING_TIMEOUT));
     }
 
@@ -168,6 +172,15 @@ public class InterviewAnswer extends BaseEntity {
         }
 
         this.transcriptionStatus = InterviewTranscriptionStatus.FAILED;
+    }
+
+    public void discardVoice() {
+        validatePending();
+
+        this.audioKey = null;
+        this.transcript = null;
+        this.transcriptionStatus = null;
+        this.transcriptionRequestedAt = null;
     }
 
     private void validatePending() {
