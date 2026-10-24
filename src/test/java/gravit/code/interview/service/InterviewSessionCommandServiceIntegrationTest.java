@@ -8,6 +8,7 @@ import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.domain.InterviewTranscriptionStatus;
 import gravit.code.interview.dto.event.InterviewCompletedEvent;
+import gravit.code.interview.dto.event.InterviewSessionAbandonedEvent;
 import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
@@ -160,6 +161,22 @@ class InterviewSessionCommandServiceIntegrationTest {
 
     private List<InterviewAnswer> 답안들(long sessionId) {
         return interviewAnswerRepository.findAllBySessionIdOrderByDisplayOrderAsc(sessionId);
+    }
+
+    private void 변환을_요청해_둔다(InterviewAnswer answer) {
+        answer.requestTranscription(
+                음성_키(answer.getSessionId(), answer.getDisplayOrder()),
+                LocalDateTime.now(clock).minusMinutes(IN_PROGRESS_ELAPSED_MINUTES)
+        );
+    }
+
+    private void 음성과_변환_결과가_비어_있다(long sessionId) {
+        assertThat(답안들(sessionId)).allSatisfy(answer -> {
+            assertThat(answer.getAudioKey()).isNull();
+            assertThat(answer.getTranscript()).isNull();
+            assertThat(answer.getTranscriptionStatus()).isNull();
+            assertThat(answer.getTranscriptionRequestedAt()).isNull();
+        });
     }
 
     private void 채점_완료를_기다린다(long sessionId) {
@@ -685,8 +702,40 @@ class InterviewSessionCommandServiceIntegrationTest {
     }
 
     @Nested
+    @RecordApplicationEvents
     @DisplayName("세션을 중단할 때")
     class Abandon {
+
+        @Test
+        void 음성_세션이면_답안의_음성_키와_변환_결과를_비우고_정리_이벤트를_발행한다(ApplicationEvents events) {
+            // given
+            InterviewSession session = 준비된_세션(InterviewInputType.VOICE);
+            List<InterviewAnswer> answers = 답안들(session.getId());
+            변환을_요청해_둔다(answers.get(0));
+            answers.get(0).completeTranscription(TRANSCRIPT);
+            변환을_요청해_둔다(answers.get(1));
+            interviewAnswerRepository.saveAll(answers);
+
+            // when
+            interviewSessionCommandService.abandon(USER_ID, session.getId());
+
+            // then
+            음성과_변환_결과가_비어_있다(session.getId());
+            assertThat(events.stream(InterviewSessionAbandonedEvent.class))
+                    .containsExactly(InterviewSessionAbandonedEvent.from(List.of(session.getId())));
+        }
+
+        @Test
+        void 텍스트_세션이면_정리_이벤트를_발행하지_않는다(ApplicationEvents events) {
+            // given
+            InterviewSession session = 준비된_세션(InterviewInputType.TEXT);
+
+            // when
+            interviewSessionCommandService.abandon(USER_ID, session.getId());
+
+            // then
+            assertThat(events.stream(InterviewSessionAbandonedEvent.class)).isEmpty();
+        }
 
         @Test
         void 진행_중인_세션을_취소로_바꾸고_종료_시각을_남긴다() {
@@ -767,6 +816,7 @@ class InterviewSessionCommandServiceIntegrationTest {
     }
 
     @Nested
+    @RecordApplicationEvents
     @DisplayName("세션을 생성할 때")
     class Create {
 
@@ -815,6 +865,37 @@ class InterviewSessionCommandServiceIntegrationTest {
                 softly.assertThat(세션(second.getId()).getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
                 softly.assertThat(진행_중_세션_수(USER_ID)).isEqualTo(1L);
             });
+        }
+
+        @Test
+        void 취소한_음성_세션만_답안의_음성과_변환_결과를_비우고_정리_이벤트를_발행한다(ApplicationEvents events) {
+            // given
+            interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.TEXT));
+            InterviewSession voiceSession = 준비된_세션(InterviewInputType.VOICE);
+            List<InterviewAnswer> answers = 답안들(voiceSession.getId());
+            변환을_요청해_둔다(answers.get(0));
+            answers.get(0).completeTranscription(TRANSCRIPT);
+            interviewAnswerRepository.saveAll(answers);
+
+            // when
+            interviewSessionCommandService.create(USER_ID, 생성_명령());
+
+            // then
+            음성과_변환_결과가_비어_있다(voiceSession.getId());
+            assertThat(events.stream(InterviewSessionAbandonedEvent.class))
+                    .containsExactly(InterviewSessionAbandonedEvent.from(List.of(voiceSession.getId())));
+        }
+
+        @Test
+        void 취소할_음성_세션이_없으면_정리_이벤트를_발행하지_않는다(ApplicationEvents events) {
+            // given
+            interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.TEXT));
+
+            // when
+            interviewSessionCommandService.create(USER_ID, 생성_명령());
+
+            // then
+            assertThat(events.stream(InterviewSessionAbandonedEvent.class)).isEmpty();
         }
 
         @Test

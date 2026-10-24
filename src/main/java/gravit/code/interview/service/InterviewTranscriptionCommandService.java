@@ -86,7 +86,7 @@ public class InterviewTranscriptionCommandService {
     }
 
     private InterviewAnswer findAnswer(long answerId) {
-        return interviewAnswerRepository.findById(answerId)
+        return interviewAnswerRepository.findByIdForUpdate(answerId)
                 .orElseThrow(() -> new RestApiException(INTERVIEW_ANSWER_NOT_FOUND));
     }
 }

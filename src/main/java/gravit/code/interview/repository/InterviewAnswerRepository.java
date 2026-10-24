@@ -4,7 +4,9 @@ import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.dto.internal.InterviewQuestionHistoryDto;
 import gravit.code.interview.dto.internal.InterviewSessionQuestionDto;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,6 +22,22 @@ public interface InterviewAnswerRepository extends JpaRepository<InterviewAnswer
             long sessionId,
             int displayOrder
     );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT a
+            FROM InterviewAnswer a
+            WHERE a.id = :answerId
+    """)
+    Optional<InterviewAnswer> findByIdForUpdate(@Param("answerId") long answerId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT a
+            FROM InterviewAnswer a
+            WHERE a.sessionId IN :sessionIds
+    """)
+    List<InterviewAnswer> findAllBySessionIdInForUpdate(@Param("sessionIds") Collection<Long> sessionIds);
 
     @Query("""
             SELECT new gravit.code.interview.dto.internal.InterviewSessionQuestionDto(a.displayOrder, q.content, q.audioKey)

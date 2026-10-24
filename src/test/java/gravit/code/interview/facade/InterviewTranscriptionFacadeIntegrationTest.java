@@ -7,6 +7,7 @@ import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewTranscriptionStatus;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
+import gravit.code.interview.service.InterviewSessionCommandService;
 import gravit.code.interviewQuestion.domain.InterviewConceptType;
 import gravit.code.interviewQuestion.domain.InterviewQuestion;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
@@ -69,6 +70,9 @@ class InterviewTranscriptionFacadeIntegrationTest {
 
     @Autowired
     private InterviewTranscriptionFacade interviewTranscriptionFacade;
+
+    @Autowired
+    private InterviewSessionCommandService interviewSessionCommandService;
 
     @Autowired
     private InterviewSessionRepository interviewSessionRepository;
@@ -268,6 +272,48 @@ class InterviewTranscriptionFacadeIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(result.getTranscriptionStatus()).isEqualTo(InterviewTranscriptionStatus.COMPLETED);
                 softly.assertThat(result.getTranscript()).isEqualTo(PREVIOUS_TRANSCRIPT);
+            });
+        }
+
+        @Test
+        void 세션_취소로_변환_요청이_비워진_답안이면_음성을_받지_않고_변환을_호출하지_않는다() {
+            // given
+            InterviewAnswer answer = 변환_중_답안_저장(개념이_있는_문제());
+            String audioKey = 키(answer);
+            answer.discardVoice();
+            interviewAnswerRepository.save(answer);
+
+            // when
+            interviewTranscriptionFacade.transcribe(answer.getId(), audioKey);
+
+            // then
+            InterviewAnswer result = 답안(answer.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(result.getTranscriptionStatus()).isNull();
+                softly.assertThat(result.getTranscript()).isNull();
+            });
+            verify(s3Client, never()).getObjectAsBytes(any(GetObjectRequest.class));
+            verify(transcriptionModel, never()).call(any(AudioTranscriptionPrompt.class));
+        }
+
+        @Test
+        void 변환하는_동안_세션이_취소되면_늦게_도착한_결과를_버린다() {
+            // given
+            InterviewAnswer answer = 변환_중_답안_저장(개념이_있는_문제());
+            when(transcriptionModel.call(any(AudioTranscriptionPrompt.class))).thenAnswer(invocation -> {
+                interviewSessionCommandService.abandon(USER_ID, answer.getSessionId());
+                return 변환_응답(TRANSCRIPT);
+            });
+
+            // when
+            interviewTranscriptionFacade.transcribe(answer.getId(), 키(answer));
+
+            // then
+            InterviewAnswer result = 답안(answer.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(result.getTranscriptionStatus()).isNull();
+                softly.assertThat(result.getTranscript()).isNull();
+                softly.assertThat(result.getAudioKey()).isNull();
             });
         }
     }

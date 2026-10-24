@@ -2,8 +2,9 @@ package gravit.code.interview.repository;
 
 import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewSession;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Lock;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.dto.internal.InterviewSessionAverageDto;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface InterviewSessionRepository extends JpaRepository<InterviewSession, Long> {
 
@@ -78,16 +80,22 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
             @Param("inputType") InterviewInputType inputType
     );
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
-            UPDATE InterviewSession s
-            SET s.status = :abandonedStatus, s.endedAt = :endedAt, s.updatedAt = :endedAt
-            WHERE s.userId = :userId AND s.status = :inProgressStatus
+            SELECT s
+            FROM InterviewSession s
+            WHERE s.id = :sessionId
     """)
-    int abandonInProgressByUserId(
+    Optional<InterviewSession> findByIdForUpdate(@Param("sessionId") long sessionId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT s
+            FROM InterviewSession s
+            WHERE s.userId = :userId AND s.status = :status
+    """)
+    List<InterviewSession> findAllByUserIdAndStatusForUpdate(
             @Param("userId") long userId,
-            @Param("inProgressStatus") InterviewSessionStatus inProgressStatus,
-            @Param("abandonedStatus") InterviewSessionStatus abandonedStatus,
-            @Param("endedAt") LocalDateTime endedAt
+            @Param("status") InterviewSessionStatus status
     );
 }
