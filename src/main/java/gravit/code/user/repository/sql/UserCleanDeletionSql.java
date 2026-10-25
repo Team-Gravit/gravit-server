@@ -18,6 +18,9 @@ public class UserCleanDeletionSql {
               d_fcm_token AS (
                 DELETE FROM fcm_token WHERE user_id = :id
               ),
+              d_apple_credential AS (
+                DELETE FROM apple_credential WHERE user_id = :id
+              ),
               d_social_feed AS (
                 DELETE FROM social_feed WHERE actor_id = :id
               ),

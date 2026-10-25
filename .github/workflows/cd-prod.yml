@@ -51,6 +51,12 @@ jobs:
           oauth.android.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           oauth.android.kakao.client-id: ${{ secrets.KAKAO_NATIVE_APP_KEY }}
 
+          oauth.apple.team-id: ${{ secrets.APPLE_TEAM_ID }}
+          oauth.apple.client-id: ${{ secrets.APPLE_CLIENT_ID }}
+          oauth.apple.key-id: ${{ secrets.APPLE_KEY_ID }}
+          oauth.apple.private-key: ${{ secrets.APPLE_PRIVATE_KEY }}
+          oauth.apple.token-encryption-key: ${{ secrets.PROD_APPLE_TOKEN_ENCRYPTION_KEY }}
+
           admin.bootstrap.emails: ${{ secrets.ADMIN_BOOTSTRAP_EMAILS }}
 
           spring.ai.openai.api-key: ${{ secrets.LITELLM_MASTER_KEY }}

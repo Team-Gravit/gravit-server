@@ -112,6 +112,16 @@ oauth:
     kakao:
       issuer: https://kauth.kakao.com
       client-id: ${KAKAO_NATIVE_APP_KEY}
+  apple:
+    issuer: https://appleid.apple.com
+    token-uri: https://appleid.apple.com/auth/token
+    revoke-uri: https://appleid.apple.com/auth/revoke
+    jwk-set-uri: https://appleid.apple.com/auth/keys
+    team-id: ${APPLE_TEAM_ID}
+    client-id: ${APPLE_CLIENT_ID}
+    key-id: ${APPLE_KEY_ID}
+    private-key: ${APPLE_PRIVATE_KEY}
+    token-encryption-key: ${APPLE_TOKEN_ENCRYPTION_KEY}
 
 jwt:
   secret: ${JWT_SECRET}

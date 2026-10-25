@@ -25,6 +25,7 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 | 면접 음성 버킷 | `DEV_S3_INTERVIEW_AUDIO_BUCKET` | `PROD_S3_INTERVIEW_AUDIO_BUCKET` |
 | S3 액세스 키 | `DEV_S3_ACCESS_KEY` | `PROD_S3_ACCESS_KEY` |
 | S3 시크릿 키 | `DEV_S3_SECRET_KEY` | `PROD_S3_SECRET_KEY` |
+| Apple refresh_token 암호화 키 | `DEV_APPLE_TOKEN_ENCRYPTION_KEY` | `PROD_APPLE_TOKEN_ENCRYPTION_KEY` |
 
 ### 아직 분리되지 않은 값
 
@@ -40,6 +41,9 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 
 - LLM 게이트웨이 키: `LITELLM_MASTER_KEY`. dev와 prod가 같은 서버의 LiteLLM 게이트웨이(`llm-net` 네트워크 상 `litellm-gw`)를 함께 쓰므로 값이 하나다.
   `spring.ai.openai.api-key`에 주입되며, 비어 있으면 Spring AI 스타터가 기동 자체를 거부하니 워크플로 머지 전에 반드시 등록하라.
+- Apple 로그인: `APPLE_TEAM_ID`, `APPLE_CLIENT_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY`. Apple Developer 계정 하나에서 발급한 값이고,
+  웹 Services ID 하나에 dev, prod 도메인을 모두 등록했으므로 값이 하나다. `APPLE_PRIVATE_KEY`는 .p8에서 BEGIN/END 줄과 줄바꿈을 제거한 한 줄 본문이다.
+  .p8은 한 번만 내려받을 수 있으니 원본을 별도로 보관하라.
 
 `DEV_GOOGLE_REDIRECT_URI`, `GOOGLE_REDIRECT_URI` 등 redirect-uri 계열 6종은 워크플로가 주입하지만
 런타임에서 참조하지 않는다. 실제 redirect_uri는 요청의 `dest` 파라미터로 결정된다. 이 역시 #467 범위다.
