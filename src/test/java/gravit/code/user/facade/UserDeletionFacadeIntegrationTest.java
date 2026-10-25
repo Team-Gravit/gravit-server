@@ -1,6 +1,10 @@
 package gravit.code.user.facade;
 
+import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
+import gravit.code.auth.repository.AppleCredentialRepository;
+import gravit.code.auth.service.oauth.apple.AppleCredentialService;
 import gravit.code.global.event.retry.RetryEventPublisher;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.repository.InterviewAnswerRepository;
@@ -18,6 +22,7 @@ import org.mockito.InOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.util.MultiValueMap;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
@@ -25,6 +30,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import java.util.List;
 import java.util.Map;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_SERVER_ERROR;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.권한_거부;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.삭제_성공;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.세션_접두사;
@@ -36,9 +42,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -50,9 +58,20 @@ class UserDeletionFacadeIntegrationTest {
     private static final String RETRY_QUEUE_KEY = "interview-audio-deletion-retry";
     private static final String SESSION_ID_FIELD = "sessionId";
     private static final String DB_ERROR_MESSAGE = "DB 커넥션 실패";
+    private static final String APPLE_REVOKE_URI = "https://appleid.apple.com/auth/revoke";
+    private static final String APPLE_REFRESH_TOKEN = "r.apple-refresh-token";
 
     @Autowired
     private UserDeletionFacade userDeletionFacade;
+
+    @Autowired
+    private AppleCredentialService appleCredentialService;
+
+    @Autowired
+    private AppleCredentialRepository appleCredentialRepository;
+
+    @MockitoBean
+    private OAuthHttpClientAdapter oAuthHttpClientAdapter;
 
     @Autowired
     private UserRepository userRepository;
@@ -172,6 +191,66 @@ class UserDeletionFacadeIntegrationTest {
                 softly.assertThat(cleaned).isFalse();
                 softly.assertThat(userRepository.findById(user.getId())).isPresent();
                 softly.assertThat(interviewSessionRepository.findById(session.getId())).isPresent();
+            });
+        }
+
+        @Test
+        void Apple_토큰이_남아_있으면_기록을_지운_뒤_철회하고_보관_토큰도_지운다() {
+            // given
+            User user = 탈퇴_회원(1);
+            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN);
+
+            // when
+            boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());
+
+            // then
+            InOrder inOrder = inOrder(userDeletionService, oAuthHttpClientAdapter);
+            inOrder.verify(userDeletionService).cleanUserDeletion(user.getId());
+
+            @SuppressWarnings("unchecked")
+            ArgumentCaptor<MultiValueMap<String, String>> revokeCaptor = ArgumentCaptor.forClass(MultiValueMap.class);
+            inOrder.verify(oAuthHttpClientAdapter).revokeToken(eq(APPLE_REVOKE_URI), revokeCaptor.capture());
+
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isTrue();
+                softly.assertThat(revokeCaptor.getValue().getFirst("token")).isEqualTo(APPLE_REFRESH_TOKEN);
+                softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
+            });
+        }
+
+        @Test
+        void Apple_토큰_철회가_실패해도_삭제는_완료하고_보관_토큰도_지운다() {
+            // given
+            User user = 탈퇴_회원(1);
+            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN);
+            doThrow(new RestApiException(OAUTH_SERVER_ERROR)).when(oAuthHttpClientAdapter).revokeToken(any(), any());
+
+            // when
+            boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isTrue();
+                softly.assertThat(userRepository.findByProviderId(user.getProviderId())).isEmpty();
+                softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
+            });
+        }
+
+        @Test
+        void 활성_회원이면_Apple_토큰을_철회하지_않고_남긴다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN);
+
+            // when
+            boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());
+
+            // then
+            verify(oAuthHttpClientAdapter, never()).revokeToken(any(), any());
+
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isFalse();
+                softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isPresent();
             });
         }
 
