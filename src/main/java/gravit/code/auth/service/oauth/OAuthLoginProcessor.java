@@ -2,10 +2,12 @@ package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.RefreshToken;
+import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.policy.AdminPromotionPolicy;
 import gravit.code.auth.service.AuthTokenProvider;
+import gravit.code.auth.service.oauth.apple.AppleCredentialService;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.exception.AccountSoftDeletedException;
@@ -21,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class OAuthLoginProcessor {
 
+    private final AppleCredentialService appleCredentialService;
+
     private final UserRepository userRepository;
 
     private final AuthTokenProvider authTokenProvider;
@@ -30,12 +34,8 @@ public class OAuthLoginProcessor {
     @Transactional
     public LoginResponse process(OAuthUserInfo oAuthUserInfo) {
         User user = findOrCreateUser(oAuthUserInfo);
-        boolean isOnboarded = user.isOnboarded();
 
-        AccessToken accessToken = authTokenProvider.generateAccessToken(user);
-        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
-
-        return LoginResponse.of(accessToken, refreshToken, isOnboarded, user.getRole());
+        return issueLoginResponse(user);
     }
 
     private User findOrCreateUser(OAuthUserInfo oAuthUserInfo) {
@@ -49,6 +49,18 @@ public class OAuthLoginProcessor {
                     return promoteToAdminByWhitelist(u, oAuthUserInfo);
                 })
                 .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId));
+    }
+
+    private User promoteToAdminByWhitelist(
+            User user,
+            OAuthUserInfo oAuthUserInfo
+    ) {
+        log.info("oAuthUserInfo.getEmail() : {}", oAuthUserInfo.getEmail());
+        if (user.getRole() != Role.ADMIN && adminPromotionPolicy.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {
+            user.changeRole(Role.ADMIN);
+            log.info("화이트리스트 일치: USER → ADMIN 승격 (userId={})", user.getId());
+        }
+        return user;
     }
 
     private User registerNewUser(
@@ -73,16 +85,34 @@ public class OAuthLoginProcessor {
         return user;
     }
 
-    private User promoteToAdminByWhitelist(
+    private LoginResponse issueLoginResponse(User user) {
+        boolean isOnboarded = user.isOnboarded();
+
+        AccessToken accessToken = authTokenProvider.generateAccessToken(user);
+        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
+
+        return LoginResponse.of(accessToken, refreshToken, isOnboarded, user.getRole());
+    }
+
+    @Transactional
+    public LoginResponse processApple(AppleLoginDto appleLoginDto) {
+        User user = findOrCreateUser(appleLoginDto.userInfo());
+
+        saveAppleRefreshToken(user, appleLoginDto.refreshToken());
+
+        return issueLoginResponse(user);
+    }
+
+    private void saveAppleRefreshToken(
             User user,
-            OAuthUserInfo oAuthUserInfo
+            String appleRefreshToken
     ) {
-        log.info("oAuthUserInfo.getEmail() : {}", oAuthUserInfo.getEmail());
-        if (user.getRole() != Role.ADMIN && adminPromotionPolicy.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {
-            user.changeRole(Role.ADMIN);
-            log.info("화이트리스트 일치: USER → ADMIN 승격 (userId={})", user.getId());
+        if (appleRefreshToken == null || appleRefreshToken.isBlank()) {
+            log.warn("Apple 토큰 응답에 refresh_token 이 없어 저장하지 않습니다. userId={}", user.getId());
+            return;
         }
-        return user;
+
+        appleCredentialService.save(user.getId(), appleRefreshToken);
     }
 
 }

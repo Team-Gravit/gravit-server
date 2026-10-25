@@ -1,12 +1,15 @@
 package gravit.code.auth.controller;
 
 import gravit.code.auth.controller.docs.OAuthControllerDocs;
+import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.oauth.AuthCodeRequest;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.service.oauth.OAuthLoginProcessor;
 import gravit.code.auth.service.oauth.OAuthLoginUrlService;
 import gravit.code.auth.service.oauth.OAuthUserInfoService;
+import gravit.code.auth.service.oauth.apple.AppleOAuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,7 @@ public class OAuthController implements OAuthControllerDocs {
 
     private final OAuthUserInfoService oAuthClientService;
     private final OAuthLoginUrlService oAuthLoginUrlService;
+    private final AppleOAuthService appleOAuthService;
 
     private final OAuthLoginProcessor oAuthLoginProcessor;
 
@@ -58,6 +62,18 @@ public class OAuthController implements OAuthControllerDocs {
         OAuthUserInfo userInfo = oAuthClientService.getUserInfo(code, provider, dest);
 
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
+
+        return ResponseEntity.status(OK).body(loginResponse);
+    }
+
+    @PostMapping("/apple")
+    public ResponseEntity<LoginResponse> appleLogin(
+            @RequestBody @Valid AuthCodeRequest authCodeRequest,
+            @RequestParam String dest
+    ) {
+        AppleLoginDto appleLoginDto = appleOAuthService.getUserInfo(authCodeRequest.code(), dest);
+
+        LoginResponse loginResponse = oAuthLoginProcessor.processApple(appleLoginDto);
 
         return ResponseEntity.status(OK).body(loginResponse);
     }

@@ -39,6 +39,8 @@ public enum CustomErrorCode implements ErrorCode {
     AUDIENCE_IS_EMPTY(BAD_REQUEST, "AUTH_4008", "IdToken 의 audience 가 비어있습니다."),
     AUDIENCE_NOT_MATCHING(BAD_REQUEST,"AUTH_4009", "IdToken 의 audience 가 매칭되지 않습니다."),
     OAUTH_USER_INFO_INVALID(BAD_REQUEST, "AUTH_4010", "OAuth 제공자로부터 유효한 사용자 정보를 받지 못했습니다."),
+    APPLE_CONFIG_INVALID(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5001", "Apple 로그인 설정이 올바르지 않습니다."),
+    APPLE_TOKEN_CRYPTO_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5002", "Apple 토큰 암복호화에 실패하였습니다."),
 
     // HandleGenerator
     HANDLE_CONFLICT_TEN_TIMES(CONFLICT, "H_G_4091", "중복으로 인해 유효한 handle 을 찾지 못했습니다."),
