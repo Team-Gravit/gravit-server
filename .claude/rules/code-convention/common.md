@@ -89,6 +89,32 @@ return BookmarkedProblemResponse.of(
 );
 ```
 
+## 메서드 배치 순서
+
+private 메서드는 그것을 사용하는 메서드 바로 아래에, 호출되는 순서대로 둔다. 위에서 아래로 읽으면 실행 흐름이 따라가지도록 하기 위함이다.
+
+- 여러 메서드가 함께 쓰는 private 메서드는 처음 사용하는 메서드 아래에 둔다
+- private 메서드 안에서 다시 부르는 private 메서드는 부르는 메서드 바로 아래에 호출 순서대로 둔다
+- 생성자에서 쓰는 private 메서드는 생성자 바로 아래에 둔다
+- 다음 public 메서드는 앞 public 메서드가 쓰는 private 메서드들이 끝난 뒤에 온다
+
+```java
+public AppleLoginDto getUserInfo(
+        String authCode,
+        String dest
+) {
+    validateAuthCode(authCode);
+    String baseHost = validateDest(dest);
+    ...
+}
+
+private void validateAuthCode(String authCode) { ... }
+
+private String validateDest(String dest) { ... }
+
+public void revokeRefreshToken(String refreshToken) { ... }
+```
+
 ## 네이밍
 
 - 패키지는 도메인 단위로 나눠라 (`chapter`, `user`, `bookmark`, `wrongAnsweredNote`). 여러 단어 도메인은 camelCase로 쓴다 (`dailyLearningRecord`). `csnote`는 기존 예외다
