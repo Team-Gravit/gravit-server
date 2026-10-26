@@ -115,6 +115,7 @@ TEXT 입력, NORMAL, 만점 70/15/15다.
   - 00:01 정산에서 오늘 학습하지 않은 연속 일수가 0이 된다
   - 실행 직전에 재적재하고, 00:00~00:02 사이의 재적재는 피한다
 - `withdrawing`은 탈퇴 상태라 `users/login`이 404다. 복구는 `PATCH /api/v1/users/restore?providerId=qa-persona-{set}-withdrawing`으로 하고, 복구한 뒤에는 같은 userId로 토큰을 받을 수 있다
+- `league-edge`로 시즌 결과·시작 팝업을 보려면 `POST /api/v1/test/season/popup?userId={league-edge userId}`를 먼저 부른다. 가장 최근 CLOSED 시즌을 Redis `lastClosedSeasonId`로 기록하고 그 유저의 `season:seen` 키를 지우므로, 다음 `GET /api/v1/league/home`이 `containsPopup=true`를 준다(한 번 본 뒤 다시 보려면 또 부른다). 배치가 남기는 캐시가 없어도 되고 다른 유저에게 영향이 없다
 - `suspended`를 막는 서버 경로가 없다. 정지 상태여도 로그인과 모든 API를 쓸 수 있으므로 관리자 화면의 상태 표시 확인용이다
 - `interviewer`의 IN_PROGRESS 세션을 제출하면 실제 LLM 채점이 돌고 XP와 LP가 지급된다
 - QA 유저는 dev 실사용자의 친구 검색, 추천(같은 티어와 인접 티어)에 나온다
