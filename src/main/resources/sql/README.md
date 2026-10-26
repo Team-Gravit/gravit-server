@@ -12,6 +12,7 @@
 | `interview/{챕터}/` | 유닛별 면접 질문, 핵심 개념 | O |
 | `sync/` | IDENTITY 시퀀스 재동기화 | O (마지막) |
 | `seed/` | DEV 전용 더미 데이터 | X |
+| `seed/qa/` | QA 페르소나 데이터셋. 재적재 API 전용(`{set}` 자리표시자 치환), 명세는 `seed/qa/PERSONAS.md` | X |
 | `backfill/` | 이미 적재된 DB의 기존 행 보정. 운영자가 psql로 수동 실행 | X |
 
 ## 실행 순서
