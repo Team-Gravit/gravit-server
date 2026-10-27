@@ -4,6 +4,7 @@ import gravit.code.global.consts.RedirectHostConst;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.config.UserDeleteMailProps;
 import gravit.code.user.domain.User;
+import gravit.code.user.dto.event.UserWithdrawnEvent;
 import gravit.code.user.infrastructure.RedisUserCleanManager;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.user.service.port.MailAuthCodeStore;
@@ -88,6 +89,7 @@ public class UserDeletionService {
                     userRepository.deleteById(user.getId());
 
                     rankRemoved.ifPresent(publisher::publishEvent);
+                    publisher.publishEvent(new UserWithdrawnEvent(user.getId()));
                 });
 
         cleanManager.storeDeletionUser(userId);

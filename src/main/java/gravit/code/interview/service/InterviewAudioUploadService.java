@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
-import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +41,7 @@ public class InterviewAudioUploadService {
         if (session.isTextInput()) {
             throw new RestApiException(INTERVIEW_INPUT_TYPE_MISMATCH);
         }
-        if (!session.isInProgress()) {
-            throw new RestApiException(INTERVIEW_SESSION_NOT_IN_PROGRESS);
-        }
+        session.validateInProgress();
 
         InterviewAudioFormat format = InterviewAudioFormat.from(request.contentType());
 

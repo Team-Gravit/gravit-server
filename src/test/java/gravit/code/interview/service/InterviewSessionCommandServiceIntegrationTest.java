@@ -8,12 +8,14 @@ import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.domain.InterviewTranscriptionStatus;
 import gravit.code.interview.dto.event.InterviewCompletedEvent;
+import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
 import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
 import gravit.code.interviewFeedback.repository.InterviewFeedbackRepository;
 import gravit.code.interviewQuestion.domain.InterviewConceptType;
+import gravit.code.interviewQuestion.domain.InterviewDifficulty;
 import gravit.code.interviewQuestion.domain.InterviewQuestion;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
 import gravit.code.interviewQuestion.repository.InterviewQuestionConceptRepository;
@@ -36,21 +38,24 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ALREADY_SUBMITTED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_NOT_FOUND;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_KEY_INVALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ORDER_INVALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ABANDONED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ALREADY_SUBMITTED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_GRADING;
-import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_SCORE_INVALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_IN_PROGRESS;
 import static gravit.code.interview.fixture.InterviewSessionFixture.답안_요청;
 import static gravit.code.interview.fixture.InterviewSessionFixture.미제출_답안;
 import static gravit.code.interview.fixture.InterviewSessionFixture.상태_세션;
+import static gravit.code.interview.fixture.InterviewSessionFixture.생성_요청_공통CS;
 import static gravit.code.interview.fixture.InterviewSessionFixture.음성_답안_요청;
 import static gravit.code.interview.fixture.InterviewSessionFixture.제출_요청;
 import static gravit.code.interview.fixture.InterviewSessionFixture.진행중_세션;
@@ -238,8 +243,8 @@ class InterviewSessionCommandServiceIntegrationTest {
         }
 
         @ParameterizedTest
-        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "GRADING_FAILED", "COMPLETED", "ABANDONED"})
-        void 진행_중이_아닌_세션이면_예외를_던진다(InterviewSessionStatus status) {
+        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "GRADING_FAILED", "COMPLETED"})
+        void 제출_이후_세션이면_예외를_던진다(InterviewSessionStatus status) {
             // given
             InterviewSession session = interviewSessionRepository.save(상태_세션(USER_ID, status));
             interviewAnswerRepository.saveAll(미제출_답안(session.getId(), 저장된_문제_5개()));
@@ -249,7 +254,21 @@ class InterviewSessionCommandServiceIntegrationTest {
             assertThatThrownBy(() -> interviewSessionCommandService.submit(USER_ID, session.getId(), requests))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(INTERVIEW_SESSION_NOT_IN_PROGRESS);
+                    .isEqualTo(INTERVIEW_SESSION_ALREADY_SUBMITTED);
+        }
+
+        @Test
+        void 취소된_세션이면_예외를_던진다() {
+            // given
+            InterviewSession session = interviewSessionRepository.save(상태_세션(USER_ID, InterviewSessionStatus.ABANDONED));
+            interviewAnswerRepository.saveAll(미제출_답안(session.getId(), 저장된_문제_5개()));
+            List<InterviewAnswerSubmitRequest> requests = 제출_요청("1", "2", "3", "4", "5");
+
+            // when & then
+            assertThatThrownBy(() -> interviewSessionCommandService.submit(USER_ID, session.getId(), requests))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_SESSION_ABANDONED);
         }
 
         @Test
@@ -710,8 +729,8 @@ class InterviewSessionCommandServiceIntegrationTest {
         }
 
         @ParameterizedTest
-        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "COMPLETED", "GRADING_FAILED", "ABANDONED"})
-        void 진행_중이_아니면_예외를_던지고_상태와_종료_시각이_그대로다(InterviewSessionStatus status) {
+        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "COMPLETED", "GRADING_FAILED"})
+        void 제출_이후_세션이면_예외를_던지고_상태와_종료_시각이_그대로다(InterviewSessionStatus status) {
             // given
             InterviewSession session = interviewSessionRepository.save(상태_세션(USER_ID, status));
 
@@ -719,9 +738,112 @@ class InterviewSessionCommandServiceIntegrationTest {
             assertThatThrownBy(() -> interviewSessionCommandService.abandon(USER_ID, session.getId()))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(INTERVIEW_SESSION_NOT_IN_PROGRESS);
+                    .isEqualTo(INTERVIEW_SESSION_ALREADY_SUBMITTED);
 
             InterviewSession unchanged = 세션(session.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(unchanged.getStatus()).isEqualTo(status);
+                softly.assertThat(unchanged.getEndedAt()).isNull();
+            });
+        }
+
+        @Test
+        void 이미_취소된_세션이면_예외를_던지고_종료_시각이_그대로다() {
+            // given
+            InterviewSession session = interviewSessionRepository.save(상태_세션(USER_ID, InterviewSessionStatus.ABANDONED));
+
+            // when & then
+            assertThatThrownBy(() -> interviewSessionCommandService.abandon(USER_ID, session.getId()))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_SESSION_ABANDONED);
+
+            InterviewSession unchanged = 세션(session.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(unchanged.getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(unchanged.getEndedAt()).isNull();
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("세션을 생성할 때")
+    class Create {
+
+        private InterviewSessionCreateDto 생성_명령() {
+            return InterviewSessionCreateDto.of(
+                    생성_요청_공통CS(InterviewDifficulty.NORMAL, TOPICS.toArray(InterviewTopic[]::new)),
+                    Set.copyOf(TOPICS),
+                    저장된_문제_5개()
+            );
+        }
+
+        private long 진행_중_세션_수(long userId) {
+            return interviewSessionRepository.countByUserIdAndStatus(userId, InterviewSessionStatus.IN_PROGRESS);
+        }
+
+        @Test
+        void 같은_사용자의_진행_중_세션을_취소하고_새_세션을_만든다() {
+            // given
+            InterviewSession previous = interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.TEXT));
+
+            // when
+            long sessionId = interviewSessionCommandService.create(USER_ID, 생성_명령());
+
+            // then
+            InterviewSession abandoned = 세션(previous.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(abandoned.getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(abandoned.getEndedAt()).isEqualTo(LocalDateTime.now(clock));
+                softly.assertThat(세션(sessionId).getStatus()).isEqualTo(InterviewSessionStatus.IN_PROGRESS);
+                softly.assertThat(진행_중_세션_수(USER_ID)).isEqualTo(1L);
+            });
+        }
+
+        @Test
+        void 진행_중_세션이_여러_개면_모두_취소한다() {
+            // given
+            InterviewSession first = interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.TEXT));
+            InterviewSession second = interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.VOICE));
+
+            // when
+            interviewSessionCommandService.create(USER_ID, 생성_명령());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(세션(first.getId()).getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(세션(second.getId()).getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(진행_중_세션_수(USER_ID)).isEqualTo(1L);
+            });
+        }
+
+        @Test
+        void 다른_사용자의_진행_중_세션은_그대로다() {
+            // given
+            InterviewSession others = interviewSessionRepository.save(진행중_세션(OTHER_USER_ID, InterviewInputType.TEXT));
+
+            // when
+            interviewSessionCommandService.create(USER_ID, 생성_명령());
+
+            // then
+            InterviewSession unchanged = 세션(others.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(unchanged.getStatus()).isEqualTo(InterviewSessionStatus.IN_PROGRESS);
+                softly.assertThat(unchanged.getEndedAt()).isNull();
+            });
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "GRADING_FAILED", "COMPLETED", "ABANDONED"})
+        void 진행_중이_아닌_세션은_바뀌지_않는다(InterviewSessionStatus status) {
+            // given
+            InterviewSession previous = interviewSessionRepository.save(상태_세션(USER_ID, status));
+
+            // when
+            interviewSessionCommandService.create(USER_ID, 생성_명령());
+
+            // then
+            InterviewSession unchanged = 세션(previous.getId());
             assertSoftly(softly -> {
                 softly.assertThat(unchanged.getStatus()).isEqualTo(status);
                 softly.assertThat(unchanged.getEndedAt()).isNull();

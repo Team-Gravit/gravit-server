@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,11 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSW
 @Service
 @RequiredArgsConstructor
 public class InterviewAnswerQueryService {
+
+    private static final Set<InterviewSessionStatus> HISTORY_EXCLUDED_STATUSES = Set.of(
+            InterviewSessionStatus.IN_PROGRESS,
+            InterviewSessionStatus.ABANDONED
+    );
 
     private final InterviewAnswerRepository interviewAnswerRepository;
 
@@ -43,8 +49,8 @@ public class InterviewAnswerQueryService {
             return Map.of();
         }
 
-        return interviewAnswerRepository.findQuestionHistoriesByUserIdExcludingStatus(
-                        userId, questionIds, InterviewSessionStatus.ABANDONED).stream()
+        return interviewAnswerRepository.findQuestionHistoriesByUserIdExcludingStatuses(
+                        userId, questionIds, HISTORY_EXCLUDED_STATUSES).stream()
                 .collect(Collectors.toMap(
                         InterviewQuestionHistoryDto::questionId,
                         Function.identity(),

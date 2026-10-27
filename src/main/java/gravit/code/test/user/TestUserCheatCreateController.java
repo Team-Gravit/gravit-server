@@ -35,6 +35,7 @@ import java.util.UUID;
 import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_LENGTH_INVALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_NOT_NULL;
 import static gravit.code.global.exception.domain.CustomErrorCode.NICKNAME_PATTERN_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -122,7 +123,8 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
     public ResponseEntity<LoginResponse> login(
             @RequestParam Long userId
     ){
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
         RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);

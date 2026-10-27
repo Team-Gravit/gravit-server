@@ -36,12 +36,12 @@ public interface InterviewAnswerRepository extends JpaRepository<InterviewAnswer
             FROM InterviewAnswer a
             JOIN InterviewSession s ON s.id = a.sessionId
             LEFT JOIN InterviewFeedback f ON f.answerId = a.id
-            WHERE s.userId = :userId AND s.status <> :excludedStatus AND a.questionId IN :questionIds
+            WHERE s.userId = :userId AND s.status NOT IN :excludedStatuses AND a.questionId IN :questionIds
             ORDER BY s.startedAt DESC, s.id DESC
     """)
-    List<InterviewQuestionHistoryDto> findQuestionHistoriesByUserIdExcludingStatus(
+    List<InterviewQuestionHistoryDto> findQuestionHistoriesByUserIdExcludingStatuses(
             @Param("userId") long userId,
             @Param("questionIds") Collection<Long> questionIds,
-            @Param("excludedStatus") InterviewSessionStatus excludedStatus
+            @Param("excludedStatuses") Collection<InterviewSessionStatus> excludedStatuses
     );
 }

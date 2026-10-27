@@ -3,6 +3,7 @@ package gravit.code.interview.service;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.interview.domain.InterviewAnswer;
 import gravit.code.interview.domain.InterviewSession;
+import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.domain.InterviewSessionTopic;
 import gravit.code.interview.dto.event.InterviewCompletedEvent;
 import gravit.code.interview.dto.event.InterviewSubmittedEvent;
@@ -33,7 +34,6 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSW
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
-import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_IN_PROGRESS;
 
 @Service
@@ -58,6 +58,13 @@ public class InterviewSessionCommandService {
             long userId,
             InterviewSessionCreateDto createDto
     ) {
+        interviewSessionRepository.abandonInProgressByUserId(
+                userId,
+                InterviewSessionStatus.IN_PROGRESS,
+                InterviewSessionStatus.ABANDONED,
+                LocalDateTime.now(clock)
+        );
+
         long attemptCount = interviewSessionRepository.findMaxAttemptCountByUserId(userId) + 1;
 
         InterviewSession session = interviewSessionRepository.save(
@@ -110,7 +117,7 @@ public class InterviewSessionCommandService {
     ) {
         InterviewSession session = findSession(sessionId);
         validateOwner(session, userId);
-        validateInProgress(session);
+        session.validateInProgress();
         validateDisplayOrders(answerRequests);
         validateAudioKeys(session, answerRequests);
 
@@ -159,12 +166,6 @@ public class InterviewSessionCommandService {
     ) {
         if (!session.isOwnedBy(userId)) {
             throw new RestApiException(INTERVIEW_SESSION_ACCESS_DENIED);
-        }
-    }
-
-    private void validateInProgress(InterviewSession session) {
-        if (!session.isInProgress()) {
-            throw new RestApiException(INTERVIEW_SESSION_NOT_IN_PROGRESS);
         }
     }
 

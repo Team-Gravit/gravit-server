@@ -39,6 +39,8 @@ public enum CustomErrorCode implements ErrorCode {
     AUDIENCE_IS_EMPTY(BAD_REQUEST, "AUTH_4008", "IdToken 의 audience 가 비어있습니다."),
     AUDIENCE_NOT_MATCHING(BAD_REQUEST,"AUTH_4009", "IdToken 의 audience 가 매칭되지 않습니다."),
     OAUTH_USER_INFO_INVALID(BAD_REQUEST, "AUTH_4010", "OAuth 제공자로부터 유효한 사용자 정보를 받지 못했습니다."),
+    APPLE_CONFIG_INVALID(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5001", "Apple 로그인 설정이 올바르지 않습니다."),
+    APPLE_TOKEN_CRYPTO_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5002", "Apple 토큰 암복호화에 실패하였습니다."),
 
     // HandleGenerator
     HANDLE_CONFLICT_TEN_TIMES(CONFLICT, "H_G_4091", "중복으로 인해 유효한 handle 을 찾지 못했습니다."),
@@ -179,7 +181,6 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_SESSION_SCORE_INVALID(BAD_REQUEST, "INTERVIEW_4002", "면접 세션 점수가 0점과 만점 사이를 벗어났습니다."),
     INTERVIEW_SESSION_NOT_FOUND(NOT_FOUND, "INTERVIEW_4003", "존재하지 않는 면접 세션입니다."),
     INTERVIEW_SESSION_ACCESS_DENIED(FORBIDDEN, "INTERVIEW_4004", "본인의 면접 세션만 접근할 수 있습니다."),
-    INTERVIEW_SESSION_NOT_IN_PROGRESS(CONFLICT, "INTERVIEW_4005", "진행 중인 면접 세션이 아닙니다."),
     INTERVIEW_INPUT_TYPE_MISMATCH(BAD_REQUEST, "INTERVIEW_4006", "면접 세션의 답변 입력 방식과 일치하지 않습니다."),
     INTERVIEW_STACK_REQUIRED(BAD_REQUEST, "INTERVIEW_4007", "직군 면접은 스택을 선택해야 합니다."),
     INTERVIEW_STACK_NOT_ALLOWED(BAD_REQUEST, "INTERVIEW_4008", "공통 CS 면접은 스택을 선택할 수 없습니다."),
@@ -198,9 +199,16 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_TRANSCRIPTION_ALREADY_REQUESTED(CONFLICT, "INTERVIEW_4022", "이미 변환을 요청한 답안입니다."),
     INTERVIEW_TRANSCRIPTION_IN_PROGRESS(CONFLICT, "INTERVIEW_4023", "음성 변환이 끝나지 않은 답안이 있어 제출할 수 없습니다."),
     INTERVIEW_AUDIO_EMPTY(BAD_REQUEST, "INTERVIEW_4024", "업로드된 음성 파일이 비어 있습니다."),
+    INTERVIEW_SESSION_ABANDONED(CONFLICT, "INTERVIEW_4025", "중단된 면접 세션입니다."),
+    INTERVIEW_SESSION_ALREADY_SUBMITTED(CONFLICT, "INTERVIEW_4026", "이미 제출된 면접 세션입니다."),
     INTERVIEW_GRADING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5001", "면접 답변 채점 판정 요청이 실패했습니다."),
     INTERVIEW_AUDIO_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5002", "면접 음성 파일 삭제에 실패했습니다."),
     INTERVIEW_TRANSCRIPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5003", "면접 답변 음성 변환 요청이 실패했습니다."),
+
+    // QA Fixture
+    QA_FIXTURE_SET_INVALID(BAD_REQUEST, "QA_FIXTURE_4001", "지원하지 않는 QA 페르소나 세트입니다."),
+    QA_FIXTURE_RELOAD_IN_PROGRESS(CONFLICT, "QA_FIXTURE_4091", "같은 세트의 재적재가 진행 중입니다."),
+    QA_FIXTURE_PREREQUISITE_MISSING(CONFLICT, "QA_FIXTURE_4092", "QA 페르소나 적재에 필요한 기준 데이터가 없습니다."),
 
     // Global
     INVALID_PARAMS(BAD_REQUEST, "GLOBAL_4001", "유효성 검사 실패"),

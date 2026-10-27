@@ -116,6 +116,19 @@ scheduler:
   season:
     rollover-cron: "-"
 
+oauth:
+  apple:
+    issuer: https://appleid.apple.com
+    token-uri: https://appleid.apple.com/auth/token
+    revoke-uri: https://appleid.apple.com/auth/revoke
+    jwk-set-uri: https://appleid.apple.com/auth/keys
+    team-id: TESTTEAMID
+    client-id: test.apple.client.id
+    key-id: TESTKEYID0
+    # 테스트 전용 EC P-256 키. 실제 Apple 계정과 무관하다
+    private-key: MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgfzKsbNNZQCzMEXaVVnny5oxS03hDMc9BmrS3NBQEmDWhRANCAASEiUtZ1QRUP+WuRDfNj2nxF+cLTXiDlqM565DOY8mkiTNMdx5U2G4BFTqzinO3hnMeHM8raP+4F7RsJXpQBNpB
+    token-encryption-key: zaK9adGxW9qk5Pii8kOIUaM3oWTwChIwOXmbhiS2PsI=
+
 auth0:
   issuer: https://dev-wdqwk434kl24h2k.us.auth0.com/
   android-client-id: fmewlninfdoiubherihui32ijewoi

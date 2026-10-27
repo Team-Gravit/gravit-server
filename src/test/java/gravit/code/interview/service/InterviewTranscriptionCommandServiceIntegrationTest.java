@@ -39,9 +39,10 @@ import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDI
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_KEY_INVALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_AUDIO_NOT_UPLOADED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ABANDONED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ALREADY_SUBMITTED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
-import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_IN_PROGRESS;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_ALREADY_REQUESTED;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.권한_거부;
 import static gravit.code.interview.fixture.InterviewAudioS3Fixture.본문_없는_404;
@@ -216,9 +217,24 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
                     .isEqualTo(INTERVIEW_INPUT_TYPE_MISMATCH);
         }
 
+        @Test
+        void 취소된_세션이면_예외를_던진다() {
+            // given
+            InterviewSession session = interviewSessionRepository.save(
+                    상태_세션(USER_ID, InterviewSessionStatus.ABANDONED, InterviewInputType.VOICE));
+            미요청_답안_저장(session.getId(), DISPLAY_ORDER);
+
+            // when & then
+            assertThatThrownBy(() -> interviewTranscriptionCommandService.request(
+                    USER_ID, session.getId(), 요청(session.getId())))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(INTERVIEW_SESSION_ABANDONED);
+        }
+
         @ParameterizedTest
-        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "COMPLETED", "GRADING_FAILED", "ABANDONED"})
-        void 진행_중이_아닌_세션이면_예외를_던진다(InterviewSessionStatus status) {
+        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "COMPLETED", "GRADING_FAILED"})
+        void 제출_이후_세션이면_예외를_던진다(InterviewSessionStatus status) {
             // given
             InterviewSession session = interviewSessionRepository.save(
                     상태_세션(USER_ID, status, InterviewInputType.VOICE));
@@ -229,7 +245,7 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
                     USER_ID, session.getId(), 요청(session.getId())))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(INTERVIEW_SESSION_NOT_IN_PROGRESS);
+                    .isEqualTo(INTERVIEW_SESSION_ALREADY_SUBMITTED);
         }
 
         @ParameterizedTest

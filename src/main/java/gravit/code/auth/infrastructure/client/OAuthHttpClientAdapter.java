@@ -83,4 +83,22 @@ public class OAuthHttpClientAdapter implements OAuthClient {
             throw new RestApiException(OAUTH_SERVER_ERROR);
         }
     }
+
+    @Override
+    public void revokeToken(
+            String revokeUri,
+            MultiValueMap<String, String> revokeRequest
+    ) {
+        try {
+            restClient.post()
+                    .uri(revokeUri)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(revokeRequest)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException e) {
+            log.error("OAuth 토큰 철회 요청 실패", e);
+            throw new RestApiException(OAUTH_SERVER_ERROR);
+        }
+    }
 }

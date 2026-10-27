@@ -150,8 +150,39 @@ class InterviewAnswerQueryServiceIntegrationTest {
             });
         }
 
+        @Test
+        void 진행_중_세션에만_나온_문제는_결과에_없다() {
+            // given
+            점수_없는_세션을_만든다(USER_ID, NEWER, InterviewSessionStatus.IN_PROGRESS, List.of(firstQuestionId));
+
+            // when
+            Map<Long, InterviewQuestionHistoryDto> result =
+                    interviewAnswerQueryService.getQuestionIdToLatestHistory(USER_ID, List.of(firstQuestionId));
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void 가장_최근_세션이_진행_중이면_그_전_기록을_쓴다() {
+            // given
+            채점된_세션을_만든다(USER_ID, OLDER, firstQuestionId, 3);
+            점수_없는_세션을_만든다(USER_ID, NEWER, InterviewSessionStatus.IN_PROGRESS, List.of(firstQuestionId));
+
+            // when
+            Map<Long, InterviewQuestionHistoryDto> result =
+                    interviewAnswerQueryService.getQuestionIdToLatestHistory(USER_ID, List.of(firstQuestionId));
+
+            // then
+            InterviewQuestionHistoryDto history = result.get(firstQuestionId);
+            assertSoftly(softly -> {
+                softly.assertThat(history.presentedAt()).isEqualTo(OLDER);
+                softly.assertThat(history.accuracyScore()).isEqualTo(3);
+            });
+        }
+
         @ParameterizedTest
-        @EnumSource(value = InterviewSessionStatus.class, names = {"IN_PROGRESS", "GRADING", "GRADING_FAILED"})
+        @EnumSource(value = InterviewSessionStatus.class, names = {"GRADING", "GRADING_FAILED"})
         void 채점되지_않은_세션의_문제는_점수가_null이다(InterviewSessionStatus status) {
             // given
             점수_없는_세션을_만든다(USER_ID, NEWER, status, List.of(firstQuestionId));

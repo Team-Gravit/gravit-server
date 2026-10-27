@@ -64,7 +64,8 @@ public interface TestUserCheatCreateControllerDocs {
             description = "지정 userId 의 유저로 로그인 토큰(access/refresh)을 즉시 발급합니다."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "✅ 발급 성공 (로그인 토큰 반환)")
+            @ApiResponse(responseCode = "200", description = "✅ 발급 성공 (로그인 토큰 반환)"),
+            @ApiResponse(responseCode = "404", description = "🚨 존재하지 않는 유저 (USER_4041). 탈퇴 유예 중인 유저도 포함")
     })
     @PostMapping("/users/login")
     ResponseEntity<LoginResponse> login(
