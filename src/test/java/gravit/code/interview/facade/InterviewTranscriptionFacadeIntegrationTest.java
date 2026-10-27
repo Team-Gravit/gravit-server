@@ -23,6 +23,7 @@ import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
 import org.springframework.ai.audio.transcription.AudioTranscriptionResponse;
 import org.springframework.ai.openai.OpenAiAudioTranscriptionModel;
 import org.springframework.ai.openai.OpenAiAudioTranscriptionOptions;
+import org.springframework.ai.openai.api.OpenAiAudioApi.TranscriptResponseFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -66,6 +67,8 @@ class InterviewTranscriptionFacadeIntegrationTest {
     private static final String PREVIOUS_TRANSCRIPT = "먼저 끝난 변환 결과";
     private static final String SUBMITTED_CONTENT = "사용자가 고쳐 제출한 답변";
     private static final String MODEL_ERROR_MESSAGE = "LiteLLM 호출 실패";
+    private static final String WRAPPED_TRANSCRIPT_FORMAT =
+            "{\"text\":\"%s\",\"asset_pointer\":\"sediment://file_test\",\"asset_ttl\":\"30d\",\"asset_format\":\"m4a\"}";
 
     @Autowired
     private InterviewTranscriptionFacade interviewTranscriptionFacade;
@@ -99,6 +102,10 @@ class InterviewTranscriptionFacadeIntegrationTest {
 
     private AudioTranscriptionResponse 변환_응답(String transcript) {
         return new AudioTranscriptionResponse(new AudioTranscription(transcript));
+    }
+
+    private String 감싼_변환_결과(String text) {
+        return WRAPPED_TRANSCRIPT_FORMAT.formatted(text);
     }
 
     private long 개념이_있는_문제() {
@@ -182,9 +189,55 @@ class InterviewTranscriptionFacadeIntegrationTest {
             // then
             AudioTranscriptionPrompt prompt = 변환_호출_인자();
             assertSoftly(softly -> {
-                softly.assertThat(prompt.getOptions()).isNull();
+                softly.assertThat(((OpenAiAudioTranscriptionOptions) prompt.getOptions()).getPrompt()).isNull();
                 softly.assertThat(답안(answer.getId()).getTranscriptionStatus())
                         .isEqualTo(InterviewTranscriptionStatus.COMPLETED);
+            });
+        }
+
+        @Test
+        void 응답_본문을_JSON으로_받도록_요청한다() {
+            // given
+            InterviewAnswer answer = 변환_중_답안_저장(QUESTION_ID_WITHOUT_CONCEPT);
+
+            // when
+            interviewTranscriptionFacade.transcribe(answer.getId(), 키(answer));
+
+            // then
+            AudioTranscriptionPrompt prompt = 변환_호출_인자();
+            assertThat(((OpenAiAudioTranscriptionOptions) prompt.getOptions()).getResponseFormat())
+                    .isEqualTo(TranscriptResponseFormat.JSON);
+        }
+
+        @Test
+        void 변환_결과가_JSON으로_한_번_더_감싸져_오면_text만_꺼내_저장한다() {
+            // given
+            InterviewAnswer answer = 변환_중_답안_저장(개념이_있는_문제());
+            when(transcriptionModel.call(any(AudioTranscriptionPrompt.class)))
+                    .thenReturn(변환_응답(감싼_변환_결과(TRANSCRIPT)));
+
+            // when
+            interviewTranscriptionFacade.transcribe(answer.getId(), 키(answer));
+
+            // then
+            assertThat(답안(answer.getId()).getTranscript()).isEqualTo(TRANSCRIPT);
+        }
+
+        @Test
+        void 감싼_변환_결과의_text가_비어_있으면_말이_없던_문항으로_보고_null로_저장한다() {
+            // given
+            InterviewAnswer answer = 변환_중_답안_저장(개념이_있는_문제());
+            when(transcriptionModel.call(any(AudioTranscriptionPrompt.class)))
+                    .thenReturn(변환_응답(감싼_변환_결과("")));
+
+            // when
+            interviewTranscriptionFacade.transcribe(answer.getId(), 키(answer));
+
+            // then
+            InterviewAnswer completed = 답안(answer.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(completed.getTranscriptionStatus()).isEqualTo(InterviewTranscriptionStatus.COMPLETED);
+                softly.assertThat(completed.getTranscript()).isNull();
             });
         }
 
