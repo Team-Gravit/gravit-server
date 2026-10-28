@@ -30,6 +30,7 @@ import gravit.code.interviewQuestion.dto.response.InterviewTopicResponse;
 import gravit.code.interviewQuestion.repository.InterviewQuestionConceptRepository;
 import gravit.code.interviewQuestion.repository.InterviewQuestionRepository;
 import gravit.code.support.TCSpringBootTest;
+import gravit.code.unit.repository.UnitRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_FEEDBACK_NOT_READY;
@@ -53,6 +55,7 @@ import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.세
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.완료_세션;
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.직군_완료_세션;
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.피드백;
+import static gravit.code.unit.fixture.UnitFixture.새_유닛;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -66,10 +69,14 @@ class InterviewFeedbackQueryServiceIntegrationTest {
     private static final long UNKNOWN_SESSION_ID = 999L;
     private static final LocalDateTime BASE_TIME = LocalDateTime.of(2026, 9, 1, 10, 0);
 
-    private static final long DATA_STRUCTURE_UNIT_ID = 11L;
-    private static final long ALGORITHM_UNIT_ID = 12L;
-    private static final long NETWORK_UNIT_ID = 13L;
-    private static final long DATABASE_UNIT_ID = 14L;
+    private static final long UNKNOWN_UNIT_ID = 999L;
+    private static final long POOL_CHAPTER_ID = 1L;
+    private static final long ALGORITHM_CHAPTER_ID = 2L;
+
+    private static final String DATA_STRUCTURE_UNIT_TITLE = "배열과 연결 리스트";
+    private static final String ALGORITHM_UNIT_TITLE = "정렬";
+    private static final String NETWORK_UNIT_TITLE = "TCP와 UDP";
+    private static final String DATABASE_UNIT_TITLE = "트랜잭션";
 
     @Autowired
     private InterviewFeedbackQueryService interviewFeedbackQueryService;
@@ -91,6 +98,9 @@ class InterviewFeedbackQueryServiceIntegrationTest {
 
     @Autowired
     private InterviewFeedbackRepository interviewFeedbackRepository;
+
+    @Autowired
+    private UnitRepository unitRepository;
 
     @Nested
     @DisplayName("응시 이력을 조회할 때")
@@ -240,12 +250,14 @@ class InterviewFeedbackQueryServiceIntegrationTest {
         private InterviewSession gradedSession;
         private InterviewSession inProgressSession;
         private InterviewSession otherUserSession;
+        private List<InterviewQuestion> questions;
 
         @BeforeEach
         void setUp() {
             firstSession = saveCompletedSession(USER_ID, 1, daysAfter(1), 40, 18);
             secondSession = saveCompletedSession(USER_ID, 2, daysAfter(2), 47, 18);
-            gradedSession = saveGradedSession(USER_ID, 3, daysAfter(3), 24, 14, saveQuestionPool());
+            questions = saveQuestionPool();
+            gradedSession = saveGradedSession(USER_ID, 3, daysAfter(3), 24, 14, questions);
             saveCompletedSession(USER_ID, 4, daysAfter(4), 60, 25);
             inProgressSession = interviewSessionRepository.save(
                     미완료_세션(USER_ID, 5, daysAfter(5), InterviewSessionStatus.IN_PROGRESS)
@@ -282,9 +294,69 @@ class InterviewFeedbackQueryServiceIntegrationTest {
                 softly.assertThat(result.answers().get(0).topic().displayName()).isEqualTo("자료구조");
 
                 softly.assertThat(result.weakTopics()).extracting(InterviewWeakTopicResponse::unitId)
-                        .containsExactly(ALGORITHM_UNIT_ID, NETWORK_UNIT_ID, DATABASE_UNIT_ID);
+                        .containsExactly(
+                                questions.get(1).getUnitId(),
+                                questions.get(2).getUnitId(),
+                                questions.get(4).getUnitId()
+                        );
+                softly.assertThat(result.weakTopics()).extracting(InterviewWeakTopicResponse::unitTitle)
+                        .containsExactly(ALGORITHM_UNIT_TITLE, NETWORK_UNIT_TITLE, DATABASE_UNIT_TITLE);
                 softly.assertThat(result.weakTopics()).extracting(weak -> weak.topic().topic())
                         .containsExactly(InterviewTopic.ALGORITHM, InterviewTopic.NETWORK, InterviewTopic.DATABASE);
+            });
+        }
+
+        @Test
+        void 같은_주제의_서로_다른_유닛이_약점이면_유닛마다_나가고_유닛_제목으로_구분된다() {
+            // given
+            List<String> unitTitles = List.of("정렬", "이분 탐색", "그래프 탐색", "동적 계획법", "그리디");
+            InterviewSession session = saveCompletedSession(USER_ID, 6, daysAfter(16), 20, 10);
+            List<Long> unitIds = new ArrayList<>();
+            for (int order = 1; order <= unitTitles.size(); order++) {
+                long unitId = saveUnit(unitTitles.get(order - 1), ALGORITHM_CHAPTER_ID, order);
+                InterviewQuestion question = interviewQuestionRepository.save(문제(InterviewTopic.ALGORITHM, unitId));
+                saveGradedAnswer(session.getId(), question.getId(), order, 4, 1, 1);
+                unitIds.add(unitId);
+            }
+
+            // when
+            InterviewSessionSummaryResponse result = interviewFeedbackQueryService.getSessionSummary(
+                    USER_ID,
+                    session.getId()
+            );
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.weakTopics()).extracting(InterviewWeakTopicResponse::unitId)
+                        .containsExactlyElementsOf(unitIds);
+                softly.assertThat(result.weakTopics()).extracting(InterviewWeakTopicResponse::unitTitle)
+                        .containsExactlyElementsOf(unitTitles);
+                softly.assertThat(result.weakTopics()).extracting(weak -> weak.topic().topic())
+                        .containsOnly(InterviewTopic.ALGORITHM);
+            });
+        }
+
+        @Test
+        void 유닛이_없는_문항도_문항별_점수에_남고_약점_분야의_유닛_제목은_비어_있다() {
+            // given
+            InterviewSession session = saveCompletedSession(USER_ID, 6, daysAfter(16), 4, 2);
+            InterviewQuestion question = interviewQuestionRepository.save(문제(InterviewTopic.NETWORK, UNKNOWN_UNIT_ID));
+            saveGradedAnswer(session.getId(), question.getId(), 1, 4, 1, 1);
+
+            // when
+            InterviewSessionSummaryResponse result = interviewFeedbackQueryService.getSessionSummary(
+                    USER_ID,
+                    session.getId()
+            );
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.answers()).extracting(InterviewAnswerScoreResponse::displayOrder)
+                        .containsExactly(1);
+                softly.assertThat(result.weakTopics()).extracting(InterviewWeakTopicResponse::unitId)
+                        .containsExactly(UNKNOWN_UNIT_ID);
+                softly.assertThat(result.weakTopics()).extracting(InterviewWeakTopicResponse::unitTitle)
+                        .containsOnlyNulls();
             });
         }
 
@@ -648,13 +720,26 @@ class InterviewFeedbackQueryServiceIntegrationTest {
     }
 
     private List<InterviewQuestion> saveQuestionPool() {
+        long dataStructureUnitId = saveUnit(DATA_STRUCTURE_UNIT_TITLE, POOL_CHAPTER_ID, 1);
+        long algorithmUnitId = saveUnit(ALGORITHM_UNIT_TITLE, POOL_CHAPTER_ID, 2);
+        long networkUnitId = saveUnit(NETWORK_UNIT_TITLE, POOL_CHAPTER_ID, 3);
+        long databaseUnitId = saveUnit(DATABASE_UNIT_TITLE, POOL_CHAPTER_ID, 4);
+
         return List.of(
-                interviewQuestionRepository.save(문제(InterviewTopic.DATA_STRUCTURE, DATA_STRUCTURE_UNIT_ID)),
-                interviewQuestionRepository.save(문제(InterviewTopic.ALGORITHM, ALGORITHM_UNIT_ID)),
-                interviewQuestionRepository.save(문제(InterviewTopic.NETWORK, NETWORK_UNIT_ID)),
-                interviewQuestionRepository.save(문제(InterviewTopic.NETWORK, NETWORK_UNIT_ID)),
-                interviewQuestionRepository.save(문제(InterviewTopic.DATABASE, DATABASE_UNIT_ID))
+                interviewQuestionRepository.save(문제(InterviewTopic.DATA_STRUCTURE, dataStructureUnitId)),
+                interviewQuestionRepository.save(문제(InterviewTopic.ALGORITHM, algorithmUnitId)),
+                interviewQuestionRepository.save(문제(InterviewTopic.NETWORK, networkUnitId)),
+                interviewQuestionRepository.save(문제(InterviewTopic.NETWORK, networkUnitId)),
+                interviewQuestionRepository.save(문제(InterviewTopic.DATABASE, databaseUnitId))
         );
+    }
+
+    private long saveUnit(
+            String title,
+            long chapterId,
+            int displayOrder
+    ) {
+        return unitRepository.save(새_유닛(title, chapterId, displayOrder)).getId();
     }
 
     private InterviewSession saveGradedSession(
