@@ -113,6 +113,7 @@ public interface InterviewFeedbackControllerDocs {
                     완료된 세션의 리포트 종합을 조회합니다.<br>
                     총점과 만점, 정확도와 전달력, 전체 사용자 평균, 이 세션을 포함한 최근 완료 세션 5개의 추이(오래된 순), 문항별 점수, 약점 분야를 담습니다.<br>
                     약점 분야는 문항 획득 점수가 문항 만점의 절반 이하인 문항의 유닛이며 중복을 제거합니다.<br>
+                    같은 주제의 유닛이 여럿이면 주제가 반복되므로 유닛 제목으로 구분합니다.<br>
                     본인 세션이 아니면 403, 완료되지 않은 세션이면 409입니다.<br>
                     🔐 <strong>Jwt 필요</strong>
                     """
@@ -131,25 +132,30 @@ public interface InterviewFeedbackControllerDocs {
                                               "sessionId": 12,
                                               "sequence": 3,
                                               "startedAt": "2026-09-04T10:15:30",
-                                              "score": 78,
+                                              "score": 52,
                                               "maxScore": 100,
-                                              "accuracyScore": 54,
+                                              "accuracyScore": 34,
                                               "accuracyMaxScore": 70,
-                                              "deliveryScore": 24,
+                                              "deliveryScore": 18,
                                               "deliveryMaxScore": 30,
                                               "averageAccuracyScore": 49,
                                               "averageDeliveryScore": 21,
                                               "recentSessions": [
                                                 {"sessionId": 5, "sequence": 1, "accuracyScore": 40, "deliveryScore": 18},
                                                 {"sessionId": 9, "sequence": 2, "accuracyScore": 47, "deliveryScore": 18},
-                                                {"sessionId": 12, "sequence": 3, "accuracyScore": 54, "deliveryScore": 24}
+                                                {"sessionId": 12, "sequence": 3, "accuracyScore": 34, "deliveryScore": 18}
                                               ],
                                               "answers": [
-                                                {"displayOrder": 1, "topic": {"topic": "DATA_STRUCTURE", "displayName": "자료구조"}, "accuracyScore": 12, "deliveryScore": 5},
-                                                {"displayOrder": 2, "topic": {"topic": "NETWORK", "displayName": "네트워크"}, "accuracyScore": 4, "deliveryScore": 3}
+                                                {"displayOrder": 1, "topic": {"topic": "ALGORITHM", "displayName": "알고리즘"}, "accuracyScore": 4, "deliveryScore": 2},
+                                                {"displayOrder": 2, "topic": {"topic": "ALGORITHM", "displayName": "알고리즘"}, "accuracyScore": 5, "deliveryScore": 3},
+                                                {"displayOrder": 3, "topic": {"topic": "DATA_STRUCTURE", "displayName": "자료구조"}, "accuracyScore": 12, "deliveryScore": 5},
+                                                {"displayOrder": 4, "topic": {"topic": "NETWORK", "displayName": "네트워크"}, "accuracyScore": 3, "deliveryScore": 2},
+                                                {"displayOrder": 5, "topic": {"topic": "DATABASE", "displayName": "데이터베이스"}, "accuracyScore": 10, "deliveryScore": 6}
                                               ],
                                               "weakTopics": [
-                                                {"unitId": 7, "topic": {"topic": "NETWORK", "displayName": "네트워크"}}
+                                                {"unitId": 21, "unitTitle": "정렬", "topic": {"topic": "ALGORITHM", "displayName": "알고리즘"}},
+                                                {"unitId": 24, "unitTitle": "그래프 탐색", "topic": {"topic": "ALGORITHM", "displayName": "알고리즘"}},
+                                                {"unitId": 7, "unitTitle": "TCP와 UDP", "topic": {"topic": "NETWORK", "displayName": "네트워크"}}
                                               ]
                                             }
                                             """

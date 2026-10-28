@@ -1,6 +1,6 @@
 package gravit.code.interviewFeedback.dto.response;
 
-import gravit.code.interviewQuestion.domain.InterviewTopic;
+import gravit.code.interviewFeedback.dto.internal.InterviewAnswerScoreDto;
 import gravit.code.interviewQuestion.dto.response.InterviewTopicResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -17,18 +17,23 @@ public record InterviewWeakTopicResponse(
         long unitId,
 
         @Schema(
+                description = "학습 이동 대상 유닛 제목",
+                example = "정렬",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        String unitTitle,
+
+        @Schema(
                 description = "약점 문항의 주제",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         InterviewTopicResponse topic
 ) {
-    public static InterviewWeakTopicResponse of(
-            long unitId,
-            InterviewTopic topic
-    ) {
+    public static InterviewWeakTopicResponse from(InterviewAnswerScoreDto score) {
         return InterviewWeakTopicResponse.builder()
-                .unitId(unitId)
-                .topic(InterviewTopicResponse.from(topic))
+                .unitId(score.unitId())
+                .unitTitle(score.unitTitle())
+                .topic(InterviewTopicResponse.from(score.topic()))
                 .build();
     }
 }

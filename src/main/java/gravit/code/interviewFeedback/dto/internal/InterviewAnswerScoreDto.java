@@ -9,6 +9,8 @@ public record InterviewAnswerScoreDto(
 
         long unitId,
 
+        String unitTitle,
+
         int accuracyScore,
 
         int structureScore,

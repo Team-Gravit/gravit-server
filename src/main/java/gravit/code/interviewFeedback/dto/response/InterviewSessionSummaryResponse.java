@@ -102,7 +102,7 @@ public record InterviewSessionSummaryResponse(
         List<InterviewAnswerScoreResponse> answers,
 
         @Schema(
-                description = "약점 분야 (문항 획득 점수가 문항 만점의 절반 이하인 문항의 유닛, 중복 제거)",
+                description = "약점 분야 (문항 획득 점수가 문항 만점의 절반 이하인 문항의 유닛, 유닛 기준 중복 제거, 문항 순서)",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         List<InterviewWeakTopicResponse> weakTopics

@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_FEEDBACK_NOT_READY;
@@ -246,17 +247,17 @@ public class InterviewFeedbackQueryService {
             List<InterviewAnswerScoreDto> scores,
             InterviewSession session
     ) {
-        Map<Long, InterviewTopic> unitIdToTopic = scores.stream()
+        Map<Long, InterviewAnswerScoreDto> unitIdToWeakScore = scores.stream()
                 .filter(score -> session.isWeakAnswer(score.earnedScore()))
                 .collect(Collectors.toMap(
                         InterviewAnswerScoreDto::unitId,
-                        InterviewAnswerScoreDto::topic,
+                        Function.identity(),
                         (first, second) -> first,
                         LinkedHashMap::new
                 ));
 
-        return unitIdToTopic.entrySet().stream()
-                .map(entry -> InterviewWeakTopicResponse.of(entry.getKey(), entry.getValue()))
+        return unitIdToWeakScore.values().stream()
+                .map(InterviewWeakTopicResponse::from)
                 .toList();
     }
 
