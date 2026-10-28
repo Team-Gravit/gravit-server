@@ -1,5 +1,7 @@
 package gravit.code.user.facade;
 
+import gravit.code.auth.domain.AppleClient;
+import gravit.code.auth.domain.AppleCredential;
 import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
 import gravit.code.auth.repository.AppleCredentialRepository;
 import gravit.code.auth.service.oauth.apple.AppleCredentialService;
@@ -27,6 +29,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +63,8 @@ class UserDeletionFacadeIntegrationTest {
     private static final String SESSION_ID_FIELD = "sessionId";
     private static final String DB_ERROR_MESSAGE = "DB 커넥션 실패";
     private static final String APPLE_REVOKE_URI = "https://appleid.apple.com/auth/revoke";
+    private static final String APPLE_WEB_CLIENT_ID = "test.apple.client.id";
+    private static final String APPLE_IOS_BUNDLE_ID = "kr.inuappcenter.gravit.test";
     private static final String APPLE_REFRESH_TOKEN = "r.apple-refresh-token";
 
     @Autowired
@@ -198,7 +204,7 @@ class UserDeletionFacadeIntegrationTest {
         void Apple_토큰이_남아_있으면_기록을_지운_뒤_철회하고_보관_토큰도_지운다() {
             // given
             User user = 탈퇴_회원(1);
-            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN);
+            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN, AppleClient.WEB);
 
             // when
             boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());
@@ -214,6 +220,32 @@ class UserDeletionFacadeIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(cleaned).isTrue();
                 softly.assertThat(revokeCaptor.getValue().getFirst("token")).isEqualTo(APPLE_REFRESH_TOKEN);
+                softly.assertThat(revokeCaptor.getValue().getFirst("client_id")).isEqualTo(APPLE_WEB_CLIENT_ID);
+                softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
+            });
+        }
+
+        @Test
+        void iOS에서_보관한_Apple_토큰은_Bundle_ID와_그_client_secret으로_철회한다() {
+            // given
+            User user = 탈퇴_회원(1);
+            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN, AppleClient.IOS);
+
+            // when
+            boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());
+
+            // then
+            @SuppressWarnings("unchecked")
+            ArgumentCaptor<MultiValueMap<String, String>> revokeCaptor = ArgumentCaptor.forClass(MultiValueMap.class);
+            verify(oAuthHttpClientAdapter).revokeToken(eq(APPLE_REVOKE_URI), revokeCaptor.capture());
+            MultiValueMap<String, String> request = revokeCaptor.getValue();
+            String clientSecretPayload = new String(Base64.getUrlDecoder().decode(request.getFirst("client_secret").split("\\.")[1]), StandardCharsets.UTF_8);
+
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isTrue();
+                softly.assertThat(request.getFirst("token")).isEqualTo(APPLE_REFRESH_TOKEN);
+                softly.assertThat(request.getFirst("client_id")).isEqualTo(APPLE_IOS_BUNDLE_ID);
+                softly.assertThat(clientSecretPayload).contains("\"sub\":\"" + APPLE_IOS_BUNDLE_ID + "\"");
                 softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
             });
         }
@@ -222,7 +254,7 @@ class UserDeletionFacadeIntegrationTest {
         void Apple_토큰_철회가_실패해도_삭제는_완료하고_보관_토큰도_지운다() {
             // given
             User user = 탈퇴_회원(1);
-            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN);
+            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN, AppleClient.WEB);
             doThrow(new RestApiException(OAUTH_SERVER_ERROR)).when(oAuthHttpClientAdapter).revokeToken(any(), any());
 
             // when
@@ -237,10 +269,29 @@ class UserDeletionFacadeIntegrationTest {
         }
 
         @Test
+        void 보관한_Apple_토큰을_복호화할_수_없어도_철회_없이_삭제를_완료한다() {
+            // given
+            User user = 탈퇴_회원(1);
+            appleCredentialRepository.save(AppleCredential.create(user.getId(), "corrupted-ciphertext", AppleClient.WEB));
+
+            // when
+            boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());
+
+            // then
+            verify(oAuthHttpClientAdapter, never()).revokeToken(any(), any());
+
+            assertSoftly(softly -> {
+                softly.assertThat(cleaned).isTrue();
+                softly.assertThat(userRepository.findByProviderId(user.getProviderId())).isEmpty();
+                softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
+            });
+        }
+
+        @Test
         void 활성_회원이면_Apple_토큰을_철회하지_않고_남긴다() {
             // given
             User user = userFixture.일반_유저(1);
-            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN);
+            appleCredentialService.save(user.getId(), APPLE_REFRESH_TOKEN, AppleClient.WEB);
 
             // when
             boolean cleaned = userDeletionFacade.cleanUserDeletion(user.getId());

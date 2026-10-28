@@ -1,5 +1,7 @@
 package gravit.code.auth.listener;
 
+import gravit.code.auth.domain.AppleClient;
+import gravit.code.auth.dto.internal.AppleStoredTokenDto;
 import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
 import gravit.code.auth.repository.AppleCredentialRepository;
 import gravit.code.auth.service.oauth.apple.AppleCredentialService;
@@ -18,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.MultiValueMap;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_SERVER_ERROR;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +35,8 @@ import static org.mockito.Mockito.verify;
 class AppleTokenRevokeListenerIntegrationTest {
 
     private static final String REVOKE_URI = "https://appleid.apple.com/auth/revoke";
+    private static final String WEB_CLIENT_ID = "test.apple.client.id";
+    private static final String IOS_BUNDLE_ID = "kr.inuappcenter.gravit.test";
     private static final String REFRESH_TOKEN = "r.apple-refresh-token";
     private static final String MAIL_AUTH_CODE = "validauthcode123";
     private static final int MAIL_AUTH_CODE_EXPIRE_SECONDS = 180;
@@ -60,26 +67,58 @@ class AppleTokenRevokeListenerIntegrationTest {
         userDeletionService.confirmDeleteByMailAuthCode(MAIL_AUTH_CODE);
     }
 
+    @SuppressWarnings("unchecked")
+    private MultiValueMap<String, String> 보낸_철회_요청() {
+        ArgumentCaptor<MultiValueMap<String, String>> captor = ArgumentCaptor.forClass(MultiValueMap.class);
+        verify(oAuthHttpClientAdapter).revokeToken(eq(REVOKE_URI), captor.capture());
+        return captor.getValue();
+    }
+
+    private String client_secret_페이로드(String clientSecret) {
+        return new String(Base64.getUrlDecoder().decode(clientSecret.split("\\.")[1]), StandardCharsets.UTF_8);
+    }
+
     @Nested
     @DisplayName("회원 탈퇴가 확정되면")
     class HandleUserWithdrawn {
 
         @Test
-        void 보관한_Apple_토큰을_철회하고_지운다() {
+        void 웹에서_보관한_Apple_토큰을_Services_ID로_철회하고_지운다() {
             // given
             User user = userFixture.일반_유저(1);
-            appleCredentialService.save(user.getId(), REFRESH_TOKEN);
+            appleCredentialService.save(user.getId(), REFRESH_TOKEN, AppleClient.WEB);
 
             // when
             탈퇴_확정(user);
 
             // then
-            @SuppressWarnings("unchecked")
-            ArgumentCaptor<MultiValueMap<String, String>> captor = ArgumentCaptor.forClass(MultiValueMap.class);
-            verify(oAuthHttpClientAdapter).revokeToken(eq(REVOKE_URI), captor.capture());
+            MultiValueMap<String, String> request = 보낸_철회_요청();
 
             assertSoftly(softly -> {
-                softly.assertThat(captor.getValue().getFirst("token")).isEqualTo(REFRESH_TOKEN);
+                softly.assertThat(request.getFirst("token")).isEqualTo(REFRESH_TOKEN);
+                softly.assertThat(request.getFirst("client_id")).isEqualTo(WEB_CLIENT_ID);
+                softly.assertThat(client_secret_페이로드(request.getFirst("client_secret"))).contains("\"sub\":\"" + WEB_CLIENT_ID + "\"");
+                softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
+                softly.assertThat(userRepository.findById(user.getId())).isEmpty();
+            });
+        }
+
+        @Test
+        void iOS에서_보관한_Apple_토큰을_Bundle_ID로_철회하고_지운다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            appleCredentialService.save(user.getId(), REFRESH_TOKEN, AppleClient.IOS);
+
+            // when
+            탈퇴_확정(user);
+
+            // then
+            MultiValueMap<String, String> request = 보낸_철회_요청();
+
+            assertSoftly(softly -> {
+                softly.assertThat(request.getFirst("token")).isEqualTo(REFRESH_TOKEN);
+                softly.assertThat(request.getFirst("client_id")).isEqualTo(IOS_BUNDLE_ID);
+                softly.assertThat(client_secret_페이로드(request.getFirst("client_secret"))).contains("\"sub\":\"" + IOS_BUNDLE_ID + "\"");
                 softly.assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
                 softly.assertThat(userRepository.findById(user.getId())).isEmpty();
             });
@@ -89,7 +128,7 @@ class AppleTokenRevokeListenerIntegrationTest {
         void 철회가_실패해도_탈퇴는_확정되고_토큰은_실제_삭제_때를_위해_남긴다() {
             // given
             User user = userFixture.일반_유저(1);
-            appleCredentialService.save(user.getId(), REFRESH_TOKEN);
+            appleCredentialService.save(user.getId(), REFRESH_TOKEN, AppleClient.WEB);
             doThrow(new RestApiException(OAUTH_SERVER_ERROR)).when(oAuthHttpClientAdapter).revokeToken(any(), any());
 
             // when
@@ -98,7 +137,7 @@ class AppleTokenRevokeListenerIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(userRepository.findById(user.getId())).isEmpty();
-                softly.assertThat(appleCredentialService.findRefreshToken(user.getId())).contains(REFRESH_TOKEN);
+                softly.assertThat(appleCredentialService.findRefreshToken(user.getId()).map(AppleStoredTokenDto::refreshToken)).contains(REFRESH_TOKEN);
             });
         }
 

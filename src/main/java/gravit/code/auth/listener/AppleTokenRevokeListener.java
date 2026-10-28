@@ -23,10 +23,10 @@ public class AppleTokenRevokeListener {
 
         try {
             appleCredentialService.findRefreshToken(userId)
-                    .ifPresent(refreshToken -> {
-                        appleOAuthService.revokeRefreshToken(refreshToken);
+                    .ifPresent(storedToken -> {
+                        appleOAuthService.revokeRefreshToken(storedToken.refreshToken(), storedToken.client());
                         appleCredentialService.deleteByUserId(userId);
-                        log.info("탈퇴 회원의 Apple 토큰 철회 완료: userId={}", userId);
+                        log.info("탈퇴 회원의 Apple 토큰 철회 완료: userId={}, client={}", userId, storedToken.client());
                     });
         } catch (Exception e) {
             log.error("탈퇴 회원의 Apple 토큰 철회 실패, 실제 삭제 때 다시 시도: userId={}", userId, e);

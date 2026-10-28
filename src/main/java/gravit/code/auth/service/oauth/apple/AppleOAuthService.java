@@ -1,5 +1,6 @@
 package gravit.code.auth.service.oauth.apple;
 
+import gravit.code.auth.domain.AppleClient;
 import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.oauth.AppleUserInfo;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
@@ -18,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -53,20 +52,9 @@ public class AppleOAuthService {
         validateAuthCode(authCode);
         String baseHost = validateDest(dest);
 
-        String decodedCode = URLDecoder.decode(authCode, StandardCharsets.UTF_8);
         String redirectUri = baseHost + OAuthLoginUrlService.REDIRECT_PATH_PREFIX + AppleUserInfo.PROVIDER;
 
-        Map<String, Object> tokenResponse = requestToken(decodedCode, redirectUri);
-
-        Jwt idToken = decodeIdToken(tokenResponse);
-        validateIssuer(idToken);
-        validateAudience(idToken);
-
-        OAuthUserInfo userInfo = new AppleUserInfo(idToken.getClaims());
-        OAuthUserInfoValidator.validate(userInfo);
-
-        String refreshToken = (String) tokenResponse.get(RESPONSE_REFRESH_TOKEN);
-        return AppleLoginDto.of(userInfo, refreshToken);
+        return exchangeAndVerify(webTokenRequest(authCode, redirectUri), AppleClient.WEB);
     }
 
     private void validateAuthCode(String authCode) {
@@ -85,18 +73,35 @@ public class AppleOAuthService {
         return base;
     }
 
-    private Map<String, Object> requestToken(
-            String decodedCode,
+    private MultiValueMap<String, String> webTokenRequest(
+            String authCode,
             String redirectUri
     ) {
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
         tokenRequest.add("grant_type", GRANT_TYPE);
-        tokenRequest.add("client_id", props.clientId());
-        tokenRequest.add("client_secret", appleClientSecretGenerator.generate());
+        tokenRequest.add("client_id", props.clientId(AppleClient.WEB));
+        tokenRequest.add("client_secret", appleClientSecretGenerator.generate(AppleClient.WEB));
         tokenRequest.add("redirect_uri", redirectUri);
-        tokenRequest.add("code", decodedCode);
+        tokenRequest.add("code", authCode);
 
-        return oAuthClient.getAccessTokenResponse(props.tokenUri(), tokenRequest);
+        return tokenRequest;
+    }
+
+    private AppleLoginDto exchangeAndVerify(
+            MultiValueMap<String, String> tokenRequest,
+            AppleClient client
+    ) {
+        Map<String, Object> tokenResponse = oAuthClient.getAccessTokenResponse(props.tokenUri(), tokenRequest);
+
+        Jwt idToken = decodeIdToken(tokenResponse);
+        validateIssuer(idToken);
+        validateAudience(idToken, props.clientId(client));
+
+        OAuthUserInfo userInfo = new AppleUserInfo(idToken.getClaims());
+        OAuthUserInfoValidator.validate(userInfo);
+
+        String refreshToken = (String) tokenResponse.get(RESPONSE_REFRESH_TOKEN);
+        return AppleLoginDto.of(userInfo, refreshToken, client);
     }
 
     private Jwt decodeIdToken(Map<String, Object> tokenResponse) {
@@ -120,8 +125,10 @@ public class AppleOAuthService {
         }
     }
 
-    private void validateAudience(Jwt idToken) {
-        String expectedClientId = props.clientId();
+    private void validateAudience(
+            Jwt idToken,
+            String expectedClientId
+    ) {
         List<String> audiences = idToken.getAudience();
 
         if (audiences == null || audiences.isEmpty()) {
@@ -135,10 +142,29 @@ public class AppleOAuthService {
         }
     }
 
-    public void revokeRefreshToken(String refreshToken) {
+    public AppleLoginDto getIosUserInfo(String authCode) {
+        validateAuthCode(authCode);
+
+        return exchangeAndVerify(iosTokenRequest(authCode), AppleClient.IOS);
+    }
+
+    private MultiValueMap<String, String> iosTokenRequest(String authCode) {
+        MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
+        tokenRequest.add("grant_type", GRANT_TYPE);
+        tokenRequest.add("client_id", props.clientId(AppleClient.IOS));
+        tokenRequest.add("client_secret", appleClientSecretGenerator.generate(AppleClient.IOS));
+        tokenRequest.add("code", authCode);
+
+        return tokenRequest;
+    }
+
+    public void revokeRefreshToken(
+            String refreshToken,
+            AppleClient client
+    ) {
         MultiValueMap<String, String> revokeRequest = new LinkedMultiValueMap<>();
-        revokeRequest.add("client_id", props.clientId());
-        revokeRequest.add("client_secret", appleClientSecretGenerator.generate());
+        revokeRequest.add("client_id", props.clientId(client));
+        revokeRequest.add("client_secret", appleClientSecretGenerator.generate(client));
         revokeRequest.add("token", refreshToken);
         revokeRequest.add("token_type_hint", TOKEN_TYPE_HINT);
 

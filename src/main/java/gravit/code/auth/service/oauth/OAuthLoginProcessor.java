@@ -1,6 +1,7 @@
 package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.AccessToken;
+import gravit.code.auth.domain.AppleClient;
 import gravit.code.auth.domain.RefreshToken;
 import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
@@ -98,21 +99,22 @@ public class OAuthLoginProcessor {
     public LoginResponse processApple(AppleLoginDto appleLoginDto) {
         User user = findOrCreateUser(appleLoginDto.userInfo());
 
-        saveAppleRefreshToken(user, appleLoginDto.refreshToken());
+        saveAppleRefreshToken(user, appleLoginDto.refreshToken(), appleLoginDto.client());
 
         return issueLoginResponse(user);
     }
 
     private void saveAppleRefreshToken(
             User user,
-            String appleRefreshToken
+            String appleRefreshToken,
+            AppleClient client
     ) {
         if (appleRefreshToken == null || appleRefreshToken.isBlank()) {
-            log.warn("Apple 토큰 응답에 refresh_token 이 없어 저장하지 않습니다. userId={}", user.getId());
+            log.warn("Apple 토큰 응답에 refresh_token 이 없어 저장하지 않습니다. userId={}, client={}", user.getId(), client);
             return;
         }
 
-        appleCredentialService.save(user.getId(), appleRefreshToken);
+        appleCredentialService.save(user.getId(), appleRefreshToken, client);
     }
 
 }

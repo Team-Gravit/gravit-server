@@ -1,6 +1,8 @@
 package gravit.code.auth.service.oauth;
 
+import gravit.code.auth.domain.AppleClient;
 import gravit.code.auth.dto.internal.AppleLoginDto;
+import gravit.code.auth.dto.internal.AppleStoredTokenDto;
 import gravit.code.auth.dto.oauth.AppleUserInfo;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.repository.AppleCredentialRepository;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,7 +49,14 @@ class OAuthLoginProcessorIntegrationTest {
     private UserFixtureBuilder userFixtureBuilder;
 
     private AppleLoginDto Apple_로그인(String refreshToken) {
-        return AppleLoginDto.of(new AppleUserInfo(Map.of("sub", SUB, "email", EMAIL)), refreshToken);
+        return Apple_로그인(refreshToken, AppleClient.WEB);
+    }
+
+    private AppleLoginDto Apple_로그인(
+            String refreshToken,
+            AppleClient client
+    ) {
+        return AppleLoginDto.of(new AppleUserInfo(Map.of("sub", SUB, "email", EMAIL)), refreshToken, client);
     }
 
     private User Apple_가입_회원() {
@@ -76,7 +86,7 @@ class OAuthLoginProcessorIntegrationTest {
                 softly.assertThat(response.isOnboarded()).isFalse();
                 softly.assertThat(user.getEmail()).isEqualTo(EMAIL);
                 softly.assertThat(user.getNickname()).isEqualTo("애플사용자");
-                softly.assertThat(appleCredentialService.findRefreshToken(user.getId())).contains(REFRESH_TOKEN);
+                softly.assertThat(appleCredentialService.findRefreshToken(user.getId()).map(AppleStoredTokenDto::refreshToken)).contains(REFRESH_TOKEN);
             });
         }
 
@@ -84,7 +94,7 @@ class OAuthLoginProcessorIntegrationTest {
         void 다시_로그인하면_같은_계정으로_로그인하고_보관한_토큰을_최신값으로_바꾼다() {
             // given
             User user = Apple_가입_회원();
-            appleCredentialService.save(user.getId(), REFRESH_TOKEN);
+            appleCredentialService.save(user.getId(), REFRESH_TOKEN, AppleClient.WEB);
 
             // when
             oAuthLoginProcessor.processApple(Apple_로그인(NEW_REFRESH_TOKEN));
@@ -93,7 +103,44 @@ class OAuthLoginProcessorIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(userRepository.findAll()).hasSize(1);
                 softly.assertThat(appleCredentialRepository.findAll()).hasSize(1);
-                softly.assertThat(appleCredentialService.findRefreshToken(user.getId())).contains(NEW_REFRESH_TOKEN);
+                softly.assertThat(appleCredentialService.findRefreshToken(user.getId()).map(AppleStoredTokenDto::refreshToken)).contains(NEW_REFRESH_TOKEN);
+            });
+        }
+
+        @Test
+        void iOS로_처음_로그인하면_가입시키고_토큰을_IOS_client로_보관한다() {
+            // when
+            LoginResponse response = oAuthLoginProcessor.processApple(Apple_로그인(REFRESH_TOKEN, AppleClient.IOS));
+
+            // then
+            User user = userRepository.findByProviderId(PROVIDER_ID).orElseThrow();
+            Optional<AppleStoredTokenDto> stored = appleCredentialService.findRefreshToken(user.getId());
+
+            assertSoftly(softly -> {
+                softly.assertThat(response.accessToken()).isNotBlank();
+                softly.assertThat(user.getNickname()).isEqualTo("애플사용자");
+                softly.assertThat(stored.map(AppleStoredTokenDto::refreshToken)).contains(REFRESH_TOKEN);
+                softly.assertThat(stored.map(AppleStoredTokenDto::client)).contains(AppleClient.IOS);
+            });
+        }
+
+        @Test
+        void 웹으로_가입한_회원이_iOS로_로그인하면_같은_계정으로_로그인하고_보관_토큰과_client를_IOS로_바꾼다() {
+            // given
+            User user = Apple_가입_회원();
+            appleCredentialService.save(user.getId(), REFRESH_TOKEN, AppleClient.WEB);
+
+            // when
+            oAuthLoginProcessor.processApple(Apple_로그인(NEW_REFRESH_TOKEN, AppleClient.IOS));
+
+            // then
+            Optional<AppleStoredTokenDto> stored = appleCredentialService.findRefreshToken(user.getId());
+
+            assertSoftly(softly -> {
+                softly.assertThat(userRepository.findAll()).hasSize(1);
+                softly.assertThat(appleCredentialRepository.findAll()).hasSize(1);
+                softly.assertThat(stored.map(AppleStoredTokenDto::refreshToken)).contains(NEW_REFRESH_TOKEN);
+                softly.assertThat(stored.map(AppleStoredTokenDto::client)).contains(AppleClient.IOS);
             });
         }
 
