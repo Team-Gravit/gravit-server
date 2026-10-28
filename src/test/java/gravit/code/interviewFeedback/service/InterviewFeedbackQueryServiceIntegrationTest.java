@@ -69,7 +69,7 @@ class InterviewFeedbackQueryServiceIntegrationTest {
     private static final long UNKNOWN_SESSION_ID = 999L;
     private static final LocalDateTime BASE_TIME = LocalDateTime.of(2026, 9, 1, 10, 0);
 
-    private static final long UNKNOWN_UNIT_ID = 999L;
+    private static final long UNKNOWN_UNIT_ID = 999_999L;
     private static final long POOL_CHAPTER_ID = 1L;
     private static final long ALGORITHM_CHAPTER_ID = 2L;
 
