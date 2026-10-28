@@ -124,6 +124,7 @@ oauth:
     jwk-set-uri: https://appleid.apple.com/auth/keys
     team-id: TESTTEAMID
     client-id: test.apple.client.id
+    ios-bundle-id: kr.inuappcenter.gravit.test
     key-id: TESTKEYID0
     # 테스트 전용 EC P-256 키. 실제 Apple 계정과 무관하다
     private-key: MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgfzKsbNNZQCzMEXaVVnny5oxS03hDMc9BmrS3NBQEmDWhRANCAASEiUtZ1QRUP+WuRDfNj2nxF+cLTXiDlqM565DOY8mkiTNMdx5U2G4BFTqzinO3hnMeHM8raP+4F7RsJXpQBNpB

@@ -1,5 +1,6 @@
 package gravit.code.auth.support;
 
+import gravit.code.auth.domain.AppleClient;
 import gravit.code.auth.infrastructure.config.AppleOAuthProps;
 import gravit.code.global.exception.domain.RestApiException;
 import io.jsonwebtoken.Jwts;
@@ -37,6 +38,7 @@ public class AppleClientSecretGenerator {
         this.clock = clock;
         this.props = props;
         this.privateKey = parsePrivateKey(props.privateKey());
+        validateIosBundleId(props.iosBundleId());
     }
 
     private PrivateKey parsePrivateKey(String encodedPrivateKey) {
@@ -54,13 +56,20 @@ public class AppleClientSecretGenerator {
         }
     }
 
-    public String generate() {
+    private void validateIosBundleId(String iosBundleId) {
+        if (iosBundleId == null || iosBundleId.isBlank()) {
+            log.error("Apple iOS Bundle ID(oauth.apple.ios-bundle-id)가 비어 있습니다.");
+            throw new RestApiException(APPLE_CONFIG_INVALID);
+        }
+    }
+
+    public String generate(AppleClient client) {
         Instant now = clock.instant();
 
         return Jwts.builder()
                 .header().keyId(props.keyId()).and()
                 .issuer(props.teamId())
-                .subject(props.clientId())
+                .subject(props.clientId(client))
                 .audience().single(props.issuer())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(CLIENT_SECRET_TTL)))
