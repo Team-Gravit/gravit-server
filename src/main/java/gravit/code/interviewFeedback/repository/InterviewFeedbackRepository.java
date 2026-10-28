@@ -15,11 +15,12 @@ public interface InterviewFeedbackRepository extends JpaRepository<InterviewFeed
 
     @Query("""
             SELECT new gravit.code.interviewFeedback.dto.internal.InterviewAnswerScoreDto(
-                a.displayOrder, q.topic, q.unitId, f.accuracyScore, f.structureScore, f.clarityScore
+                a.displayOrder, q.topic, q.unitId, u.title, f.accuracyScore, f.structureScore, f.clarityScore
             )
             FROM InterviewFeedback f
             JOIN InterviewAnswer a ON a.id = f.answerId
             JOIN InterviewQuestion q ON q.id = a.questionId
+            LEFT JOIN Unit u ON u.id = q.unitId
             WHERE a.sessionId = :sessionId
             ORDER BY a.displayOrder ASC
     """)
