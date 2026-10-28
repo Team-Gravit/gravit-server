@@ -17,9 +17,9 @@ public record InterviewWeakTopicResponse(
         long unitId,
 
         @Schema(
-                description = "학습 이동 대상 유닛 제목",
+                description = "학습 이동 대상 유닛 제목. 유닛이 없으면 null",
                 example = "정렬",
-                requiredMode = Schema.RequiredMode.REQUIRED
+                nullable = true
         )
         String unitTitle,
 
