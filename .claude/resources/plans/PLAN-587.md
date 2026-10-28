@@ -186,7 +186,7 @@ public record InterviewWeakTopicResponse(
 | 필드 | 타입 | 필수 | 설명 | 변경 |
 |---|---|---|---|---|
 | `unitId` | long | O | 학습 이동 대상 유닛 ID | 유지 |
-| `unitTitle` | string | O | 학습 이동 대상 유닛 제목 (`unit.title` 그대로) | 추가 |
+| `unitTitle` | string (nullable) | X | 학습 이동 대상 유닛 제목 (`unit.title` 그대로). 유닛이 없으면 null | 추가 |
 | `topic.topic` | string (enum `InterviewTopic`) | O | 약점 문항의 주제 태그 | 유지 |
 | `topic.displayName` | string | O | 주제 표시명 | 유지 |
 
@@ -239,3 +239,6 @@ public record InterviewWeakTopicResponse(
 
 ## Deviation Log
 > implement 스킬이 구현 중 계획을 벗어난 지점을 여기에 기록한다. (작성 시점엔 비워둔다)
+
+- `InterviewWeakTopicResponse`: `unitTitle` 스키마를 `requiredMode = REQUIRED`에서 `nullable = true`로 바꿈 - 이유: LEFT JOIN으로 유닛이 없으면 null이 나가는데 스키마가 null 불가로 표시돼 있었음(PR #588 리뷰 반영). 표기는 `InterviewAnswerDetailResponse`의 null 가능 필드를 따름
+- `InterviewFeedbackQueryServiceIntegrationTest`: `UNKNOWN_UNIT_ID`를 `999L`에서 `999_999L`로 바꿈 - 이유: TRUNCATE가 IDENTITY를 되돌리지 않아 저장된 유닛 ID와 겹칠 여지가 있었음(PR #588 리뷰 반영)
