@@ -54,6 +54,7 @@ jobs:
 
           oauth.apple.team-id: ${{ secrets.APPLE_TEAM_ID }}
           oauth.apple.client-id: ${{ secrets.APPLE_CLIENT_ID }}
+          oauth.apple.ios-bundle-id: ${{ secrets.APPLE_IOS_BUNDLE_ID }}
           oauth.apple.key-id: ${{ secrets.APPLE_KEY_ID }}
           oauth.apple.private-key: ${{ secrets.APPLE_PRIVATE_KEY }}
           oauth.apple.token-encryption-key: ${{ secrets.DEV_APPLE_TOKEN_ENCRYPTION_KEY }}
