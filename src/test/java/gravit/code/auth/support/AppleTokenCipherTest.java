@@ -22,7 +22,7 @@ class AppleTokenCipherTest {
     private static final String REFRESH_TOKEN = "r.apple-refresh-token.123";
 
     private AppleTokenCipher 암호기(String encryptionKey) {
-        return new AppleTokenCipher(new AppleOAuthProps(null, null, null, null, null, null, null, null, encryptionKey));
+        return new AppleTokenCipher(new AppleOAuthProps(null, null, null, null, null, null, null, null, null, encryptionKey));
     }
 
     @Nested

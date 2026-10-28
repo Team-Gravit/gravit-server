@@ -1,5 +1,6 @@
 package gravit.code.auth.support;
 
+import gravit.code.auth.domain.AppleClient;
 import gravit.code.auth.infrastructure.config.AppleOAuthProps;
 import gravit.code.global.exception.domain.RestApiException;
 import io.jsonwebtoken.Claims;
@@ -32,6 +33,7 @@ class AppleClientSecretGeneratorTest {
     private static final String ISSUER = "https://appleid.apple.com";
     private static final String TEAM_ID = "TESTTEAMID";
     private static final String CLIENT_ID = "test.apple.client.id";
+    private static final String IOS_BUNDLE_ID = "kr.inuappcenter.gravit.test";
     private static final String KEY_ID = "TESTKEYID0";
     private static final Duration CLIENT_SECRET_TTL = Duration.ofMinutes(5);
 
@@ -45,7 +47,18 @@ class AppleClientSecretGeneratorTest {
     }
 
     private AppleOAuthProps 개인키_설정(String privateKey) {
-        return new AppleOAuthProps(ISSUER, null, null, null, TEAM_ID, CLIENT_ID, KEY_ID, privateKey, null);
+        return 설정(privateKey, IOS_BUNDLE_ID);
+    }
+
+    private AppleOAuthProps Bundle_ID_설정(String iosBundleId) {
+        return 설정(인코딩된_개인키(), iosBundleId);
+    }
+
+    private AppleOAuthProps 설정(
+            String privateKey,
+            String iosBundleId
+    ) {
+        return new AppleOAuthProps(ISSUER, null, null, null, TEAM_ID, CLIENT_ID, iosBundleId, KEY_ID, privateKey, null);
     }
 
     private String 인코딩된_개인키() {
@@ -62,7 +75,7 @@ class AppleClientSecretGeneratorTest {
             AppleClientSecretGenerator generator = new AppleClientSecretGenerator(FIXED_CLOCK, 개인키_설정(인코딩된_개인키()));
 
             // when
-            String clientSecret = generator.generate();
+            String clientSecret = generator.generate(AppleClient.WEB);
 
             // then
             Jws<Claims> jws = Jwts.parser()
@@ -84,12 +97,51 @@ class AppleClientSecretGeneratorTest {
         }
 
         @Test
+        void WEB_client면_sub에_웹_Services_ID를_담는다() {
+            // given
+            AppleClientSecretGenerator generator = new AppleClientSecretGenerator(FIXED_CLOCK, 개인키_설정(인코딩된_개인키()));
+
+            // when
+            String clientSecret = generator.generate(AppleClient.WEB);
+
+            // then
+            assertThat(클레임(clientSecret).getSubject()).isEqualTo(CLIENT_ID);
+        }
+
+        private Claims 클레임(String clientSecret) {
+            return Jwts.parser()
+                    .verifyWith(keyPair.getPublic())
+                    .clock(() -> Date.from(NOW))
+                    .build()
+                    .parseSignedClaims(clientSecret)
+                    .getPayload();
+        }
+
+        @Test
+        void IOS_client면_sub에_iOS_Bundle_ID를_담는다() {
+            // given
+            AppleClientSecretGenerator generator = new AppleClientSecretGenerator(FIXED_CLOCK, 개인키_설정(인코딩된_개인키()));
+
+            // when
+            String clientSecret = generator.generate(AppleClient.IOS);
+
+            // then
+            Claims claims = 클레임(clientSecret);
+
+            assertSoftly(softly -> {
+                softly.assertThat(claims.getSubject()).isEqualTo(IOS_BUNDLE_ID);
+                softly.assertThat(claims.getIssuer()).isEqualTo(TEAM_ID);
+                softly.assertThat(claims.getAudience()).containsExactly(ISSUER);
+            });
+        }
+
+        @Test
         void aud는_배열이_아닌_문자열로_담는다() {
             // given
             AppleClientSecretGenerator generator = new AppleClientSecretGenerator(FIXED_CLOCK, 개인키_설정(인코딩된_개인키()));
 
             // when
-            String clientSecret = generator.generate();
+            String clientSecret = generator.generate(AppleClient.WEB);
 
             // then
             String payload = new String(Base64.getUrlDecoder().decode(clientSecret.split("\\.")[1]));
@@ -123,6 +175,29 @@ class AppleClientSecretGeneratorTest {
         void PKCS8_EC_키가_아니면_예외를_던진다() {
             // when & then
             assertThatThrownBy(() -> new AppleClientSecretGenerator(FIXED_CLOCK, 개인키_설정("CHANGE_ME")))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(APPLE_CONFIG_INVALID);
+        }
+    }
+
+    @Nested
+    @DisplayName("iOS Bundle ID 설정을 읽을 때")
+    class ValidateIosBundleId {
+
+        @Test
+        void Bundle_ID가_비어_있으면_예외를_던진다() {
+            // when & then
+            assertThatThrownBy(() -> new AppleClientSecretGenerator(FIXED_CLOCK, Bundle_ID_설정(" ")))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(APPLE_CONFIG_INVALID);
+        }
+
+        @Test
+        void Bundle_ID가_없으면_예외를_던진다() {
+            // when & then
+            assertThatThrownBy(() -> new AppleClientSecretGenerator(FIXED_CLOCK, Bundle_ID_설정(null)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(APPLE_CONFIG_INVALID);
