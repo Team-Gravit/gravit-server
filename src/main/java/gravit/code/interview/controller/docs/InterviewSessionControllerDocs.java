@@ -574,9 +574,10 @@ public interface InterviewSessionControllerDocs {
     @Operation(
             summary = "면접 세션 중단",
             description = """
-                    진행 중(IN_PROGRESS)인 세션을 취소(ABANDONED)합니다.<br>
-                    제출 이후에는 취소할 수 없으며, 취소된 세션은 채점하지 않고 결과와 통계에도 포함하지 않습니다.<br>
-                    취소된 세션은 INTERVIEW_4025, 제출 이후 세션은 INTERVIEW_4026으로 거부됩니다.<br>
+                    진행 중(IN_PROGRESS)이거나 채점 중(GRADING)인 세션을 취소(ABANDONED)합니다.<br>
+                    취소된 세션은 채점 결과를 저장하지 않고 보상을 지급하지 않으며 결과와 통계에도 포함하지 않습니다.<br>
+                    취소된 세션은 INTERVIEW_4025, 채점이 끝난 세션(COMPLETED, GRADING_FAILED)은 INTERVIEW_4026으로 거부됩니다.<br>
+                    채점 완료와 겹치면 먼저 처리된 쪽이 결과가 되며, 완료가 먼저면 INTERVIEW_4026으로 거부됩니다.<br>
                     🔐 <strong>Jwt 필요</strong>
                     """
     )
@@ -624,7 +625,7 @@ public interface InterviewSessionControllerDocs {
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "🚨 진행 중인 세션이 아님",
+                    description = "🚨 취소할 수 없는 세션",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponse.class),
@@ -634,7 +635,7 @@ public interface InterviewSessionControllerDocs {
                                             value = "{\"error\": \"INTERVIEW_4025\", \"message\": \"중단된 면접 세션입니다.\"}"
                                     ),
                                     @ExampleObject(
-                                            name = "제출된 세션",
+                                            name = "채점이 끝난 세션",
                                             value = "{\"error\": \"INTERVIEW_4026\", \"message\": \"이미 제출된 면접 세션입니다.\"}"
                                     )
                             }
