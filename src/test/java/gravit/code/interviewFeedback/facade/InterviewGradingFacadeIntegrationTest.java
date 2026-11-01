@@ -7,9 +7,13 @@ import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.repository.InterviewAnswerRepository;
 import gravit.code.interview.repository.InterviewSessionRepository;
+import gravit.code.interview.service.InterviewSessionCommandService;
 import gravit.code.interviewFeedback.domain.InterviewFeedback;
+import gravit.code.interviewFeedback.dto.internal.InterviewGradedAnswerDto;
 import gravit.code.interviewFeedback.dto.internal.InterviewGradingInputDto;
+import gravit.code.interviewFeedback.dto.internal.InterviewScoreDto;
 import gravit.code.interviewFeedback.repository.InterviewFeedbackRepository;
+import gravit.code.interviewFeedback.service.InterviewFeedbackCommandService;
 import gravit.code.interviewQuestion.domain.InterviewConceptType;
 import gravit.code.interviewQuestion.domain.InterviewQuestion;
 import gravit.code.interviewQuestion.domain.InterviewTopic;
@@ -31,14 +35,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ALREADY_SUBMITTED;
 import static gravit.code.interview.fixture.InterviewSessionFixture.상태_세션;
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.개념;
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.답변한_답안;
@@ -46,6 +61,7 @@ import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.무
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.문제;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
@@ -62,7 +78,11 @@ class InterviewGradingFacadeIntegrationTest {
     private static final String CONTENT_PREFIX = "답변 ";
     private static final String FAILING_CONTENT = CONTENT_PREFIX + 3;
     private static final String CONCEPT_SUFFIX = " 필수 개념";
+    private static final String GRADING_FAILED_LOG = "면접 채점 실패";
+    private static final String ABANDONED_LOG = "취소된 면접 세션의 채점 종료";
     private static final LocalDateTime ANSWERED_AT = LocalDateTime.of(2026, 9, 1, 10, 0);
+    private static final long LOCK_WAIT_MILLIS = 500L;
+    private static final long TIMEOUT_SECONDS = 10L;
     private static final List<InterviewTopic> TOPICS = List.of(
             InterviewTopic.DATA_STRUCTURE,
             InterviewTopic.ALGORITHM,
@@ -73,6 +93,15 @@ class InterviewGradingFacadeIntegrationTest {
 
     @Autowired
     private InterviewGradingFacade interviewGradingFacade;
+
+    @Autowired
+    private InterviewSessionCommandService interviewSessionCommandService;
+
+    @Autowired
+    private InterviewFeedbackCommandService interviewFeedbackCommandService;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     @Autowired
     private InterviewSessionRepository interviewSessionRepository;
@@ -151,6 +180,46 @@ class InterviewGradingFacadeIntegrationTest {
 
     private InterviewSession 세션(long sessionId) {
         return interviewSessionRepository.findById(sessionId).orElseThrow();
+    }
+
+    private void 판정_중_취소하고_성공한다(
+            long userId,
+            long sessionId
+    ) {
+        stubInterviewGradingClient.respondWith(input -> {
+            interviewSessionCommandService.abandon(userId, sessionId);
+            return StubInterviewGradingClient.perfectJudgment(input);
+        });
+    }
+
+    private void 판정_중_취소하고_실패한다(
+            long userId,
+            long sessionId
+    ) {
+        stubInterviewGradingClient.respondWith(input -> {
+            interviewSessionCommandService.abandon(userId, sessionId);
+            throw new RestApiException(CustomErrorCode.INTERVIEW_GRADING_FAILED);
+        });
+    }
+
+    private void 대기(CountDownLatch latch) {
+        try {
+            if (!latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("래치 대기 시간 초과");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private boolean 끝나지_않고_대기_중인지(Future<?> future) throws Exception {
+        try {
+            future.get(LOCK_WAIT_MILLIS, TimeUnit.MILLISECONDS);
+            return false;
+        } catch (TimeoutException e) {
+            return true;
+        }
     }
 
     @Nested
@@ -313,6 +382,79 @@ class InterviewGradingFacadeIntegrationTest {
             assertThatCode(() -> interviewGradingFacade.grade(UNKNOWN_SESSION_ID)).doesNotThrowAnyException();
             assertThat(stubInterviewGradingClient.callCount()).isZero();
         }
+
+        @Test
+        void 이미_취소된_세션이면_판정하지_않고_상태를_유지한다() {
+            // given
+            InterviewSession session = interviewSessionRepository.save(상태_세션(USER_ID, InterviewSessionStatus.ABANDONED));
+            답안_저장(session.getId(), 저장된_문제_5개(), QUESTION_COUNT);
+
+            // when
+            interviewGradingFacade.grade(session.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(세션(session.getId()).getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(interviewFeedbackRepository.count()).isZero();
+                softly.assertThat(stubInterviewGradingClient.callCount()).isZero();
+            });
+        }
+
+        @Test
+        void 판정_도중_취소되면_남은_문항을_판정하지_않고_피드백_없이_취소로_남는다() {
+            // given
+            InterviewSession session = 채점중_세션();
+            답안_저장(session.getId(), 저장된_문제_5개(), QUESTION_COUNT);
+            판정_중_취소하고_성공한다(USER_ID, session.getId());
+
+            // when
+            interviewGradingFacade.grade(session.getId());
+
+            // then
+            InterviewSession abandoned = 세션(session.getId());
+            assertSoftly(softly -> {
+                softly.assertThat(abandoned.getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(abandoned.getAccuracyScore()).isZero();
+                softly.assertThat(abandoned.getDeliveryScore()).isZero();
+                softly.assertThat(interviewFeedbackRepository.count()).isZero();
+                softly.assertThat(stubInterviewGradingClient.callCount()).isEqualTo(1);
+            });
+        }
+
+        @Test
+        void 판정_도중_취소되고_판정이_실패해도_채점_실패가_되지_않는다() {
+            // given
+            InterviewSession session = 채점중_세션();
+            답안_저장(session.getId(), 저장된_문제_5개(), QUESTION_COUNT);
+            판정_중_취소하고_실패한다(USER_ID, session.getId());
+
+            // when
+            interviewGradingFacade.grade(session.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(세션(session.getId()).getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(interviewFeedbackRepository.count()).isZero();
+            });
+        }
+
+        @Test
+        @ExtendWith(OutputCaptureExtension.class)
+        void 취소된_세션은_채점_실패_로그를_남기지_않는다(CapturedOutput output) {
+            // given
+            InterviewSession session = 채점중_세션();
+            답안_저장(session.getId(), 저장된_문제_5개(), QUESTION_COUNT);
+            판정_중_취소하고_실패한다(USER_ID, session.getId());
+
+            // when
+            interviewGradingFacade.grade(session.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(output.getOut()).contains(ABANDONED_LOG);
+                softly.assertThat(output.getOut()).doesNotContain(GRADING_FAILED_LOG);
+            });
+        }
     }
 
     @Nested
@@ -460,6 +602,125 @@ class InterviewGradingFacadeIntegrationTest {
                 softly.assertThat(유저(user.getId()).getLevel().getXp()).isEqualTo(FULL_SCORE_REWARD);
                 softly.assertThat(userLeagueRepository.existsByUserId(user.getId())).isFalse();
             });
+        }
+
+        @Test
+        void 판정_도중_취소되면_보상을_지급하지_않는다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            브론즈3_리그_참여(user, 0);
+            InterviewSession session = 답안이_저장된_채점중_세션(user.getId(), QUESTION_COUNT);
+            판정_중_취소하고_성공한다(user.getId(), session.getId());
+
+            // when
+            interviewGradingFacade.grade(session.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(세션(session.getId()).getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                softly.assertThat(유저(user.getId()).getLevel().getXp()).isEqualTo(NO_REWARD);
+                softly.assertThat(누적_LP(user.getId())).isEqualTo(NO_REWARD);
+            });
+        }
+
+        @Nested
+        @DisplayName("취소와 채점 저장이 겹치면")
+        class AbandonSaveRace {
+
+            @Test
+            void 취소가_먼저_잠그면_채점_저장이_무효가_된다() throws Exception {
+                // given
+                User user = userFixture.일반_유저(1);
+                브론즈3_리그_참여(user, 0);
+                InterviewSession session = 답안이_저장된_채점중_세션(user.getId(), QUESTION_COUNT);
+                CountDownLatch abandonLocked = new CountDownLatch(1);
+                CountDownLatch abandonReleased = new CountDownLatch(1);
+                ExecutorService executor = Executors.newFixedThreadPool(2);
+
+                try {
+                    Future<?> abandon = executor.submit(() -> transactionTemplate.executeWithoutResult(status -> {
+                        interviewSessionCommandService.abandon(user.getId(), session.getId());
+                        abandonLocked.countDown();
+                        대기(abandonReleased);
+                    }));
+                    대기(abandonLocked);
+
+                    // when
+                    Future<?> grade = executor.submit(() -> interviewGradingFacade.grade(session.getId()));
+                    boolean waitedForAbandon = 끝나지_않고_대기_중인지(grade);
+
+                    abandonReleased.countDown();
+                    abandon.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                    grade.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+                    // then
+                    assertSoftly(softly -> {
+                        softly.assertThat(waitedForAbandon).isTrue();
+                        softly.assertThat(stubInterviewGradingClient.callCount()).isEqualTo(QUESTION_COUNT);
+                        softly.assertThat(세션(session.getId()).getStatus()).isEqualTo(InterviewSessionStatus.ABANDONED);
+                        softly.assertThat(interviewFeedbackRepository.count()).isZero();
+                        softly.assertThat(유저(user.getId()).getLevel().getXp()).isEqualTo(NO_REWARD);
+                        softly.assertThat(누적_LP(user.getId())).isEqualTo(NO_REWARD);
+                    });
+                } finally {
+                    abandonReleased.countDown();
+                    executor.shutdownNow();
+                }
+            }
+
+            @Test
+            void 채점_저장이_먼저_잠그면_취소가_거부되고_완료로_남는다() throws Exception {
+                // given
+                User user = userFixture.일반_유저(1);
+                브론즈3_리그_참여(user, 0);
+                InterviewSession session = 답안이_저장된_채점중_세션(user.getId(), QUESTION_COUNT);
+                List<InterviewGradedAnswerDto> gradedAnswers = interviewAnswerRepository
+                        .findAllBySessionIdOrderByDisplayOrderAsc(session.getId()).stream()
+                        .map(answer -> InterviewGradedAnswerDto.of(answer.getId(), InterviewScoreDto.noResponse()))
+                        .toList();
+                CountDownLatch saveLocked = new CountDownLatch(1);
+                CountDownLatch saveReleased = new CountDownLatch(1);
+                ExecutorService executor = Executors.newFixedThreadPool(2);
+
+                try {
+                    Future<?> save = executor.submit(() -> transactionTemplate.executeWithoutResult(status -> {
+                        interviewFeedbackCommandService.saveAll(gradedAnswers);
+                        interviewSessionCommandService.completeGrading(
+                                session.getId(),
+                                ANSWERED_ACCURACY * QUESTION_COUNT,
+                                ANSWERED_DELIVERY * QUESTION_COUNT
+                        );
+                        saveLocked.countDown();
+                        대기(saveReleased);
+                    }));
+                    대기(saveLocked);
+
+                    // when
+                    Future<?> abandon = executor.submit(
+                            () -> interviewSessionCommandService.abandon(user.getId(), session.getId())
+                    );
+                    boolean waitedForSave = 끝나지_않고_대기_중인지(abandon);
+
+                    saveReleased.countDown();
+                    save.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+                    // then
+                    assertThat(waitedForSave).isTrue();
+                    assertThatThrownBy(() -> abandon.get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                            .hasCauseInstanceOf(RestApiException.class)
+                            .extracting(e -> ((RestApiException) e.getCause()).getErrorCode())
+                            .isEqualTo(INTERVIEW_SESSION_ALREADY_SUBMITTED);
+                    assertSoftly(softly -> {
+                        softly.assertThat(세션(session.getId()).getStatus()).isEqualTo(InterviewSessionStatus.COMPLETED);
+                        softly.assertThat(interviewFeedbackRepository.count()).isEqualTo(QUESTION_COUNT);
+                        softly.assertThat(유저(user.getId()).getLevel().getXp()).isEqualTo(FULL_SCORE_REWARD);
+                        softly.assertThat(누적_LP(user.getId())).isEqualTo(FULL_SCORE_REWARD);
+                    });
+                } finally {
+                    saveReleased.countDown();
+                    executor.shutdownNow();
+                }
+            }
         }
     }
 }
