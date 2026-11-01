@@ -56,7 +56,7 @@ public class InterviewGradingFacade {
 
             Map<Long, List<InterviewQuestionConcept>> questionIdToConcepts = interviewQuestionQueryService.getQuestionIdToConcepts(questionIds);
 
-            List<InterviewGradedAnswerDto> gradedAnswers = gradeAnswers(answers, questionIdToQuestion, questionIdToConcepts);
+            List<InterviewGradedAnswerDto> gradedAnswers = gradeAnswers(sessionId, answers, questionIdToQuestion, questionIdToConcepts);
 
             List<InterviewScoreDto> scores = gradedAnswers.stream()
                     .map(InterviewGradedAnswerDto::score)
@@ -66,12 +66,12 @@ public class InterviewGradingFacade {
 
             save(sessionId, gradedAnswers, sessionScore);
         } catch (RuntimeException e) {
-            log.error("면접 채점 실패 - sessionId: {}", sessionId, e);
-            markGradingFailed(sessionId);
+            handleGradingFailure(sessionId, e);
         }
     }
 
     private List<InterviewGradedAnswerDto> gradeAnswers(
+            long sessionId,
             List<InterviewAnswer> answers,
             Map<Long, InterviewQuestion> questionIdToQuestion,
             Map<Long, List<InterviewQuestionConcept>> questionIdToConcepts
@@ -82,13 +82,14 @@ public class InterviewGradingFacade {
             InterviewQuestion question = questionIdToQuestion.get(answer.getQuestionId());
             List<InterviewQuestionConcept> concepts = questionIdToConcepts.getOrDefault(answer.getQuestionId(), List.of());
 
-            gradedAnswers.add(gradeAnswer(answer, question, concepts));
+            gradedAnswers.add(gradeAnswer(sessionId, answer, question, concepts));
         }
 
         return gradedAnswers;
     }
 
     private InterviewGradedAnswerDto gradeAnswer(
+            long sessionId,
             InterviewAnswer answer,
             InterviewQuestion question,
             List<InterviewQuestionConcept> concepts
@@ -96,6 +97,8 @@ public class InterviewGradingFacade {
         if (!answer.isAnswered()) {
             return InterviewGradedAnswerDto.of(answer.getId(), InterviewScoreDto.noResponse());
         }
+
+        interviewSessionQueryService.getGradingSession(sessionId);
 
         InterviewGradingJudgmentDto judgment = interviewGradingService.judge(
                 InterviewGradingInputDto.of(question, concepts, answer.getContent())
@@ -119,10 +122,19 @@ public class InterviewGradingFacade {
         });
     }
 
-    private void markGradingFailed(long sessionId) {
+    private void handleGradingFailure(
+            long sessionId,
+            RuntimeException cause
+    ) {
         try {
-            interviewSessionCommandService.failGrading(sessionId);
+            if (interviewSessionCommandService.failGradingUnlessAbandoned(sessionId)) {
+                log.error("면접 채점 실패 - sessionId: {}", sessionId, cause);
+                return;
+            }
+
+            log.info("취소된 면접 세션의 채점 종료 - sessionId: {}", sessionId);
         } catch (RuntimeException e) {
+            log.error("면접 채점 실패 - sessionId: {}", sessionId, cause);
             log.error("면접 채점 실패 상태 전이 실패 - sessionId: {}", sessionId, e);
         }
     }

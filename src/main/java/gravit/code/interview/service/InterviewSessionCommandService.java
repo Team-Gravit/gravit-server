@@ -101,7 +101,7 @@ public class InterviewSessionCommandService {
             long userId,
             long sessionId
     ) {
-        InterviewSession session = findSession(sessionId);
+        InterviewSession session = findSessionForUpdate(sessionId);
         validateOwner(session, userId);
 
         session.abandon(LocalDateTime.now(clock));
@@ -115,7 +115,7 @@ public class InterviewSessionCommandService {
             long sessionId,
             List<InterviewAnswerSubmitRequest> answerRequests
     ) {
-        InterviewSession session = findSession(sessionId);
+        InterviewSession session = findSessionForUpdate(sessionId);
         validateOwner(session, userId);
         session.validateInProgress();
         validateDisplayOrders(answerRequests);
@@ -141,7 +141,7 @@ public class InterviewSessionCommandService {
             int accuracyScore,
             int deliveryScore
     ) {
-        InterviewSession session = findSession(sessionId);
+        InterviewSession session = findSessionForUpdate(sessionId);
 
         session.completeGrading(accuracyScore, deliveryScore);
 
@@ -149,14 +149,20 @@ public class InterviewSessionCommandService {
     }
 
     @Transactional
-    public void failGrading(long sessionId) {
-        InterviewSession session = findSession(sessionId);
+    public boolean failGradingUnlessAbandoned(long sessionId) {
+        InterviewSession session = findSessionForUpdate(sessionId);
+
+        if (session.isAbandoned()) {
+            return false;
+        }
 
         session.failGrading();
+
+        return true;
     }
 
-    private InterviewSession findSession(long sessionId) {
-        return interviewSessionRepository.findById(sessionId)
+    private InterviewSession findSessionForUpdate(long sessionId) {
+        return interviewSessionRepository.findByIdForUpdate(sessionId)
                 .orElseThrow(() -> new RestApiException(INTERVIEW_SESSION_NOT_FOUND));
     }
 

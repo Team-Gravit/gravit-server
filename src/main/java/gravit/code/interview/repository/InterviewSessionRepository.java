@@ -2,7 +2,9 @@ package gravit.code.interview.repository;
 
 import gravit.code.interview.domain.InterviewInputType;
 import gravit.code.interview.domain.InterviewSession;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.dto.internal.InterviewSessionAverageDto;
@@ -13,8 +15,17 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface InterviewSessionRepository extends JpaRepository<InterviewSession, Long> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT s
+            FROM InterviewSession s
+            WHERE s.id = :id
+    """)
+    Optional<InterviewSession> findByIdForUpdate(@Param("id") long id);
 
     Page<InterviewSession> findAllByUserIdAndStatus(
             long userId,

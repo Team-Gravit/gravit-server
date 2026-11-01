@@ -220,10 +220,19 @@ public class InterviewSession extends BaseEntity {
     }
 
     public void abandon(LocalDateTime endedAt) {
-        validateInProgress();
+        validateAbandonable();
 
         this.status = InterviewSessionStatus.ABANDONED;
         this.endedAt = endedAt;
+    }
+
+    private void validateAbandonable() {
+        if (isAbandoned()) {
+            throw new RestApiException(INTERVIEW_SESSION_ABANDONED);
+        }
+        if (!isInProgress() && !isGrading()) {
+            throw new RestApiException(INTERVIEW_SESSION_ALREADY_SUBMITTED);
+        }
     }
 
     public void validateInProgress() {
