@@ -27,11 +27,11 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/test")
 public class TestUserDataCleanController implements TestUserDataCleanControllerDocs {
 
-    @PersistenceContext
-    private EntityManager em;
-
     private final UserRepository userRepository;
     private final UserLeagueRepository userLeagueRepository;
+
+    @PersistenceContext
+    private EntityManager em;
     private final ApplicationEventPublisher publisher;
 
     @PostMapping("/users/clean")
@@ -53,15 +53,18 @@ public class TestUserDataCleanController implements TestUserDataCleanControllerD
     }
 
     private void deleteUserData(long userId) {
-        // 랭킹 키는 user_league 삭제 전에 조회해야 한다. Redis 제거는 커밋 후 리스너가 수행한다
-        userLeagueRepository.findRankKeyByUserId(userId)
-                .map(rankKey -> LeagueRankChangedEvent.removed(userId, rankKey.seasonId(), rankKey.leagueId()))
-                .ifPresent(publisher::publishEvent);
+        publishRankRemovedBeforeDeletion(userId);
 
         em.createNativeQuery("DELETE FROM user_daily_activity WHERE user_id = :id")
                 .setParameter("id", userId)
                 .executeUpdate();
 
         userRepository.cleanUserDeletion(userId);
+    }
+
+    private void publishRankRemovedBeforeDeletion(long userId) {
+        userLeagueRepository.findRankKeyByUserId(userId)
+                .map(rankKey -> LeagueRankChangedEvent.removed(userId, rankKey.seasonId(), rankKey.leagueId()))
+                .ifPresent(publisher::publishEvent);
     }
 }
