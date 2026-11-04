@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_NOT_FOUND;
 import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_TYPE_MISMATCH;
 import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
@@ -72,7 +73,7 @@ class ProblemFacadeIntegrationTest {
         void 주관식_문제의_유닛_정보와_문제_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
@@ -95,7 +96,7 @@ class ProblemFacadeIntegrationTest {
         void 객관식_문제의_유닛_정보와_문제_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Problem problem = problemRepository.save(Problem.create(ProblemType.OBJECTIVE, "다음 중 올바른 것을 고르시오.", "큐의 특성은?", lesson.getId()));
@@ -119,7 +120,7 @@ class ProblemFacadeIntegrationTest {
         void 문제가_없으면_빈_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
@@ -155,7 +156,7 @@ class ProblemFacadeIntegrationTest {
         private static final long NOT_EXIST_PROBLEM_ID = 999_999L;
 
         private Problem 주관식_문제() {
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
@@ -163,7 +164,7 @@ class ProblemFacadeIntegrationTest {
         }
 
         private Problem 객관식_문제() {
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 

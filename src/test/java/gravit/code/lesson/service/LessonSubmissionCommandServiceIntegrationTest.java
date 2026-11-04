@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -47,7 +48,7 @@ class LessonSubmissionCommandServiceIntegrationTest {
         void 첫_풀이면_새로_생성한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(lesson.getId(), 120, 80);
@@ -63,7 +64,7 @@ class LessonSubmissionCommandServiceIntegrationTest {
         void 재풀이면_새_행을_저장한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 

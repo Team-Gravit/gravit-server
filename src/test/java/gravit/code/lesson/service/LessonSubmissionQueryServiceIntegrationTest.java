@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -46,7 +47,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 제출_기록이_있으면_횟수를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), userId));
@@ -62,7 +63,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 같은_레슨을_여러_번_제출하면_제출한_횟수를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 60, lesson.getId(), userId));
@@ -80,7 +81,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 제출_기록이_없으면_0을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
@@ -100,7 +101,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 첫_제출이면_true를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
@@ -115,7 +116,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 이미_제출한_적이_있으면_false를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), userId));
@@ -136,7 +137,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 제출_기록이_여러_개_있으면_그_수를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -154,7 +155,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 같은_레슨을_여러_번_제출해도_1개로_집계된다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 60, lesson.getId(), userId));
@@ -185,7 +186,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
             // given
             long userId = 1L;
             long otherUserId = 2L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lesson.getId(), otherUserId));
@@ -206,7 +207,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 학습_기록이_여러_개면_초를_시간으로_환산하여_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -224,7 +225,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 같은_레슨을_재시도하면_시도마다_학습_시간이_합산된다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(3600, 80, lesson.getId(), userId));
@@ -241,7 +242,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 딱_떨어지지_않으면_소수점_첫째자리로_반올림하여_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             // 4600초 = 1.2777...시간 → 1.3
@@ -271,7 +272,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
             // given
             long userId = 1L;
             long otherUserId = 2L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(3600, 80, lesson.getId(), otherUserId));
@@ -292,7 +293,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 정확도들의_평균을_정수로_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -310,7 +311,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 같은_레슨을_재시도하면_시도마다_평균에_반영된다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 40, lesson.getId(), userId));
@@ -344,7 +345,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 학습_기록이_있으면_가장_많이_학습한_시간을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(120, 80, lesson.getId(), userId));
@@ -377,10 +378,10 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 풀이_수가_많은_순으로_최대_3개의_챕터를_반환한다() {
             // given
             long userId = 1L;
-            Chapter ch1 = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Chapter ch2 = chapterRepository.save(Chapter.create("운영체제", "OS 기초"));
-            Chapter ch3 = chapterRepository.save(Chapter.create("네트워크", "네트워크 기초"));
-            Chapter ch4 = chapterRepository.save(Chapter.create("데이터베이스", "DB 기초"));
+            Chapter ch1 = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
+            Chapter ch2 = chapterRepository.save(Chapter.create("운영체제", "OS 기초", CS));
+            Chapter ch3 = chapterRepository.save(Chapter.create("네트워크", "네트워크 기초", CS));
+            Chapter ch4 = chapterRepository.save(Chapter.create("데이터베이스", "DB 기초", CS));
 
             Unit u1 = unitRepository.save(Unit.create("연결리스트", "linked list", ch1.getId(), 1));
             Unit u2 = unitRepository.save(Unit.create("프로세스", "process", ch2.getId(), 1));
@@ -424,7 +425,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
         void 같은_레슨을_여러_번_제출해도_풀이_수가_부풀지_않는다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "linked list", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -464,7 +465,7 @@ class LessonSubmissionQueryServiceIntegrationTest {
             // given
             long userId = 1L;
             long otherUserId = 2L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "linked list", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonSubmissionRepository.save(LessonSubmission.create(60, 80, lesson.getId(), otherUserId));

@@ -42,6 +42,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -109,7 +110,7 @@ class UserFacadeIntegrationTest {
             userLeague.addLeaguePoints(50);
             userLeagueRepository.save(userLeague);
 
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
@@ -155,7 +156,7 @@ class UserFacadeIntegrationTest {
             Season season = seasonRepository.save(Season.active("2026-W18", LocalDateTime.now(KST), LocalDateTime.now(KST).plusWeeks(1)));
             userLeagueRepository.save(UserLeague.create(user, season, league));
 
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
 
@@ -186,7 +187,7 @@ class UserFacadeIntegrationTest {
             Season season = seasonRepository.save(Season.active("2026-W18", LocalDateTime.now(KST), LocalDateTime.now(KST).plusWeeks(1)));
             userLeagueRepository.save(UserLeague.create(user, season, league));
 
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
 

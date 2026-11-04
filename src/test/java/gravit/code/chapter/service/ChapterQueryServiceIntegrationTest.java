@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.CHAPTER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,8 +40,8 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            chapterRepository.save(Chapter.create("네트워크", "네트워크 기초 개념"));
+            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            chapterRepository.save(Chapter.create("네트워크", "네트워크 기초 개념", CS));
 
             // when
             List<ChapterSummaryResponse> result = chapterQueryService.getAllChapter();
@@ -70,7 +71,7 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             ChapterSummaryResponse result = chapterQueryService.getChapterSummary(saved.getId());
@@ -100,7 +101,7 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             Chapter result = chapterQueryService.getChapter(saved.getId());
@@ -130,7 +131,7 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 챕터_아이디와_이름을_반환한다() {
             // given
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             // when

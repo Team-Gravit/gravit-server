@@ -46,6 +46,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
 import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND;
 import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_NOT_FOUND;
@@ -149,7 +150,7 @@ class LessonFacadeIntegrationTest {
         void 유닛_정보와_레슨_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 3));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -174,7 +175,7 @@ class LessonFacadeIntegrationTest {
         void 레슨이_없으면_빈_리스트를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             // when
@@ -193,7 +194,7 @@ class LessonFacadeIntegrationTest {
         private static final long NOT_EXIST_PROBLEM_ID = 999_999L;
 
         private Lesson 레슨() {
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             return lessonRepository.save(Lesson.create("레슨1", unit.getId()));
@@ -383,7 +384,7 @@ class LessonFacadeIntegrationTest {
         private static final long OTHER_USER_ID = 999_999L;
 
         private Lesson 레슨() {
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             return lessonRepository.save(Lesson.create("레슨1", unit.getId()));
@@ -433,7 +434,7 @@ class LessonFacadeIntegrationTest {
             // given
             User user = 유저();
             브론즈로_리그에_참여시킨다(user, 승급_직전_LP);
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "연결리스트 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             LessonSubmission submission = lessonSubmissionRepository.save(LessonSubmission.create(80, 60, lesson.getId(), user.getId()));

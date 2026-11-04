@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -57,7 +58,7 @@ class WrongAnsweredNoteFacadeIntegrationTest {
         void 유닛_정보와_오답_주관식_문제_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
@@ -80,7 +81,7 @@ class WrongAnsweredNoteFacadeIntegrationTest {
         void 오답_문제가_없으면_빈_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
 
             // when

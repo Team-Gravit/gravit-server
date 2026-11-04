@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.LEARNING_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -61,7 +62,7 @@ class LearningFacadeIntegrationTest {
             // given
             User user = userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 3, Role.USER));
 
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
@@ -88,7 +89,7 @@ class LearningFacadeIntegrationTest {
             User user = userRepository.save(User.create("test@test.com", "provider_1", "테스터", "handle1", 1, Role.USER));
 
             // Learning.create 기본 recentSolvedChapterId=1L 이므로 id 1 챕터가 존재해야 한다 (reset SQL 로 id 1부터 시작)
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
 

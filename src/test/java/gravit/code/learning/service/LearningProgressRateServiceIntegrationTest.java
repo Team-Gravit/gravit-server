@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -49,7 +50,7 @@ class LearningProgressRateServiceIntegrationTest {
         void 풀이한_레슨이_없으면_0을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -65,7 +66,7 @@ class LearningProgressRateServiceIntegrationTest {
         void 일부_레슨을_풀었으면_진행률을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -83,7 +84,7 @@ class LearningProgressRateServiceIntegrationTest {
         void 모든_레슨을_풀었으면_100을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -106,7 +107,7 @@ class LearningProgressRateServiceIntegrationTest {
         void 풀이한_레슨이_없으면_0을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -122,7 +123,7 @@ class LearningProgressRateServiceIntegrationTest {
         void 일부_레슨을_풀었으면_정복률을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -140,7 +141,7 @@ class LearningProgressRateServiceIntegrationTest {
         void 모든_레슨을_풀었으면_100을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -166,7 +167,7 @@ class LearningProgressRateServiceIntegrationTest {
             User user2 = userRepository.save(User.create("b@b.com", "p2", "유저2", "user2", 1, Role.USER));
             User user3 = userRepository.save(User.create("c@c.com", "p3", "유저3", "user3", 1, Role.USER));
 
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Unit unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
