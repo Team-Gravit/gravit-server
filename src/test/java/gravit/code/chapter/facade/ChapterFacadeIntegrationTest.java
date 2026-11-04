@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -46,7 +47,7 @@ class ChapterFacadeIntegrationTest {
         void 챕터_목록과_진행도를_함께_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -67,7 +68,7 @@ class ChapterFacadeIntegrationTest {
         void 학습_기록이_없으면_진행도가_0이다() {
             // given
             long userId = 1L;
-            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             List<ChapterDetailResponse> result = chapterFacade.getAllChapter(userId);

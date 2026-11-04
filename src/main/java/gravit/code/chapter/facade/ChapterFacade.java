@@ -1,5 +1,6 @@
 package gravit.code.chapter.facade;
 
+import gravit.code.chapter.domain.ChapterCategory;
 import gravit.code.chapter.dto.internal.ChapterProgressRowDto;
 import gravit.code.chapter.dto.response.ChapterDetailResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 
 @Facade
 @RequiredArgsConstructor
@@ -26,8 +29,16 @@ public class ChapterFacade {
     public List<ChapterDetailResponse> getAllChapter(long userId){
         List<ChapterSummaryResponse> chapters = chapterQueryService.getAllChapter();
 
-        Map<Long, Double> chapterIdToProgressRate = chapterQueryService.getAllChapterProgress(userId)
-                .stream()
+        List<ChapterProgressRowDto> progressRows = chapterQueryService.getAllChapterProgress(userId);
+
+        return toChapterDetailResponses(chapters, progressRows);
+    }
+
+    private List<ChapterDetailResponse> toChapterDetailResponses(
+            List<ChapterSummaryResponse> chapters,
+            List<ChapterProgressRowDto> progressRows
+    ) {
+        Map<Long, Double> chapterIdToProgressRate = progressRows.stream()
                 .collect(Collectors.toMap(
                         ChapterProgressRowDto::chapterId,
                         row -> learningProgressRateService.calculateProgressRate(row.solvedLessons(), row.totalLessons())
@@ -38,5 +49,29 @@ public class ChapterFacade {
                         chapter,
                         chapterIdToProgressRate.getOrDefault(chapter.chapterId(), NOT_STARTED_PROGRESS_RATE)
                 )).toList();
+    }
+
+    public List<ChapterDetailResponse> getCsChapters(long userId) {
+        return getChaptersWithProgress(userId, CS);
+    }
+
+    private List<ChapterDetailResponse> getChaptersWithProgress(
+            long userId,
+            ChapterCategory category
+    ) {
+        List<ChapterSummaryResponse> chapters = chapterQueryService.getChaptersByCategory(category);
+
+        List<ChapterProgressRowDto> progressRows = chapterQueryService.getChapterProgressByCategory(userId, category);
+
+        return toChapterDetailResponses(chapters, progressRows);
+    }
+
+    public List<ChapterDetailResponse> getTrackChapters(
+            long userId,
+            ChapterCategory track
+    ) {
+        track.validateTrack();
+
+        return getChaptersWithProgress(userId, track);
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.View;
 
 import java.util.ArrayList;
@@ -73,6 +74,15 @@ public class GlobalExceptionHandler {
         }
 
         return handleExceptionInternal(errorMessages);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse<String>> handleTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        ErrorCode errorCode = INVALID_PARAMS;
+
+        log.error("MethodArgumentTypeMismatchException occur with: [ {} ][ {} ]", e.getName(), e.getValue());
+
+        return handleExceptionInternal(errorCode);
     }
 
     @ExceptionHandler(DataAccessException.class)

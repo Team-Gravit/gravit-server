@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -45,7 +46,7 @@ class UnitFacadeIntegrationTest {
         void 챕터_정보와_유닛_목록_및_진행도를_함께_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
@@ -67,7 +68,7 @@ class UnitFacadeIntegrationTest {
         void 저장_순서와_달라도_챕터_내_순서대로_진행도와_함께_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             Unit thread = unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
             Lesson threadLesson = lessonRepository.save(Lesson.create("스레드 레슨", thread.getId()));
@@ -97,7 +98,7 @@ class UnitFacadeIntegrationTest {
         void 학습_기록이_없으면_진행도가_0이다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             lessonRepository.save(Lesson.create("레슨1", unit.getId())); // 레슨은 존재하지만 제출 기록 없음
 
@@ -115,7 +116,7 @@ class UnitFacadeIntegrationTest {
         void 유닛이_없으면_빈_유닛_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             UnitPageResponse result = unitFacade.getAllUnitInChapter(userId, chapter.getId());

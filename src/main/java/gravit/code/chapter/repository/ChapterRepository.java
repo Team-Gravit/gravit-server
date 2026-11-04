@@ -1,6 +1,7 @@
 package gravit.code.chapter.repository;
 
 import gravit.code.chapter.domain.Chapter;
+import gravit.code.chapter.domain.ChapterCategory;
 import gravit.code.chapter.dto.internal.ChapterProgressRowDto;
 import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
@@ -47,4 +48,28 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
             GROUP BY c.id
     """)
     List<ChapterProgressRowDto> findChapterProgressByUserId(@Param("userId") long userId);
+
+    @Query("""
+            SELECT new gravit.code.chapter.dto.response.ChapterSummaryResponse(c.id, c.title, c.description)
+            FROM Chapter c
+            WHERE c.category = :category
+            ORDER BY c.id
+    """)
+    List<ChapterSummaryResponse> findAllChapterSummaryByCategory(@Param("category") ChapterCategory category);
+
+    @Query("""
+            SELECT new gravit.code.chapter.dto.internal.ChapterProgressRowDto(
+                c.id, COUNT(DISTINCT l.id), COUNT(DISTINCT ls.lessonId)
+            )
+            FROM Chapter c
+            LEFT JOIN Unit u ON u.chapterId = c.id
+            LEFT JOIN Lesson l ON l.unitId = u.id
+            LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id AND ls.userId = :userId
+            WHERE c.category = :category
+            GROUP BY c.id
+    """)
+    List<ChapterProgressRowDto> findChapterProgressByUserIdAndCategory(
+            @Param("userId") long userId,
+            @Param("category") ChapterCategory category
+    );
 }
