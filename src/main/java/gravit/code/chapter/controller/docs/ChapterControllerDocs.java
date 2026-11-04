@@ -113,14 +113,20 @@ public interface ChapterControllerDocs {
             @ApiResponse(responseCode = "200", description = "✅ 직군별 챕터 목록 조회 성공"),
             @ApiResponse(
                     responseCode = "400",
-                    description = "🚨 직군이 아닌 분류(CS) 요청",
+                    description = "🚨 직군이 아닌 분류(CS) 요청, 존재하지 않는 분류 값 요청",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(
-                                    name = "직군이 아닌 분류 요청",
-                                    value = "{\"error\": \"CHAPTER_4001\", \"message\": \"직군 분류만 조회할 수 있습니다.\"}"
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            name = "직군이 아닌 분류 요청",
+                                            value = "{\"error\": \"CHAPTER_4001\", \"message\": \"직군 분류만 조회할 수 있습니다.\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "존재하지 않는 분류 값 요청",
+                                            value = "{\"error\": \"GLOBAL_4001\", \"message\": \"유효성 검사 실패\"}"
+                                    )
+                            }
                     )
             ),
             @ApiResponse(
