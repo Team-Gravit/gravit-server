@@ -1,9 +1,13 @@
 package gravit.code.test.user;
 
 import gravit.code.test.user.docs.TestUserDataCleanControllerDocs;
+import gravit.code.user.repository.UserRepository;
+import gravit.code.userLeague.dto.event.LeagueRankChangedEvent;
+import gravit.code.userLeague.repository.UserLeagueRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +30,10 @@ public class TestUserDataCleanController implements TestUserDataCleanControllerD
     @PersistenceContext
     private EntityManager em;
 
+    private final UserRepository userRepository;
+    private final UserLeagueRepository userLeagueRepository;
+    private final ApplicationEventPublisher publisher;
+
     @PostMapping("/users/clean")
     @Transactional
     public ResponseEntity<String> clean(@RequestParam String email){
@@ -39,52 +47,21 @@ public class TestUserDataCleanController implements TestUserDataCleanControllerD
             return ResponseEntity.status(NOT_FOUND).build();
         }
 
-        int deletedCount = 0;
-        for(Long userId : userIds){
-            deleteUserData(userId);
-            deletedCount++;
-        }
+        userIds.forEach(this::deleteUserData);
 
-        return ResponseEntity.status(OK).body(deletedCount + " user(s) deleted");
+        return ResponseEntity.status(OK).body(userIds.size() + " user(s) deleted");
     }
 
-    private void deleteUserData(Long userId) {
-        exec("DELETE FROM congratulation WHERE user_id = :id OR actor_id = :id"
-                + " OR feed_id IN (SELECT id FROM social_feed WHERE actor_id = :id)", userId);
-        exec("DELETE FROM notification WHERE user_id = :id", userId);
-        exec("DELETE FROM fcm_token WHERE user_id = :id", userId);
-        exec("DELETE FROM social_feed WHERE actor_id = :id", userId);
-        exec("DELETE FROM user_feed WHERE user_id = :id", userId);
+    private void deleteUserData(long userId) {
+        // 랭킹 키는 user_league 삭제 전에 조회해야 한다. Redis 제거는 커밋 후 리스너가 수행한다
+        userLeagueRepository.findRankKeyByUserId(userId)
+                .map(rankKey -> LeagueRankChangedEvent.removed(userId, rankKey.seasonId(), rankKey.leagueId()))
+                .ifPresent(publisher::publishEvent);
 
-        exec("DELETE FROM friends WHERE follower_id = :id OR followee_id = :id", userId);
-
-        exec("DELETE FROM notice WHERE author_id = :id", userId);
-
-        exec("DELETE FROM learning WHERE user_id = :id", userId);
-        exec("DELETE FROM lesson_submission WHERE user_id = :id", userId);
-        exec("DELETE FROM problem_submission WHERE user_id = :id", userId);
-        exec("DELETE FROM bookmark WHERE user_id = :id", userId);
-        exec("DELETE FROM wrong_answered_note WHERE user_id = :id", userId);
-        exec("DELETE FROM daily_learning_record WHERE user_id = :id", userId);
-
-        exec("DELETE FROM user_league_history WHERE user_id = :id", userId);
-        exec("DELETE FROM user_league WHERE user_id = :id", userId);
-
-        exec("DELETE FROM user_mission WHERE user_id = :id", userId);
-        exec("DELETE FROM report WHERE user_id = :id", userId);
-
-        exec("DELETE FROM inquiry_answer WHERE inquiry_id IN (SELECT id FROM inquiry WHERE user_id = :id)", userId);
-        exec("DELETE FROM inquiry WHERE user_id = :id", userId);
-
-        exec("DELETE FROM users WHERE id = :id", userId);
-    }
-
-    private void exec(
-            String sql,
-            Long id
-    ) {
-        em.createNativeQuery(sql)
-                .setParameter("id", id)
+        em.createNativeQuery("DELETE FROM user_daily_activity WHERE user_id = :id")
+                .setParameter("id", userId)
                 .executeUpdate();
+
+        userRepository.cleanUserDeletion(userId);
     }
 }
