@@ -59,6 +59,7 @@ public enum CustomErrorCode implements ErrorCode {
     LEARNING_CONFLICT(CONFLICT, "LEARNING_4091", "이미 학습 정보가 존재합니다."),
 
     // Chapter
+    CHAPTER_TRACK_INVALID(BAD_REQUEST, "CHAPTER_4001", "직군 분류만 조회할 수 있습니다."),
     CHAPTER_NOT_FOUND(NOT_FOUND, "CHAPTER_4041", "챕터 조회에 실패하였습니다."),
     CHAPTER_PROGRESS_NOT_FOUND(NOT_FOUND, "CHAPTER_4042", "챕터 진행도 조회에 실패하였습니다."),
     CHAPTER_SUMMARY_NOT_FOUND(NOT_FOUND,"CHAPTER_4043", "챕터 요약 조회에 실패하였습니다."),

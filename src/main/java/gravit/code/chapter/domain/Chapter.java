@@ -2,6 +2,8 @@ package gravit.code.chapter.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,22 +27,30 @@ public class Chapter {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private ChapterCategory category;
+
     @Builder(access = AccessLevel.PRIVATE)
     private Chapter(
             String title,
-            String description
+            String description,
+            ChapterCategory category
     ) {
         this.title = title;
         this.description = description;
+        this.category = category;
     }
 
     public static Chapter create(
             String title,
-            String description
+            String description,
+            ChapterCategory category
     ) {
         return Chapter.builder()
                 .title(title)
                 .description(description)
+                .category(category)
                 .build();
     }
 
