@@ -1,6 +1,7 @@
 package gravit.code.chapter.service;
 
 import gravit.code.chapter.domain.Chapter;
+import gravit.code.chapter.domain.ChapterCategory;
 import gravit.code.chapter.dto.internal.ChapterProgressRowDto;
 import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
@@ -46,6 +47,23 @@ public class ChapterQueryService {
     public Chapter getChapter(long chapterId){
         return chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RestApiException(CHAPTER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChapterSummaryResponse> getChaptersByCategory(ChapterCategory category) {
+        return chapterRepository.findAllChapterSummaryByCategory(category);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChapterProgressRowDto> getChapterProgressByCategory(
+            long userId,
+            ChapterCategory category
+    ) {
+        return chapterRepository.findChapterProgressByUserIdAndCategory(userId, category);
+    }
+
+    public List<ChapterCategory> getTracks() {
+        return ChapterCategory.tracks();
     }
 }
 
