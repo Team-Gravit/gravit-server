@@ -324,7 +324,7 @@ public enum ChapterCategory {
 - [x] 3. 직군별 조회에 CS를 요청했을 때 - **A 확정**: 400 `CHAPTER_4001`로 거절
 
 ## 나중에 고려할 문제
-- 잘못된 경로 변수(`/tracks/FOO`, 소문자 `/tracks/server`)는 `MethodArgumentTypeMismatchException`이 `GlobalExceptionHandler`의 `Exception` 핸들러로 떨어져 500이 된다. `/interview-stack-groups/{stackGroup}`도 같다. 400 매핑은 전역 핸들러 변경이라 이번 범위 밖이다
+- ~~잘못된 경로 변수(`/tracks/FOO`, 소문자 `/tracks/server`)는 `MethodArgumentTypeMismatchException`이 `GlobalExceptionHandler`의 `Exception` 핸들러로 떨어져 500이 된다~~ - PR #593 리뷰 반영으로 해결: `GlobalExceptionHandler`에 핸들러를 추가해 `INVALID_PARAMS`(`GLOBAL_4001`, 400)로 응답한다. 전역이라 `/interview-stack-groups/{stackGroup}`, `sort` 파라미터, 어드민 enum 파라미터도 함께 400이 된다
 - 어드민 챕터 목록, 수정에 분류를 노출하거나 수정할지 여부. 어드민은 담당 범위 밖이라 인계 사항이다
 - 분류 컬럼 인덱스. 챕터가 22행이라 지금은 필요 없다
 - 직군 옵션을 문자열 배열로 내려서, 나중에 옵션별 필드(표시명, 아이콘 등)를 붙이려면 객체 배열로 바꿔야 하고 이는 응답 계약 변경이다
