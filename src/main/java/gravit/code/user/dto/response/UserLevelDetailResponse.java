@@ -15,7 +15,11 @@ public record UserLevelDetailResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         int maxXp,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "현재 레벨 진행률 (0~100, 소수점 첫째 자리 반올림). 현재 레벨 구간에서 획득한 XP / 구간 XP x 100, 최대 레벨이면 100",
+                example = "31.3",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         double levelRate
 ) {
     public static UserLevelDetailResponse of(

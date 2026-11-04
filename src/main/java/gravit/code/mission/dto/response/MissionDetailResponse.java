@@ -18,7 +18,11 @@ public record MissionDetailResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         int awardXp,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "미션 진행률 (0~100, 소수점 첫째 자리 반올림). 진행량 / 목표치 x 100, 최대 100",
+                example = "33.3",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         double progressRate,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

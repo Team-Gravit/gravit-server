@@ -15,7 +15,11 @@ public record LearningDetailResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String recentSolvedChapterTitle,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(
+                description = "최근 학습한 챕터 진행률 (0~100, 소수점 버림). 푼 레슨 수 / 챕터 전체 레슨 수 x 100",
+                example = "33.0",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
         double recentSolvedChapterProgressRate,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
