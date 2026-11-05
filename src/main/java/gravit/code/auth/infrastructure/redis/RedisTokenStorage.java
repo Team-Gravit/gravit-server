@@ -42,6 +42,7 @@ public class RedisTokenStorage implements TokenStorage {
         return Optional.of(foundTokenValue);
     }
 
+    @Override
     public <T extends Token> void deleteToken(
             Subject subject,
             Class<T> tokenClass

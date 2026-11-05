@@ -33,9 +33,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpEndpoint.prefix("/swagger-ui", HttpMethod.GET),
             HttpEndpoint.prefix("/v3/api-docs", HttpMethod.GET),
 
-            /* oauth signup & reissue */
+            /* oauth signup & reissue & logout */
             HttpEndpoint.prefix("/api/v1/oauth", HttpMethod.GET, HttpMethod.POST),
             HttpEndpoint.exact("/api/v1/auth/reissue", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/auth/logout", HttpMethod.POST),
 
             /* test */
             HttpEndpoint.exact("/api/v1/test/users/create", HttpMethod.POST),

@@ -1,9 +1,10 @@
 package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.Provider;
+import gravit.code.auth.dto.internal.WebLoginDto;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.strategy.OAuthResponseFactory;
-import gravit.code.global.consts.RedirectHostConst;
+import gravit.code.auth.support.RedirectHostResolver;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.AUTH_CODE_INVALID;
-import static gravit.code.global.exception.domain.CustomErrorCode.DEST_NOT_VALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.PROVIDER_INVALID;
 
 @Service
@@ -29,20 +29,26 @@ public class OAuthUserInfoService {
 
     private static final String GRANT_TYPE = "authorization_code";
 
+    private final OAuthStateService oAuthStateService;
+
     private final OAuthResponseFactory oAuthResponseFactory;
     private final OAuthClient oAuthClient;
+    private final RedirectHostResolver redirectHostResolver;
 
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     public OAuthUserInfo getUserInfo(
-            String authCode,
             String provider,
-            String dest
+            WebLoginDto webLoginDto
     ) {
+        String authCode = webLoginDto.code();
         validateAuthCode(authCode);
-        String baseHost = validateDest(dest);
 
         String validProvider = getValidProvider(Provider.parse(provider));
+
+        oAuthStateService.verify(validProvider, webLoginDto.state());
+
+        String baseHost = redirectHostResolver.resolve(webLoginDto.origin(), webLoginDto.dest());
 
         String decodedCode = URLDecoder.decode(authCode, StandardCharsets.UTF_8);
 
@@ -81,16 +87,6 @@ public class OAuthUserInfoService {
 
         Map<String, Object> tokenResponse = oAuthClient.getAccessTokenResponse(tokenUri, tokenRequest);
         return (String) tokenResponse.get("access_token");
-    }
-
-    private String validateDest(String dest) {
-        String base = RedirectHostConst.DEST_BASE.get(dest);
-
-        if(base == null || base.isBlank()){
-            throw new RestApiException(DEST_NOT_VALID);
-        }
-
-        return base;
     }
 
     private void validateAuthCode(String authCode) {

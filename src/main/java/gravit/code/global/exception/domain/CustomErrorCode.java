@@ -39,6 +39,7 @@ public enum CustomErrorCode implements ErrorCode {
     AUDIENCE_IS_EMPTY(BAD_REQUEST, "AUTH_4008", "IdToken 의 audience 가 비어있습니다."),
     AUDIENCE_NOT_MATCHING(BAD_REQUEST,"AUTH_4009", "IdToken 의 audience 가 매칭되지 않습니다."),
     OAUTH_USER_INFO_INVALID(BAD_REQUEST, "AUTH_4010", "OAuth 제공자로부터 유효한 사용자 정보를 받지 못했습니다."),
+    OAUTH_STATE_INVALID(BAD_REQUEST, "AUTH_4011", "유효하지 않은 OAuth state 입니다."),
     APPLE_CONFIG_INVALID(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5001", "Apple 로그인 설정이 올바르지 않습니다."),
     APPLE_TOKEN_CRYPTO_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_5002", "Apple 토큰 암복호화에 실패하였습니다."),
 
@@ -155,7 +156,7 @@ public enum CustomErrorCode implements ErrorCode {
     STAGING_LABEL_ALREADY_COMPLETED(CONFLICT, "STAGING_4091", "이미 승급 완료된 스테이징 라벨입니다."),
 
     // Dest
-    DEST_NOT_VALID(BAD_REQUEST, "DEST_4001", "유효하지 않은 Dest 입니다. (local/prod 만 유효합니다.)"),
+    DEST_NOT_VALID(BAD_REQUEST, "DEST_4001", "웹 로그인 환경을 판별할 수 없습니다."),
 
     // Mail
     INVALID_MAIL_AUTH_CODE(BAD_REQUEST, "MAIL_4001", "메일 인증 코드가 유효하지 않습니다."),

@@ -135,6 +135,10 @@ token:
     storage-key-prefix: "refreshToken:"
     expire-time: 14d
 
+auth:
+  cookie:
+    same-site: None
+
 user-delete-mail:
   code-length: 16
   expire-time: 180

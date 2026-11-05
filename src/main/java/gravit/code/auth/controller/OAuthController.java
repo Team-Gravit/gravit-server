@@ -2,34 +2,36 @@ package gravit.code.auth.controller;
 
 import gravit.code.auth.controller.docs.OAuthControllerDocs;
 import gravit.code.auth.dto.internal.AppleLoginDto;
-import gravit.code.auth.dto.oauth.AuthCodeRequest;
+import gravit.code.auth.dto.internal.WebLoginDto;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
+import gravit.code.auth.dto.request.WebAuthCodeRequest;
 import gravit.code.auth.dto.response.LoginResponse;
+import gravit.code.auth.dto.response.LoginUrlResponse;
+import gravit.code.auth.dto.response.WebLoginResponse;
 import gravit.code.auth.service.oauth.OAuthLoginProcessor;
 import gravit.code.auth.service.oauth.OAuthLoginUrlService;
 import gravit.code.auth.service.oauth.OAuthUserInfoService;
 import gravit.code.auth.service.oauth.apple.AppleOAuthService;
+import gravit.code.auth.support.RefreshTokenCookieFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpHeaders.ORIGIN;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
-@Slf4j
 public class OAuthController implements OAuthControllerDocs {
 
     private final OAuthUserInfoService oAuthClientService;
@@ -37,44 +39,48 @@ public class OAuthController implements OAuthControllerDocs {
     private final AppleOAuthService appleOAuthService;
 
     private final OAuthLoginProcessor oAuthLoginProcessor;
+    private final RefreshTokenCookieFactory refreshTokenCookieFactory;
 
     @GetMapping("/login-url/{provider}")
-    public ResponseEntity<Map<String, String>> authorizeUrl(
+    public ResponseEntity<LoginUrlResponse> authorizeUrl(
             @PathVariable("provider") String provider,
-            @RequestParam String dest
+            @RequestHeader(value = ORIGIN, required = false) String origin,
+            @RequestParam(required = false) String dest
     ) {
-        String loginUrl = oAuthLoginUrlService.generateLoginUrl(provider, dest);
-        return ResponseEntity.status(OK).body(Map.of("loginUrl", loginUrl));
+        LoginUrlResponse response = oAuthLoginUrlService.generateLoginUrl(provider, origin, dest);
+        return ResponseEntity.status(OK).body(response);
     }
 
     @PostMapping("/{provider}")
-    public ResponseEntity<LoginResponse> oauthLogin(
+    public ResponseEntity<WebLoginResponse> oauthLogin(
             @PathVariable("provider") String provider,
-            @RequestBody AuthCodeRequest authCodeRequest,
-            @RequestParam String dest
-    ){
-        String code = authCodeRequest.code();
-
-        if(code == null){
-            return  ResponseEntity.status(BAD_REQUEST).build();
-        }
-
-        OAuthUserInfo userInfo = oAuthClientService.getUserInfo(code, provider, dest);
+            @RequestBody @Valid WebAuthCodeRequest webAuthCodeRequest,
+            @RequestHeader(value = ORIGIN, required = false) String origin,
+            @RequestParam(required = false) String dest
+    ) {
+        OAuthUserInfo userInfo = oAuthClientService.getUserInfo(provider, WebLoginDto.of(webAuthCodeRequest, origin, dest));
 
         LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
 
-        return ResponseEntity.status(OK).body(loginResponse);
+        return webLoginResponse(loginResponse);
+    }
+
+    private ResponseEntity<WebLoginResponse> webLoginResponse(LoginResponse loginResponse) {
+        return ResponseEntity.status(OK)
+                .header(SET_COOKIE, refreshTokenCookieFactory.create(loginResponse.refreshToken()).toString())
+                .body(WebLoginResponse.from(loginResponse));
     }
 
     @PostMapping("/apple")
-    public ResponseEntity<LoginResponse> appleLogin(
-            @RequestBody @Valid AuthCodeRequest authCodeRequest,
-            @RequestParam String dest
+    public ResponseEntity<WebLoginResponse> appleLogin(
+            @RequestBody @Valid WebAuthCodeRequest webAuthCodeRequest,
+            @RequestHeader(value = ORIGIN, required = false) String origin,
+            @RequestParam(required = false) String dest
     ) {
-        AppleLoginDto appleLoginDto = appleOAuthService.getUserInfo(authCodeRequest.code(), dest);
+        AppleLoginDto appleLoginDto = appleOAuthService.getUserInfo(WebLoginDto.of(webAuthCodeRequest, origin, dest));
 
         LoginResponse loginResponse = oAuthLoginProcessor.processApple(appleLoginDto);
 
-        return ResponseEntity.status(OK).body(loginResponse);
+        return webLoginResponse(loginResponse);
     }
 }
