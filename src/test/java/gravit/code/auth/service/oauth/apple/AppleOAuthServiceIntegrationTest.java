@@ -2,8 +2,12 @@ package gravit.code.auth.service.oauth.apple;
 
 import gravit.code.auth.domain.AppleClient;
 import gravit.code.auth.dto.internal.AppleLoginDto;
+import gravit.code.auth.dto.internal.WebLoginDto;
+import gravit.code.auth.dto.oauth.AppleUserInfo;
+import gravit.code.auth.dto.request.WebAuthCodeRequest;
 import gravit.code.auth.infrastructure.client.AppleIdTokenDecoder;
 import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
+import gravit.code.auth.service.oauth.OAuthStateService;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.support.TCSpringBootTest;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +31,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.AUTH_CODE_INVA
 import static gravit.code.global.exception.domain.CustomErrorCode.DEST_NOT_VALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.ISSUER_NOT_MATCHING;
 import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_ID_TOKEN_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_STATE_INVALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_USER_INFO_INVALID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,6 +53,9 @@ class AppleOAuthServiceIntegrationTest {
     private static final String AUTH_CODE = "c1a2b3.0.apple-auth-code";
     private static final String DEST = "dev";
     private static final String DEV_REDIRECT_URI = "https://dev.gravit.inuappcenter.kr/login/oauth2/code/apple";
+    private static final String PROD_ORIGIN = "https://gravit.inuappcenter.kr";
+    private static final String PROD_REDIRECT_URI = PROD_ORIGIN + "/login/oauth2/code/apple";
+    private static final String UNKNOWN_ORIGIN = "https://evil.example.com";
     private static final String ID_TOKEN = "apple.id.token";
     private static final String REFRESH_TOKEN = "r.apple-refresh-token";
     private static final String SUB = "001234.abcdef.0123";
@@ -56,11 +64,30 @@ class AppleOAuthServiceIntegrationTest {
     @Autowired
     private AppleOAuthService appleOAuthService;
 
+    @Autowired
+    private OAuthStateService oAuthStateService;
+
     @MockitoBean
     private OAuthHttpClientAdapter oAuthHttpClientAdapter;
 
     @MockitoBean
     private AppleIdTokenDecoder appleIdTokenDecoder;
+
+    private WebLoginDto 웹_로그인(
+            String code,
+            String dest
+    ) {
+        return 웹_로그인(code, null, dest);
+    }
+
+    private WebLoginDto 웹_로그인(
+            String code,
+            String origin,
+            String dest
+    ) {
+        String state = oAuthStateService.issue(AppleUserInfo.PROVIDER);
+        return WebLoginDto.of(new WebAuthCodeRequest(code, state), origin, dest);
+    }
 
     private void 토큰_응답(Map<String, Object> response) {
         when(oAuthHttpClientAdapter.getAccessTokenResponse(eq(TOKEN_URI), any())).thenReturn(response);
@@ -116,7 +143,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().build());
 
             // when
-            AppleLoginDto result = appleOAuthService.getUserInfo(AUTH_CODE, DEST);
+            AppleLoginDto result = appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST));
 
             // then
             assertSoftly(softly -> {
@@ -136,7 +163,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().build());
 
             // when
-            appleOAuthService.getUserInfo(AUTH_CODE, DEST);
+            appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST));
 
             // then
             MultiValueMap<String, String> request = 보낸_토큰_요청();
@@ -159,7 +186,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().build());
 
             // when
-            appleOAuthService.getUserInfo(rawCode, DEST);
+            appleOAuthService.getUserInfo(웹_로그인(rawCode, DEST));
 
             // then
             assertThat(보낸_토큰_요청().getFirst("code")).isEqualTo(rawCode);
@@ -174,7 +201,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().build());
 
             // when
-            AppleLoginDto result = appleOAuthService.getUserInfo(AUTH_CODE, DEST);
+            AppleLoginDto result = appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST));
 
             // then
             assertSoftly(softly -> {
@@ -186,7 +213,7 @@ class AppleOAuthServiceIntegrationTest {
         @Test
         void 인가_코드가_비어_있으면_Apple에_요청하지_않고_예외를_던진다() {
             // when & then
-            assertThatThrownBy(() -> appleOAuthService.getUserInfo(" ", DEST))
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(" ", DEST)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(AUTH_CODE_INVALID);
@@ -197,7 +224,7 @@ class AppleOAuthServiceIntegrationTest {
         @Test
         void 등록되지_않은_dest이면_Apple에_요청하지_않고_예외를_던진다() {
             // when & then
-            assertThatThrownBy(() -> appleOAuthService.getUserInfo(AUTH_CODE, "unknown"))
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, "unknown")))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(DEST_NOT_VALID);
@@ -206,12 +233,93 @@ class AppleOAuthServiceIntegrationTest {
         }
 
         @Test
+        void 등록된_Origin으로_요청하면_dest_없이_그_Origin의_redirect_uri로_토큰을_요청한다() {
+            // given
+            토큰_응답(정상_토큰_응답());
+            when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().build());
+
+            // when
+            appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, PROD_ORIGIN, null));
+
+            // then
+            assertThat(보낸_토큰_요청().getFirst("redirect_uri")).isEqualTo(PROD_REDIRECT_URI);
+        }
+
+        @Test
+        void 등록되지_않은_Origin이면_dest의_redirect_uri로_토큰을_요청한다() {
+            // given
+            토큰_응답(정상_토큰_응답());
+            when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().build());
+
+            // when
+            appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, UNKNOWN_ORIGIN, DEST));
+
+            // then
+            assertThat(보낸_토큰_요청().getFirst("redirect_uri")).isEqualTo(DEV_REDIRECT_URI);
+        }
+
+        @Test
+        void 등록되지_않은_Origin이고_dest도_잘못되면_Apple에_요청하지_않고_예외를_던진다() {
+            // when & then
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, UNKNOWN_ORIGIN, "unknown")))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(DEST_NOT_VALID);
+
+            verifyNoInteractions(oAuthHttpClientAdapter);
+        }
+
+        @Test
+        void 서버가_발급하지_않은_state면_Apple에_요청하지_않고_예외를_던진다() {
+            // given
+            WebLoginDto webLoginDto = WebLoginDto.of(new WebAuthCodeRequest(AUTH_CODE, "not-issued-state"), null, DEST);
+
+            // when & then
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(webLoginDto))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(OAUTH_STATE_INVALID);
+
+            verifyNoInteractions(oAuthHttpClientAdapter);
+        }
+
+        @Test
+        void 다른_제공자용으로_발급한_state면_Apple에_요청하지_않고_예외를_던진다() {
+            // given
+            String googleState = oAuthStateService.issue("google");
+            WebLoginDto webLoginDto = WebLoginDto.of(new WebAuthCodeRequest(AUTH_CODE, googleState), null, DEST);
+
+            // when & then
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(webLoginDto))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(OAUTH_STATE_INVALID);
+
+            verifyNoInteractions(oAuthHttpClientAdapter);
+        }
+
+        @Test
+        void 이미_쓴_state로_다시_요청하면_예외를_던진다() {
+            // given
+            토큰_응답(정상_토큰_응답());
+            when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().build());
+            WebLoginDto webLoginDto = 웹_로그인(AUTH_CODE, DEST);
+            appleOAuthService.getUserInfo(webLoginDto);
+
+            // when & then
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(webLoginDto))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(OAUTH_STATE_INVALID);
+        }
+
+        @Test
         void 토큰_응답에_id_token이_없으면_예외를_던진다() {
             // given
             토큰_응답(Map.of("refresh_token", REFRESH_TOKEN));
 
             // when & then
-            assertThatThrownBy(() -> appleOAuthService.getUserInfo(AUTH_CODE, DEST))
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_ID_TOKEN_INVALID);
@@ -224,7 +332,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().issuer("https://evil.example.com").build());
 
             // when & then
-            assertThatThrownBy(() -> appleOAuthService.getUserInfo(AUTH_CODE, DEST))
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(ISSUER_NOT_MATCHING);
@@ -238,7 +346,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(idToken);
 
             // when & then
-            assertThatThrownBy(() -> appleOAuthService.getUserInfo(AUTH_CODE, DEST))
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(AUDIENCE_IS_EMPTY);
@@ -251,7 +359,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(정상_id_토큰().audience(List.of("other.client.id")).build());
 
             // when & then
-            assertThatThrownBy(() -> appleOAuthService.getUserInfo(AUTH_CODE, DEST))
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(AUDIENCE_NOT_MATCHING);
@@ -265,7 +373,7 @@ class AppleOAuthServiceIntegrationTest {
             when(appleIdTokenDecoder.decode(ID_TOKEN)).thenReturn(idToken);
 
             // when & then
-            assertThatThrownBy(() -> appleOAuthService.getUserInfo(AUTH_CODE, DEST))
+            assertThatThrownBy(() -> appleOAuthService.getUserInfo(웹_로그인(AUTH_CODE, DEST)))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
