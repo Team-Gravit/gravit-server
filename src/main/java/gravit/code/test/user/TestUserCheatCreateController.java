@@ -1,6 +1,7 @@
 package gravit.code.test.user;
 
 import gravit.code.auth.domain.AccessToken;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.domain.RefreshToken;
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.dto.response.LoginResponse;
@@ -85,7 +86,7 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
         userService.onboard(user.getId(), request);
 
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
-        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
+        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user, LoginClient.ANDROID);
 
         return ResponseEntity.status(OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }
@@ -127,7 +128,7 @@ public class TestUserCheatCreateController implements TestUserCheatCreateControl
                 .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
-        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
+        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user, LoginClient.ANDROID);
 
         return ResponseEntity.status(OK).body(LoginResponse.of(accessToken,refreshToken,true, user.getRole()));
     }

@@ -89,6 +89,13 @@ public class JwtProvider {
         return new Subject(subject);
     }
 
+    public String parseClaim(
+            String token,
+            String claimKey
+    ) {
+        return extractClaims(token).get(claimKey, String.class);
+    }
+
     public Authentication getAuthentication(User user){
         Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 

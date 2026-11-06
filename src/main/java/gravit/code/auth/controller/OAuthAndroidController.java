@@ -1,6 +1,7 @@
 package gravit.code.auth.controller;
 
 import gravit.code.auth.controller.docs.OAuthAndroidControllerDocs;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.dto.oauth.android.AccessTokenRequest;
 import gravit.code.auth.dto.oauth.android.IdTokenRequest;
@@ -36,7 +37,7 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
     ){
         String idToken = request.idToken();
         OAuthUserInfo userInfo = oAuthAndroidClientService.parseIdToken(provider, idToken);
-        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
+        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo, LoginClient.ANDROID);
 
         return ResponseEntity.status(OK).body(loginResponse);
     }
@@ -47,7 +48,7 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
     ){
         OAuthUserInfo userInfo = naverAndroidUserInfoService.getUserInfo(request.accessToken());
 
-        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
+        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo, LoginClient.ANDROID);
 
         return ResponseEntity.status(OK).body(loginResponse);
     }

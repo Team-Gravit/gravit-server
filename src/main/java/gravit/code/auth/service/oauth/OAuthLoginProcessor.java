@@ -2,6 +2,7 @@ package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.AccessToken;
 import gravit.code.auth.domain.AppleClient;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.domain.RefreshToken;
 import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
@@ -33,10 +34,13 @@ public class OAuthLoginProcessor {
     private final AdminPromotionPolicy adminPromotionPolicy;
 
     @Transactional
-    public LoginResponse process(OAuthUserInfo oAuthUserInfo) {
+    public LoginResponse process(
+            OAuthUserInfo oAuthUserInfo,
+            LoginClient client
+    ) {
         User user = findOrCreateUser(oAuthUserInfo);
 
-        return issueLoginResponse(user);
+        return issueLoginResponse(user, client);
     }
 
     private User findOrCreateUser(OAuthUserInfo oAuthUserInfo) {
@@ -86,11 +90,14 @@ public class OAuthLoginProcessor {
         return user;
     }
 
-    private LoginResponse issueLoginResponse(User user) {
+    private LoginResponse issueLoginResponse(
+            User user,
+            LoginClient client
+    ) {
         boolean isOnboarded = user.isOnboarded();
 
         AccessToken accessToken = authTokenProvider.generateAccessToken(user);
-        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
+        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user, client);
 
         return LoginResponse.of(accessToken, refreshToken, isOnboarded, user.getRole());
     }
@@ -101,7 +108,7 @@ public class OAuthLoginProcessor {
 
         saveAppleRefreshToken(user, appleLoginDto.refreshToken(), appleLoginDto.client());
 
-        return issueLoginResponse(user);
+        return issueLoginResponse(user, LoginClient.from(appleLoginDto.client()));
     }
 
     private void saveAppleRefreshToken(
