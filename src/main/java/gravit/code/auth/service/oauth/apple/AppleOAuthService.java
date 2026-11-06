@@ -2,15 +2,17 @@ package gravit.code.auth.service.oauth.apple;
 
 import gravit.code.auth.domain.AppleClient;
 import gravit.code.auth.dto.internal.AppleLoginDto;
+import gravit.code.auth.dto.internal.WebLoginDto;
 import gravit.code.auth.dto.oauth.AppleUserInfo;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.infrastructure.client.AppleIdTokenDecoder;
 import gravit.code.auth.infrastructure.config.AppleOAuthProps;
 import gravit.code.auth.service.oauth.OAuthClient;
 import gravit.code.auth.service.oauth.OAuthLoginUrlService;
+import gravit.code.auth.service.oauth.OAuthStateService;
 import gravit.code.auth.strategy.support.OAuthUserInfoValidator;
 import gravit.code.auth.support.AppleClientSecretGenerator;
-import gravit.code.global.consts.RedirectHostConst;
+import gravit.code.auth.support.RedirectHostResolver;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,6 @@ import java.util.Map;
 import static gravit.code.global.exception.domain.CustomErrorCode.AUDIENCE_IS_EMPTY;
 import static gravit.code.global.exception.domain.CustomErrorCode.AUDIENCE_NOT_MATCHING;
 import static gravit.code.global.exception.domain.CustomErrorCode.AUTH_CODE_INVALID;
-import static gravit.code.global.exception.domain.CustomErrorCode.DEST_NOT_VALID;
 import static gravit.code.global.exception.domain.CustomErrorCode.ISSUER_NOT_MATCHING;
 import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_ID_TOKEN_INVALID;
 
@@ -39,18 +40,22 @@ public class AppleOAuthService {
     private static final String RESPONSE_ID_TOKEN = "id_token";
     private static final String RESPONSE_REFRESH_TOKEN = "refresh_token";
 
+    private final OAuthStateService oAuthStateService;
+
     private final OAuthClient oAuthClient;
     private final AppleIdTokenDecoder appleIdTokenDecoder;
     private final AppleClientSecretGenerator appleClientSecretGenerator;
+    private final RedirectHostResolver redirectHostResolver;
 
     private final AppleOAuthProps props;
 
-    public AppleLoginDto getUserInfo(
-            String authCode,
-            String dest
-    ) {
+    public AppleLoginDto getUserInfo(WebLoginDto webLoginDto) {
+        String authCode = webLoginDto.code();
         validateAuthCode(authCode);
-        String baseHost = validateDest(dest);
+
+        oAuthStateService.verify(AppleUserInfo.PROVIDER, webLoginDto.state());
+
+        String baseHost = redirectHostResolver.resolve(webLoginDto.origin(), webLoginDto.dest());
 
         String redirectUri = baseHost + OAuthLoginUrlService.REDIRECT_PATH_PREFIX + AppleUserInfo.PROVIDER;
 
@@ -61,16 +66,6 @@ public class AppleOAuthService {
         if (authCode == null || authCode.isBlank()) {
             throw new RestApiException(AUTH_CODE_INVALID);
         }
-    }
-
-    private String validateDest(String dest) {
-        String base = RedirectHostConst.DEST_BASE.get(dest);
-
-        if (base == null || base.isBlank()) {
-            throw new RestApiException(DEST_NOT_VALID);
-        }
-
-        return base;
     }
 
     private MultiValueMap<String, String> webTokenRequest(

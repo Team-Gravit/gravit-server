@@ -139,6 +139,10 @@ scheduler:
   season:
     rollover-cron: "0 0 0 * * MON"
 
+auth:
+  cookie:
+    same-site: Lax
+
 user-delete-mail:
   code-length: 16
   expire-time: 180

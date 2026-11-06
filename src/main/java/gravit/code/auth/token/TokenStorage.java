@@ -15,4 +15,9 @@ public interface TokenStorage {
             Subject subject,
             Class<T> tokenClass
     );
+
+    <T extends Token> void deleteToken(
+            Subject subject,
+            Class<T> tokenClass
+    );
 }

@@ -59,6 +59,15 @@ public class AuthTokenProvider {
                 .orElse(false);
     }
 
+    public void deleteRefreshToken(String refreshToken) {
+        if (!isValidRefreshToken(refreshToken)) {
+            return;
+        }
+
+        Subject subject = jwtProvider.parseSubject(refreshToken);
+        tokenStorage.deleteToken(subject, RefreshToken.class);
+    }
+
     public void validateToken(String token){
         jwtProvider.validateToken(token);
     }
