@@ -77,7 +77,7 @@ public interface OAuthControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ OAuth 회원가입/로그인 성공",
-                    headers = @Header(name = "Set-Cookie", description = "refreshToken=...; Path=/api/v1/auth; Secure; HttpOnly; SameSite=...")
+                    headers = @Header(name = "Set-Cookie", schema = @Schema(type = "string"), description = "refreshToken=...; Path=/api/v1/auth; Secure; HttpOnly; SameSite=...")
             ),
             @ApiResponse(responseCode = "400", description = "🚨 유효하지 않은 OAuth 제공자",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -136,7 +136,7 @@ public interface OAuthControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ Apple 회원가입/로그인 성공",
-                    headers = @Header(name = "Set-Cookie", description = "refreshToken=...; Path=/api/v1/auth; Secure; HttpOnly; SameSite=...")
+                    headers = @Header(name = "Set-Cookie", schema = @Schema(type = "string"), description = "refreshToken=...; Path=/api/v1/auth; Secure; HttpOnly; SameSite=...")
             ),
             @ApiResponse(responseCode = "400", description = "🚨 요청 또는 Apple 응답이 유효하지 않음",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

@@ -79,7 +79,7 @@ public interface AuthTokenControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "✅ 로그아웃 성공",
-                    headers = @Header(name = "Set-Cookie", description = "refreshToken=; Path=/api/v1/auth; Max-Age=0; Secure; HttpOnly; SameSite=...")
+                    headers = @Header(name = "Set-Cookie", schema = @Schema(type = "string"), description = "refreshToken=; Path=/api/v1/auth; Max-Age=0; Secure; HttpOnly; SameSite=...")
             ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
