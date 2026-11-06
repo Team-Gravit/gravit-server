@@ -1,6 +1,7 @@
 package gravit.code.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.infrastructure.client.AppleIdTokenDecoder;
 import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
 import gravit.code.auth.service.oauth.OAuthStateService;
@@ -127,7 +128,7 @@ class OAuthControllerIntegrationTest {
 
     private String 저장된_리프레시_토큰(String providerId) {
         User user = userRepository.findByProviderId(providerId).orElseThrow();
-        return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY_PREFIX + user.getId());
+        return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY_PREFIX + user.getId() + ":" + LoginClient.WEB.name());
     }
 
     @Nested
