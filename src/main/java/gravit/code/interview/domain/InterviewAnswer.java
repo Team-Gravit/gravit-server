@@ -175,8 +175,6 @@ public class InterviewAnswer extends BaseEntity {
     }
 
     public void discardVoice() {
-        validatePending();
-
         this.audioKey = null;
         this.transcript = null;
         this.transcriptionStatus = null;

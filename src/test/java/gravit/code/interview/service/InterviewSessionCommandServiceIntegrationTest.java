@@ -777,6 +777,30 @@ class InterviewSessionCommandServiceIntegrationTest {
         }
 
         @Test
+        void 채점_중인_음성_세션이면_제출한_답안의_음성_키와_변환_결과를_비우고_정리_이벤트를_발행한다(ApplicationEvents events) {
+            // given
+            InterviewSession session = 준비된_세션(InterviewInputType.VOICE);
+            List<InterviewAnswer> answers = 답안들(session.getId());
+            answers.forEach(answer -> {
+                변환을_요청해_둔다(answer);
+                answer.completeTranscription(TRANSCRIPT);
+                answer.submit(TRANSCRIPT, 음성_키(session.getId(), answer.getDisplayOrder()), LocalDateTime.now(clock));
+            });
+            interviewAnswerRepository.saveAll(answers);
+            ReflectionTestUtils.setField(session, "status", InterviewSessionStatus.GRADING);
+            interviewSessionRepository.save(session);
+
+            // when
+            InterviewSessionStatusResponse response = interviewSessionCommandService.abandon(USER_ID, session.getId());
+
+            // then
+            assertThat(response.status()).isEqualTo(InterviewSessionStatus.ABANDONED);
+            음성과_변환_결과가_비어_있다(session.getId());
+            assertThat(events.stream(InterviewSessionAbandonedEvent.class))
+                    .containsExactly(InterviewSessionAbandonedEvent.from(List.of(session.getId())));
+        }
+
+        @Test
         void 텍스트_세션이면_정리_이벤트를_발행하지_않는다(ApplicationEvents events) {
             // given
             InterviewSession session = 준비된_세션(InterviewInputType.TEXT);

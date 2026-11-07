@@ -65,6 +65,20 @@ class InterviewAudioDeletionEventListenerIntegrationTest {
         }
 
         @Test
+        void 채점_중인_음성_세션도_커밋_후_음성_삭제를_큐에_적재한다() {
+            // given
+            InterviewSession session = interviewSessionRepository.save(
+                    상태_세션(USER_ID, InterviewSessionStatus.GRADING, InterviewInputType.VOICE));
+
+            // when
+            interviewSessionCommandService.abandon(USER_ID, session.getId());
+
+            // then
+            verify(retryEventPublisher).publish(DELETION_QUEUE_KEY, 삭제_페이로드(session.getId()));
+            verifyNoInteractions(s3Client);
+        }
+
+        @Test
         void 텍스트_세션이면_적재하지_않는다() {
             // given
             InterviewSession session = interviewSessionRepository.save(진행중_세션(USER_ID, InterviewInputType.TEXT));
@@ -80,7 +94,7 @@ class InterviewAudioDeletionEventListenerIntegrationTest {
         void 취소가_실패해_롤백되면_적재하지_않는다() {
             // given
             InterviewSession session = interviewSessionRepository.save(
-                    상태_세션(USER_ID, InterviewSessionStatus.GRADING, InterviewInputType.VOICE));
+                    상태_세션(USER_ID, InterviewSessionStatus.COMPLETED, InterviewInputType.VOICE));
 
             // when & then
             assertThatThrownBy(() -> interviewSessionCommandService.abandon(USER_ID, session.getId()))
