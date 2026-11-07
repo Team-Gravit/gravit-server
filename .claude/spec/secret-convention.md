@@ -32,6 +32,8 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 아래는 dev와 prod가 같은 시크릿을 참조한다. 분리는 #467에서 다룬다.
 
 - OAuth 클라이언트: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `KAKAO_NATIVE_APP_KEY`
+  - `GOOGLE_CLIENT_ID`, `KAKAO_NATIVE_APP_KEY`는 앱 id_token 검증 설정 `oauth.android.*`와 `oauth.ios.*`에 함께 주입한다. 두 앱이 같은 값(Google은 웹 client ID, Kakao는 앱 키)으로 검증되기 때문이다.
+    iOS 값이 달라지면 iOS용 시크릿을 새로 만들고 CD 워크플로의 `oauth.ios.*` 주입 줄만 바꾼다. `oauth.ios.*`가 비어 있으면 서버가 기동을 거부한다
 - 어드민 화이트리스트: `ADMIN_BOOTSTRAP_EMAILS`
 - DB 계정: `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`
 - 메일: `STMP_PASSWORD`
