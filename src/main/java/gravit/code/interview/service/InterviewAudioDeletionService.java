@@ -34,6 +34,10 @@ public class InterviewAudioDeletionService {
         sessionIds.forEach(this::deleteOrQueueRetry);
     }
 
+    public void queueAllBySessionIds(List<Long> sessionIds) {
+        sessionIds.forEach(this::queueDeletion);
+    }
+
     public void deleteBySessionId(long sessionId) {
         interviewAudioStorage.deleteAllByPrefix(interviewAudioKeyPolicy.sessionPrefix(sessionId));
     }
@@ -43,18 +47,18 @@ public class InterviewAudioDeletionService {
             deleteBySessionId(sessionId);
         } catch (Exception e) {
             log.error("면접 음성 삭제 실패, 재시도 큐 적재: sessionId={}", sessionId, e);
-            queueRetry(sessionId);
+            queueDeletion(sessionId);
         }
     }
 
-    private void queueRetry(long sessionId) {
+    private void queueDeletion(long sessionId) {
         try {
             retryEventPublisher.publish(
                     InterviewAudioDeletionRetryTarget.QUEUE_KEY,
                     Map.of(InterviewAudioDeletionRetryTarget.FIELD_SESSION_ID, String.valueOf(sessionId))
             );
         } catch (Exception e) {
-            log.error("면접 음성 삭제 재시도 적재 실패, 유실: sessionId={}", sessionId, e);
+            log.error("면접 음성 삭제 큐 적재 실패, 유실: sessionId={}", sessionId, e);
         }
     }
 }

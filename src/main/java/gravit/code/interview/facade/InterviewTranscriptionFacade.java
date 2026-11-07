@@ -29,6 +29,9 @@ public class InterviewTranscriptionFacade {
     ) {
         try {
             InterviewAnswer answer = interviewAnswerQueryService.getById(answerId);
+            if (!answer.isTranscriptionPending()) {
+                return;
+            }
 
             List<String> conceptNames = interviewQuestionQueryService.getQuestionIdToConcepts(Set.of(answer.getQuestionId()))
                     .getOrDefault(answer.getQuestionId(), List.of()).stream()

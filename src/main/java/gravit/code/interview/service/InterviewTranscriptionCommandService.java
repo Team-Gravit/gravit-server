@@ -43,7 +43,7 @@ public class InterviewTranscriptionCommandService {
             long sessionId,
             InterviewTranscriptionRequest request
     ) {
-        InterviewSession session = interviewSessionRepository.findById(sessionId)
+        InterviewSession session = interviewSessionRepository.findByIdForUpdate(sessionId)
                 .orElseThrow(() -> new RestApiException(INTERVIEW_SESSION_NOT_FOUND));
 
         if (!session.isOwnedBy(userId)) {
@@ -86,7 +86,7 @@ public class InterviewTranscriptionCommandService {
     }
 
     private InterviewAnswer findAnswer(long answerId) {
-        return interviewAnswerRepository.findById(answerId)
+        return interviewAnswerRepository.findByIdForUpdate(answerId)
                 .orElseThrow(() -> new RestApiException(INTERVIEW_ANSWER_NOT_FOUND));
     }
 }

@@ -6,6 +6,7 @@ import gravit.code.interview.domain.InterviewSession;
 import gravit.code.interview.domain.InterviewSessionStatus;
 import gravit.code.interview.domain.InterviewSessionTopic;
 import gravit.code.interview.dto.event.InterviewCompletedEvent;
+import gravit.code.interview.dto.event.InterviewSessionAbandonedEvent;
 import gravit.code.interview.dto.event.InterviewSubmittedEvent;
 import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
 import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
@@ -58,12 +59,9 @@ public class InterviewSessionCommandService {
             long userId,
             InterviewSessionCreateDto createDto
     ) {
-        interviewSessionRepository.abandonInProgressByUserId(
-                userId,
-                InterviewSessionStatus.IN_PROGRESS,
-                InterviewSessionStatus.ABANDONED,
-                LocalDateTime.now(clock)
-        );
+        List<InterviewSession> inProgressSessions = interviewSessionRepository.findAllByUserIdAndStatusForUpdate(
+                userId, InterviewSessionStatus.IN_PROGRESS);
+        abandonAll(inProgressSessions, LocalDateTime.now(clock));
 
         long attemptCount = interviewSessionRepository.findMaxAttemptCountByUserId(userId) + 1;
 
@@ -104,7 +102,7 @@ public class InterviewSessionCommandService {
         InterviewSession session = findSessionForUpdate(sessionId);
         validateOwner(session, userId);
 
-        session.abandon(LocalDateTime.now(clock));
+        abandonAll(List.of(session), LocalDateTime.now(clock));
 
         return InterviewSessionStatusResponse.of(session.getId(), session.getStatus());
     }
@@ -159,6 +157,27 @@ public class InterviewSessionCommandService {
         session.failGrading();
 
         return true;
+    }
+
+    private void abandonAll(
+            List<InterviewSession> sessions,
+            LocalDateTime endedAt
+    ) {
+        sessions.forEach(session -> session.abandon(endedAt));
+
+        List<Long> voiceSessionIds = sessions.stream()
+                .filter(session -> !session.isTextInput())
+                .map(InterviewSession::getId)
+                .toList();
+
+        if (voiceSessionIds.isEmpty()) {
+            return;
+        }
+
+        interviewAnswerRepository.findAllBySessionIdInForUpdate(voiceSessionIds)
+                .forEach(InterviewAnswer::discardVoice);
+
+        publisher.publishEvent(InterviewSessionAbandonedEvent.from(voiceSessionIds));
     }
 
     private InterviewSession findSessionForUpdate(long sessionId) {

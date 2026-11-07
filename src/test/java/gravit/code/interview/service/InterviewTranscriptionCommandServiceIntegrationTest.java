@@ -32,6 +32,12 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ALREADY_SUBMITTED;
 import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_NOT_FOUND;
@@ -84,9 +90,14 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
     private static final String TRANSCRIPT = "트랜잭션 격리 수준은 동시성 제어 방식입니다.";
     private static final String PREVIOUS_TRANSCRIPT = "먼저 끝난 변환 결과";
     private static final String SUBMITTED_CONTENT = "사용자가 고쳐 제출한 답변";
+    private static final long LOCK_WAIT_MILLIS = 500L;
+    private static final long TIMEOUT_SECONDS = 10L;
 
     @Autowired
     private InterviewTranscriptionCommandService interviewTranscriptionCommandService;
+
+    @Autowired
+    private InterviewSessionCommandService interviewSessionCommandService;
 
     @Autowired
     private InterviewSessionRepository interviewSessionRepository;
@@ -137,6 +148,36 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
 
     private LocalDateTime 지금() {
         return LocalDateTime.now(clock);
+    }
+
+    private void 대기(CountDownLatch latch) {
+        try {
+            if (!latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("래치 대기 시간 초과");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private boolean 끝나지_않고_대기_중인지(Future<?> future) throws Exception {
+        try {
+            future.get(LOCK_WAIT_MILLIS, TimeUnit.MILLISECONDS);
+            return false;
+        } catch (TimeoutException e) {
+            return true;
+        }
+    }
+
+    private void 음성과_변환_결과가_비어_있다(long answerId) {
+        InterviewAnswer discarded = 답안(answerId);
+        assertSoftly(softly -> {
+            softly.assertThat(discarded.getAudioKey()).isNull();
+            softly.assertThat(discarded.getTranscript()).isNull();
+            softly.assertThat(discarded.getTranscriptionStatus()).isNull();
+            softly.assertThat(discarded.getTranscriptionRequestedAt()).isNull();
+        });
     }
 
     @Nested
@@ -596,6 +637,88 @@ class InterviewTranscriptionCommandServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(INTERVIEW_ANSWER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("취소와 변환 요청이 겹칠 때")
+    class AbandonRequestRace {
+
+        @Test
+        void 취소가_먼저_잠그면_변환_요청이_중단된_세션_예외로_거부된다() throws Exception {
+            // given
+            InterviewSession session = 음성_세션();
+            InterviewAnswer answer = 미요청_답안_저장(session.getId(), DISPLAY_ORDER);
+            CountDownLatch abandonLocked = new CountDownLatch(1);
+            CountDownLatch abandonReleased = new CountDownLatch(1);
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+
+            try {
+                Future<?> abandon = executor.submit(() -> transactionTemplate.executeWithoutResult(status -> {
+                    interviewSessionCommandService.abandon(USER_ID, session.getId());
+                    abandonLocked.countDown();
+                    대기(abandonReleased);
+                }));
+                대기(abandonLocked);
+
+                // when
+                Future<?> request = executor.submit(() ->
+                        interviewTranscriptionCommandService.request(USER_ID, session.getId(), 요청(session.getId())));
+                boolean waitedForAbandon = 끝나지_않고_대기_중인지(request);
+
+                abandonReleased.countDown();
+                abandon.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+                // then
+                assertThat(waitedForAbandon).isTrue();
+                assertThatThrownBy(() -> request.get(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                        .hasCauseInstanceOf(RestApiException.class)
+                        .extracting(e -> ((RestApiException) e.getCause()).getErrorCode())
+                        .isEqualTo(INTERVIEW_SESSION_ABANDONED);
+                음성과_변환_결과가_비어_있다(answer.getId());
+                verify(interviewTranscriptionFacade, never()).transcribe(anyLong(), anyString());
+            } finally {
+                abandonReleased.countDown();
+                executor.shutdownNow();
+            }
+        }
+
+        @Test
+        void 변환_요청이_먼저_잠그면_취소가_요청한_답안의_음성까지_비운다() throws Exception {
+            // given
+            InterviewSession session = 음성_세션();
+            InterviewAnswer answer = 미요청_답안_저장(session.getId(), DISPLAY_ORDER);
+            CountDownLatch requestLocked = new CountDownLatch(1);
+            CountDownLatch requestReleased = new CountDownLatch(1);
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+
+            try {
+                Future<?> request = executor.submit(() -> transactionTemplate.executeWithoutResult(status -> {
+                    interviewTranscriptionCommandService.request(USER_ID, session.getId(), 요청(session.getId()));
+                    requestLocked.countDown();
+                    대기(requestReleased);
+                }));
+                대기(requestLocked);
+
+                // when
+                Future<?> abandon = executor.submit(() -> interviewSessionCommandService.abandon(USER_ID, session.getId()));
+                boolean waitedForRequest = 끝나지_않고_대기_중인지(abandon);
+
+                requestReleased.countDown();
+                request.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                abandon.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+                // then
+                assertSoftly(softly -> {
+                    softly.assertThat(waitedForRequest).isTrue();
+                    softly.assertThat(interviewSessionRepository.findById(session.getId()).orElseThrow().getStatus())
+                            .isEqualTo(InterviewSessionStatus.ABANDONED);
+                });
+                음성과_변환_결과가_비어_있다(answer.getId());
+            } finally {
+                requestReleased.countDown();
+                executor.shutdownNow();
+            }
         }
     }
 }
