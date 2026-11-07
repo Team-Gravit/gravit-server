@@ -1,4 +1,4 @@
-package gravit.code.auth.strategy.android;
+package gravit.code.auth.strategy.app;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.global.exception.domain.RestApiException;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-class AndroidUserInfoFactoryIntegrationTest {
+class AppUserInfoFactoryIntegrationTest {
 
     @Nested
     @DisplayName("구글 idToken 클레임으로 사용자 정보를 생성할 때")
@@ -32,7 +32,7 @@ class AndroidUserInfoFactoryIntegrationTest {
             );
 
             // when
-            OAuthUserInfo userInfo = AndroidUserInfoFactory.fromClaims("google", claims);
+            OAuthUserInfo userInfo = AppUserInfoFactory.fromClaims("google", claims);
 
             // then
             assertSoftly(softly -> {
@@ -53,7 +53,7 @@ class AndroidUserInfoFactoryIntegrationTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> AndroidUserInfoFactory.fromClaims("google", claims))
+            assertThatThrownBy(() -> AppUserInfoFactory.fromClaims("google", claims))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -69,7 +69,7 @@ class AndroidUserInfoFactoryIntegrationTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> AndroidUserInfoFactory.fromClaims("google", claims))
+            assertThatThrownBy(() -> AppUserInfoFactory.fromClaims("google", claims))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -91,7 +91,7 @@ class AndroidUserInfoFactoryIntegrationTest {
             );
 
             // when
-            OAuthUserInfo userInfo = AndroidUserInfoFactory.fromClaims("kakao", claims);
+            OAuthUserInfo userInfo = AppUserInfoFactory.fromClaims("kakao", claims);
 
             // then
             assertSoftly(softly -> {
@@ -112,7 +112,7 @@ class AndroidUserInfoFactoryIntegrationTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> AndroidUserInfoFactory.fromClaims("kakao", claims))
+            assertThatThrownBy(() -> AppUserInfoFactory.fromClaims("kakao", claims))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -128,7 +128,7 @@ class AndroidUserInfoFactoryIntegrationTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> AndroidUserInfoFactory.fromClaims("kakao", claims))
+            assertThatThrownBy(() -> AppUserInfoFactory.fromClaims("kakao", claims))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -145,7 +145,7 @@ class AndroidUserInfoFactoryIntegrationTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> AndroidUserInfoFactory.fromClaims("kakao", claims))
+            assertThatThrownBy(() -> AppUserInfoFactory.fromClaims("kakao", claims))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -159,7 +159,7 @@ class AndroidUserInfoFactoryIntegrationTest {
         Map<String, Object> claims = Map.of("sub", "1");
 
         // when & then
-        assertThatThrownBy(() -> AndroidUserInfoFactory.fromClaims("samsung", claims))
+        assertThatThrownBy(() -> AppUserInfoFactory.fromClaims("samsung", claims))
                 .isInstanceOf(RestApiException.class)
                 .extracting(e -> ((RestApiException) e).getErrorCode())
                 .isEqualTo(PROVIDER_INVALID);

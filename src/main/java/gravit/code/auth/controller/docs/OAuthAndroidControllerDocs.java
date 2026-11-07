@@ -1,7 +1,7 @@
 package gravit.code.auth.controller.docs;
 
-import gravit.code.auth.dto.oauth.android.AccessTokenRequest;
-import gravit.code.auth.dto.oauth.android.IdTokenRequest;
+import gravit.code.auth.dto.oauth.app.AccessTokenRequest;
+import gravit.code.auth.dto.oauth.app.IdTokenRequest;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;

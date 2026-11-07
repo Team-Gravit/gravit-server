@@ -1,4 +1,4 @@
-package gravit.code.auth.service.oauth.android;
+package gravit.code.auth.service.oauth.app;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
@@ -24,13 +24,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @TCSpringBootTest
-class NaverAndroidUserInfoServiceIntegrationTest {
+class NaverAppUserInfoServiceIntegrationTest {
 
     private static final String NAVER_USER_INFO_URI = "https://openapi.naver.com/v1/nid/me";
     private static final String VALID_ACCESS_TOKEN = "valid-naver-access-token";
 
     @Autowired
-    private NaverAndroidUserInfoService naverAndroidUserInfoService;
+    private NaverAppUserInfoService naverAppUserInfoService;
 
     @MockitoBean
     private OAuthHttpClientAdapter oAuthHttpClientAdapter;
@@ -55,7 +55,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     ));
 
             // when
-            OAuthUserInfo userInfo = naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN);
+            OAuthUserInfo userInfo = naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN);
 
             // then
             assertSoftly(softly -> {
@@ -72,7 +72,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
         @DisplayName("액세스 토큰이 없으면 OAUTH_ACCESS_TOKEN_INVALID 예외가 발생한다")
         void 액세스_토큰이_비어있으면_예외가_발생한다(String accessToken) {
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(accessToken))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(accessToken))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_ACCESS_TOKEN_INVALID);
@@ -89,7 +89,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     ));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -103,7 +103,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     .thenReturn(Map.of("message", "unknown"));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -120,7 +120,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     ));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -137,7 +137,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     ));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -157,7 +157,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     ));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -177,7 +177,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     ));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -197,7 +197,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     ));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo(VALID_ACCESS_TOKEN))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_USER_INFO_INVALID);
@@ -211,7 +211,7 @@ class NaverAndroidUserInfoServiceIntegrationTest {
                     .thenThrow(new RestApiException(OAUTH_ACCESS_TOKEN_INVALID));
 
             // when & then
-            assertThatThrownBy(() -> naverAndroidUserInfoService.getUserInfo("expired-access-token"))
+            assertThatThrownBy(() -> naverAppUserInfoService.getUserInfo("expired-access-token"))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(OAUTH_ACCESS_TOKEN_INVALID);

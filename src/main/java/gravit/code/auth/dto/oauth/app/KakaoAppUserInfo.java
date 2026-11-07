@@ -1,4 +1,4 @@
-package gravit.code.auth.dto.oauth.android;
+package gravit.code.auth.dto.oauth.app;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 
@@ -6,7 +6,7 @@ import java.util.Map;
 
 import static gravit.code.auth.dto.oauth.support.OAuthAttributeExtractor.getAttributeAsString;
 
-public record KakaoAndroidUserInfo(Map<String, Object> claims) implements OAuthUserInfo {
+public record KakaoAppUserInfo(Map<String, Object> claims) implements OAuthUserInfo {
 
     private static final String PROVIDER = "kakao";
     private static final String CLAIM_SUB = "sub";

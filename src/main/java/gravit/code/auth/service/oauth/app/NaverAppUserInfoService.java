@@ -1,4 +1,4 @@
-package gravit.code.auth.service.oauth.android;
+package gravit.code.auth.service.oauth.app;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.service.oauth.OAuthClient;
@@ -18,7 +18,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.OAUTH_USER_INF
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class NaverAndroidUserInfoService {
+public class NaverAppUserInfoService {
 
     private static final String PROVIDER = "naver";
     private static final String RESULT_CODE_KEY = "resultcode";

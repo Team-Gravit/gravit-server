@@ -117,6 +117,20 @@ scheduler:
     rollover-cron: "-"
 
 oauth:
+  android:
+    google:
+      issuer: https://accounts.google.com
+      client-id: test-android-google-client-id
+    kakao:
+      issuer: https://kauth.kakao.com
+      client-id: test-android-kakao-client-id
+  ios:
+    google:
+      issuer: https://accounts.google.com
+      client-id: test-ios-google-client-id
+    kakao:
+      issuer: https://kauth.kakao.com
+      client-id: test-ios-kakao-client-id
   apple:
     issuer: https://appleid.apple.com
     token-uri: https://appleid.apple.com/auth/token

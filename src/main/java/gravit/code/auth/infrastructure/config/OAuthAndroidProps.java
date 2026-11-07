@@ -9,7 +9,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.PROVIDER_INVAL
 public record OAuthAndroidProps(
         Google google,
         Kakao kakao
-) {
+) implements OAuthIdTokenProps {
     public record Google(
             String issuer,
             String clientId
