@@ -1,4 +1,4 @@
-package gravit.code.auth.dto.oauth.android;
+package gravit.code.auth.dto.oauth.app;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

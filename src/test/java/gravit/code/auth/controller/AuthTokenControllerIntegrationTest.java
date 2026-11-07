@@ -1,6 +1,7 @@
 package gravit.code.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.domain.RefreshToken;
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.service.AuthTokenProvider;
@@ -40,6 +41,7 @@ class AuthTokenControllerIntegrationTest {
     private static final String LOGOUT_URI = "/api/v1/auth/logout";
     private static final String COOKIE_NAME = "refreshToken";
     private static final String REFRESH_TOKEN_KEY_PREFIX = "refreshToken:";
+    private static final String CLIENT_CLAIM_KEY = "client";
 
     @Autowired
     private MockMvc mockMvc;
@@ -65,7 +67,7 @@ class AuthTokenControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         user = userFixture.일반_유저(1);
-        RefreshToken issued = authTokenProvider.generateRefreshToken(user);
+        RefreshToken issued = authTokenProvider.generateRefreshToken(user, LoginClient.WEB);
         refreshToken = issued.token();
     }
 
@@ -74,11 +76,19 @@ class AuthTokenControllerIntegrationTest {
     }
 
     private String 저장되지_않은_토큰() {
-        return jwtProvider.generateToken(new Subject(user.getId().toString()), Duration.ofDays(1));
+        return jwtProvider.generateToken(
+                new Subject(user.getId().toString()),
+                Map.of(CLIENT_CLAIM_KEY, LoginClient.WEB.name()),
+                Duration.ofDays(1)
+        );
     }
 
     private String 저장된_토큰() {
-        return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY_PREFIX + user.getId());
+        return 저장된_토큰(LoginClient.WEB);
+    }
+
+    private String 저장된_토큰(LoginClient client) {
+        return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY_PREFIX + user.getId() + ":" + client.name());
     }
 
     @Nested
@@ -226,6 +236,29 @@ class AuthTokenControllerIntegrationTest {
 
             // then
             assertThat(저장된_토큰()).isEqualTo(refreshToken);
+        }
+
+        @Test
+        void 웹에서_로그아웃해도_앱_토큰으로는_계속_재발급된다() throws Exception {
+            // given
+            String appRefreshToken = authTokenProvider.generateRefreshToken(user, LoginClient.ANDROID).token();
+
+            // when
+            mockMvc.perform(post(LOGOUT_URI)
+                            .cookie(new Cookie(COOKIE_NAME, refreshToken)))
+                    .andExpect(status().isNoContent());
+
+            // then
+            mockMvc.perform(post(REISSUE_URI)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(토큰_본문(appRefreshToken)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.accessToken").isNotEmpty());
+
+            assertSoftly(softly -> {
+                softly.assertThat(저장된_토큰(LoginClient.WEB)).isNull();
+                softly.assertThat(저장된_토큰(LoginClient.ANDROID)).isEqualTo(appRefreshToken);
+            });
         }
     }
 }

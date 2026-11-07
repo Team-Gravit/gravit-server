@@ -1,13 +1,14 @@
 package gravit.code.auth.controller;
 
 import gravit.code.auth.controller.docs.OAuthAndroidControllerDocs;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
-import gravit.code.auth.dto.oauth.android.AccessTokenRequest;
-import gravit.code.auth.dto.oauth.android.IdTokenRequest;
+import gravit.code.auth.dto.oauth.app.AccessTokenRequest;
+import gravit.code.auth.dto.oauth.app.IdTokenRequest;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.service.oauth.OAuthLoginProcessor;
-import gravit.code.auth.service.oauth.android.NaverAndroidUserInfoService;
-import gravit.code.auth.service.oauth.android.OAuthAndroidUserInfoService;
+import gravit.code.auth.service.oauth.app.NaverAppUserInfoService;
+import gravit.code.auth.service.oauth.app.OAuthAppUserInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/oauth/android")
 public class OAuthAndroidController implements OAuthAndroidControllerDocs {
 
-    private final OAuthAndroidUserInfoService oAuthAndroidClientService;
-    private final NaverAndroidUserInfoService naverAndroidUserInfoService;
+    private final OAuthAppUserInfoService oAuthAppUserInfoService;
+    private final NaverAppUserInfoService naverAppUserInfoService;
 
     private final OAuthLoginProcessor oAuthLoginProcessor;
 
@@ -35,8 +36,8 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
             @RequestBody IdTokenRequest request
     ){
         String idToken = request.idToken();
-        OAuthUserInfo userInfo = oAuthAndroidClientService.parseIdToken(provider, idToken);
-        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
+        OAuthUserInfo userInfo = oAuthAppUserInfoService.parseAndroidIdToken(provider, idToken);
+        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo, LoginClient.ANDROID);
 
         return ResponseEntity.status(OK).body(loginResponse);
     }
@@ -45,9 +46,9 @@ public class OAuthAndroidController implements OAuthAndroidControllerDocs {
     public ResponseEntity<LoginResponse> oauthNaverLogin(
             @RequestBody @Valid AccessTokenRequest request
     ){
-        OAuthUserInfo userInfo = naverAndroidUserInfoService.getUserInfo(request.accessToken());
+        OAuthUserInfo userInfo = naverAppUserInfoService.getUserInfo(request.accessToken());
 
-        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
+        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo, LoginClient.ANDROID);
 
         return ResponseEntity.status(OK).body(loginResponse);
     }

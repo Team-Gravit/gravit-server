@@ -1,6 +1,7 @@
 package gravit.code.auth.controller;
 
 import gravit.code.auth.controller.docs.OAuthControllerDocs;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.internal.WebLoginDto;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
@@ -60,7 +61,7 @@ public class OAuthController implements OAuthControllerDocs {
     ) {
         OAuthUserInfo userInfo = oAuthClientService.getUserInfo(provider, WebLoginDto.of(webAuthCodeRequest, origin, dest));
 
-        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo);
+        LoginResponse loginResponse = oAuthLoginProcessor.process(userInfo, LoginClient.WEB);
 
         return webLoginResponse(loginResponse);
     }

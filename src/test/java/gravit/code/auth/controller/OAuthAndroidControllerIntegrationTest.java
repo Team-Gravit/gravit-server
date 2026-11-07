@@ -1,9 +1,9 @@
 package gravit.code.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gravit.code.auth.dto.oauth.android.GoogleAndroidUserInfo;
+import gravit.code.auth.dto.oauth.app.GoogleAppUserInfo;
 import gravit.code.auth.infrastructure.client.OAuthHttpClientAdapter;
-import gravit.code.auth.service.oauth.android.OAuthAndroidUserInfoService;
+import gravit.code.auth.service.oauth.app.OAuthAppUserInfoService;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.Role;
@@ -57,7 +57,7 @@ class OAuthAndroidControllerIntegrationTest {
     private OAuthHttpClientAdapter oAuthHttpClientAdapter;
 
     @MockitoBean
-    private OAuthAndroidUserInfoService oAuthAndroidUserInfoService;
+    private OAuthAppUserInfoService oAuthAppUserInfoService;
 
     @Nested
     @DisplayName("안드로이드 네이버 로그인을 요청할 때")
@@ -195,8 +195,8 @@ class OAuthAndroidControllerIntegrationTest {
         @DisplayName("IdToken 검증을 통과하면 토큰이 발급된다")
         void 구글_id_token_으로_로그인에_성공한다() throws Exception {
             // given
-            when(oAuthAndroidUserInfoService.parseIdToken(eq("google"), any()))
-                    .thenReturn(new GoogleAndroidUserInfo(Map.of(
+            when(oAuthAppUserInfoService.parseAndroidIdToken(eq("google"), any()))
+                    .thenReturn(new GoogleAppUserInfo(Map.of(
                             "sub", "google-provider-id",
                             "email", "tester@gmail.com",
                             "name", "구글테스터"
@@ -219,7 +219,7 @@ class OAuthAndroidControllerIntegrationTest {
         @DisplayName("IdToken 검증에 실패하면 회원가입도 토큰 발급도 되지 않는다")
         void id_token_검증에_실패하면_로그인에_실패한다() throws Exception {
             // given
-            when(oAuthAndroidUserInfoService.parseIdToken(any(), any()))
+            when(oAuthAppUserInfoService.parseAndroidIdToken(any(), any()))
                     .thenThrow(new RestApiException(OAUTH_ID_TOKEN_INVALID));
             String body = objectMapper.writeValueAsString(Map.of("idToken", "forged-id-token"));
 

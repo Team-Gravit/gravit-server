@@ -1,9 +1,11 @@
 package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.AppleClient;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.internal.AppleStoredTokenDto;
 import gravit.code.auth.dto.oauth.AppleUserInfo;
+import gravit.code.auth.dto.oauth.GoogleUserInfo;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.repository.AppleCredentialRepository;
 import gravit.code.auth.service.oauth.apple.AppleCredentialService;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +35,8 @@ class OAuthLoginProcessorIntegrationTest {
     private static final String EMAIL = "relay@privaterelay.appleid.com";
     private static final String REFRESH_TOKEN = "r.apple-refresh-token";
     private static final String NEW_REFRESH_TOKEN = "r.apple-refresh-token-new";
+    private static final String GOOGLE_PROVIDER_ID = "google_1029384756";
+    private static final String REFRESH_TOKEN_KEY_PREFIX = "refreshToken:";
 
     @Autowired
     private OAuthLoginProcessor oAuthLoginProcessor;
@@ -47,6 +52,16 @@ class OAuthLoginProcessorIntegrationTest {
 
     @Autowired
     private UserFixtureBuilder userFixtureBuilder;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    private String 저장된_리프레시_토큰(
+            long userId,
+            LoginClient client
+    ) {
+        return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY_PREFIX + userId + ":" + client.name());
+    }
 
     private AppleLoginDto Apple_로그인(String refreshToken) {
         return Apple_로그인(refreshToken, AppleClient.WEB);
@@ -168,6 +183,60 @@ class OAuthLoginProcessorIntegrationTest {
                     .isInstanceOf(AccountSoftDeletedException.class);
 
             assertThat(appleCredentialRepository.findByUserId(user.getId())).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("리프레시 토큰을 발급할 때")
+    class IssueRefreshToken {
+
+        @Test
+        void Apple_웹_로그인이면_WEB_칸에만_저장한다() {
+            // when
+            LoginResponse response = oAuthLoginProcessor.processApple(Apple_로그인(REFRESH_TOKEN, AppleClient.WEB));
+
+            // then
+            User user = userRepository.findByProviderId(PROVIDER_ID).orElseThrow();
+
+            assertSoftly(softly -> {
+                softly.assertThat(저장된_리프레시_토큰(user.getId(), LoginClient.WEB)).isEqualTo(response.refreshToken());
+                softly.assertThat(저장된_리프레시_토큰(user.getId(), LoginClient.IOS)).isNull();
+            });
+        }
+
+        @Test
+        void Apple_iOS_로그인이면_IOS_칸에만_저장한다() {
+            // when
+            LoginResponse response = oAuthLoginProcessor.processApple(Apple_로그인(REFRESH_TOKEN, AppleClient.IOS));
+
+            // then
+            User user = userRepository.findByProviderId(PROVIDER_ID).orElseThrow();
+
+            assertSoftly(softly -> {
+                softly.assertThat(저장된_리프레시_토큰(user.getId(), LoginClient.IOS)).isEqualTo(response.refreshToken());
+                softly.assertThat(저장된_리프레시_토큰(user.getId(), LoginClient.WEB)).isNull();
+            });
+        }
+
+        @Test
+        void 소셜_로그인은_넘겨받은_기기_종류_칸에만_저장한다() {
+            // given
+            GoogleUserInfo userInfo = new GoogleUserInfo(Map.of(
+                    "sub", "1029384756",
+                    "email", "learner@gmail.com",
+                    "name", "구글학습자"
+            ));
+
+            // when
+            LoginResponse response = oAuthLoginProcessor.process(userInfo, LoginClient.ANDROID);
+
+            // then
+            User user = userRepository.findByProviderId(GOOGLE_PROVIDER_ID).orElseThrow();
+
+            assertSoftly(softly -> {
+                softly.assertThat(저장된_리프레시_토큰(user.getId(), LoginClient.ANDROID)).isEqualTo(response.refreshToken());
+                softly.assertThat(저장된_리프레시_토큰(user.getId(), LoginClient.WEB)).isNull();
+            });
         }
     }
 }

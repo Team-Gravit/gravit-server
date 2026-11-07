@@ -1,8 +1,10 @@
-package gravit.code.auth.service.oauth.android;
+package gravit.code.auth.service.oauth.app;
 
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.infrastructure.config.OAuthAndroidProps;
-import gravit.code.auth.strategy.android.AndroidUserInfoFactory;
+import gravit.code.auth.infrastructure.config.OAuthIdTokenProps;
+import gravit.code.auth.infrastructure.config.OAuthIosProps;
+import gravit.code.auth.strategy.app.AppUserInfoFactory;
 import gravit.code.global.exception.domain.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,27 +20,36 @@ import static gravit.code.global.exception.domain.CustomErrorCode.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OAuthAndroidUserInfoService {
+public class OAuthAppUserInfoService {
 
     private final Map<String, JwtDecoder> jwtDecoderMap;
     private final OAuthAndroidProps androidProps;
+    private final OAuthIosProps iosProps;
 
-    public OAuthUserInfo parseIdToken(
+    public OAuthUserInfo parseAndroidIdToken(
             String provider,
             String idToken
+    ) {
+        return parseIdToken(provider, idToken, androidProps);
+    }
+
+    private OAuthUserInfo parseIdToken(
+            String provider,
+            String idToken,
+            OAuthIdTokenProps props
     ) {
         validateNullAndBlankIdToken(idToken);
 
         JwtDecoder decoder = selectJwtDecoder(provider);
         Jwt jwt = decodingIdTokenToJwt(idToken, decoder);
 
-        validateIssuer(jwt, provider);
-        validateAudience(jwt, provider);
+        validateIssuer(jwt, provider, props);
+        validateAudience(jwt, provider, props);
 
         Map<String, Object> claims = jwt.getClaims();
         log.info("IdToken 파싱 성공 provider: {}, subject: {}", provider, jwt.getSubject());
 
-        return AndroidUserInfoFactory.fromClaims(provider, claims);
+        return AppUserInfoFactory.fromClaims(provider, claims);
     }
 
     private JwtDecoder selectJwtDecoder(String provider) {
@@ -66,9 +77,10 @@ public class OAuthAndroidUserInfoService {
 
     private void validateIssuer(
             Jwt jwt,
-            String provider
+            String provider,
+            OAuthIdTokenProps props
     ) {
-        String expectedIssuer = androidProps.getIssuer(provider);
+        String expectedIssuer = props.getIssuer(provider);
         String targetIssuer = jwt.getIssuer().toString();
 
         if(!expectedIssuer.equals(targetIssuer)) {
@@ -79,9 +91,10 @@ public class OAuthAndroidUserInfoService {
 
     private void validateAudience(
             Jwt jwt,
-            String provider
+            String provider,
+            OAuthIdTokenProps props
     ) {
-        String expectedClientId = androidProps.getClientId(provider);
+        String expectedClientId = props.getClientId(provider);
         List<String> audiences = jwt.getAudience();
 
         if(audiences.isEmpty()){
@@ -99,5 +112,12 @@ public class OAuthAndroidUserInfoService {
         if (idToken == null || idToken.isEmpty()) {
             throw new RestApiException(OAUTH_ID_TOKEN_INVALID);
         }
+    }
+
+    public OAuthUserInfo parseIosIdToken(
+            String provider,
+            String idToken
+    ) {
+        return parseIdToken(provider, idToken, iosProps);
     }
 }
