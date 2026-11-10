@@ -375,18 +375,22 @@ class LessonSubmissionQueryServiceIntegrationTest {
     class GetTopChapters {
 
         @Test
-        void 풀이_수가_많은_순으로_최대_3개의_챕터를_반환한다() {
+        void 풀이_수가_많은_순으로_최대_5개의_챕터를_반환한다() {
             // given
             long userId = 1L;
             Chapter ch1 = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
             Chapter ch2 = chapterRepository.save(Chapter.create("운영체제", "OS 기초", CS));
             Chapter ch3 = chapterRepository.save(Chapter.create("네트워크", "네트워크 기초", CS));
             Chapter ch4 = chapterRepository.save(Chapter.create("데이터베이스", "DB 기초", CS));
+            Chapter ch5 = chapterRepository.save(Chapter.create("컴퓨터구조", "컴퓨터구조 기초", CS));
+            Chapter ch6 = chapterRepository.save(Chapter.create("알고리즘", "알고리즘 기초", CS));
 
             Unit u1 = unitRepository.save(Unit.create("연결리스트", "linked list", ch1.getId(), 1));
             Unit u2 = unitRepository.save(Unit.create("프로세스", "process", ch2.getId(), 1));
             Unit u3 = unitRepository.save(Unit.create("TCP", "tcp", ch3.getId(), 1));
             Unit u4 = unitRepository.save(Unit.create("정규화", "normalization", ch4.getId(), 1));
+            Unit u5 = unitRepository.save(Unit.create("캐시", "cache", ch5.getId(), 1));
+            Unit u6 = unitRepository.save(Unit.create("정렬", "sort", ch6.getId(), 1));
 
             Lesson l1a = lessonRepository.save(Lesson.create("레슨1a", u1.getId()));
             Lesson l1b = lessonRepository.save(Lesson.create("레슨1b", u1.getId()));
@@ -395,6 +399,8 @@ class LessonSubmissionQueryServiceIntegrationTest {
             Lesson l2b = lessonRepository.save(Lesson.create("레슨2b", u2.getId()));
             Lesson l3 = lessonRepository.save(Lesson.create("레슨3", u3.getId()));
             Lesson l4 = lessonRepository.save(Lesson.create("레슨4", u4.getId()));
+            Lesson l5 = lessonRepository.save(Lesson.create("레슨5", u5.getId()));
+            Lesson l6 = lessonRepository.save(Lesson.create("레슨6", u6.getId()));
 
             lessonSubmissionRepository.save(LessonSubmission.create(60, 80, l1a.getId(), userId));
             lessonSubmissionRepository.save(LessonSubmission.create(60, 80, l1b.getId(), userId));
@@ -403,21 +409,21 @@ class LessonSubmissionQueryServiceIntegrationTest {
             lessonSubmissionRepository.save(LessonSubmission.create(60, 80, l2b.getId(), userId));
             lessonSubmissionRepository.save(LessonSubmission.create(60, 80, l3.getId(), userId));
             lessonSubmissionRepository.save(LessonSubmission.create(60, 80, l4.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 80, l5.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 80, l6.getId(), userId));
 
             // when
             List<TopChapterResponse> result = lessonSubmissionQueryService.getTopChapters(userId);
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(result).hasSize(3);
-                softly.assertThat(result.get(0).rank()).isEqualTo(1);
+                softly.assertThat(result).hasSize(5);
+                softly.assertThat(result).extracting(TopChapterResponse::rank)
+                        .containsExactly(1, 2, 3, 4, 5);
+                softly.assertThat(result).extracting(TopChapterResponse::solvedLessonCount)
+                        .containsExactly(3, 2, 1, 1, 1);
                 softly.assertThat(result.get(0).chapterTitle()).isEqualTo("자료구조");
-                softly.assertThat(result.get(0).solvedLessonCount()).isEqualTo(3);
-                softly.assertThat(result.get(1).rank()).isEqualTo(2);
                 softly.assertThat(result.get(1).chapterTitle()).isEqualTo("운영체제");
-                softly.assertThat(result.get(1).solvedLessonCount()).isEqualTo(2);
-                softly.assertThat(result.get(2).rank()).isEqualTo(3);
-                softly.assertThat(result.get(2).solvedLessonCount()).isEqualTo(1);
             });
         }
 
