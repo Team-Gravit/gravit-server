@@ -48,6 +48,18 @@ description: AI 면접 시뮬레이터의 모드와 선택지, 세션 생성과 
 - 스택 목록은 그룹별로 노출 순서 오름차순으로 나간다
 - 여러 스택이 공유하는 태그(SERVER_COMMON, SPRING_BOOT, KOTLIN, TYPESCRIPT)의 문제와 학습 콘텐츠는 한 번만 만들면 모든 스택에서 쓰인다
 
+직군 그룹 목록에는 그룹마다 설명이 함께 나간다. 직군 카드에 보이는 기술 문구다.
+
+| 그룹 | 설명 |
+|------|------|
+| SERVER | Spring Boot / NestJS / Django |
+| WEB | React / Vue.js / Next.js |
+| AOS | Jetpack Compose / Kotlin |
+| IOS | SwiftUI / Swift |
+
+- 그룹 설명은 그룹에 속한 스택의 프레임워크를 노출 순서대로 ` / `로 잇는다. 프레임워크가 하나뿐인 그룹은 언어를 덧붙인다
+- 스택을 추가하면 그 스택의 프레임워크가 그룹 설명에 들어가도록 설명을 함께 고친다
+
 ## 난이도
 
 - 난이도는 EASY(하), NORMAL(중), HARD(상) 세 단계다
