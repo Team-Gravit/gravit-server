@@ -20,12 +20,20 @@ public record InterviewStackGroupResponse(
                 example = "Server",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        String displayName
+        String displayName,
+
+        @Schema(
+                description = "직군 그룹 설명",
+                example = "Spring Boot / NestJS / Django",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        String description
 ) {
     public static InterviewStackGroupResponse from(InterviewStackGroup stackGroup) {
         return InterviewStackGroupResponse.builder()
                 .stackGroup(stackGroup)
                 .displayName(stackGroup.getDisplayName())
+                .description(stackGroup.getDescription())
                 .build();
     }
 }
