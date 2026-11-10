@@ -135,4 +135,7 @@ jobs:
             docker-compose -f docker-compose-dev.yml pull gravit-server-dev
             docker-compose -f docker-compose-dev.yml up -d --no-deps --force-recreate gravit-server-dev
 
-            docker image prune -f
+            # 새 이미지를 받으며 태그가 빠진 이전 gravit-server 이미지만 지운다.
+            # 공용 서버라 다른 팀 이미지까지 지우는 전체 prune(docker image prune)은 쓰지 않는다.
+            docker images "$DOCKER_HUB_USERNAME/gravit-server" --filter dangling=true -q | \
+              xargs -r docker rmi 2>/dev/null || true
