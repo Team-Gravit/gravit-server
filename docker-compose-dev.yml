@@ -67,6 +67,8 @@ services:
     volumes:
       - ./logs:/var/log/spring
       - ./infra/config.alloy:/etc/alloy/config.alloy:ro
+      # 파일별 읽기 위치(positions). 컨테이너 안에만 두면 재생성 때 사라져 남은 로그 파일을 처음부터 다시 보낸다.
+      - alloy_data:/data-alloy
     environment:
       - ALLOY_ENV=dev
     command: ["run", "/etc/alloy/config.alloy"]
@@ -78,6 +80,8 @@ volumes:
   # compose 프로젝트 이름(배포 디렉터리 이름 dev)은 서버의 다른 서비스와 겹칠 수 있어 이름을 고정한다.
   loki_data:
     name: gravit-loki-dev-data
+  alloy_data:
+    name: gravit-alloy-dev-data
 
 networks:
   gravit-dev:
