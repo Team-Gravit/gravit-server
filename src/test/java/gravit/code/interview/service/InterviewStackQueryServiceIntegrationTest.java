@@ -50,6 +50,39 @@ class InterviewStackQueryServiceIntegrationTest {
                 softly.assertThat(stackGroups.get(3).displayName()).isEqualTo("iOS");
             });
         }
+
+        @Test
+        void 그룹별_설명을_돌려준다() {
+            // when
+            List<InterviewStackGroupResponse> stackGroups = interviewStackQueryService.getStackGroups();
+
+            // then
+            assertThat(stackGroups.stream().map(InterviewStackGroupResponse::description))
+                    .containsExactly(
+                            "Spring Boot / NestJS / Django",
+                            "React / Vue.js / Next.js",
+                            "Jetpack Compose / Kotlin",
+                            "SwiftUI / Swift"
+                    );
+        }
+
+        @ParameterizedTest
+        @EnumSource(InterviewStackGroup.class)
+        void 그룹_설명에_소속_스택의_프레임워크가_모두_들어있다(InterviewStackGroup stackGroup) {
+            // when
+            String description = interviewStackQueryService.getStackGroups().stream()
+                    .filter(response -> response.stackGroup() == stackGroup)
+                    .findFirst()
+                    .orElseThrow()
+                    .description();
+            List<InterviewStackResponse> stacks = interviewStackQueryService.getStacks(stackGroup);
+
+            // then
+            assertThat(stacks)
+                    .isNotEmpty()
+                    .allSatisfy(stack ->
+                            assertThat(description).contains(stack.stack().getFrameworkTopic().getDisplayName()));
+        }
     }
 
     @Nested
