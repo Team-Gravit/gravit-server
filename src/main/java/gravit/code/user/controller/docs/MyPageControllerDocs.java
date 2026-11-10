@@ -126,7 +126,7 @@ public interface MyPageControllerDocs {
     })
     ResponseEntity<WeeklyLearningReportResponse> getMyPageWeeklyReport(@AuthenticationPrincipal LoginUser loginUser);
 
-    @Operation(summary = "마이페이지 이번주 최다 학습 챕터 조회", description = "이번 주에 가장 많이 푼 챕터 상위 3개를 조회합니다<br>" +
+    @Operation(summary = "마이페이지 이번주 최다 학습 챕터 조회", description = "이번 주에 가장 많이 푼 챕터 상위 5개를 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 마이페이지 이번주 최다 학습 챕터 조회 성공"),

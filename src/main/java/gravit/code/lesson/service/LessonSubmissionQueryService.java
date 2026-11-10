@@ -24,7 +24,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_SUBMISS
 @RequiredArgsConstructor
 public class LessonSubmissionQueryService {
 
-    private static final int TOP_CHAPTERS_LIMIT = 3;
+    private static final int TOP_CHAPTERS_LIMIT = 5;
     private static final int SECONDS_PER_HOUR = 60 * 60;
     private static final int NO_PEAK_LEARNING_HOUR = -1;
 
