@@ -268,3 +268,8 @@ public ThreadPoolTaskScheduler retrySweepScheduler() { pool 2, prefix "retry-swe
 - 운영 `lesson_submission` 행 수로 백필 소요 시간을 추정해 둔다(로컬 100만 행 기준 측정값 첨부)
 
 ## Deviation Log
+- `V52__add_league_point_grant.sql`: 마이그레이션 번호를 V51에서 V52로 변경 — 이유: #610 계획(D3)에서 V51을 친구 검색 표현식 통계가 먼저 쓰고 #608보다 먼저 머지하기로 했다. 배포 체크리스트의 "V51 백필 쿼리"는 V52의 백필 쿼리를 가리킨다
+- `LeaguePointGrant`: `@Table(uniqueConstraints = ux_league_point_grant_source)` 추가 — 이유: 테스트 스키마는 `ddl-auto: create`로 만들어져 마이그레이션의 unique 인덱스가 없다. 없으면 `ON CONFLICT (source_type, source_id, user_id)`가 실패한다. `UserMission`과 같은 선례다
+- `RetryQueueSweeper`: 재적재, 데드레터 실패 로그의 "유실"을 "원본 항목을 남겨 다음 스윕에서 다시 처리"로 변경 — 이유: STEP 4로 실패 시 원본이 남으므로 "유실"이 사실과 달라진다
+- `LeaguePointRetryTarget`, `LeaguePointInterviewRetryTarget`: 재시도 불가 로그에 `lessonId`, `sessionId` 추가 — 이유: 지급 기록 키가 출처 식별자라 확인할 때 필요하다
+- 기존 테스트(`UserLeaguePointServiceIntegrationTest`, `UserLeagueEventListenerIntegrationTest`): 바뀐 시그니처와 payload 필드만 반영했다. 검증 섹션의 새 시나리오와 신규 테스트 클래스는 `write-test`에서 작성한다
