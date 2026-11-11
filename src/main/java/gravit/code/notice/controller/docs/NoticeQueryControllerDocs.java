@@ -93,13 +93,41 @@ public interface NoticeQueryControllerDocs {
 
     @Operation(
             summary = "공지 상세 조회",
-            description = "공지의 상세 내용을 조회합니다.<br>" +
+            description = "공지의 상세 내용과 이전, 다음 공지를 조회합니다.<br>" +
+                    "<strong>prev</strong>는 바로 더 최근에 게시된 공지, <strong>next</strong>는 바로 더 오래전에 게시된 공지입니다. 게시일이 같으면 id로 순서를 정합니다.<br>" +
+                    "고정 공지는 이 순서에서 빠지며, 고정 공지 상세에서는 prev, next가 모두 null입니다. 가장 최근 공지는 prev, 가장 오래된 공지는 next가 null입니다.<br>" +
                     "🔐 <strong>Jwt 필요</strong><br>"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 조회 성공",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NoticeDetailResponse.class))
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = NoticeDetailResponse.class),
+                            examples = @ExampleObject(
+                                    name = "notice-detail",
+                                    value = """
+                                    {
+                                      "id": 122,
+                                      "title": "신규 기능 출시",
+                                      "content": "프로필 커버 이미지 기능이 추가되었습니다.",
+                                      "authorName": "운영자",
+                                      "createdAt": "2025-09-20T10:00:00",
+                                      "updatedAt": "2025-09-20T10:00:00",
+                                      "status": "PUBLISHED",
+                                      "pinned": false,
+                                      "publishedAt": "2025-09-20T10:00:00",
+                                      "prev": {
+                                        "id": 125,
+                                        "title": "10월 업데이트 안내"
+                                      },
+                                      "next": {
+                                        "id": 118,
+                                        "title": "추석 연휴 고객센터 운영 안내"
+                                      }
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",

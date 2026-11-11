@@ -5,6 +5,7 @@ import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.notice.domain.Notice;
 import gravit.code.notice.domain.NoticeStatus;
 import gravit.code.notice.dto.response.NoticeDetailResponse;
+import gravit.code.notice.dto.response.NoticeNeighborResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
 import gravit.code.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,17 @@ public class NoticeQueryService {
     public NoticeDetailResponse getNoticeDetail(long noticeId){
         Notice notice = noticeRepository.findByIdAndStatus(noticeId, NoticeStatus.PUBLISHED)
                 .orElseThrow(() -> new RestApiException(NOTICE_NOT_FOUND));
-        return NoticeDetailResponse.from(notice);
+
+        if (notice.isPinned()) {
+            return NoticeDetailResponse.of(notice, null, null);
+        }
+
+        NoticeNeighborResponse prev = noticeRepository.findNewerNeighbor(NoticeStatus.PUBLISHED, notice.getPublishedAt(), notice.getId())
+                .orElse(null);
+        NoticeNeighborResponse next = noticeRepository.findOlderNeighbor(NoticeStatus.PUBLISHED, notice.getPublishedAt(), notice.getId())
+                .orElse(null);
+
+        return NoticeDetailResponse.of(notice, prev, next);
     }
 
     private Pageable noticePageable(int page) {
