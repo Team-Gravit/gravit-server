@@ -7,11 +7,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum InterviewStackGroup {
 
-    SERVER("Server", 1),
-    WEB("Web", 2),
-    AOS("AOS", 3),
-    IOS("iOS", 4);
+    SERVER("Server", "Spring Boot / NestJS / Django", 1),
+    WEB("Web", "React / Vue.js / Next.js", 2),
+    AOS("AOS", "Jetpack Compose / Kotlin", 3),
+    IOS("iOS", "SwiftUI / Swift", 4);
 
     private final String displayName;
+    private final String description;
     private final int displayOrder;
 }

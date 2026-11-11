@@ -40,10 +40,10 @@ public interface InterviewStackGroupControllerDocs {
                                     name = "직군 그룹 목록 예시",
                                     value = """
                                             [
-                                              { "stackGroup": "SERVER", "displayName": "Server" },
-                                              { "stackGroup": "WEB", "displayName": "Web" },
-                                              { "stackGroup": "AOS", "displayName": "AOS" },
-                                              { "stackGroup": "IOS", "displayName": "iOS" }
+                                              { "stackGroup": "SERVER", "displayName": "Server", "description": "Spring Boot / NestJS / Django" },
+                                              { "stackGroup": "WEB", "displayName": "Web", "description": "React / Vue.js / Next.js" },
+                                              { "stackGroup": "AOS", "displayName": "AOS", "description": "Jetpack Compose / Kotlin" },
+                                              { "stackGroup": "IOS", "displayName": "iOS", "description": "SwiftUI / Swift" }
                                             ]
                                             """
                             )
