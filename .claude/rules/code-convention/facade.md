@@ -65,4 +65,6 @@ Long createdId = transactionTemplate.execute(status -> {
 
 - 리그 점수(레슨, 면접), 리그 배정, 미션, 일일 기록, 학습 생성, 면접 완료 XP: `AFTER_COMMIT` 리스너가 `REQUIRES_NEW` 서비스를 바로 호출한다. 실패하면 리스너가 예외를 잡아 재시도 큐에 적재한다. 재시도해도 소용없는 에러코드는 적재하지 않고 로그만 남기는 리스너도 있다
 - 소셜 피드와 알림(공지 등록, 팔로우, 문의 답변): 리스너가 직접 처리하지 않고 재시도 큐에 적재만 한다. 처리는 `RetryQueueSweeper`가 30초 주기로 큐를 꺼내 실행한다
+- `RetryQueueSweeper`는 기본 스케줄러(21시 알림 배치, 자정 배치 등)와 분리된 전용 스케줄러 `retrySweepScheduler`에서 돈다. 큐 항목은 재적재나 데드레터 적재가 성공한 뒤에만 지운다. 그래서 실패는 유실이 아니라 다시 처리로 이어진다
+- 리그 점수(레슨, 면접)는 출처(레슨, 면접 세션)별 지급 기록(`league_point_grant`)으로 중복 지급을 막는다. 레슨 리그 점수는 10분 주기 대조(`LeaguePointReconcileService`)가 지급 기록 없는 첫 제출을 찾아 누락을 메운다
 - 호출한 쪽이 롤백돼도 남는 동기 `REQUIRES_NEW` 호출은 `SocialFacade.congratulateFeed`의 축하 LP 지급이다
