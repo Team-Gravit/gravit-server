@@ -2,6 +2,7 @@ package gravit.code.user.service;
 
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
+import gravit.code.lesson.policy.LessonRewardPolicy;
 import gravit.code.user.domain.User;
 import gravit.code.user.dto.event.LevelUpFeedEvent;
 import gravit.code.user.dto.event.OnboardingCompletedEvent;
@@ -34,12 +35,11 @@ import static gravit.code.global.exception.domain.CustomErrorCode.USER_PAGE_NOT_
 @RequiredArgsConstructor
 public class UserService {
 
-    private static final int POINT_PER_LESSON = 20;
-
     private final UserRepository userRepository;
     private final UserLeagueRepository userLeagueRepository;
 
     private final RandomHandleGenerator handleGenerator;
+    private final LessonRewardPolicy lessonRewardPolicy;
 
     private final ApplicationEventPublisher publisher;
 
@@ -108,7 +108,7 @@ public class UserService {
         boolean isLevelUp;
 
         if(isFirstTry){
-            isLevelUp = updateUserLevelAndXp(userId, POINT_PER_LESSON, request.accuracy());
+            isLevelUp = updateUserLevelAndXp(userId, LessonRewardPolicy.BASE_REWARD_POINTS, request.accuracy());
         }else{
             isLevelUp = updateUserLevelAndXp(userId, 0, request.accuracy());
         }
@@ -152,7 +152,7 @@ public class UserService {
             int xp,
             int accuracy
     ) {
-        return applyXp(userId, (int) Math.round(xp * accuracy * 0.01));
+        return applyXp(userId, lessonRewardPolicy.calculate(xp, accuracy));
     }
 
     private boolean applyXp(
