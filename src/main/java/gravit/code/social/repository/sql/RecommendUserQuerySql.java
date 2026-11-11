@@ -18,9 +18,26 @@ public class RecommendUserQuerySql {
             ) AS mutual_follow_count
             """;
 
+    private static final String MUTUAL_FOLLOW_PREVIEW_NICKNAME_SUBQUERY = """
+            (
+                SELECT u_mutual.nickname
+                FROM friends f_my_following
+                JOIN users u_mutual ON u_mutual.id = f_my_following.followee_id
+                WHERE f_my_following.follower_id = :userId
+                  AND u_mutual.deleted_at IS NULL
+                  AND EXISTS (
+                      SELECT 1 FROM friends f_follows_cand
+                      WHERE f_follows_cand.follower_id = f_my_following.followee_id
+                        AND f_follows_cand.followee_id = u.id
+                  )
+                ORDER BY f_my_following.id DESC
+                LIMIT 1
+            ) AS mutual_follow_preview_nickname
+            """;
+
     public static final String SAME_SORT_ORDER_SQL = """
             SELECT u.id AS user_id, u.nickname, u.profile_img_number,
-            """ + MUTUAL_FOLLOW_SUBQUERY + """
+            """ + MUTUAL_FOLLOW_SUBQUERY + ", " + MUTUAL_FOLLOW_PREVIEW_NICKNAME_SUBQUERY + """
             FROM users u
             JOIN user_league ul ON ul.user_id = u.id
             JOIN league l ON l.id = ul.league_id
@@ -36,7 +53,7 @@ public class RecommendUserQuerySql {
 
     public static final String ADJACENT_SORT_ORDER_SQL = """
             SELECT u.id AS user_id, u.nickname, u.profile_img_number,
-            """ + MUTUAL_FOLLOW_SUBQUERY + """
+            """ + MUTUAL_FOLLOW_SUBQUERY + ", " + MUTUAL_FOLLOW_PREVIEW_NICKNAME_SUBQUERY + """
             FROM users u
             JOIN user_league ul ON ul.user_id = u.id
             JOIN league l ON l.id = ul.league_id

@@ -51,7 +51,7 @@ public class SocialFacade {
         List<RecommendCandidateDto> candidates = recommendUserService.findCandidates(userId, mainSortOrder);
 
         return candidates.stream()
-                .map(c -> RecommendUserResponse.of(c.userId(), c.nickname(), c.profileImgNumber(), c.mutualFollowCount()))
+                .map(c -> RecommendUserResponse.of(c.userId(), c.nickname(), c.profileImgNumber(), c.mutualFollowCount(), c.mutualFollowPreviewNickname()))
                 .toList();
     }
 
