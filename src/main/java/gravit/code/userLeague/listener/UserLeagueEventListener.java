@@ -36,7 +36,7 @@ public class UserLeagueEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleLessonCompleted(LessonCompletedEvent event) {
         try {
-            pointService.addLeaguePointsForLesson(event.userId(), event.points(), event.accuracy());
+            pointService.addLeaguePointsForLesson(event.userId(), event.lessonId(), event.points(), event.accuracy());
         } catch (RestApiException e) {
             if (isNonRetryable(e)) {
                 log.error("리그 포인트 반영 실패(재시도 불가, 확인 필요): userId={}, errorCode={}", event.userId(), e.getErrorCode(), e);
@@ -55,6 +55,7 @@ public class UserLeagueEventListener {
         log.error("리그 포인트 반영 실패, 재시도 큐 적재: userId={}", event.userId(), cause);
         retryEventPublisher.publish(LeaguePointRetryTarget.QUEUE_KEY, Map.of(
                 LeaguePointRetryTarget.FIELD_USER_ID, String.valueOf(event.userId()),
+                LeaguePointRetryTarget.FIELD_LESSON_ID, String.valueOf(event.lessonId()),
                 LeaguePointRetryTarget.FIELD_POINTS, String.valueOf(event.points()),
                 LeaguePointRetryTarget.FIELD_ACCURACY, String.valueOf(event.accuracy())
         ));
@@ -63,7 +64,7 @@ public class UserLeagueEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleInterviewCompleted(InterviewCompletedEvent event) {
         try {
-            pointService.addLeaguePointsForInterview(event.userId(), event.rewardPoints());
+            pointService.addLeaguePointsForInterview(event.userId(), event.sessionId(), event.rewardPoints());
         } catch (RestApiException e) {
             if (isNonRetryable(e)) {
                 log.error("면접 완료 리그 포인트 반영 실패(재시도 불가, 확인 필요): userId={}, sessionId={}, errorCode={}", event.userId(), event.sessionId(), e.getErrorCode(), e);
@@ -82,6 +83,7 @@ public class UserLeagueEventListener {
         log.error("면접 완료 리그 포인트 반영 실패, 재시도 큐 적재: userId={}, sessionId={}", event.userId(), event.sessionId(), cause);
         retryEventPublisher.publish(LeaguePointInterviewRetryTarget.QUEUE_KEY, Map.of(
                 LeaguePointInterviewRetryTarget.FIELD_USER_ID, String.valueOf(event.userId()),
+                LeaguePointInterviewRetryTarget.FIELD_SESSION_ID, String.valueOf(event.sessionId()),
                 LeaguePointInterviewRetryTarget.FIELD_POINTS, String.valueOf(event.rewardPoints())
         ));
     }
