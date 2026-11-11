@@ -119,7 +119,12 @@ public class LessonFacade {
                 ));
             }
 
-            return new LessonSubmissionSavedDto(submissionId, isLevelUp);
+            return new LessonSubmissionSavedDto(
+                    submissionId,
+                    isLevelUp,
+                    consecutiveSolvedDto.isUpdated(),
+                    consecutiveSolvedDto.after()
+            );
         });
 
         boolean isLeaguePromoted = leagueSortOrderBeforeSubmission
@@ -129,7 +134,9 @@ public class LessonFacade {
         return LessonSubmissionSaveResponse.create(
                 saved.lessonSubmissionId(),
                 saved.isLevelUp(),
-                isLeaguePromoted
+                isLeaguePromoted,
+                saved.isStreakUpdated(),
+                saved.consecutiveSolvedDays()
         );
     }
 
