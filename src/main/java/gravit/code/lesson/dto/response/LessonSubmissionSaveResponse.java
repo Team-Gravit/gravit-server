@@ -30,17 +30,36 @@ public record LessonSubmissionSaveResponse(
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("isLeaguePromoted")
-        boolean isLeaguePromoted
+        boolean isLeaguePromoted,
+
+        @Schema(
+                description = "이번 제출로 연속 학습일이 올랐는지 여부. 그날 첫 학습이면 재제출이어도 true이며, 같은 날 두 번째 제출부터는 false",
+                example = "true",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        @JsonProperty("isStreakUpdated")
+        boolean isStreakUpdated,
+
+        @Schema(
+                description = "이번 제출 반영 후 연속 학습일. isStreakUpdated가 false여도 현재 연속 학습일을 준다",
+                example = "4",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        int consecutiveSolvedDays
 ) {
     public static LessonSubmissionSaveResponse create(
             long lessonSubmissionId,
             boolean isLevelUp,
-            boolean isLeaguePromoted
+            boolean isLeaguePromoted,
+            boolean isStreakUpdated,
+            int consecutiveSolvedDays
     ){
         return LessonSubmissionSaveResponse.builder()
                 .lessonSubmissionId(lessonSubmissionId)
                 .isLevelUp(isLevelUp)
                 .isLeaguePromoted(isLeaguePromoted)
+                .isStreakUpdated(isStreakUpdated)
+                .consecutiveSolvedDays(consecutiveSolvedDays)
                 .build();
     }
 }

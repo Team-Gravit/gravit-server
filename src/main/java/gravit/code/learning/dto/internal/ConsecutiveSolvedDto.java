@@ -18,4 +18,8 @@ public record ConsecutiveSolvedDto(
                 .after(after)
                 .build();
     }
+
+    public boolean isUpdated() {
+        return after > before;
+    }
 }

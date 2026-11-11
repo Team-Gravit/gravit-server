@@ -7,6 +7,8 @@ public record RecommendCandidateDto(
 
         int profileImgNumber,
 
-        int mutualFollowCount
+        int mutualFollowCount,
+
+        String mutualFollowPreviewNickname
 ) {
 }

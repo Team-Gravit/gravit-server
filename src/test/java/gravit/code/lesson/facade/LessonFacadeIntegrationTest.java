@@ -7,6 +7,7 @@ import gravit.code.league.domain.League;
 import gravit.code.league.repository.LeagueRepository;
 import gravit.code.learning.domain.Learning;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
+import gravit.code.learning.fixture.LearningFixture;
 import gravit.code.learning.repository.LearningRepository;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.domain.LessonSubmission;
@@ -373,6 +374,65 @@ class LessonFacadeIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(lessonSubmissionRepository.findById(result.lessonSubmissionId())).isPresent();
                 softly.assertThat(result.isLeaguePromoted()).isFalse();
+            });
+        }
+
+        @Test
+        void 그날_첫_제출이면_연속_학습일_갱신으로_응답하고_일수가_1_오른다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 0);
+            learningRepository.save(LearningFixture.저장_전_학습(user.getId(), false, 3));
+            Lesson lesson = 레슨();
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.isStreakUpdated()).isTrue();
+                softly.assertThat(result.consecutiveSolvedDays()).isEqualTo(4);
+            });
+        }
+
+        @Test
+        void 같은_날_두_번째_제출이면_연속_학습일_갱신이_아니고_일수는_그대로다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 0);
+            learningRepository.save(LearningFixture.저장_전_학습(user.getId(), false, 3));
+            Lesson firstLesson = 레슨();
+            Lesson secondLesson = 레슨();
+            lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(firstLesson.getId(), 100));
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(secondLesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.isStreakUpdated()).isFalse();
+                softly.assertThat(result.consecutiveSolvedDays()).isEqualTo(4);
+            });
+        }
+
+        @Test
+        void 재제출이어도_그날_첫_학습이면_연속_학습일_갱신으로_응답한다() {
+            // given
+            User user = 유저();
+            브론즈로_리그에_참여시킨다(user, 0);
+            learningRepository.save(LearningFixture.저장_전_학습(user.getId(), false, 0));
+            Lesson lesson = 레슨();
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson.getId(), user.getId()));
+
+            // when
+            LessonSubmissionSaveResponse result = lessonFacade.saveLessonSubmission(user.getId(), 정답_제출(lesson.getId(), 100));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.isLevelUp()).isFalse();
+                softly.assertThat(result.isLeaguePromoted()).isFalse();
+                softly.assertThat(result.isStreakUpdated()).isTrue();
+                softly.assertThat(result.consecutiveSolvedDays()).isEqualTo(1);
             });
         }
     }

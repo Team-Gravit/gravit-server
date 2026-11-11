@@ -21,7 +21,8 @@ public class RecommendUserRepositoryImpl implements RecommendUserRepository {
                     rs.getLong("user_id"),
                     rs.getString("nickname"),
                     rs.getInt("profile_img_number"),
-                    rs.getInt("mutual_follow_count")
+                    rs.getInt("mutual_follow_count"),
+                    rs.getString("mutual_follow_preview_nickname")
             );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;

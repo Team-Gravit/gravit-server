@@ -17,19 +17,29 @@ public record RecommendUserResponse(
         int profileImgNumber,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        int mutualFollowCount
+        int mutualFollowCount,
+
+        @Schema(
+                description = "함께 아는 친구 중 내가 가장 최근에 팔로우한 사람의 닉네임. 탈퇴한 사람은 빠지며, 함께 아는 친구가 없거나 모두 탈퇴 처리 중이면 null",
+                example = "그래빗",
+                nullable = true,
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        String mutualFollowPreviewNickname
 ) {
     public static RecommendUserResponse of(
             long userId,
             String nickname,
             int profileImgNumber,
-            int mutualFollowCount
+            int mutualFollowCount,
+            String mutualFollowPreviewNickname
     ) {
         return RecommendUserResponse.builder()
                 .userId(userId)
                 .nickname(nickname)
                 .profileImgNumber(profileImgNumber)
                 .mutualFollowCount(mutualFollowCount)
+                .mutualFollowPreviewNickname(mutualFollowPreviewNickname)
                 .build();
     }
 }
