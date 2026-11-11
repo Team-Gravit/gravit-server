@@ -264,11 +264,34 @@ public ThreadPoolTaskScheduler retrySweepScheduler() { pool 2, prefix "retry-swe
 
 ### 배포 체크리스트
 - 배포 전 `ZCARD league-points-retry`, `ZCARD league-points-interview-retry`가 0인지 확인 (STEP 2의 구 payload)
-- 배포 뒤 롤백(`rollback-prod.yml`)했다가 다시 올리면, 롤백 기간의 제출은 지급 기록 없이 지급돼 있어 대조가 다시 지급한다. 롤백했다면 재배포 전에 V51 백필 쿼리를 다시 실행한다
+- 배포 직후 구 payload 잔존 확인. 확인 뒤 컨테이너가 교체되기 전까지 구버전이 출처 식별자 없는 항목을 적재할 수 있고, 신버전은 이를 파싱하지 못해 재시도 한도 뒤 데드레터로 보낸다
+  - `ZRANGE league-points-interview-retry 0 -1`, `LRANGE league-points-interview-retry:dead-letter 0 -1`에서 `sessionId`가 없는 항목을 찾는다. 레슨 큐(`league-points-retry`)도 같은 방법으로 `lessonId`가 없는 항목을 본다
+  - 레슨 항목은 대조가 24시간 안에 지급하므로 지우기만 한다. 면접 항목은 대조가 없으니 `userId`로 지급 기록이 없는 `COMPLETED` 세션을 찾아 `sessionId`를 채워 다시 적재하거나 수동 지급한다
+- 배포 뒤 롤백(`rollback-prod.yml`)했다가 다시 올리면, 롤백 기간의 제출은 지급 기록 없이 지급돼 있어 대조가 다시 지급한다. 롤백했다면 재배포 전에 아래 멱등 백필을 실행한다. V52의 백필 INSERT를 그대로 다시 돌리면 이미 있는 기록과 `ux_league_point_grant_source`가 충돌해 문장 전체가 실패한다. V52 파일은 적용된 마이그레이션이라 고치지 않는다
+  ```sql
+  -- 롤백 기간에 기록 없이 지급된 레슨 첫 제출을 지급된 것으로 기록한다 (이미 있는 기록은 건너뜀)
+  INSERT INTO league_point_grant (user_id, source_type, source_id, points, created_at)
+  SELECT DISTINCT ON (user_id, lesson_id)
+         user_id, 'LESSON', lesson_id, ROUND(20 * accuracy / 100.0), created_at
+  FROM lesson_submission
+  ORDER BY user_id, lesson_id, created_at, id
+  ON CONFLICT (source_type, source_id, user_id) DO NOTHING;
+
+  -- 롤백 기간에 기록 없이 지급된 완료 면접 세션도 같은 방식으로 기록한다
+  INSERT INTO league_point_grant (user_id, source_type, source_id, points, created_at)
+  SELECT user_id, 'INTERVIEW', id,
+         ROUND(30.0 * (accuracy_score + delivery_score) / (accuracy_max_score + structure_max_score + clarity_max_score)),
+         COALESCE(ended_at, updated_at, started_at)
+  FROM interview_session
+  WHERE status = 'COMPLETED'
+    AND accuracy_max_score + structure_max_score + clarity_max_score > 0
+  ON CONFLICT (source_type, source_id, user_id) DO NOTHING;
+  ```
+  - 전체 테이블을 다시 읽으므로 소요 시간은 최초 백필과 같다. 신버전이 이미 남긴 기록과 겹치는 행은 `ON CONFLICT`로 건너뛴다
 - 운영 `lesson_submission` 행 수로 백필 소요 시간을 추정해 둔다(로컬 100만 행 기준 측정값 첨부)
 
 ## Deviation Log
-- `V52__add_league_point_grant.sql`: 마이그레이션 번호를 V51에서 V52로 변경 — 이유: #610 계획(D3)에서 V51을 친구 검색 표현식 통계가 먼저 쓰고 #608보다 먼저 머지하기로 했다. 배포 체크리스트의 "V51 백필 쿼리"는 V52의 백필 쿼리를 가리킨다
+- `V52__add_league_point_grant.sql`: 마이그레이션 번호를 V51에서 V52로 변경 — 이유: #610 계획(D3)에서 V51을 친구 검색 표현식 통계가 먼저 쓰고 #608보다 먼저 머지하기로 했다
 - `LeaguePointGrant`: `@Table(uniqueConstraints = ux_league_point_grant_source)` 추가 — 이유: 테스트 스키마는 `ddl-auto: create`로 만들어져 마이그레이션의 unique 인덱스가 없다. 없으면 `ON CONFLICT (source_type, source_id, user_id)`가 실패한다. `UserMission`과 같은 선례다
 - `RetryQueueSweeper`: 재적재, 데드레터 실패 로그의 "유실"을 "원본 항목을 남겨 다음 스윕에서 다시 처리"로 변경 — 이유: STEP 4로 실패 시 원본이 남으므로 "유실"이 사실과 달라진다
 - `LeaguePointRetryTarget`, `LeaguePointInterviewRetryTarget`: 재시도 불가 로그에 `lessonId`, `sessionId` 추가 — 이유: 지급 기록 키가 출처 식별자라 확인할 때 필요하다
