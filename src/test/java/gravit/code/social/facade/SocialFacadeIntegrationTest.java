@@ -499,5 +499,32 @@ class SocialFacadeIntegrationTest {
                         .doesNotContain("유저1");
             });
         }
+
+        @Test
+        void 추천_응답에_함께_아는_친구_수와_대표_닉네임이_담긴다() {
+            // given
+            User requester = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(requester, season, 브론즈, 0);
+
+            User candidate = userFixture.일반_유저(2);
+            userLeagueFixture.참여(candidate, season, 브론즈, 0);
+
+            User mutualFriend = userFixture.일반_유저(3);
+            friendFixture.팔로우(requester, mutualFriend);
+            friendFixture.팔로우(mutualFriend, candidate);
+
+            // when
+            List<RecommendUserResponse> result = socialFacade.getRecommendedUsers(requester.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).userId()).isEqualTo(candidate.getId());
+                softly.assertThat(result.get(0).mutualFollowCount()).isEqualTo(1);
+                softly.assertThat(result.get(0).mutualFollowPreviewNickname()).isEqualTo("유저3");
+            });
+        }
     }
 }

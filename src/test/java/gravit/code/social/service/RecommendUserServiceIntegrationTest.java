@@ -9,6 +9,7 @@ import gravit.code.social.dto.internal.RecommendCandidateDto;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
+import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,6 +41,9 @@ class RecommendUserServiceIntegrationTest {
 
     @Autowired
     private FriendFixture friendFixture;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Nested
     @DisplayName("추천 유저 후보를 조회할 때")
@@ -253,6 +257,98 @@ class RecommendUserServiceIntegrationTest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).userId()).isEqualTo(candidate.getId());
             assertThat(result.get(0).mutualFollowCount()).isEqualTo(1);
+        }
+
+        @Test
+        void 함께_아는_친구가_없으면_대표_닉네임은_null이다() {
+            // given
+            User me = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League bronze3 = leagueFixture.브론즈_3();
+
+            User candidate = userFixture.일반_유저(2);
+            User myFollowing = userFixture.일반_유저(3);
+
+            userLeagueFixture.참여(me, season, bronze3, 0);
+            userLeagueFixture.참여(candidate, season, bronze3, 0);
+            friendFixture.팔로우(me, myFollowing);
+
+            // when
+            List<RecommendCandidateDto> result = recommendUserService.findCandidates(me.getId(), 1);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).mutualFollowCount()).isZero();
+                softly.assertThat(result.get(0).mutualFollowPreviewNickname()).isNull();
+            });
+        }
+
+        @Test
+        void 함께_아는_친구가_여럿이면_내가_가장_최근에_팔로우한_사람의_닉네임을_준다() {
+            // given - 내 팔로우 순서 Z, X, Y / candidate 팔로우 순서 Y, X, Z
+            //         유저 id, 닉네임, candidate 쪽 순서로는 Y가 뽑히지 않는다
+            User me = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League bronze3 = leagueFixture.브론즈_3();
+
+            User candidate = userFixture.일반_유저(2);
+            User userX = userFixture.일반_유저(3);
+            User userY = userFixture.일반_유저(4);
+            User userZ = userFixture.일반_유저(5);
+
+            userLeagueFixture.참여(me, season, bronze3, 0);
+            userLeagueFixture.참여(candidate, season, bronze3, 0);
+
+            friendFixture.팔로우(me, userZ);
+            friendFixture.팔로우(me, userX);
+            friendFixture.팔로우(me, userY);
+
+            friendFixture.팔로우(userY, candidate);
+            friendFixture.팔로우(userX, candidate);
+            friendFixture.팔로우(userZ, candidate);
+
+            // when
+            List<RecommendCandidateDto> result = recommendUserService.findCandidates(me.getId(), 1);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).mutualFollowCount()).isEqualTo(3);
+                softly.assertThat(result.get(0).mutualFollowPreviewNickname()).isEqualTo("유저4");
+            });
+        }
+
+        @Test
+        void 탈퇴한_함께_아는_친구는_대표에서_빠지고_수에는_남는다() {
+            // given - 가장 최근에 팔로우한 B가 탈퇴 처리됨
+            User me = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League bronze3 = leagueFixture.브론즈_3();
+
+            User candidate = userFixture.일반_유저(2);
+            User userA = userFixture.일반_유저(3);
+            User userB = userFixture.일반_유저(4);
+
+            userLeagueFixture.참여(me, season, bronze3, 0);
+            userLeagueFixture.참여(candidate, season, bronze3, 0);
+
+            friendFixture.팔로우(me, userA);
+            friendFixture.팔로우(me, userB);
+            friendFixture.팔로우(userA, candidate);
+            friendFixture.팔로우(userB, candidate);
+
+            userRepository.delete(userB);
+
+            // when
+            List<RecommendCandidateDto> result = recommendUserService.findCandidates(me.getId(), 1);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result.get(0).mutualFollowCount()).isEqualTo(2);
+                softly.assertThat(result.get(0).mutualFollowPreviewNickname()).isEqualTo("유저3");
+            });
         }
     }
 }
