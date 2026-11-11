@@ -141,6 +141,18 @@ jobs:
             # LLM 게이트웨이(litellm-gw)와 통신할 외부 네트워크. 없으면 만들어 compose 기동이 막히지 않게 한다.
             docker network inspect llm-net >/dev/null 2>&1 || docker network create llm-net
 
+            # Alloy 읽기 위치를 볼륨으로 옮긴다 (볼륨이 없을 때 한 번만).
+            # 위치를 잃으면 남은 로그 파일을 처음부터 다시 보내 Loki에 수집 시각으로 중복 저장된다.
+            if ! docker volume inspect gravit-alloy-prod-data >/dev/null 2>&1 && docker inspect alloy >/dev/null 2>&1; then
+              docker volume create gravit-alloy-prod-data >/dev/null
+              docker cp alloy:/data-alloy - | docker run --rm -i -v gravit-alloy-prod-data:/v alpine tar xf - -C /v --strip-components=1
+            fi
+
+            # logback 파일 이름이 info.날짜.번호.log로 바뀌어 예전 형식(info.날짜.log)은 logback이 지우지 않는다.
+            # 예전 보관 기간(7일)이 지난 것만 지운다. 그 안의 파일은 Alloy가 이미 보냈다. 대상이 없으면 아무 일도 하지 않는다.
+            docker run --rm -v "$PWD/logs":/logs alpine \
+              find /logs -name '*.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].log' -mtime +7 -delete
+
             # 인프라 서비스: compose 설정이 변경된 경우에만 재시작
             docker-compose -f docker-compose-prod.yml up -d --no-deps gravit-redis-prod loki alloy
 
@@ -148,8 +160,15 @@ jobs:
             docker-compose -f docker-compose-prod.yml pull gravit-server-prod
             docker-compose -f docker-compose-prod.yml up -d --no-deps --force-recreate gravit-server-prod
 
+            # 지금 버전 외의 gravit-server 태그를 지운다. prod는 :latest를 쓰지 않으므로 남겨 두지 않는다.
+            # :dev는 같은 서버의 개발 서버가 쓰는 이미지라 남긴다.
             docker images "$DOCKER_HUB_USERNAME/gravit-server" \
               --format "{{.Repository}}:{{.Tag}}" | \
-              grep -v ":latest" | \
-              grep -v ":$IMAGE_TAG" | \
-              xargs docker rmi 2>/dev/null || true
+              grep -v ":<none>" | \
+              grep -v ":dev$" | \
+              grep -v ":$IMAGE_TAG$" | \
+              xargs -r docker rmi 2>/dev/null || true
+            # 새 이미지를 받으며 태그가 빠진 이전 gravit-server 이미지만 지운다.
+            # 공용 서버라 다른 팀 이미지까지 지우는 전체 prune(docker image prune)은 쓰지 않는다.
+            docker images "$DOCKER_HUB_USERNAME/gravit-server" --filter dangling=true -q | \
+              xargs -r docker rmi 2>/dev/null || true
