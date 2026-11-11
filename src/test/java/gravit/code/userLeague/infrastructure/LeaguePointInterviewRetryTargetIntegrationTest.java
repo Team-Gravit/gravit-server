@@ -27,6 +27,7 @@ class LeaguePointInterviewRetryTargetIntegrationTest {
 
     private static final int REWARD_POINTS = 30;
     private static final int NEGATIVE_POINTS = -1;
+    private static final long SESSION_ID = 1L;
 
     @Autowired
     private LeaguePointInterviewRetryTarget leaguePointInterviewRetryTarget;
@@ -52,6 +53,7 @@ class LeaguePointInterviewRetryTargetIntegrationTest {
     ) {
         return Map.of(
                 "userId", String.valueOf(userId),
+                "sessionId", String.valueOf(SESSION_ID),
                 "points", String.valueOf(points)
         );
     }
