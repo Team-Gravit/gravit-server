@@ -17,7 +17,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 @TCSpringBootTest
 class InterviewTopicQueryServiceIntegrationTest {
 
-    private static final int CS_TOPIC_COUNT = 5;
+    private static final int CS_TOPIC_COUNT = 6;
 
     @Autowired
     private InterviewTopicQueryService interviewTopicQueryService;
@@ -39,7 +39,8 @@ class InterviewTopicQueryServiceIntegrationTest {
                         InterviewTopic.ALGORITHM,
                         InterviewTopic.DATABASE,
                         InterviewTopic.OPERATING_SYSTEM,
-                        InterviewTopic.NETWORK
+                        InterviewTopic.NETWORK,
+                        InterviewTopic.WEB_SECURITY
                 );
             });
         }

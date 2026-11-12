@@ -68,10 +68,8 @@ class TestQaFixtureControllerIntegrationTest {
     private static final String CLEAN_DUE_KEY = "user:clean:due";
     private static final List<String> CONTENT_SEED_LOCATIONS = List.of(
             "classpath:sql/chapter/chapter.sql",
-            "classpath:sql/chapter/chapter_track.sql",
             "classpath:sql/league/league.sql",
             "classpath:sql/unit/unit.sql",
-            "classpath:sql/unit/unit_track.sql",
             "classpath*:sql/problem/**/*.sql",
             "classpath*:sql/interview/**/*.sql",
             "classpath:sql/sync/resync_sequences.sql"
