@@ -41,7 +41,8 @@ public interface InterviewTopicControllerDocs {
                                               { "topic": "ALGORITHM", "displayName": "알고리즘" },
                                               { "topic": "DATABASE", "displayName": "데이터베이스" },
                                               { "topic": "OPERATING_SYSTEM", "displayName": "운영체제" },
-                                              { "topic": "NETWORK", "displayName": "네트워크" }
+                                              { "topic": "NETWORK", "displayName": "네트워크" },
+                                              { "topic": "WEB_SECURITY", "displayName": "웹 보안" }
                                             ]
                                             """
                             )
