@@ -22,7 +22,7 @@ LP 지급 기록을 출처 기준 unique로 남겨 **중복을 0으로**, 기록
 
 ## 영향 범위
 ### 신규 파일
-- `src/main/resources/db/migration/V51__add_league_point_grant.sql` - 지급 기록 테이블, unique 인덱스, 기존 지급분 백필
+- `src/main/resources/db/migration/V52__add_league_point_grant.sql` - 지급 기록 테이블, unique 인덱스, 기존 지급분 백필
 - `src/main/java/gravit/code/userLeague/domain/LeaguePointGrant.java` - 지급 기록 Entity
 - `src/main/java/gravit/code/userLeague/domain/LeaguePointSource.java` - 지급 출처 enum (`LESSON`, `INTERVIEW`)
 - `src/main/java/gravit/code/userLeague/repository/LeaguePointGrantRepository.java` - 지급 기록 insert-if-absent
@@ -55,9 +55,9 @@ LP 지급 기록을 출처 기준 unique로 남겨 **중복을 0으로**, 기록
 ## 구현 계획
 
 ### STEP 1. 지급 기록 테이블과 백필 (Entity / Flyway)
-`V51__add_league_point_grant.sql`
+`V52__add_league_point_grant.sql`
 ```sql
--- V51__add_league_point_grant.sql
+-- V52__add_league_point_grant.sql
 
 -- 리그 포인트 지급 기록. 출처(레슨, 면접 세션)당 1건만 지급되도록 unique로 막는다
 CREATE TABLE league_point_grant
@@ -291,7 +291,7 @@ public ThreadPoolTaskScheduler retrySweepScheduler() { pool 2, prefix "retry-swe
 - 운영 `lesson_submission` 행 수로 백필 소요 시간을 추정해 둔다(로컬 100만 행 기준 측정값 첨부)
 
 ## Deviation Log
-- `V52__add_league_point_grant.sql`: 마이그레이션 번호를 V51에서 V52로 변경 — 이유: #610 계획(D3)에서 V51을 친구 검색 표현식 통계가 먼저 쓰고 #608보다 먼저 머지하기로 했다
+- `V52__add_league_point_grant.sql`: 마이그레이션 번호를 V51에서 V52로 변경 - 이유: 운영 배포 전 콘텐츠 확장(#619, PR #621)이 V51을 쓰고 먼저 머지한다. 처음에는 #610 계획(D3)에서 친구 검색 표현식 통계가 V51을 쓰기로 했으나, #610은 V53으로 옮겨 이 작업 다음에 머지한다. 운영 Flyway는 `outOfOrder`가 꺼져 있어 머지 순서는 #619, #608, #610이어야 한다
 - `LeaguePointGrant`: `@Table(uniqueConstraints = ux_league_point_grant_source)` 추가 — 이유: 테스트 스키마는 `ddl-auto: create`로 만들어져 마이그레이션의 unique 인덱스가 없다. 없으면 `ON CONFLICT (source_type, source_id, user_id)`가 실패한다. `UserMission`과 같은 선례다
 - `RetryQueueSweeper`: 재적재, 데드레터 실패 로그의 "유실"을 "원본 항목을 남겨 다음 스윕에서 다시 처리"로 변경 — 이유: STEP 4로 실패 시 원본이 남으므로 "유실"이 사실과 달라진다
 - `LeaguePointRetryTarget`, `LeaguePointInterviewRetryTarget`: 재시도 불가 로그에 `lessonId`, `sessionId` 추가 — 이유: 지급 기록 키가 출처 식별자라 확인할 때 필요하다
