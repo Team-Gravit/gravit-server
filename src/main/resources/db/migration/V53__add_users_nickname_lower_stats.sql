@@ -1,4 +1,4 @@
--- V51__add_users_nickname_lower_stats.sql
+-- V53__add_users_nickname_lower_stats.sql
 
 -- 닉네임 정확, 접두 검색의 선택도 추정용 표현식 통계
 -- 식 인덱스가 부분 인덱스(ix_users_nickname_lower_cover)뿐이라 플래너가 그 통계를 쓰지 못해,

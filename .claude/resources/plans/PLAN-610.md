@@ -22,7 +22,7 @@
 
 ## 영향 범위
 ### 신규 파일
-- `src/main/resources/db/migration/V51__add_users_nickname_lower_stats.sql` - `lower(nickname) COLLATE "C"` 표현식 통계와 `ANALYZE users`
+- `src/main/resources/db/migration/V53__add_users_nickname_lower_stats.sql` - `lower(nickname) COLLATE "C"` 표현식 통계와 `ANALYZE users`
 - `.claude/resources/perf/610/` - 측정 기록
 
 ### 수정 파일
@@ -31,9 +31,9 @@
 
 ## 구현 계획
 ### STEP 1. 마이그레이션 (Flyway)
-`V51__add_users_nickname_lower_stats.sql`
+`V53__add_users_nickname_lower_stats.sql`
 ```sql
--- V51__add_users_nickname_lower_stats.sql
+-- V53__add_users_nickname_lower_stats.sql
 
 -- 닉네임 정확, 접두 검색의 선택도 추정용 표현식 통계
 -- 식 인덱스가 부분 인덱스(ix_users_nickname_lower_cover)뿐이라 플래너가 그 통계를 쓰지 못해,
@@ -83,3 +83,4 @@ ANALYZE users;
 - [ ] 배포 뒤 운영에서 통계 생성 확인: `SELECT stxname FROM pg_statistic_ext WHERE stxname = 'st_users_nickname_lower_c';`, `SELECT n_distinct FROM pg_stats_ext_exprs WHERE statistics_name = 'st_users_nickname_lower_c';`(값이 채워졌는지)
 
 ## Deviation Log
+- `V53__add_users_nickname_lower_stats.sql`: 마이그레이션 번호를 V51에서 V53으로 변경 - 이유: 운영 배포 전 콘텐츠 확장(#619)이 웹 보안 면접 주제 CHECK 제약을 V51로 먼저 쓰기로 했다. #608이 V52를 쓰므로 이 작업은 V53이 되고, 머지 순서도 #619, #608, #610 순이어야 한다(F8)
