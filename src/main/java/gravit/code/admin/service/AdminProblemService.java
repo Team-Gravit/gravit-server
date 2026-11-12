@@ -1,16 +1,17 @@
 package gravit.code.admin.service;
 
-import gravit.code.admin.dto.request.ProblemCreateRequest;
-import gravit.code.admin.dto.request.ProblemUpdateRequest;
+import gravit.code.admin.dto.request.ObjectiveOptionUpdateRequest;
+import gravit.code.admin.dto.request.ObjectiveProblemUpdateRequest;
+import gravit.code.admin.dto.request.SubjectiveAnswerUpdateRequest;
+import gravit.code.admin.dto.request.SubjectiveProblemUpdateRequest;
+import gravit.code.admin.dto.response.ProblemDetailResponse;
 import gravit.code.answer.domain.Answer;
 import gravit.code.answer.repository.AnswerRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.option.dto.response.OptionResponse;
+import gravit.code.option.domain.Option;
 import gravit.code.option.repository.OptionRepository;
 import gravit.code.problem.domain.Problem;
 import gravit.code.problem.domain.ProblemType;
-import gravit.code.problem.dto.response.ProblemResponse;
 import gravit.code.problem.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,57 +19,117 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.OBJECTIVE_OPTIONS_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.OPTION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.OPTION_NOT_IN_PROBLEM;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_TYPE_MISMATCH;
+
 @Service
 @RequiredArgsConstructor
 public class AdminProblemService {
+
+    private static final int OBJECTIVE_OPTION_COUNT = 4;
 
     private final ProblemRepository problemRepository;
     private final OptionRepository optionRepository;
     private final AnswerRepository answerRepository;
 
-    @Transactional
-    public void createProblem(ProblemCreateRequest request){
-        Problem problem = Problem.create(ProblemType.from(request.problemType()), request.instruction(), request.content(), request.lessonId());
+    @Transactional(readOnly = true)
+    public ProblemDetailResponse getProblem(long problemId) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new RestApiException(PROBLEM_NOT_FOUND));
 
-        problemRepository.save(problem);
+        if (problem.getProblemType() == ProblemType.OBJECTIVE) {
+            List<Option> options = optionRepository.findByProblemIdOrderById(problemId);
+
+            if (options.isEmpty()) {
+                throw new RestApiException(OPTION_NOT_FOUND);
+            }
+
+            return ProblemDetailResponse.objective(problem, options);
+        }
+
+        Answer answer = answerRepository.findByProblemId(problemId)
+                .orElseThrow(() -> new RestApiException(ANSWER_NOT_FOUND));
+
+        return ProblemDetailResponse.subjective(problem, answer);
     }
 
-    @Transactional(readOnly = true)
-    public ProblemResponse getProblem(long problemId){
+    @Transactional
+    public void updateObjective(
+            long problemId,
+            ObjectiveProblemUpdateRequest request
+    ) {
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(PROBLEM_NOT_FOUND));
 
-        if(problem.getProblemType() == ProblemType.OBJECTIVE){
-            List<OptionResponse> options = optionRepository.findByProblemId(problemId);
+        if (problem.getProblemType() != ProblemType.OBJECTIVE) {
+            throw new RestApiException(PROBLEM_TYPE_MISMATCH);
+        }
 
-            if(options.isEmpty())
-                throw new RestApiException(CustomErrorCode.OPTION_NOT_FOUND);
+        String instruction = request.instruction() != null ? request.instruction() : problem.getInstruction();
+        String content = request.content() != null ? request.content() : problem.getContent();
 
-            return ProblemResponse.createObjectiveProblemForAdmin(problem, options);
-        }else{
-            Answer answer = answerRepository.findByProblemId(problemId)
-                    .orElseThrow(() -> new RestApiException(CustomErrorCode.ANSWER_NOT_FOUND));
+        problem.updateContent(instruction, content);
 
-            return ProblemResponse.createSubjectiveProblemForAdmin(problem, answer);
+        if (request.options() != null) {
+            replaceOptions(problemId, request.options());
         }
     }
 
     @Transactional
-    public void updateProblem(ProblemUpdateRequest request){
-        Problem problem = problemRepository.findById(request.problemId())
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND));
+    public void updateSubjective(
+            long problemId,
+            SubjectiveProblemUpdateRequest request
+    ) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new RestApiException(PROBLEM_NOT_FOUND));
 
-        problem.updateProblem(request);
+        if (problem.getProblemType() != ProblemType.SUBJECTIVE) {
+            throw new RestApiException(PROBLEM_TYPE_MISMATCH);
+        }
+
+        String instruction = request.instruction() != null ? request.instruction() : problem.getInstruction();
+        String content = request.content() != null ? request.content() : problem.getContent();
+
+        problem.updateContent(instruction, content);
+
+        SubjectiveAnswerUpdateRequest answerRequest = request.answer();
+        if (answerRequest != null) {
+            Answer answer = answerRepository.findByProblemId(problemId)
+                    .orElseThrow(() -> new RestApiException(ANSWER_NOT_FOUND));
+
+            answer.update(answerRequest.content(), answerRequest.explanation());
+        }
     }
 
-    @Transactional
-    public void deleteProblem(long problemId){
+    private void replaceOptions(
+            long problemId,
+            List<ObjectiveOptionUpdateRequest> options
+    ) {
+        validateObjectiveOptions(options);
 
-        if(!problemRepository.existsProblemById(problemId))
-            throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
+        for (ObjectiveOptionUpdateRequest optionRequest : options) {
+            Option option = optionRepository.findById(optionRequest.optionId())
+                    .orElseThrow(() -> new RestApiException(OPTION_NOT_FOUND));
 
-        problemRepository.deleteById(problemId);
-        optionRepository.deleteAllByProblemId(problemId);
-        answerRepository.deleteByProblemId(problemId);
+            if (option.getProblemId() != problemId) {
+                throw new RestApiException(OPTION_NOT_IN_PROBLEM);
+            }
+
+            option.update(optionRequest.content(), optionRequest.explanation(), optionRequest.isAnswer());
+        }
+    }
+
+    private void validateObjectiveOptions(List<ObjectiveOptionUpdateRequest> options) {
+        long answerCount = options.stream()
+                .filter(ObjectiveOptionUpdateRequest::isAnswer)
+                .count();
+
+        if (options.size() != OBJECTIVE_OPTION_COUNT || answerCount != 1) {
+            throw new RestApiException(OBJECTIVE_OPTIONS_INVALID);
+        }
     }
 }

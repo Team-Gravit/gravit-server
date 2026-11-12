@@ -2,13 +2,16 @@ package gravit.code.league.dto.response;
 
 import gravit.code.league.dto.internal.CurrentSeasonDto;
 import gravit.code.league.dto.internal.LastSeasonPopupDto;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record LeagueHomeResponse(
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         boolean containsPopup,
-        @NotNull
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         CurrentSeasonDto currentSeason,
+
         LastSeasonPopupDto lastSeasonPopupDto
 ) {
     public static LeagueHomeResponse normal(

@@ -7,6 +7,7 @@ import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -81,8 +83,16 @@ public interface UserControllerDocs {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
+                                            name = "닉네임 길이 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 2자 이상 8자 이하이어야 합니다. ][ 가 ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "닉네임 패턴 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 공백이나 특수문자를 포함할 수 없습니다. ][ 홍 길동! ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "복수 필드 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 필수입니다. ][  ]\", \"[ profilePhotoNumber ][ 프로필 사진 번호는 필수입니다. ][ null ]\"]}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -98,9 +108,11 @@ public interface UserControllerDocs {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PatchMapping("/onboarding")
-    ResponseEntity<UserResponse> onboardUser(@AuthenticationPrincipal LoginUser loginUser,
-                                             @Valid @RequestBody OnboardingRequest request);
+    @PostMapping("/onboarding")
+    ResponseEntity<UserResponse> onboardUser(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid @RequestBody OnboardingRequest request
+    );
 
     @Operation(summary = "프로필 수정", description = "닉네임, 프로필 사진 등 사용자의 프로필 정보를 수정합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -120,8 +132,16 @@ public interface UserControllerDocs {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "유효성 검사 실패",
-                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : \"유효성 검사 실패\"}"
+                                            name = "닉네임 길이 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 2자 이상 8자 이하이어야 합니다. ][ 가 ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "닉네임 패턴 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 공백이나 특수문자를 포함할 수 없습니다. ][ 홍 길동! ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "복수 필드 위반",
+                                            value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 필수입니다. ][  ]\", \"[ profilePhotoNumber ][ 프로필 사진 번호는 필수입니다. ][ null ]\"]}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -137,10 +157,11 @@ public interface UserControllerDocs {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PatchMapping("/me")
-    ResponseEntity<UserResponse> updateProfile(@AuthenticationPrincipal LoginUser loginUser,
-                                               @Valid @RequestBody UserProfileUpdateRequest request);
-
+    @PatchMapping
+    ResponseEntity<UserResponse> updateProfile(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid @RequestBody UserProfileUpdateRequest request
+    );
 
     @Operation(summary = "마이페이지 조회", description = "사용자의 마이페이지 정보를 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -210,9 +231,13 @@ public interface UserControllerDocs {
             )
     })
     @PatchMapping("/restore")
-    ResponseEntity<Void> restoreUser(@RequestParam("providerId") String providerId);
+    ResponseEntity<Void> restoreUser(
+            @Parameter(description = "복구할 계정의 소셜 providerId", example = "google 1234567890")
+            @RequestParam("providerId") String providerId
+    );
 
-    @Operation(summary = "메인 페이지 조회", description = "사용자의 메인 페이지 정보를 조회합니다<br>" +
+    @Operation(summary = "메인 페이지 조회", deprecated = true, description = "[Deprecated] 위젯별 API(GET /api/v1/main-pages/*)로 분리되었습니다(#415). 후속 릴리스에서 제거 예정입니다.<br>" +
+            "사용자의 메인 페이지 정보를 조회합니다<br>" +
             "닉네임, 리그명, 레벨 정보, 미션 정보, 학습 정보를 포함합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
     @ApiResponses({

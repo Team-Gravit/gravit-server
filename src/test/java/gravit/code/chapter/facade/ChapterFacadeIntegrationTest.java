@@ -14,15 +14,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ChapterFacadeIntegrationTest {
 
     @Autowired
@@ -48,11 +47,11 @@ class ChapterFacadeIntegrationTest {
         void 챕터_목록과_진행도를_함께_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, lesson1.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
 
             // when
             List<ChapterDetailResponse> result = chapterFacade.getAllChapter(userId);
@@ -69,7 +68,7 @@ class ChapterFacadeIntegrationTest {
         void 학습_기록이_없으면_진행도가_0이다() {
             // given
             long userId = 1L;
-            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             List<ChapterDetailResponse> result = chapterFacade.getAllChapter(userId);

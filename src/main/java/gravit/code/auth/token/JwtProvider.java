@@ -3,7 +3,7 @@ package gravit.code.auth.token;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.auth.domain.Subject;
 import gravit.code.auth.token.config.JwtProperties;
-import gravit.code.global.exception.domain.CustomErrorCode;
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.domain.User;
 import io.jsonwebtoken.Claims;
@@ -23,7 +23,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +30,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERNAL_SERVER_ERROR;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_EMPTY;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_EXPIRED;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_NOT_SIGNED;
 import static io.jsonwebtoken.Jwts.SIG.HS256;
 
 @Component
@@ -38,7 +42,6 @@ import static io.jsonwebtoken.Jwts.SIG.HS256;
 public class JwtProvider {
 
     private final SecretKey secretKey;
-    private static final ZoneId SEOUL_ZONE = ZoneId.of("Asia/Seoul");
 
     public JwtProvider(JwtProperties jwtProperties) {
         this.secretKey = new SecretKeySpec(jwtProperties.secret().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
@@ -49,7 +52,7 @@ public class JwtProvider {
             Map<String, String> claims,
             Duration expireTime
     ) {
-        ZonedDateTime now = ZonedDateTime.now(SEOUL_ZONE);
+        ZonedDateTime now = ZonedDateTime.now(TimeZoneConst.KST);
         ZonedDateTime expiredDateTime = now.plus(expireTime);
 
         Date nowDate = Date.from(now.toInstant());
@@ -68,7 +71,7 @@ public class JwtProvider {
             Subject subject,
             Duration expireTime
     ) {
-        ZonedDateTime now = ZonedDateTime.now(SEOUL_ZONE);
+        ZonedDateTime now = ZonedDateTime.now(TimeZoneConst.KST);
         ZonedDateTime expiredDateTime = now.plus(expireTime);
 
         Date nowDate = Date.from(now.toInstant());
@@ -84,6 +87,13 @@ public class JwtProvider {
     public Subject parseSubject(String token) {
         String subject = extractClaims(token).getSubject();
         return new Subject(subject);
+    }
+
+    public String parseClaim(
+            String token,
+            String claimKey
+    ) {
+        return extractClaims(token).get(claimKey, String.class);
     }
 
     public Authentication getAuthentication(User user){
@@ -126,15 +136,15 @@ public class JwtProvider {
         try{
             return function.apply(token);
         }catch (MalformedJwtException malformedJwtException){
-            throw new RestApiException(CustomErrorCode.TOKEN_INVALID);
+            throw new RestApiException(TOKEN_INVALID);
         }catch (ExpiredJwtException expiredJwtException){
-            throw new RestApiException(CustomErrorCode.TOKEN_EXPIRED);
+            throw new RestApiException(TOKEN_EXPIRED);
         }catch (IllegalArgumentException illegalArgumentException){
-            throw new RestApiException(CustomErrorCode.TOKEN_EMPTY);
+            throw new RestApiException(TOKEN_EMPTY);
         }catch (SignatureException signatureException){
-            throw new RestApiException(CustomErrorCode.TOKEN_NOT_SIGNED);
+            throw new RestApiException(TOKEN_NOT_SIGNED);
         }catch (JwtException jwtException){
-            throw new RestApiException(CustomErrorCode.INTERNAL_SERVER_ERROR);
+            throw new RestApiException(INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -2,6 +2,7 @@ package gravit.code.global.config;
 
 import gravit.code.global.filter.HttpLoggingFilter;
 import gravit.code.global.interceptor.ApiPerformanceInterceptor;
+import gravit.code.global.interceptor.LastAccessInterceptor;
 import gravit.code.global.interceptor.RequestContextInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -15,19 +16,30 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private static final String[] EXCLUDE_PATH_PATTERNS = {
+            "/actuator/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    };
+
     private final ApiPerformanceInterceptor apiPerformanceInterceptor;
     private final RequestContextInterceptor requestContextInterceptor;
+    private final LastAccessInterceptor lastAccessInterceptor;
     private final HttpLoggingFilter httpLoggingFilter;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(requestContextInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**");
+                .excludePathPatterns(EXCLUDE_PATH_PATTERNS);
 
         registry.addInterceptor(apiPerformanceInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**");
+                .excludePathPatterns(EXCLUDE_PATH_PATTERNS);
+
+        registry.addInterceptor(lastAccessInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(EXCLUDE_PATH_PATTERNS);
     }
 
     @Bean

@@ -1,10 +1,12 @@
 package gravit.code.global.exception.handler;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.ErrorResponse;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.user.exception.AccountSoftDeletedException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,16 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.View;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.DATABASE_EXCEPTION;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERNAL_SERVER_ERROR;
+import static gravit.code.global.exception.domain.CustomErrorCode.INVALID_PARAMS;
+import static org.springframework.http.HttpStatus.LOCKED;
 
 @Log4j2
 @RestControllerAdvice
@@ -53,9 +61,33 @@ public class GlobalExceptionHandler {
         return handleExceptionInternal(errorMessages);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse<List<String>>> handleConstraintViolationException(ConstraintViolationException e) {
+        List<String> errorMessages = new ArrayList<>();
+
+        log.error("@Validated Exception occur with below parameter");
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+            String errorMessage = "[ " + extractLeafName(violation.getPropertyPath()) + " ]" +
+                    "[ " + violation.getMessage() + " ]" +
+                    "[ " + violation.getInvalidValue() + " ]";
+            errorMessages.add(errorMessage);
+        }
+
+        return handleExceptionInternal(errorMessages);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse<String>> handleTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        ErrorCode errorCode = INVALID_PARAMS;
+
+        log.error("MethodArgumentTypeMismatchException occur with: [ {} ][ {} ]", e.getName(), e.getValue());
+
+        return handleExceptionInternal(errorCode);
+    }
+
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse<String>> handleDatabaseException(DataAccessException e){
-        ErrorCode errorCode = CustomErrorCode.DATABASE_EXCEPTION;
+        ErrorCode errorCode = DATABASE_EXCEPTION;
 
         log.error("DataAccessException occur with: {}", e.getMessage());
 
@@ -66,7 +98,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse<String>> handleException(Exception e){
 
         log.error("예외 발생 :", e);
-        ErrorCode errorCode = CustomErrorCode.INTERNAL_SERVER_ERROR;
+        ErrorCode errorCode = INTERNAL_SERVER_ERROR;
 
         return handleExceptionInternal(errorCode);
     }
@@ -75,12 +107,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse<String>> handleSoftDeleted(AccountSoftDeletedException ex) {
         String errorCode = "USER_423";
         String message = ex.getProviderId();
-        ErrorResponse<String> errorResponse = ErrorResponse.<String>builder()
-                .error(errorCode)
-                .message(message)
-                .build();
-        HttpStatus status = HttpStatus.LOCKED;
+        ErrorResponse<String> errorResponse = ErrorResponse.of(errorCode, message);
+        HttpStatus status = LOCKED;
         return ResponseEntity.status(status).body(errorResponse);
+    }
+
+    private String extractLeafName(Path propertyPath) {
+        String leafName = null;
+        for (Path.Node node : propertyPath) {
+            leafName = node.getName();
+        }
+        return leafName;
     }
 
     private ResponseEntity<ErrorResponse<String>> handleExceptionInternal(ErrorCode errorCode) {
@@ -89,21 +126,15 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse<List<String>>> handleExceptionInternal(List<String> message) {
-        return ResponseEntity.status(CustomErrorCode.INVALID_PARAMS.getHttpStatus())
+        return ResponseEntity.status(INVALID_PARAMS.getHttpStatus())
                 .body(makeErrorResponse(message));
     }
 
     private ErrorResponse<String> makeErrorResponse(ErrorCode errorCode){
-        return ErrorResponse.<String>builder()
-                .error(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
+        return ErrorResponse.of(errorCode.getCode(), errorCode.getMessage());
     }
 
     private ErrorResponse<List<String>> makeErrorResponse(List<String> message){
-        return ErrorResponse.<List<String>>builder()
-                .error(CustomErrorCode.INVALID_PARAMS.getCode())
-                .message(message)
-                .build();
+        return ErrorResponse.of(INVALID_PARAMS.getCode(), message);
     }
 }

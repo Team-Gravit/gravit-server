@@ -2,8 +2,11 @@ package gravit.code.friend.dto.internal;
 
 public record SearchPlanDto(
         String selectSql,
+
         String cleanText,
+
         boolean isQueryNeedContains,
+
         boolean isEmpty
 ) {
 

@@ -1,13 +1,11 @@
 package gravit.code.problem.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import gravit.code.answer.domain.Answer;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.answer.dto.response.AnswerResponse;
 import gravit.code.option.dto.response.OptionResponse;
-import gravit.code.problem.domain.Problem;
 import gravit.code.problem.domain.ProblemType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -19,29 +17,30 @@ public record ProblemResponse(
 
         @Schema(
                 description = "문제 아이디",
-                example = "1"
+                example = "1",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
         long problemId,
 
         @Schema(
                 description = "문제 타입",
-                example = "SUBJECTIVE / OBJECTIVE"
+                example = "SUBJECTIVE / OBJECTIVE",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotNull
         ProblemType problemType,
 
         @Schema(
                 description = "발문",
-                example = "빈칸에 들어갈 단어를 고르시오."
+                example = "빈칸에 들어갈 단어를 고르시오.",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotNull
         String instruction,
 
         @Schema(
                 description = "본문",
-                example = "큐에 2, 9, 7, 4를 순차적으로 넣었을 때, 원소 삭제시 반환되는 값은?"
+                example = "큐에 2, 9, 7, 4를 순차적으로 넣었을 때, 원소 삭제시 반환되는 값은?",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotNull
         String content,
 
         @Schema(
@@ -58,8 +57,10 @@ public record ProblemResponse(
 
         @Schema(
                 description = "북마크 여부",
-                example = "true"
+                example = "true",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
+        @JsonProperty("isBookmarked")
         boolean isBookmarked
 
 ) {
@@ -90,36 +91,6 @@ public record ProblemResponse(
                         .answerResponse(null)
                         .options(options)
                         .isBookmarked(problemDetailResponse.isBookmarked())
-                        .build();
-        }
-
-        public static ProblemResponse createSubjectiveProblemForAdmin(
-                Problem problem,
-                Answer answer
-        ){
-                return ProblemResponse.builder()
-                        .problemId(problem.getId())
-                        .problemType(problem.getProblemType())
-                        .instruction(problem.getInstruction())
-                        .content(problem.getContent())
-                        .answerResponse(AnswerResponse.from(answer))
-                        .options(null)
-                        .isBookmarked(false)
-                        .build();
-        }
-
-        public static ProblemResponse createObjectiveProblemForAdmin(
-                Problem problem,
-                List<OptionResponse> options
-        ){
-                return ProblemResponse.builder()
-                        .problemId(problem.getId())
-                        .problemType(problem.getProblemType())
-                        .instruction(problem.getInstruction())
-                        .content(problem.getContent())
-                        .answerResponse(null)
-                        .options(options)
-                        .isBookmarked(false)
                         .build();
         }
 }

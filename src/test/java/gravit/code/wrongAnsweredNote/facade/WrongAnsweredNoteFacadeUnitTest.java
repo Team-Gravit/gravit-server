@@ -48,7 +48,7 @@ class WrongAnsweredNoteFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "스택/큐", "스택과 큐 개념");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, 1, "스택/큐", "스택과 큐 개념");
             List<ProblemDetailResponse> problemDetailResponses = List.of(
                     new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false)
             );
@@ -76,7 +76,7 @@ class WrongAnsweredNoteFacadeUnitTest {
             // given
             long userId = 1L;
             long unitId = 1L;
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, "스택/큐", "스택과 큐 개념");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(unitId, 1, "스택/큐", "스택과 큐 개념");
 
             when(unitQueryService.getUnitSummaryByUnitId(unitId)).thenReturn(unitSummaryResponse);
             when(wrongAnsweredNoteService.getAllWrongAnsweredProblemInUnit(userId, unitId)).thenReturn(List.of());

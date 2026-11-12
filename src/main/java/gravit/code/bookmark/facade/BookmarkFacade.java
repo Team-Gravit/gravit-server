@@ -18,15 +18,15 @@ import java.util.List;
 public class BookmarkFacade {
 
     private final BookmarkService bookmarkService;
-
     private final UnitQueryService unitQueryService;
+
     private final ProblemFactory problemFactory;
 
     @Transactional(readOnly = true)
     public BookmarkedProblemResponse getAllBookmarkedProblemInUnit(
             long userId,
             long unitId
-    ){
+    ) {
         UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByUnitId(unitId);
 
         List<ProblemDetailResponse> problemDetailResponses = bookmarkService.getAllBookmarkedProblemInUnit(userId, unitId);

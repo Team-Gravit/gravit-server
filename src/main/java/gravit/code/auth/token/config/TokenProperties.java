@@ -15,22 +15,22 @@ public record TokenProperties(
         TokenConfig refresh
 ) {
 
-    private static Map<Class<? extends Token>, TokenConfig> tokenConfigs;
+    private static Map<Class<? extends Token>, TokenConfig> tokenTypeToConfig;
 
     @PostConstruct
     public void init() {
-        tokenConfigs = Map.of(
+        tokenTypeToConfig = Map.of(
                 AccessToken.class, access,
                 RefreshToken.class, refresh
         );
     }
 
     public static Duration getExpireTime(Class<? extends Token> tokenClass) {
-        return tokenConfigs.get(tokenClass).expireTime();
+        return tokenTypeToConfig.get(tokenClass).expireTime();
     }
 
     public static String getStorageKeyPrefix(Class<? extends Token> tokenClass) {
-        return tokenConfigs.get(tokenClass).storageKeyPrefix();
+        return tokenTypeToConfig.get(tokenClass).storageKeyPrefix();
     }
 
 }

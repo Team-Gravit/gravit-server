@@ -1,5 +1,6 @@
 package gravit.code.global.entity;
 
+import gravit.code.global.consts.TimeZoneConst;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
@@ -10,7 +11,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import static java.time.temporal.ChronoUnit.MICROS;
 
@@ -24,17 +24,15 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
-
     @PrePersist
     public void onPrePersist(){
-        LocalDateTime now = LocalDateTime.now(SEOUL).truncatedTo(MICROS);
+        LocalDateTime now = LocalDateTime.now(TimeZoneConst.KST).truncatedTo(MICROS);
         this.createdAt = now;
         this.updatedAt = now;
     }
 
     @PreUpdate
     public void onPreUpdate(){
-        this.updatedAt = LocalDateTime.now(SEOUL).truncatedTo(MICROS);
+        this.updatedAt = LocalDateTime.now(TimeZoneConst.KST).truncatedTo(MICROS);
     }
 }

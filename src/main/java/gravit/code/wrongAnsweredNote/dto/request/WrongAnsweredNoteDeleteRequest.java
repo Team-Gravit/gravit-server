@@ -7,7 +7,8 @@ public record WrongAnsweredNoteDeleteRequest(
 
         @Schema(
                 description = "문제 아이디",
-                example = "1"
+                example = "1",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
         long problemId
 ) {

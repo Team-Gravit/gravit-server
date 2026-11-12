@@ -21,16 +21,15 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
+import static gravit.code.unit.domain.UnitProgressStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = {
-        "classpath:sql/truncate_all.sql",
-        "classpath:sql/reset_main_page_ids.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "classpath:sql/reset_main_page_ids.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class UnitQueryServiceIntegrationTest {
 
     @Autowired
@@ -55,9 +54,9 @@ class UnitQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
-            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
 
             // when
             List<UnitSummaryResponse> result = unitQueryService.getAllUnitSummaryByChapterId(chapter.getId());
@@ -66,14 +65,33 @@ class UnitQueryServiceIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(result).hasSize(2);
                 softly.assertThat(result.get(0).title()).isEqualTo("프로세스");
+                softly.assertThat(result.get(0).displayOrder()).isEqualTo(1);
                 softly.assertThat(result.get(1).title()).isEqualTo("스레드");
+                softly.assertThat(result.get(1).displayOrder()).isEqualTo(2);
+            });
+        }
+
+        @Test
+        void 저장_순서와_달라도_챕터_내_순서대로_반환한다() {
+            // given
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            unitRepository.save(Unit.create("스레드", "스레드 개념", chapter.getId(), 2));
+            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+
+            // when
+            List<UnitSummaryResponse> result = unitQueryService.getAllUnitSummaryByChapterId(chapter.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).extracting(UnitSummaryResponse::title).containsExactly("프로세스", "스레드");
+                softly.assertThat(result).extracting(UnitSummaryResponse::displayOrder).containsExactly(1, 2);
             });
         }
 
         @Test
         void 유닛이_없으면_빈_리스트를_반환한다() {
             // given
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             List<UnitSummaryResponse> result = unitQueryService.getAllUnitSummaryByChapterId(chapter.getId());
@@ -90,8 +108,8 @@ class UnitQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 3));
 
             // when
             UnitSummaryResponse result = unitQueryService.getUnitSummaryByUnitId(unit.getId());
@@ -99,6 +117,7 @@ class UnitQueryServiceIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result.unitId()).isEqualTo(unit.getId());
+                softly.assertThat(result.displayOrder()).isEqualTo(3);
                 softly.assertThat(result.title()).isEqualTo("프로세스");
             });
         }
@@ -120,8 +139,8 @@ class UnitQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 3));
             Lesson lesson = lessonRepository.save(Lesson.create("프로세스와 스레드", unit.getId()));
 
             // when
@@ -130,6 +149,7 @@ class UnitQueryServiceIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result.unitId()).isEqualTo(unit.getId());
+                softly.assertThat(result.displayOrder()).isEqualTo(3);
                 softly.assertThat(result.title()).isEqualTo("프로세스");
             });
         }
@@ -152,12 +172,12 @@ class UnitQueryServiceIntegrationTest {
         void 모든_레슨을_푼_유닛은_완료로_표시된다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Lesson lesson2 = lessonRepository.save(Lesson.create("레슨2", unit.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, lesson1.getId(), userId));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, lesson2.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson2.getId(), userId));
 
             // when
             List<UnitProgressSummaryResponse> result = unitQueryService.getAllUnitProgressSummariesInChapter(chapter.getId(), userId);
@@ -166,19 +186,19 @@ class UnitQueryServiceIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(result).hasSize(1);
                 softly.assertThat(result.get(0).unitId()).isEqualTo(unit.getId());
-                softly.assertThat(result.get(0).isCompleted()).isTrue();
+                softly.assertThat(result.get(0).status()).isEqualTo(COMPLETED);
             });
         }
 
         @Test
-        void 일부_레슨만_푼_유닛은_미완료로_표시된다() {
+        void 일부_레슨만_푼_유닛은_진행중으로_표시된다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, lesson1.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
 
             // when
             List<UnitProgressSummaryResponse> result = unitQueryService.getAllUnitProgressSummariesInChapter(chapter.getId(), userId);
@@ -186,16 +206,16 @@ class UnitQueryServiceIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result).hasSize(1);
-                softly.assertThat(result.get(0).isCompleted()).isFalse();
+                softly.assertThat(result.get(0).status()).isEqualTo(IN_PROGRESS);
             });
         }
 
         @Test
-        void 레슨이_없는_유닛은_미완료로_표시된다() {
+        void 레슨이_없는_유닛은_시작전으로_표시된다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            unitRepository.save(Unit.create("빈유닛", "레슨이 없는 유닛", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            unitRepository.save(Unit.create("빈유닛", "레슨이 없는 유닛", chapter.getId(), 1));
 
             // when
             List<UnitProgressSummaryResponse> result = unitQueryService.getAllUnitProgressSummariesInChapter(chapter.getId(), userId);
@@ -203,7 +223,7 @@ class UnitQueryServiceIntegrationTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(result).hasSize(1);
-                softly.assertThat(result.get(0).isCompleted()).isFalse();
+                softly.assertThat(result.get(0).status()).isEqualTo(NOT_STARTED);
             });
         }
 
@@ -211,7 +231,7 @@ class UnitQueryServiceIntegrationTest {
         void 챕터에_유닛이_없으면_빈_리스트를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             List<UnitProgressSummaryResponse> result = unitQueryService.getAllUnitProgressSummariesInChapter(chapter.getId(), userId);
@@ -229,9 +249,9 @@ class UnitQueryServiceIntegrationTest {
         void 유닛이_2개_이상이면_2개를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             for (int i = 1; i <= 5; i++) {
-                unitRepository.save(Unit.create("유닛" + i, "설명" + i, chapter.getId()));
+                unitRepository.save(Unit.create("유닛" + i, "설명" + i, chapter.getId(), i));
             }
 
             // when
@@ -249,9 +269,9 @@ class UnitQueryServiceIntegrationTest {
         void 같은_유저는_같은_날_호출_시_동일한_추천을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
             for (int i = 1; i <= 5; i++) {
-                unitRepository.save(Unit.create("유닛" + i, "설명" + i, chapter.getId()));
+                unitRepository.save(Unit.create("유닛" + i, "설명" + i, chapter.getId(), i));
             }
 
             // when
@@ -269,8 +289,8 @@ class UnitQueryServiceIntegrationTest {
         void 유닛이_2개_미만이면_예외를_던진다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             // when & then
             assertThatThrownBy(() -> unitQueryService.getRecommendedUnits(userId))

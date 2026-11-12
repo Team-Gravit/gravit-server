@@ -6,12 +6,28 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
         show_sql: true # 쿼리 확인을 위해 true 권장
     open-in-view: false
+
+  # Spring AI 스타터는 api-key가 비어 있으면 컨텍스트 기동을 거부한다.
+  # 테스트에서 LLM을 실호출하지 않으므로 기동 보장용 더미 값만 둔다.
+  ai:
+    openai:
+      base-url: http://localhost:4000
+      api-key: test-key
+      chat:
+        options:
+          model: codex-terra
+      audio:
+        transcription:
+          options:
+            model: gpt-transcribe
+            language: ko
+            temperature: 0
 
   data:
     redis:
@@ -82,6 +98,9 @@ spring:
             authorization-grant-type: authorization_code
             scope: name,email
 
+app:
+  version: 1.0.0
+
 jwt:
   secret: testtesttesttesttesttesttesttesttesttesttest
 
@@ -95,11 +114,43 @@ token:
 
 scheduler:
   season:
-    rollover-cron: "* * * * * *"
+    rollover-cron: "-"
+
+oauth:
+  android:
+    google:
+      issuer: https://accounts.google.com
+      client-id: test-android-google-client-id
+    kakao:
+      issuer: https://kauth.kakao.com
+      client-id: test-android-kakao-client-id
+  ios:
+    google:
+      issuer: https://accounts.google.com
+      client-id: test-ios-google-client-id
+    kakao:
+      issuer: https://kauth.kakao.com
+      client-id: test-ios-kakao-client-id
+  apple:
+    issuer: https://appleid.apple.com
+    token-uri: https://appleid.apple.com/auth/token
+    revoke-uri: https://appleid.apple.com/auth/revoke
+    jwk-set-uri: https://appleid.apple.com/auth/keys
+    team-id: TESTTEAMID
+    client-id: test.apple.client.id
+    ios-bundle-id: kr.inuappcenter.gravit.test
+    key-id: TESTKEYID0
+    # 테스트 전용 EC P-256 키. 실제 Apple 계정과 무관하다
+    private-key: MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgfzKsbNNZQCzMEXaVVnny5oxS03hDMc9BmrS3NBQEmDWhRANCAASEiUtZ1QRUP+WuRDfNj2nxF+cLTXiDlqM565DOY8mkiTNMdx5U2G4BFTqzinO3hnMeHM8raP+4F7RsJXpQBNpB
+    token-encryption-key: zaK9adGxW9qk5Pii8kOIUaM3oWTwChIwOXmbhiS2PsI=
 
 auth0:
   issuer: https://dev-wdqwk434kl24h2k.us.auth0.com/
   android-client-id: fmewlninfdoiubherihui32ijewoi
+
+auth:
+  cookie:
+    same-site: Lax
 
 user-delete-mail:
   code-length: 16
@@ -111,3 +162,12 @@ admin:
     enabled: true
     emails:
       - test@test.com
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: test-interview-audio
+    access-key: test-access-key
+    secret-key: test-secret-key
+    upload-expiry: 10m
+    download-expiry: 30m

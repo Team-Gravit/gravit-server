@@ -3,24 +3,34 @@
   <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
   <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-  <property name="FILE_PATTERN"
-    value="timestamp=[%d{yyyy-MM-dd'T'HH:mm:ss, Asia/Seoul}] level=[%-5level] thread=[%thread] logger=[%logger{36}] message=[%msg%n]"/>
+  <property name="LOG_PATTERN"
+    value="timestamp=%d{yyyy-MM-dd'T'HH:mm:ss,Asia/Seoul} level=%-5level traceId=%X{traceId:-null} %msg%n"/>
 
   <!-- ================== -->
   <!-- DEV + PROD 공통 -->
   <!-- ================== -->
   <springProfile name="dev | prod">
     <property name="LOG_PATH" value="/var/log/spring"/>
+    <!--
+      파일 로그는 Alloy가 Loki로 보내기 전까지의 버퍼다. 장기 보관과 검색은 Loki(6개월)가 맡는다.
+      공용 서버 디스크를 지키기 위해 기간(7일)과 용량(종류별 totalSizeCap) 중 먼저 닿는 쪽에서 지운다.
+      에러 폭주로 하루 파일이 커져도 maxFileSize 단위로 잘라 상한 안에서 오래된 조각부터 지운다.
+    -->
+    <property name="LOG_MAX_FILE_SIZE" value="100MB"/>
+    <property name="LOG_MAX_HISTORY" value="7"/>
 
     <!-- INFO -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>${LOG_PATH}/info/info.log</file>
-      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>${LOG_PATH}/info/info.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <maxHistory>7</maxHistory>
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_PATH}/info/info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <maxFileSize>${LOG_MAX_FILE_SIZE}</maxFileSize>
+        <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
       </rollingPolicy>
       <encoder>
-        <pattern>${FILE_PATTERN}</pattern>
+        <pattern>${LOG_PATTERN}</pattern>
       </encoder>
       <filter class="ch.qos.logback.classic.filter.LevelFilter">
         <level>INFO</level>
@@ -32,12 +42,15 @@
     <!-- WARN -->
     <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>${LOG_PATH}/warn/warn.log</file>
-      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>${LOG_PATH}/warn/warn.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <maxHistory>7</maxHistory>
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_PATH}/warn/warn.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <maxFileSize>${LOG_MAX_FILE_SIZE}</maxFileSize>
+        <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+        <totalSizeCap>300MB</totalSizeCap>
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
       </rollingPolicy>
       <encoder>
-        <pattern>${FILE_PATTERN}</pattern>
+        <pattern>${LOG_PATTERN}</pattern>
       </encoder>
       <filter class="ch.qos.logback.classic.filter.LevelFilter">
         <level>WARN</level>
@@ -49,12 +62,15 @@
     <!-- ERROR -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>${LOG_PATH}/error/error.log</file>
-      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>${LOG_PATH}/error/error.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <maxHistory>7</maxHistory>
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_PATH}/error/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <maxFileSize>${LOG_MAX_FILE_SIZE}</maxFileSize>
+        <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+        <totalSizeCap>300MB</totalSizeCap>
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
       </rollingPolicy>
       <encoder>
-        <pattern>${FILE_PATTERN}</pattern>
+        <pattern>${LOG_PATTERN}</pattern>
       </encoder>
       <filter class="ch.qos.logback.classic.filter.LevelFilter">
         <level>ERROR</level>
@@ -66,12 +82,15 @@
     <!-- API 성능 로그 (logfmt 형식) -->
     <appender name="API_PERF" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>${LOG_PATH}/api-perf/api-perf.log</file>
-      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <fileNamePattern>${LOG_PATH}/api-perf/api-perf.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <maxHistory>7</maxHistory>
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_PATH}/api-perf/api-perf.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <maxFileSize>${LOG_MAX_FILE_SIZE}</maxFileSize>
+        <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+        <totalSizeCap>500MB</totalSizeCap>
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
       </rollingPolicy>
       <encoder>
-        <pattern>${FILE_PATTERN}</pattern>
+        <pattern>${LOG_PATTERN}</pattern>
       </encoder>
     </appender>
 

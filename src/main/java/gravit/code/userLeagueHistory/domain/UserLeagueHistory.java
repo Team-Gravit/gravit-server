@@ -49,7 +49,7 @@ public class UserLeagueHistory extends BaseEntity {
     @Column(name = "final_lp", nullable = false)
     private int finalLp;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private UserLeagueHistory(
             Season season,
             User user,

@@ -1,0 +1,29 @@
+BEGIN
+                                                                               QUERY PLAN                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using ix_wrong_answered_note_user_problem on public.wrong_answered_note wan1_0  (cost=0.29..8.31 rows=1 width=52) (actual time=0.222..0.226 rows=1 loops=1)
+   Output: id, created_at, problem_id, resolved_at, updated_at, user_id, wrong_count
+   Index Cond: ((wan1_0.user_id = 1501) AND (wan1_0.problem_id = 910035))
+   Buffers: shared hit=6
+ Query Identifier: 122809128972921203
+ Planning:
+   Buffers: shared hit=103
+ Planning Time: 3.188 ms
+ Execution Time: 0.383 ms
+(9 rows)
+
+ROLLBACK
+BEGIN
+                                                                                                     QUERY PLAN                                                                                                     
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Insert on public.wrong_answered_note  (cost=0.00..0.02 rows=0 width=0) (actual time=0.758..0.762 rows=0 loops=1)
+   Buffers: shared hit=68
+   ->  Result  (cost=0.00..0.02 rows=1 width=52) (actual time=0.054..0.055 rows=1 loops=1)
+         Output: nextval('wrong_answered_note_id_seq'), '919999'::bigint, '1501'::bigint, (now())::timestamp(6) without time zone, (now())::timestamp(6) without time zone, 1, NULL::timestamp(6) without time zone
+         Buffers: shared hit=10
+ Query Identifier: -5574841346787342567
+ Planning Time: 0.069 ms
+ Execution Time: 0.793 ms
+(8 rows)
+
+ROLLBACK

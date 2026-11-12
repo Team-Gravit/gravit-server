@@ -1,101 +1,102 @@
 package gravit.code.problem.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gravit.code.global.exception.domain.RestApiException;
-import gravit.code.problem.domain.ProblemSubmission;
-import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.domain.ProblemType;
+import gravit.code.problem.dto.internal.ProblemSubmissionRowDto;
+import gravit.code.problem.dto.internal.ProblemTypeDto;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
+import gravit.code.problem.repository.ProblemRepository;
 import gravit.code.problem.repository.ProblemSubmissionRepository;
-import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_SUBMISSION_SERIALIZE_FAILED;
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_TYPE_MISMATCH;
 
 @Service
 @RequiredArgsConstructor
 public class ProblemSubmissionCommandService {
 
-    private final WrongAnsweredNoteService wrongAnsweredNoteService;
-
     private final ProblemSubmissionRepository problemSubmissionRepository;
+    private final ProblemRepository problemRepository;
 
-    @Transactional
-    public void saveProblemSubmissions(
-            long userId,
-            List<ProblemSubmissionRequest> requests,
-            boolean isFirstTry
-    ) {
-        List<ProblemSubmission> problemSubmissions;
-        if (isFirstTry) {
-            problemSubmissions = createProblemSubmissions(userId, requests);
-        } else {
-            problemSubmissions = updateProblemSubmissions(userId, requests);
-        }
+    private final ObjectMapper objectMapper;
+    private final Clock clock;
 
-        problemSubmissionRepository.saveAll(problemSubmissions);
-    }
-
-    @Transactional
-    public void saveProblemSubmission(
-            long userId,
-            ProblemSubmissionRequest request
-    ) {
-        ProblemSubmission problemSubmission = problemSubmissionRepository.findByProblemIdAndUserId(request.problemId(), userId)
-                .orElseGet(() -> ProblemSubmission.create(request.isCorrect(), request.problemId(), userId));
-
-        problemSubmission.updateIsCorrect(request.isCorrect());
-
-        if (!request.isCorrect())
-            wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemSubmission.getProblemId());
-
-        problemSubmissionRepository.save(problemSubmission);
-    }
-
-    private List<ProblemSubmission> updateProblemSubmissions(
-            long userId,
-            List<ProblemSubmissionRequest> requests
-    ) {
-        Map<Long, Boolean> problemSubmissionMap = requests.stream()
-                .collect(Collectors.toMap(
-                        ProblemSubmissionRequest::problemId,
-                        ProblemSubmissionRequest::isCorrect
-                ));
-
+    @Transactional(readOnly = true)
+    public void validateProblemSubmissions(List<ProblemSubmissionSaveRequest> requests) {
         List<Long> problemIds = requests.stream()
-                .map(ProblemSubmissionRequest::problemId)
+                .map(ProblemSubmissionSaveRequest::problemId)
                 .toList();
 
-        List<ProblemSubmission> problemSubmissions = problemSubmissionRepository.findByIdInIdsAndUserId(problemIds, userId);
+        Map<Long, ProblemType> problemIdToType = findProblemTypes(problemIds);
 
-        if (problemSubmissions.size() != requests.size())
-            throw new RestApiException(CustomErrorCode.PROBLEM_SUBMISSION_NOT_FOUND);
-
-        problemSubmissions.forEach(problemSubmission -> {
-            long problemId = problemSubmission.getProblemId();
-            boolean isCorrect = problemSubmissionMap.get(problemId);
-
-            problemSubmission.updateIsCorrect(isCorrect);
-
-            if (!isCorrect)
-                wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemSubmission.getProblemId());
-        });
-
-        return problemSubmissions;
+        requests.forEach(request -> validateSubmission(request, problemIdToType));
     }
 
-    private List<ProblemSubmission> createProblemSubmissions(
+    @Transactional
+    public List<Long> saveProblemSubmissions(
             long userId,
-            List<ProblemSubmissionRequest> requests
+            List<ProblemSubmissionSaveRequest> requests
     ) {
-        return requests.stream()
-                .map(problemSubmissionRequest -> {
-                    if (!problemSubmissionRequest.isCorrect())
-                        wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemSubmissionRequest.problemId());
+        problemSubmissionRepository.insertAll(userId, toPayload(requests), LocalDateTime.now(clock));
 
-                    return ProblemSubmission.create(problemSubmissionRequest.isCorrect(), problemSubmissionRequest.problemId(), userId);
-                }).toList();
+        return requests.stream()
+                .filter(request -> !request.isCorrect())
+                .map(ProblemSubmissionSaveRequest::problemId)
+                .toList();
+    }
+
+    private String toPayload(List<ProblemSubmissionSaveRequest> requests) {
+        List<ProblemSubmissionRowDto> rows = requests.stream()
+                .map(ProblemSubmissionRowDto::from)
+                .toList();
+
+        try {
+            return objectMapper.writeValueAsString(rows);
+        } catch (JsonProcessingException e) {
+            throw new RestApiException(PROBLEM_SUBMISSION_SERIALIZE_FAILED);
+        }
+    }
+
+    private Map<Long, ProblemType> findProblemTypes(List<Long> problemIds) {
+        return problemRepository.findProblemTypesByIds(problemIds).stream()
+                .collect(Collectors.toMap(
+                        ProblemTypeDto::problemId,
+                        ProblemTypeDto::problemType
+                ));
+    }
+
+    private void validateSubmission(
+            ProblemSubmissionSaveRequest request,
+            Map<Long, ProblemType> problemIdToType
+    ) {
+        ProblemType problemType = problemIdToType.get(request.problemId());
+
+        if (problemType == null)
+            throw new RestApiException(PROBLEM_NOT_FOUND);
+
+        validateSubmissionContent(problemType, request);
+    }
+
+    private void validateSubmissionContent(
+            ProblemType problemType,
+            ProblemSubmissionSaveRequest request
+    ) {
+        if (problemType == ProblemType.OBJECTIVE && request.selectedOptionId() == null)
+            throw new RestApiException(PROBLEM_TYPE_MISMATCH);
+
+        if (problemType == ProblemType.SUBJECTIVE && (request.submittedContent() == null || request.submittedContent().isBlank()))
+            throw new RestApiException(PROBLEM_TYPE_MISMATCH);
     }
 }

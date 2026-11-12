@@ -1,0 +1,39 @@
+# 부하 테스트 측정 전용 프로파일 (로컬).
+# application.yml을 베이스로 두고, 측정값을 왜곡하는 설정만 덮어쓴다.
+# 실행: ./gradlew bootRun --args='--spring.profiles.active=perf'
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+  datasource:
+    hikari:
+      # POST /api/v1/lessons/results 는 AFTER_COMMIT 리스너의 REQUIRES_NEW 때문에
+      # 요청 하나가 커넥션 2개를 동시에 점유한다(바깥 트랜잭션은 보류될 뿐 반납되지 않는다).
+      # 데드락을 피하려면 풀이 동시 요청 수보다 커야 한다. VU 50 기준으로 60을 쓴다.
+      maximum-pool-size: 60
+      pool-name: gravit-perf-pool
+
+logging:
+  level:
+    API_PERF: WARN
+    org.hibernate.SQL: OFF
+    org.hibernate.orm.jdbc.bind: OFF
+    org.hibernate.orm.jdbc.extract: OFF
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  metrics:
+    tags:
+      application: gravit-perf
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 100ms,200ms,500ms,1s

@@ -1,5 +1,6 @@
 package gravit.code.problem.domain;
 
+import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProblemSubmission {
+public class ProblemSubmission extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,30 +31,40 @@ public class ProblemSubmission {
     @Column(name = "user_id", nullable = false)
     private long userId;
 
+    @Column(name = "selected_option_id")
+    private Long selectedOptionId;
+
+    @Column(name = "submitted_content", columnDefinition = "TEXT")
+    private String submittedContent;
+
     @Builder(access = AccessLevel.PRIVATE)
     private ProblemSubmission(
             boolean isCorrect,
             long problemId,
-            long userId
+            long userId,
+            Long selectedOptionId,
+            String submittedContent
     ) {
         this.isCorrect = isCorrect;
         this.problemId = problemId;
         this.userId = userId;
+        this.selectedOptionId = selectedOptionId;
+        this.submittedContent = submittedContent;
     }
 
     public static ProblemSubmission create(
-            Boolean isCorrect,
+            boolean isCorrect,
             long problemId,
-            long userId
+            long userId,
+            Long selectedOptionId,
+            String submittedContent
     ) {
         return ProblemSubmission.builder()
                 .isCorrect(isCorrect)
                 .problemId(problemId)
                 .userId(userId)
+                .selectedOptionId(selectedOptionId)
+                .submittedContent(submittedContent)
                 .build();
-    }
-
-    public void updateIsCorrect(boolean isCorrect) {
-        this.isCorrect = isCorrect;
     }
 }

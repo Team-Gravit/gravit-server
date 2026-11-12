@@ -2,7 +2,6 @@ package gravit.code.lesson.service;
 
 import gravit.code.chapter.domain.Chapter;
 import gravit.code.chapter.repository.ChapterRepository;
-import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
@@ -15,17 +14,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
+import java.util.List;
+
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Transactional
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class LessonSubmissionCommandServiceIntegrationTest {
 
     @Autowired
@@ -51,50 +48,38 @@ class LessonSubmissionCommandServiceIntegrationTest {
         void 첫_풀이면_새로_생성한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(lesson.getId(), 120, 80);
 
             // when
-            lessonSubmissionCommandService.saveLessonSubmission(userId, request, true);
+            lessonSubmissionCommandService.saveLessonSubmission(userId, request);
 
             // then
             assertThat(lessonSubmissionRepository.existsByLessonIdAndUserId(lesson.getId(), userId)).isTrue();
         }
 
         @Test
-        void 재풀이면_기존_기록을_업데이트한다() {
+        void 재풀이면_새_행을_저장한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, lesson.getId(), userId));
-            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(lesson.getId(), 90, 85);
 
             // when
-            lessonSubmissionCommandService.saveLessonSubmission(userId, request, false);
+            lessonSubmissionCommandService.saveLessonSubmission(userId, new LessonSubmissionSaveRequest(lesson.getId(), 120, 80));
+            lessonSubmissionCommandService.saveLessonSubmission(userId, new LessonSubmissionSaveRequest(lesson.getId(), 90, 85));
 
             // then
-            LessonSubmission updated = lessonSubmissionRepository.findByLessonIdAndUserId(lesson.getId(), userId).get();
+            List<LessonSubmission> submissions = lessonSubmissionRepository.findAll();
             assertSoftly(softly -> {
-                softly.assertThat(updated.getLearningTime()).isEqualTo(90);
-                softly.assertThat(updated.getTryCount()).isEqualTo(2);
+                softly.assertThat(submissions).hasSize(2);
+                softly.assertThat(submissions)
+                        .extracting(LessonSubmission::getLearningTime, LessonSubmission::getAccuracy)
+                        .containsExactlyInAnyOrder(tuple(120, 80), tuple(90, 85));
             });
-        }
-
-        @Test
-        void 레슨이_존재하지_않으면_예외를_던진다() {
-            // given
-            long userId = 1L;
-            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(999L, 120, 80);
-
-            // when & then
-            assertThatThrownBy(() -> lessonSubmissionCommandService.saveLessonSubmission(userId, request, true))
-                    .isInstanceOf(RestApiException.class)
-                    .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(LESSON_NOT_FOUND);
         }
     }
 }

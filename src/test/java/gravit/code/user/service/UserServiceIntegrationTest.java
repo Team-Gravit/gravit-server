@@ -1,0 +1,552 @@
+package gravit.code.user.service;
+
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.league.domain.League;
+import gravit.code.league.fixture.LeagueFixture;
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
+import gravit.code.season.domain.Season;
+import gravit.code.season.fixture.SeasonFixture;
+import gravit.code.support.TCSpringBootTest;
+import gravit.code.user.domain.User;
+import gravit.code.user.domain.UserLevel;
+import gravit.code.user.dto.event.LevelUpFeedEvent;
+import gravit.code.user.dto.internal.UserSummaryDto;
+import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
+import gravit.code.userLeague.fixture.UserLeagueFixture;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
+import gravit.code.mission.fixture.MissionFixture;
+import gravit.code.mission.repository.MissionRepository;
+import gravit.code.user.dto.request.OnboardingRequest;
+import gravit.code.user.dto.request.UserProfileUpdateRequest;
+import gravit.code.user.dto.response.MyPageResponse;
+import gravit.code.user.dto.response.UserResponse;
+import gravit.code.user.fixture.UserFixture;
+import gravit.code.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
+@TCSpringBootTest
+class UserServiceIntegrationTest {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserFixture userFixture;
+
+    @Autowired
+    private LeagueFixture leagueFixture;
+
+    @Autowired
+    private SeasonFixture seasonFixture;
+
+    @Autowired
+    private UserLeagueFixture userLeagueFixture;
+
+    @Autowired
+    private LeagueRankingStore leagueRankingStore;
+
+    @Autowired
+    private MissionRepository missionRepository;
+
+    @Nested
+    @DisplayName("유저를 아이디로 조회할 때")
+    class FindById {
+
+        @Test
+        void 존재하는_유저이면_UserResponse를_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            UserResponse result = userService.findById(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.userId()).isEqualTo(user.getId());
+                softly.assertThat(result.nickname()).isEqualTo(user.getNickname());
+                softly.assertThat(result.providerId()).isEqualTo(user.getProviderId());
+                softly.assertThat(result.isOnboarded()).isEqualTo(user.isOnboarded());
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userService.findById(nonExistentUserId))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("온보딩을 진행할 때")
+    class Onboarding {
+
+        @Test
+        void 정상_요청이면_온보딩에_성공한다() {
+            // given
+            leagueFixture.브론즈_3(); // OnboardingCompletedEvent 리스너가 리그 초기화 시 필요
+            missionRepository.save(MissionFixture.미션정의_레슨_1개()); // 같은 리스너가 미션 배정 시 활성 정의를 요구
+            User user = userFixture.일반_유저(1);
+            OnboardingRequest request = new OnboardingRequest("새닉네임", 3);
+
+            // when
+            UserResponse result = userService.onboard(user.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.nickname()).isEqualTo("새닉네임");
+                softly.assertThat(result.profileImgNumber()).isEqualTo(3);
+                softly.assertThat(userRepository.findById(user.getId()).get().isOnboarded()).isTrue();
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+            OnboardingRequest request = new OnboardingRequest("닉네임", 1);
+
+            // when & then
+            assertThatThrownBy(() -> userService.onboard(nonExistentUserId, request))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+
+        @Test
+        void 이미_온보딩된_유저이면_예외를_던진다() {
+            // given
+            leagueFixture.브론즈_3(); // OnboardingCompletedEvent 리스너가 리그 초기화 시 필요
+            missionRepository.save(MissionFixture.미션정의_레슨_1개()); // 같은 리스너가 미션 배정 시 활성 정의를 요구
+            User user = userFixture.일반_유저(1);
+            userService.onboard(user.getId(), new OnboardingRequest("닉네임", 1));
+
+            // when & then
+            assertThatThrownBy(() -> userService.onboard(user.getId(), new OnboardingRequest("닉네임", 1)))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(ALREADY_ONBOARDING);
+        }
+
+        @Test
+        void 닉네임_길이가_범위를_벗어나면_예외를_던진다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            OnboardingRequest request = new OnboardingRequest("이름이너무길다길다", 1); // 9자
+
+            // when & then
+            assertThatThrownBy(() -> userService.onboard(user.getId(), request))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(NICKNAME_LENGTH_INVALID);
+        }
+
+        @Test
+        void 프로필_이미지_번호가_범위를_벗어나면_예외를_던진다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            OnboardingRequest request = new OnboardingRequest("닉네임", 21); // 최대 20
+
+            // when & then
+            assertThatThrownBy(() -> userService.onboard(user.getId(), request))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(PROFILE_IMG_NUM_INVALID);
+        }
+    }
+
+    @Nested
+    @DisplayName("프로필을 수정할 때")
+    class UpdateUserProfile {
+
+        @Test
+        void 정상_요청이면_프로필_수정에_성공한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            UserProfileUpdateRequest request = new UserProfileUpdateRequest("새닉네임", 5);
+
+            // when
+            UserResponse result = userService.updateUserProfile(user.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.nickname()).isEqualTo("새닉네임");
+                softly.assertThat(result.profileImgNumber()).isEqualTo(5);
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userService.updateUserProfile(nonExistentUserId, new UserProfileUpdateRequest("닉네임", 1)))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("마이페이지를 조회할 때")
+    class GetMyPage {
+
+        @Test
+        void 존재하는_유저이면_마이페이지를_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            MyPageResponse result = userService.getMyPage(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.nickname()).isEqualTo(user.getNickname());
+                softly.assertThat(result.handle()).isEqualTo(user.getHandle());
+                softly.assertThat(result.follower()).isEqualTo(0);
+                softly.assertThat(result.following()).isEqualTo(0);
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userService.getMyPage(nonExistentUserId))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_PAGE_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("탈퇴한 유저를 복원할 때")
+    class RestoreUser {
+
+        @Test
+        void 삭제된_유저이면_복원에_성공한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            String providerId = user.getProviderId();
+            userRepository.deleteById(user.getId()); // soft-delete
+
+            // when
+            userService.restoreUser(providerId);
+
+            // then
+            assertThat(userRepository.findById(user.getId())).isPresent();
+        }
+
+        @Test
+        void 삭제되지_않은_유저는_복원할_수_없다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when & then
+            assertThatThrownBy(() -> userService.restoreUser(user.getProviderId()))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_RESTORE_ONLY_POSSIBLE_DELETED_STATUS_USER);
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            String nonExistentProviderId = "non-existent-provider";
+
+            // when & then
+            assertThatThrownBy(() -> userService.restoreUser(nonExistentProviderId))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+
+        @Test
+        void 복원하면_탈퇴_직전의_리그와_점수로_랭킹에_재등록된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈3 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(user, season, 브론즈3, 70);
+
+            String providerId = user.getProviderId();
+            userRepository.deleteById(user.getId());
+
+            // when
+            userService.restoreUser(providerId);
+
+            // then
+            List<LeagueRankEntryDto> entries =
+                    leagueRankingStore.findPage(season.getId(), 브론즈3.getId(), 0, 10);
+
+            assertThat(entries).singleElement()
+                    .extracting(LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
+                    .containsExactly(user.getId(), 70);
+        }
+    }
+
+    @Nested
+    @DisplayName("레슨 제출로 유저 레벨을 업데이트할 때")
+    class UpdateUserLevelByLessonSubmission {
+
+        private static final int 레벨업_직전_XP = 90;
+
+        private User 경험치를_보유한_유저(int xp) {
+            User user = userFixture.일반_유저(1);
+            ReflectionTestUtils.setField(user, "level", UserLevel.create(1, xp), UserLevel.class);
+            return userRepository.save(user);
+        }
+
+        private UserLevel 저장된_레벨(long userId) {
+            return userRepository.findById(userId).orElseThrow().getLevel();
+        }
+
+        @Test
+        void 첫_시도로_레벨_구간을_넘으면_레벨업으로_판정한다() {
+            // given
+            User user = 경험치를_보유한_유저(레벨업_직전_XP);
+            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
+
+            // when
+            boolean result = userService.updateUserLevelByLessonSubmission(user.getId(), request, true);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).isTrue();
+                softly.assertThat(저장된_레벨(user.getId()).getLevel()).isEqualTo(2);
+            });
+        }
+
+        @Test
+        void 첫_시도라도_레벨_구간을_넘지_않으면_레벨업이_아니다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
+
+            // when
+            boolean result = userService.updateUserLevelByLessonSubmission(user.getId(), request, true);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).isFalse();
+                softly.assertThat(저장된_레벨(user.getId()).getXp()).isEqualTo(20);
+            });
+        }
+
+        @Test
+        void 재시도이면_XP가_증가하지_않아_레벨업이_아니다() {
+            // given
+            User user = 경험치를_보유한_유저(레벨업_직전_XP);
+            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
+
+            // when
+            boolean result = userService.updateUserLevelByLessonSubmission(user.getId(), request, false);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).isFalse();
+                softly.assertThat(저장된_레벨(user.getId()).getXp()).isEqualTo(레벨업_직전_XP);
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+            LessonSubmissionSaveRequest request = new LessonSubmissionSaveRequest(1L, 60, 100);
+
+            // when & then
+            assertThatThrownBy(() -> userService.updateUserLevelByLessonSubmission(nonExistentUserId, request, true))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @RecordApplicationEvents
+    @DisplayName("확정된 XP를 지급할 때")
+    class AddXp {
+
+        private User XP를_가진_유저(int xp) {
+            User user = userFixture.일반_유저(1);
+            ReflectionTestUtils.setField(user, "level", UserLevel.create(1, xp), UserLevel.class);
+            return userRepository.save(user);
+        }
+
+        @Test
+        void XP가_그대로_누적된다(ApplicationEvents events) {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            userService.addXp(user.getId(), 30);
+
+            // then
+            // 정답률 비율을 적용하지 않고 받은 양을 그대로 더한다
+            User updated = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLevel().getXp()).isEqualTo(30);
+                softly.assertThat(updated.getLevel().getLevel()).isEqualTo(1);
+                softly.assertThat(events.stream(LevelUpFeedEvent.class)).isEmpty();
+            });
+        }
+
+        @Test
+        void 레벨_경계를_넘으면_레벨이_오르고_레벨업_피드_이벤트가_발행된다(ApplicationEvents events) {
+            // given - 레벨 2 시작 XP는 100
+            User user = XP를_가진_유저(99);
+
+            // when
+            userService.addXp(user.getId(), 1);
+
+            // then
+            User updated = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLevel().getXp()).isEqualTo(100);
+                softly.assertThat(updated.getLevel().getLevel()).isEqualTo(2);
+                softly.assertThat(events.stream(LevelUpFeedEvent.class))
+                        .containsExactly(new LevelUpFeedEvent(user.getId(), 2));
+            });
+        }
+
+        @Test
+        void 경계_직전까지만_오르면_레벨업_피드_이벤트가_발행되지_않는다(ApplicationEvents events) {
+            // given
+            User user = XP를_가진_유저(50);
+
+            // when
+            userService.addXp(user.getId(), 49);
+
+            // then
+            User updated = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLevel().getXp()).isEqualTo(99);
+                softly.assertThat(updated.getLevel().getLevel()).isEqualTo(1);
+                softly.assertThat(events.stream(LevelUpFeedEvent.class)).isEmpty();
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userService.addXp(nonExistentUserId, 30))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+
+        @Test
+        void 탈퇴한_유저이면_예외를_던진다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            userRepository.deleteById(user.getId()); // soft-delete
+
+            // when & then
+            assertThatThrownBy(() -> userService.addXp(user.getId(), 30))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("유저 요약 목록을 조회할 때")
+    class GetUserSummaries {
+
+        @Test
+        void 존재하는_유저들의_요약을_Map으로_반환한다() {
+            // given
+            User user1 = userFixture.일반_유저(1);
+            User user2 = userFixture.일반_유저(2);
+
+            // when
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(Set.of(user1.getId(), user2.getId()));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(2);
+                softly.assertThat(result.get(user1.getId()).nickname()).isEqualTo(user1.getNickname());
+                softly.assertThat(result.get(user1.getId()).profileImgNumber()).isEqualTo(user1.getProfileImgNumber());
+                softly.assertThat(result.get(user2.getId()).nickname()).isEqualTo(user2.getNickname());
+            });
+        }
+
+        @Test
+        void 빈_아이디_집합이면_빈_Map을_반환한다() {
+            // given
+            Set<Long> emptyIds = Collections.emptySet();
+
+            // when
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(emptyIds);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void 탈퇴한_유저는_결과에서_제외된다() {
+            // given
+            User active = userFixture.일반_유저(1);
+            User deleted = userFixture.일반_유저(2);
+            userRepository.deleteById(deleted.getId()); // soft-delete
+
+            // when
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(Set.of(active.getId(), deleted.getId()));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result).containsKey(active.getId());
+                softly.assertThat(result).doesNotContainKey(deleted.getId());
+            });
+        }
+
+        @Test
+        void 존재하지_않는_아이디는_결과에서_제외된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            long nonExistentUserId = 999L;
+
+            // when
+            Map<Long, UserSummaryDto> result = userService.getUserSummaries(Set.of(user.getId(), nonExistentUserId));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result).containsKey(user.getId());
+                softly.assertThat(result).doesNotContainKey(nonExistentUserId);
+            });
+        }
+    }
+}

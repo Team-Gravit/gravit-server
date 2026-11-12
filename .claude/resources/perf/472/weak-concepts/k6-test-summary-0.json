@@ -1,0 +1,46 @@
+{
+  "phase": "measure",
+  "target": "weak-concepts",
+  "endpoint": "GET /api/v1/my-pages/learning/weak-concepts",
+  "condition": {
+    "vus": 50,
+    "duration": "1m",
+    "cache": "cold",
+    "user_id_start": 1001,
+    "user_count": 1000
+  },
+  "requests": 1966,
+  "rps": 16.373709003628573,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 1966,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 1966,
+      "fails": 0
+    },
+    {
+      "name": "취약 유닛이 실려 있다",
+      "passes": 1966,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 2746.709,
+    "p95": 3598.58125,
+    "p99": 4014.4301499999997,
+    "max": 4379.747
+  },
+  "waiting_ms": {
+    "med": 2746.4325,
+    "p95": 3598.34075,
+    "p99": 4014.0705,
+    "max": 4379.636
+  },
+  "bytes_received": 2528229
+}

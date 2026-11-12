@@ -1,6 +1,5 @@
 package gravit.code.option.domain;
 
-import gravit.code.admin.dto.request.OptionUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,10 +19,10 @@ public class Option {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "explanation", nullable = false)
     private String explanation;
 
     @Column(name = "is_answer", nullable = false)
@@ -59,9 +58,13 @@ public class Option {
                 .build();
     }
 
-    public void updateOption(OptionUpdateRequest optionUpdateRequest){
-        this.content = optionUpdateRequest.content();
-        this.explanation = optionUpdateRequest.explanation();
-        this.isAnswer = optionUpdateRequest.isAnswer();
+    public void update(
+            String content,
+            String explanation,
+            boolean isAnswer
+    ){
+        this.content = content;
+        this.explanation = explanation;
+        this.isAnswer = isAnswer;
     }
 }

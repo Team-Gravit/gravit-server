@@ -1,19 +1,22 @@
+# 운영, 개발 compose의 Loki(gravit-loki-prod, gravit-loki-dev)와 로컬 모니터링 compose가 함께 쓰는 설정이다. CD가 서버로 보낸다.
+# 보관 기간 4320h(6개월)는 개인정보 처리방침의 서비스 이용기록 보관 기간이다.
+
 auth_enabled: false
 
-common:
-  path_prefix: /tmp/loki
-
 server:
-  http_listen_address: 0.0.0.0
   http_listen_port: 3100
 
-ingester:
-  lifecycler:
-    address: 127.0.0.1
-    ring:
-      kvstore:
-        store: inmemory
-      replication_factor: 1
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
 
 schema_config:
   configs:
@@ -25,6 +28,15 @@ schema_config:
         prefix: index_
         period: 24h
 
-storage_config:
-  filesystem:
-    directory: /loki/chunks
+compactor:
+  working_directory: /loki/compactor
+  compaction_interval: 10m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  delete_request_store: filesystem
+
+limits_config:
+  retention_period: 4320h
+
+analytics:
+  reporting_enabled: false

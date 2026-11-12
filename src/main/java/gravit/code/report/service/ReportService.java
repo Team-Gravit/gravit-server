@@ -1,6 +1,5 @@
 package gravit.code.report.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.problem.repository.ProblemRepository;
 import gravit.code.report.domain.Report;
@@ -9,6 +8,8 @@ import gravit.code.report.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.PROBLEM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class ReportService {
             ProblemReportSubmitRequest request
     ){
         if(!problemRepository.existsProblemById(request.problemId()))
-            throw new RestApiException(CustomErrorCode.PROBLEM_NOT_FOUND);
+            throw new RestApiException(PROBLEM_NOT_FOUND);
 
         reportRepository.save(Report.create(request, userId));
     }

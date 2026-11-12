@@ -34,7 +34,7 @@ class LessonSubmissionQueryServiceUnitTest {
                     .thenReturn(3);
 
             // when
-            int result = lessonSubmissionQueryService.getLessonSubmissionCount(userId, lessonId);
+            int result = lessonSubmissionQueryService.getLessonSubmissionTryCount(userId, lessonId);
 
             // then
             assertThat(result).isEqualTo(3);
@@ -49,7 +49,7 @@ class LessonSubmissionQueryServiceUnitTest {
                     .thenReturn(0);
 
             // when
-            int result = lessonSubmissionQueryService.getLessonSubmissionCount(userId, lessonId);
+            int result = lessonSubmissionQueryService.getLessonSubmissionTryCount(userId, lessonId);
 
             // then
             assertThat(result).isZero();

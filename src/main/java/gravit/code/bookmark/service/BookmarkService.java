@@ -4,7 +4,6 @@ import gravit.code.bookmark.domain.Bookmark;
 import gravit.code.bookmark.dto.request.BookmarkDeleteRequest;
 import gravit.code.bookmark.dto.request.BookmarkSaveRequest;
 import gravit.code.bookmark.repository.BookmarkRepository;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.problem.dto.response.ProblemDetailResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_DUPLICATED;
+import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +25,9 @@ public class BookmarkService {
     public void addBookmark(
             long userId,
             BookmarkSaveRequest request
-    ){
+    ) {
         if(bookmarkRepository.existsByProblemIdAndUserId(request.problemId(), userId))
-            throw new RestApiException(CustomErrorCode.BOOKMARK_DUPLICATED);
+            throw new RestApiException(BOOKMARK_DUPLICATED);
 
         Bookmark bookmark = Bookmark.create(
                 request.problemId(),
@@ -41,7 +43,7 @@ public class BookmarkService {
             BookmarkDeleteRequest request
     ) {
         if(!bookmarkRepository.existsByProblemIdAndUserId(request.problemId(), userId))
-            throw new RestApiException(CustomErrorCode.BOOKMARK_NOT_FOUND);
+            throw new RestApiException(BOOKMARK_NOT_FOUND);
 
         bookmarkRepository.deleteByProblemIdAndUserId(request.problemId(), userId);
     }
@@ -58,7 +60,7 @@ public class BookmarkService {
     public List<ProblemDetailResponse> getAllBookmarkedProblemInUnit(
             long userId,
             long unitId
-    ){
+    ) {
         return bookmarkRepository.findBookmarkedProblemDetailByUnitIdAndUserId(unitId, userId);
     }
 }

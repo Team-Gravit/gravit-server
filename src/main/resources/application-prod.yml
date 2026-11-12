@@ -17,6 +17,20 @@ spring:
         show_sql: true
     open-in-view: false
 
+  ai:
+    openai:
+      base-url: http://litellm-gw:4000
+      api-key: ${LITELLM_MASTER_KEY:dummy}
+      chat:
+        options:
+          model: codex-terra
+      audio:
+        transcription:
+          options:
+            model: gpt-transcribe
+            language: ko
+            temperature: 0
+
   data:
     redis:
       host: gravit-redis-prod
@@ -98,6 +112,24 @@ oauth:
     kakao:
       issuer: https://kauth.kakao.com
       client-id: ${KAKAO_NATIVE_APP_KEY}
+  ios:
+    google:
+      issuer: https://accounts.google.com
+      client-id: ${GOOGLE_CLIENT_ID}
+    kakao:
+      issuer: https://kauth.kakao.com
+      client-id: ${KAKAO_NATIVE_APP_KEY}
+  apple:
+    issuer: https://appleid.apple.com
+    token-uri: https://appleid.apple.com/auth/token
+    revoke-uri: https://appleid.apple.com/auth/revoke
+    jwk-set-uri: https://appleid.apple.com/auth/keys
+    team-id: ${APPLE_TEAM_ID}
+    client-id: ${APPLE_CLIENT_ID}
+    ios-bundle-id: ${APPLE_IOS_BUNDLE_ID}
+    key-id: ${APPLE_KEY_ID}
+    private-key: ${APPLE_PRIVATE_KEY}
+    token-encryption-key: ${APPLE_TOKEN_ENCRYPTION_KEY}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -114,6 +146,10 @@ scheduler:
   season:
     rollover-cron: "0 0 0 * * MON"
 
+auth:
+  cookie:
+    same-site: Lax
+
 user-delete-mail:
   code-length: 16
   expire-time: 180
@@ -124,11 +160,28 @@ admin:
     enabled: true
     emails: ${ADMIN_BOOTSTRAP_EMAILS}
 
+firebase:
+  config:
+    path: firebase/firebase_service_key.json
+
 springdoc:
   server-url: https://grav-it.inuappcenter.kr
+  paths-to-exclude: /api/v1/admin/**
 
 management:
   endpoints:
     web:
       exposure:
         include: prometheus
+
+app:
+  version: 1.0.0
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: ${S3_INTERVIEW_AUDIO_BUCKET}
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    upload-expiry: 10m
+    download-expiry: 30m

@@ -3,6 +3,8 @@ package gravit.code.lesson.repository;
 import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.dto.response.LessonSummaryResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,43 +14,50 @@ import java.util.Optional;
 
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
+    Page<Lesson> findByUnitId(
+            long unitId,
+            Pageable pageable
+    );
+
     @Query("""
-        SELECT new gravit.code.learning.dto.internal.LearningIdsDto(c.id, u.id, l.id)
-        FROM Lesson l
-        INNER JOIN Unit u ON u.id = l.unitId
-        INNER JOIN Chapter c ON c.id = u.chapterId
-        WHERE l.id = :lessonId
+            SELECT new gravit.code.learning.dto.internal.LearningIdsDto(c.id, u.id, l.id)
+            FROM Lesson l
+            INNER JOIN Unit u ON u.id = l.unitId
+            INNER JOIN Chapter c ON c.id = u.chapterId
+            WHERE l.id = :lessonId
     """)
     Optional<LearningIdsDto> findLearningIdsByLessonId(@Param("lessonId")long lessonId);
 
     @Query("""
-        SELECT COUNT(l.id)
-        FROM Chapter c
-        JOIN Unit u ON u.chapterId = c.id
-        JOIN Lesson l ON l.unitId = u.id
-        WHERE c.id = :chapterId
+            SELECT COUNT(l.id)
+            FROM Chapter c
+            JOIN Unit u ON u.chapterId = c.id
+            JOIN Lesson l ON l.unitId = u.id
+            WHERE c.id = :chapterId
     """)
     int countTotalLessonByChapterId(@Param("chapterId") long chapterId);
 
     @Query("""
-        SELECT COUNT(l.id)
-        FROM Unit u
-        JOIN Lesson l ON l.unitId = u.id
-        WHERE u.id = :unitId
+            SELECT COUNT(l.id)
+            FROM Unit u
+            JOIN Lesson l ON l.unitId = u.id
+            WHERE u.id = :unitId
     """)
     int countTotalLessonByUnitId(@Param("unitId") long unitId);
 
     @Query("""
-        SELECT new gravit.code.lesson.dto.response.LessonSummaryResponse(
-          l.id,
-          l.title,
-          (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id),
-          CASE WHEN ls.id IS NOT NULL THEN true ELSE false END
-        )
-        FROM Lesson l
-        LEFT JOIN LessonSubmission ls ON ls.lessonId = l.id AND ls.userId = :userId
-        WHERE l.unitId = :unitId
-  """)
+            SELECT new gravit.code.lesson.dto.response.LessonSummaryResponse(
+              l.id,
+              l.title,
+              (SELECT COUNT(p.id) FROM Problem p WHERE p.lessonId = l.id),
+              CASE WHEN EXISTS (
+                SELECT 1 FROM LessonSubmission ls
+                WHERE ls.lessonId = l.id AND ls.userId = :userId
+              ) THEN true ELSE false END
+            )
+            FROM Lesson l
+            WHERE l.unitId = :unitId
+    """)
     List<LessonSummaryResponse> findAllLessonSummaryByUnitId(
             @Param("unitId") long unitId,
             @Param("userId") long userId

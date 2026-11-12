@@ -2,6 +2,8 @@ package gravit.code.chapter.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,28 +21,44 @@ public class Chapter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private ChapterCategory category;
 
     @Builder(access = AccessLevel.PRIVATE)
     private Chapter(
+            String title,
+            String description,
+            ChapterCategory category
+    ) {
+        this.title = title;
+        this.description = description;
+        this.category = category;
+    }
+
+    public static Chapter create(
+            String title,
+            String description,
+            ChapterCategory category
+    ) {
+        return Chapter.builder()
+                .title(title)
+                .description(description)
+                .category(category)
+                .build();
+    }
+
+    public void update(
             String title,
             String description
     ) {
         this.title = title;
         this.description = description;
-    }
-
-    public static Chapter create(
-            String title,
-            String description
-    ) {
-        return Chapter.builder()
-                .title(title)
-                .description(description)
-                .build();
     }
 }

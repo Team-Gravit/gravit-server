@@ -5,9 +5,8 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FriendsNicknameSearchQuerySql {
 
-    // --- Search: contains 포함 (exact/prefix: lower()+LIKE, contains: ILIKE) ---
     public static final String SELECT_USER_WITH_CONTAINS_BY_NICKNAME = """
-        WITH p AS (
+        WITH p AS NOT MATERIALIZED (
           SELECT :me::bigint AS me,
                  :q::text AS q,
                  :q_prefix::text AS q_prefix,
@@ -22,8 +21,9 @@ public class FriendsNicknameSearchQuerySql {
             FROM users
             WHERE id <> p.me
               AND deleted_at IS NULL
-              AND lower(nickname) = p.q
-            ORDER BY nickname, id
+              -- COLLATE "C" 유지 필수: 빼면 인덱스를 못 타고 Seq Scan이 된다
+              AND lower(nickname) COLLATE "C" = p.q
+            ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
         ),
@@ -36,7 +36,7 @@ public class FriendsNicknameSearchQuerySql {
               AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
-            ORDER BY nickname, id
+            ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
         ),
@@ -63,7 +63,8 @@ public class FriendsNicknameSearchQuerySql {
               AND nickname ILIKE p.q_contains
               AND lower(nickname) <> p.q
               AND lower(nickname) NOT LIKE p.q_prefix
-            LIMIT GREATEST(1, (SELECT need FROM need_contains)) * 3
+            ORDER BY lower(nickname) COLLATE "C", id
+            LIMIT (SELECT need FROM need_contains) * 3
           ) u
         ),
         contains AS MATERIALIZED (
@@ -90,13 +91,12 @@ public class FriendsNicknameSearchQuerySql {
         LEFT JOIN friends f
           ON f.follower_id = (SELECT me FROM p)
          AND f.followee_id = s.id
-        ORDER BY s.w DESC, s.nickname ASC, s.id ASC
+        ORDER BY s.w DESC, lower(s.nickname) COLLATE "C" ASC, s.id ASC
         LIMIT (SELECT lim FROM p) OFFSET (SELECT off FROM p)
         """;
 
-    // --- Search: contains 없는 버전 (exact/prefix만) ---
     public static final String SELECT_USER_NO_CONTAINS_BY_NICKNAME = """
-        WITH p AS (
+        WITH p AS NOT MATERIALIZED (
           SELECT :me::bigint AS me,
                  :q::text AS q,
                  :q_prefix::text AS q_prefix,
@@ -110,8 +110,9 @@ public class FriendsNicknameSearchQuerySql {
             FROM users
             WHERE id <> p.me
               AND deleted_at IS NULL
-              AND lower(nickname) = p.q
-            ORDER BY nickname, id
+              -- COLLATE "C" 유지 필수: 빼면 인덱스를 못 타고 Seq Scan이 된다
+              AND lower(nickname) COLLATE "C" = p.q
+            ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
         ),
@@ -124,7 +125,7 @@ public class FriendsNicknameSearchQuerySql {
               AND deleted_at IS NULL
               AND lower(nickname) LIKE p.q_prefix
               AND lower(nickname) <> p.q
-            ORDER BY nickname, id
+            ORDER BY lower(nickname) COLLATE "C", id
             LIMIT p.lim + p.off
           ) u
         ),
@@ -152,7 +153,7 @@ public class FriendsNicknameSearchQuerySql {
         LEFT JOIN friends f
           ON f.follower_id = (SELECT me FROM p)
          AND f.followee_id = s.id
-        ORDER BY s.w DESC, s.nickname ASC, s.id ASC
+        ORDER BY s.w DESC, lower(s.nickname) COLLATE "C" ASC, s.id ASC
         LIMIT (SELECT lim FROM p) OFFSET (SELECT off FROM p)
         """;
 }

@@ -1,0 +1,16 @@
+BEGIN
+                                                          QUERY PLAN                                                          
+------------------------------------------------------------------------------------------------------------------------------
+ Seq Scan on public.wrong_answered_note wan1_0  (cost=0.00..797.35 rows=1 width=52) (actual time=2.062..5.312 rows=1 loops=1)
+   Output: id, created_at, problem_id, resolved_at, updated_at, user_id, wrong_count
+   Filter: ((wan1_0.problem_id = 910035) AND (wan1_0.user_id = 1501))
+   Rows Removed by Filter: 32489
+   Buffers: shared hit=310
+ Query Identifier: 122809128972921203
+ Planning:
+   Buffers: shared hit=82
+ Planning Time: 1.787 ms
+ Execution Time: 5.475 ms
+(10 rows)
+
+ROLLBACK

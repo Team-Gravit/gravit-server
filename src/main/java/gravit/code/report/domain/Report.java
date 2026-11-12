@@ -1,5 +1,6 @@
 package gravit.code.report.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -29,7 +29,7 @@ public class Report {
     @Column(name = "report_type", nullable = false)
     private ReportType reportType;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(name = "problem_id", columnDefinition = "bigint", nullable = false)
@@ -44,7 +44,7 @@ public class Report {
     @Column(name = "submitted_at", columnDefinition = "timestamp", nullable = false)
     private LocalDateTime submittedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Report(
             ReportType reportType,
             String content,
@@ -56,7 +56,7 @@ public class Report {
         this.problemId = problemId;
         this.userId = userId;
         this.isResolved = false;
-        this.submittedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        this.submittedAt = LocalDateTime.now(TimeZoneConst.KST);
     }
 
     public static Report create(
@@ -71,7 +71,21 @@ public class Report {
                 .build();
     }
 
-    public void updateResolvedStatus(){
-        this.isResolved = !this.isResolved;
+    public static Report of(
+            ReportType reportType,
+            String content,
+            long problemId,
+            long userId
+    ) {
+        return Report.builder()
+                .reportType(reportType)
+                .content(content)
+                .problemId(problemId)
+                .userId(userId)
+                .build();
+    }
+
+    public void changeResolved(boolean isResolved){
+        this.isResolved = isResolved;
     }
 }

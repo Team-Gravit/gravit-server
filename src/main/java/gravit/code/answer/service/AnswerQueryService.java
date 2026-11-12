@@ -26,7 +26,7 @@ public class AnswerQueryService {
                 .filter(p -> p.problemType() == ProblemType.SUBJECTIVE)
                 .toList();
 
-        Map<Long, AnswerResponse> answerMap;
+        Map<Long, AnswerResponse> problemIdToAnswer;
         if(!subjectiveProblems.isEmpty()){
             List<Long> subjectiveProblemIds = subjectiveProblems.stream()
                     .map(ProblemDetailResponse::id)
@@ -34,11 +34,11 @@ public class AnswerQueryService {
 
             List<Answer> answers = answerRepository.findByProblemIdIn(subjectiveProblemIds);
 
-            answerMap = answers.stream()
+            problemIdToAnswer = answers.stream()
                     .collect(Collectors.toMap(Answer::getProblemId, AnswerResponse::from));
         } else {
-            answerMap = new HashMap<>();
+            problemIdToAnswer = new HashMap<>();
         }
-        return answerMap;
+        return problemIdToAnswer;
     }
 }

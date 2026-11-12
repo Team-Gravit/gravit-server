@@ -19,10 +19,10 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(columnDefinition = "TEXT",  nullable = false)
+    @Column(name = "explanation", columnDefinition = "TEXT", nullable = false)
     private String explanation;
 
     @Column(name = "problem_id")
@@ -49,5 +49,13 @@ public class Answer {
                 .explanation(explanation)
                 .problemId(problemId)
                 .build();
+    }
+
+    public void update(
+            String content,
+            String explanation
+    ){
+        this.content = content;
+        this.explanation = explanation;
     }
 }

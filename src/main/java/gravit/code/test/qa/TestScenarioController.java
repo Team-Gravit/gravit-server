@@ -7,11 +7,12 @@ import gravit.code.lesson.domain.Lesson;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.facade.LessonFacade;
 import gravit.code.lesson.repository.LessonRepository;
-import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.unit.domain.Unit;
 import gravit.code.unit.repository.UnitRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
+import gravit.code.test.qa.docs.TestScenarioControllerDocs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @Profile("!prod")
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
-public class TestScenarioController {
+public class TestScenarioController implements TestScenarioControllerDocs {
+
+    private static final int FULL_ACCURACY = 100;
+    private static final int LEARNING_TIME_SECONDS = 60;
 
     private final LessonFacade lessonFacade;
+
     private final LessonRepository lessonRepository;
     private final UnitRepository unitRepository;
     private final UserRepository userRepository;
@@ -42,41 +49,38 @@ public class TestScenarioController {
             @RequestParam Long userId,
             @RequestParam Long chapterId
     ){
-        // 1. 해당 챕터의 유닛들 조회
         List<Unit> units = unitRepository.findAll();
         List<Unit> chapterUnits = units.stream()
                 .filter(u -> u.getChapterId() == chapterId)
                 .toList();
 
-        // 2. 챕터의 유닛 ID들 추출
         Set<Long> chapterUnitIds = chapterUnits.stream()
                 .map(Unit::getId)
                 .collect(Collectors.toSet());
 
-        // 3. 해당 유닛들에 속한 레슨들 필터링
         List<Lesson> lessons = lessonRepository.findAll();
         List<Lesson> chapterLessons = lessons.stream()
                 .filter(l -> chapterUnitIds.contains(l.getUnitId()))
                 .toList();
 
-
-        // 4. 마지막 레슨을 제외한 모든 레슨 제출
         for (int i = 0; i < chapterLessons.size() - 2; i++) {
             Lesson lesson = chapterLessons.get(i);
             submitLesson(userId, lesson.getId());
         }
 
-        return ResponseEntity.ok(userId);
+        return ResponseEntity.status(OK).body(userId);
     }
 
-    private void submitLesson(Long userId, Long lessonId) {
-        // 문제 제출 요청 생성 (모두 정답으로)
-        List<ProblemSubmissionRequest> problemRequests = List.of();
+    private void submitLesson(
+            Long userId,
+            Long lessonId
+    ) {
+        List<ProblemSubmissionSaveRequest> problemRequests = List.of();
 
         LessonSubmissionSaveRequest lessonRequest = new LessonSubmissionSaveRequest(
                 lessonId,
-                100, // accuracy
-                60   // learningTime (초)
+                FULL_ACCURACY,
+                LEARNING_TIME_SECONDS
         );
 
         LearningSubmissionSaveRequest request = new LearningSubmissionSaveRequest(
@@ -106,6 +110,6 @@ public class TestScenarioController {
 
         learningRepository.save(learning);
 
-        return ResponseEntity.ok(user.getId());
+        return ResponseEntity.status(OK).body(user.getId());
     }
 }

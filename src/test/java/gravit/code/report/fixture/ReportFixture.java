@@ -10,12 +10,7 @@ public class ReportFixture {
             long problemId,
             long userId
     ) {
-        Report report = Report.builder()
-                .reportType(ReportType.CONTENT_ERROR)
-                .content("문제 내용이 잘못되었습니다.")
-                .problemId(problemId)
-                .userId(userId)
-                .build();
+        Report report = Report.of(ReportType.CONTENT_ERROR, "문제 내용이 잘못되었습니다.", problemId, userId);
         ReflectionTestUtils.setField(report, "id", 1L);
         return report;
     }
@@ -26,12 +21,7 @@ public class ReportFixture {
             long problemId,
             long userId
     ) {
-        Report report = Report.builder()
-                .reportType(reportType)
-                .content("신고 내용" + id)
-                .problemId(problemId)
-                .userId(userId)
-                .build();
+        Report report = Report.of(reportType, "신고 내용" + id, problemId, userId);
         ReflectionTestUtils.setField(report, "id", id);
         return report;
     }

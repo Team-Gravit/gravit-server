@@ -11,24 +11,41 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WrongAnsweredNoteServiceUnitTest {
+
+    private static final Clock FIXED_CLOCK = Clock.fixed(
+            OffsetDateTime.parse("2026-07-29T12:00:00+09:00").toInstant(),
+            ZoneId.of("Asia/Seoul")
+    );
 
     @InjectMocks
     private WrongAnsweredNoteService wrongAnsweredNoteService;
 
     @Mock
     private WrongAnsweredNoteRepository wrongAnsweredNoteRepository;
+
+    @Spy
+    private Clock clock = FIXED_CLOCK;
 
     @Nested
     @DisplayName("오답 노트를 저장할 때")
@@ -51,7 +68,7 @@ class WrongAnsweredNoteServiceUnitTest {
         }
 
         @Test
-        void 기존_오답_노트가_있으면_새로_생성하지_않고_기존_것을_저장한다() {
+        void 기존_오답_노트가_있으면_새로_생성하지_않고_오답_횟수를_누적한다() {
             // given
             long userId = 1L;
             long problemId = 1L;
@@ -63,9 +80,81 @@ class WrongAnsweredNoteServiceUnitTest {
             // when
             wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemId);
 
-            // then — 새 WrongAnsweredNote를 생성하지 않고 기존 객체 그대로 저장
+            // then — 새 WrongAnsweredNote를 생성하지 않고 기존 객체의 오답 횟수만 올린다
+            assertThat(existing.getWrongCount()).isEqualTo(2);
             verify(wrongAnsweredNoteRepository).save(existing);
             verify(wrongAnsweredNoteRepository, never()).save(argThat(note -> note != existing));
+        }
+
+        @Test
+        void 극복된_오답_노트를_다시_틀리면_오답노트로_복귀시킨다() {
+            // given
+            long userId = 1L;
+            long problemId = 1L;
+            WrongAnsweredNote resolved = WrongAnsweredNoteFixture.극복된_오답노트(problemId, userId);
+
+            when(wrongAnsweredNoteRepository.findByProblemIdAndUserId(problemId, userId)).thenReturn(Optional.of(resolved));
+            when(wrongAnsweredNoteRepository.save(any())).thenReturn(resolved);
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNote(userId, problemId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(resolved.isResolved()).isFalse();
+                softly.assertThat(resolved.getWrongCount()).isEqualTo(2);
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("오답 노트를 일괄 저장할 때")
+    class SaveWrongAnsweredNotes {
+
+        @Test
+        void 문제_목록을_배열_리터럴_한_건으로_넘긴다() {
+            // given
+            long userId = 1L;
+            List<Long> problemIds = List.of(1L, 2L, 3L);
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, problemIds);
+
+            // then
+            verify(wrongAnsweredNoteRepository).upsertAll(
+                    userId,
+                    "{1,2,3}",
+                    LocalDateTime.now(FIXED_CLOCK)
+            );
+        }
+
+        @Test
+        void 중복된_문제_아이디는_한_번만_넘긴다() {
+            // given — 한 문장 안에 같은 (user_id, problem_id)가 두 번 들어가면 Postgres가 거부한다
+            long userId = 1L;
+            List<Long> problemIds = List.of(1L, 2L, 1L, 2L, 3L);
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, problemIds);
+
+            // then
+            verify(wrongAnsweredNoteRepository).upsertAll(
+                    eq(userId),
+                    eq("{1,2,3}"),
+                    any(LocalDateTime.class)
+            );
+        }
+
+        @Test
+        void 오답이_없으면_저장을_호출하지_않는다() {
+            // given
+            long userId = 1L;
+
+            // when
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, List.of());
+
+            // then
+            verify(wrongAnsweredNoteRepository, never()).upsertAll(anyLong(), anyString(), any());
         }
     }
 
@@ -111,20 +200,56 @@ class WrongAnsweredNoteServiceUnitTest {
     }
 
     @Nested
-    @DisplayName("오답 문제를 삭제할 때")
-    class DeleteWrongAnsweredProblem {
+    @DisplayName("오답 문제를 오답노트에서 내릴 때")
+    class ResolveWrongAnsweredNote {
 
         @Test
-        void 오답_노트에서_삭제에_성공한다() {
+        void 행을_지우지_않고_극복_시각을_기록한다() {
+            // given
+            long userId = 1L;
+            long problemId = 1L;
+            WrongAnsweredNote note = WrongAnsweredNoteFixture.기본_오답노트(problemId, userId);
+
+            when(wrongAnsweredNoteRepository.findByProblemIdAndUserId(problemId, userId)).thenReturn(Optional.of(note));
+
+            // when
+            wrongAnsweredNoteService.resolveWrongAnsweredNote(userId, problemId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(note.isResolved()).isTrue();
+                softly.assertThat(note.getResolvedAt()).isNotNull();
+            });
+        }
+
+        @Test
+        void 이미_극복된_노트는_극복_시각이_밀리지_않는다() {
+            // given
+            long userId = 1L;
+            long problemId = 1L;
+            WrongAnsweredNote resolved = WrongAnsweredNoteFixture.극복된_오답노트(problemId, userId);
+            LocalDateTime resolvedAt = resolved.getResolvedAt();
+
+            when(wrongAnsweredNoteRepository.findByProblemIdAndUserId(problemId, userId)).thenReturn(Optional.of(resolved));
+
+            // when
+            wrongAnsweredNoteService.resolveWrongAnsweredNote(userId, problemId);
+
+            // then
+            assertThat(resolved.getResolvedAt()).isEqualTo(resolvedAt);
+        }
+
+        @Test
+        void 오답_노트가_없으면_예외_없이_통과한다() {
             // given
             long userId = 1L;
             long problemId = 1L;
 
-            // when
-            wrongAnsweredNoteService.deleteWrongAnsweredProblem(userId, problemId);
+            when(wrongAnsweredNoteRepository.findByProblemIdAndUserId(problemId, userId)).thenReturn(Optional.empty());
 
-            // then
-            verify(wrongAnsweredNoteRepository).deleteByProblemIdAndUserId(problemId, userId);
+            // when & then
+            assertThatCode(() -> wrongAnsweredNoteService.resolveWrongAnsweredNote(userId, problemId))
+                    .doesNotThrowAnyException();
         }
     }
 

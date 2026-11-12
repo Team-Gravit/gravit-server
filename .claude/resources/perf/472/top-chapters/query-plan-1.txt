@@ -1,0 +1,88 @@
+BEGIN
+=== [1] countSolvedLessonsByUserIdInWeek ===
+                                                                                              QUERY PLAN                                                                                               
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=5.12..5.13 rows=1 width=8) (actual time=0.410..0.414 rows=1 loops=1)
+   Output: count(DISTINCT lesson_id)
+   Buffers: shared hit=15
+   ->  Index Only Scan using ix_lesson_submission_user_created_at on public.lesson_submission ls1_0  (cost=0.42..5.05 rows=28 width=8) (actual time=0.266..0.271 rows=30 loops=1)
+         Output: user_id, created_at, lesson_id
+         Index Cond: ((ls1_0.user_id = 1500) AND (ls1_0.created_at >= '2026-07-27 00:00:00'::timestamp without time zone) AND (ls1_0.created_at < '2026-08-03 00:00:00'::timestamp without time zone))
+         Heap Fetches: 0
+         Buffers: shared hit=7
+ Query Identifier: -2993255473442879340
+ Planning:
+   Buffers: shared hit=102
+ Planning Time: 1.835 ms
+ Execution Time: 0.628 ms
+(13 rows)
+
+=== [2] findTopChaptersByUserIdInWeek ===
+                                                                                                                QUERY PLAN                                                                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=16.83..16.84 rows=3 width=31) (actual time=0.582..0.584 rows=3 loops=1)
+   Output: c1_0.id, c1_0.title, (count(DISTINCT l1_0.id))
+   Buffers: shared hit=10
+   ->  Sort  (cost=16.83..16.84 rows=5 width=31) (actual time=0.580..0.583 rows=3 loops=1)
+         Output: c1_0.id, c1_0.title, (count(DISTINCT l1_0.id))
+         Sort Key: (count(DISTINCT l1_0.id)) DESC, c1_0.id
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=10
+         ->  GroupAggregate  (cost=16.51..16.77 rows=5 width=31) (actual time=0.504..0.515 rows=5 loops=1)
+               Output: c1_0.id, c1_0.title, count(DISTINCT l1_0.id)
+               Group Key: c1_0.id
+               Buffers: shared hit=10
+               ->  Sort  (cost=16.51..16.58 rows=28 width=31) (actual time=0.469..0.473 rows=30 loops=1)
+                     Output: c1_0.id, c1_0.title, l1_0.id
+                     Sort Key: c1_0.id
+                     Sort Method: quicksort  Memory: 27kB
+                     Buffers: shared hit=10
+                     ->  Hash Join  (cost=10.92..15.84 rows=28 width=31) (actual time=0.388..0.410 rows=30 loops=1)
+                           Output: c1_0.id, c1_0.title, l1_0.id
+                           Inner Unique: true
+                           Hash Cond: (u1_0.chapter_id = c1_0.id)
+                           Buffers: shared hit=10
+                           ->  Hash Join  (cost=9.81..14.59 rows=28 width=16) (actual time=0.283..0.300 rows=30 loops=1)
+                                 Output: l1_0.id, u1_0.chapter_id
+                                 Inner Unique: true
+                                 Hash Cond: (l1_0.unit_id = u1_0.id)
+                                 Buffers: shared hit=9
+                                 ->  Hash Join  (cost=6.35..11.05 rows=28 width=16) (actual time=0.187..0.198 rows=30 loops=1)
+                                       Output: l1_0.id, l1_0.unit_id
+                                       Inner Unique: true
+                                       Hash Cond: (ls1_0.lesson_id = l1_0.id)
+                                       Buffers: shared hit=7
+                                       ->  Index Only Scan using ix_lesson_submission_user_created_at on public.lesson_submission ls1_0  (cost=0.42..5.05 rows=28 width=8) (actual time=0.029..0.033 rows=30 loops=1)
+                                             Output: ls1_0.user_id, ls1_0.created_at, ls1_0.lesson_id
+                                             Index Cond: ((ls1_0.user_id = 1500) AND (ls1_0.created_at >= '2026-07-27 00:00:00'::timestamp without time zone) AND (ls1_0.created_at < '2026-08-03 00:00:00'::timestamp without time zone))
+                                             Heap Fetches: 0
+                                             Buffers: shared hit=4
+                                       ->  Hash  (cost=4.30..4.30 rows=130 width=16) (actual time=0.107..0.107 rows=130 loops=1)
+                                             Output: l1_0.id, l1_0.unit_id
+                                             Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                                             Buffers: shared hit=3
+                                             ->  Seq Scan on public.lesson l1_0  (cost=0.00..4.30 rows=130 width=16) (actual time=0.031..0.067 rows=130 loops=1)
+                                                   Output: l1_0.id, l1_0.unit_id
+                                                   Buffers: shared hit=3
+                                 ->  Hash  (cost=2.65..2.65 rows=65 width=16) (actual time=0.061..0.061 rows=65 loops=1)
+                                       Output: u1_0.id, u1_0.chapter_id
+                                       Buckets: 1024  Batches: 1  Memory Usage: 12kB
+                                       Buffers: shared hit=2
+                                       ->  Seq Scan on public.unit u1_0  (cost=0.00..2.65 rows=65 width=16) (actual time=0.030..0.040 rows=65 loops=1)
+                                             Output: u1_0.id, u1_0.chapter_id
+                                             Buffers: shared hit=2
+                           ->  Hash  (cost=1.05..1.05 rows=5 width=23) (actual time=0.023..0.023 rows=5 loops=1)
+                                 Output: c1_0.id, c1_0.title
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 Buffers: shared hit=1
+                                 ->  Seq Scan on public.chapter c1_0  (cost=0.00..1.05 rows=5 width=23) (actual time=0.012..0.014 rows=5 loops=1)
+                                       Output: c1_0.id, c1_0.title
+                                       Buffers: shared hit=1
+ Query Identifier: 9113153431669919828
+ Planning:
+   Buffers: shared hit=178
+ Planning Time: 3.009 ms
+ Execution Time: 0.952 ms
+(63 rows)
+
+ROLLBACK

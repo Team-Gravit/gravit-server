@@ -3,30 +3,35 @@ package gravit.code.userLeague.service;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.dto.response.LeagueDetailResponse;
+import gravit.code.league.fixture.LeagueFixture;
 import gravit.code.league.repository.LeagueRepository;
 import gravit.code.season.domain.Season;
+import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.season.repository.SeasonRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
+import gravit.code.user.fixture.UserFixture;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.userLeague.domain.UserLeague;
+import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.repository.UserLeagueRepository;
+import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.USER_LEAGUE_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class UserLeagueServiceIntegrationTest {
 
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
@@ -45,6 +50,21 @@ class UserLeagueServiceIntegrationTest {
 
     @Autowired
     private UserLeagueRepository userLeagueRepository;
+
+    @Autowired
+    private LeagueRankingStore leagueRankingStore;
+
+    @Autowired
+    private UserFixture userFixture;
+
+    @Autowired
+    private LeagueFixture leagueFixture;
+
+    @Autowired
+    private SeasonFixture seasonFixture;
+
+    @Autowired
+    private UserLeagueFixture userLeagueFixture;
 
     @Nested
     @DisplayName("사용자의 리그 상세를 조회할 때")
@@ -68,6 +88,7 @@ class UserLeagueServiceIntegrationTest {
                 softly.assertThat(result.leagueId()).isEqualTo(league.getId());
                 softly.assertThat(result.leagueName()).isEqualTo("Bronze");
                 softly.assertThat(result.currentLP()).isEqualTo(50);
+                softly.assertThat(result.minLP()).isEqualTo(0);
                 softly.assertThat(result.maxLP()).isEqualTo(100);
             });
         }
@@ -82,6 +103,183 @@ class UserLeagueServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting("errorCode")
                     .isEqualTo(USER_LEAGUE_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자의 리그 이름을 조회할 때")
+    class GetUserLeagueName {
+
+        @Test
+        void 리그가_있으면_리그_이름을_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈 = leagueFixture.브론즈_3();
+            userLeagueFixture.참여(user, season, 브론즈, 0);
+
+            // when
+            String result = userLeagueService.getUserLeagueName(user.getId());
+
+            // then
+            assertThat(result).isEqualTo("브론즈 3");
+        }
+
+        @Test
+        void 리그_정보가_없으면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userLeagueService.getUserLeagueName(nonExistentUserId))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_LEAGUE_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자의 리그 순서를 조회할 때")
+    class FindLeagueSortOrder {
+
+        @Test
+        void 리그에_참여했으면_현재_리그의_순서를_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈2 = leagueFixture.브론즈_2();
+            userLeagueFixture.참여(user, season, 브론즈2, 150);
+
+            // when
+            Optional<Integer> result = userLeagueService.findLeagueSortOrder(user.getId());
+
+            // then
+            assertThat(result).hasValue(브론즈2.getSortOrder());
+        }
+
+        @Test
+        void 리그에_참여하지_않았으면_빈_값을_반환한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            Optional<Integer> result = userLeagueService.findLeagueSortOrder(user.getId());
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("리그 승급 여부를 판정할 때")
+    class CheckLeaguePromoted {
+
+        @Test
+        void 현재_리그_순서가_기준보다_크면_승급으로_판정한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈3 = leagueFixture.브론즈_3();
+            League 브론즈2 = leagueFixture.브론즈_2();
+            userLeagueFixture.참여(user, season, 브론즈2, 150);
+
+            // when
+            boolean result = userLeagueService.checkLeaguePromoted(user.getId(), 브론즈3.getSortOrder());
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 현재_리그_순서가_기준과_같으면_승급이_아니다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈2 = leagueFixture.브론즈_2();
+            userLeagueFixture.참여(user, season, 브론즈2, 150);
+
+            // when
+            boolean result = userLeagueService.checkLeaguePromoted(user.getId(), 브론즈2.getSortOrder());
+
+            // then
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void 리그에_참여하지_않았으면_승급이_아니다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            League 브론즈3 = leagueFixture.브론즈_3();
+
+            // when
+            boolean result = userLeagueService.checkLeaguePromoted(user.getId(), 브론즈3.getSortOrder());
+
+            // then
+            assertThat(result).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 리그를 초기화할 때")
+    class InitUserLeague {
+
+        @Test
+        void sortOrder가_가장_낮은_리그로_초기화된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            seasonFixture.진행중인_시즌("S1");
+            leagueFixture.브론즈_3();  // sortOrder=1 이 가장 낮음
+
+            // when
+            userLeagueService.initUserLeague(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(userLeagueRepository.existsByUserId(user.getId())).isTrue();
+                softly.assertThat(userLeagueRepository.findLeagueSortOrderByUserId(user.getId())).hasValue(1);
+                softly.assertThat(userLeagueRepository.findUserLeagueNameByUserId(user.getId())).hasValue("브론즈 3");
+            });
+        }
+
+        @Test
+        void 랭킹_저장소에도_등록된다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            League 브론즈3 = leagueFixture.브론즈_3();
+
+            // when
+            userLeagueService.initUserLeague(user.getId());
+
+            // then
+            assertThat(leagueRankingStore.findRank(season.getId(), 브론즈3.getId(), user.getId()))
+                    .contains(1);
+        }
+
+        @Test
+        void 존재하지_않는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> userLeagueService.initUserLeague(nonExistentUserId))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+        }
+
+        @Test
+        void 이미_리그가_존재하면_예외를_던진다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            Season season = seasonFixture.진행중인_시즌("S1");
+            userLeagueFixture.참여(user, season, leagueFixture.브론즈_3(), 0);
+
+            // when & then
+            assertThatThrownBy(() -> userLeagueService.initUserLeague(user.getId()))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_LEAGUE_CONFLICT);
         }
     }
 }

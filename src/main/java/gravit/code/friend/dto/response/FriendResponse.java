@@ -1,15 +1,17 @@
 package gravit.code.friend.dto.response;
 
 import gravit.code.friend.domain.Friend;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public record FriendResponse(
 
-        @NotNull
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         Long followeeId,
-        @NotNull
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         Long followerId
 ) {
     public static FriendResponse from(Friend friend) {

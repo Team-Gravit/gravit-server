@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.ACCESS_DENIED;
+
 @Slf4j
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
@@ -29,7 +31,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
         log.info("AccessDeniedHandler 실행");
-        CustomErrorCode errorCode = CustomErrorCode.ACCESS_DENIED;
+        CustomErrorCode errorCode = ACCESS_DENIED;
         String result = objectMapper.writeValueAsString(makeErrorResponse(errorCode));
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -38,9 +40,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     }
 
     private ErrorResponse<String> makeErrorResponse(ErrorCode errorCode) {
-        return ErrorResponse.<String>builder()
-                .error(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
+        return ErrorResponse.of(errorCode.getCode(), errorCode.getMessage());
     }
 }

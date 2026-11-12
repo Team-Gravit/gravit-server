@@ -81,6 +81,17 @@ dependencies {
 
     // Database Proxy
     implementation 'net.ttddyy.observation:datasource-micrometer:1.2.0'
+
+    // FCM (Firebase Cloud Messaging)
+    implementation 'com.google.firebase:firebase-admin:9.9.0'
+
+    // Spring AI (LLM 게이트웨이 연동)
+    implementation platform('org.springframework.ai:spring-ai-bom:1.1.8')
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
+    // Object Storage (면접 음성 원본)
+    implementation platform('software.amazon.awssdk:bom:2.54.13')
+    implementation 'software.amazon.awssdk:s3'
 }
 
 // 현재 migration 실행까지 테스트 하려면 TestContainer 가 필요할 듯 싶습니다.
@@ -106,6 +117,47 @@ tasks.named('bootJar') {
     dependsOn 'flywayCi'
 }
 
+tasks.named('processResources') {
+    // static/ 하위는 정적 리소스로 외부에 그대로 서빙되므로,
+    // notes 서브모듈에서 노트 콘텐츠가 아닌 파일은 산출물(classpath/jar)에서 제외한다.
+    exclude 'static/notes/.claude/**'
+    exclude 'static/notes/CLAUDE.md'
+    exclude 'static/notes/requirement.md'
+    exclude 'static/notes/LICENSE'
+}
+
+tasks.named('bootRun') {
+    // bootRun 기본값(optimizedLaunch)은 -XX:TieredStopAtLevel=1로 C1까지만 컴파일한다.
+    // 기동은 빨라지지만 정상 상태 처리량이 낮게 나오므로, perf 프로파일 측정에서는 끈다.
+    def perfProfileRun = gradle.startParameter.taskRequests*.args.flatten()
+            .any { it.toString().contains('spring.profiles.active=perf') }
+
+    optimizedLaunch = !perfProfileRun
+}
+
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags 'experiment'
+    }
+
+    // 목 조합마다 Spring 컨텍스트가 따로 캐시돼 기본 힙(512m)에서 OOM이 난다
+    maxHeapSize = '1g'
+}
+
+tasks.register('experimentTest', Test) {
+    group = 'verification'
+    description = '트랜잭션 이벤트 리스너 조합 실증 테스트 (CI 기본 실행 제외)'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform {
+        includeTags 'experiment'
+    }
+
+    shouldRunAfter tasks.named('test')
+    testLogging {
+        showStandardStreams = true
+        events 'passed', 'failed', 'skipped'
+    }
 }

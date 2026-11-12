@@ -1,5 +1,15 @@
+# Docker 컨테이너 로그(json-file) 상한. 없으면 공용 서버 디스크를 끝없이 채운다. 서비스마다 최대 30MB.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   gravit-server-prod:
+    # 서버 재부팅, 프로세스 종료 뒤 자동으로 다시 뜨게 한다 (2026-08-09 재부팅 때 prod Loki가 죽은 채 남았다)
+    restart: unless-stopped
+    logging: *default-logging
     container_name: gravit-server-prod
     image: ${DOCKER_HUB_USERNAME}/gravit-server:${IMAGE_TAG}
     ports:
@@ -9,6 +19,7 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
     networks:
       - gravit-prod
+      - llm-net
     volumes:
       - ./logs:/var/log/spring
     depends_on:
@@ -17,8 +28,11 @@ services:
 
 
   gravit-redis-prod:
+    restart: unless-stopped
+    logging: *default-logging
     container_name: gravit-redis-prod
     image: redis:latest
+    command: redis-server --appendonly yes --appendfsync everysec
     ports:
       - "6388:6379"
     volumes:
@@ -34,9 +48,23 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 512M
+          memory: 768M
+
+  loki:
+    restart: unless-stopped
+    logging: *default-logging
+    image: grafana/loki:3.5.5
+    container_name: gravit-loki-prod
+    command: [ "-config.file=/etc/loki/config.yml" ]
+    volumes:
+      - ./infra/loki-config.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+    networks:
+      - gravit-prod
 
   alloy:
+    restart: unless-stopped
+    logging: *default-logging
     image: grafana/alloy:latest
     container_name: alloy
     ports:
@@ -44,11 +72,24 @@ services:
     volumes:
       - ./logs:/var/log/spring
       - ./infra/config.alloy:/etc/alloy/config.alloy:ro
+      # 파일별 읽기 위치(positions). 컨테이너 안에만 두면 재생성 때 사라져 남은 로그 파일을 처음부터 다시 보낸다.
+      - alloy_data:/data-alloy
     environment:
-      - ALLOY_ENV=production
+      - ALLOY_ENV=prod
     command: [ "run", "/etc/alloy/config.alloy" ]
     networks:
       - gravit-prod
 
+volumes:
+  # compose 프로젝트 이름(배포 디렉터리 이름 prod)이 서버의 다른 서비스와 겹쳐 prod_loki_data를 공유하게 되므로 이름을 고정한다.
+  loki_data:
+    name: gravit-loki-prod-data
+  alloy_data:
+    name: gravit-alloy-prod-data
+
 networks:
   gravit-prod:
+    driver: bridge
+  # LLM 게이트웨이(LiteLLM, llm-net 상 이름 litellm-gw)가 속한 서버 공용 네트워크. 배포 스크립트가 존재를 보장한다.
+  llm-net:
+    external: true

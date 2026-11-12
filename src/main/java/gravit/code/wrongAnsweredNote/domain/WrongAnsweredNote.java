@@ -1,5 +1,7 @@
 package gravit.code.wrongAnsweredNote.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
+import gravit.code.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,10 +12,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WrongAnsweredNote {
+public class WrongAnsweredNote extends BaseEntity {
+
+    private static final int INITIAL_WRONG_COUNT = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +31,12 @@ public class WrongAnsweredNote {
     @Column(name = "user_id", nullable = false)
     private long userId;
 
+    @Column(name = "wrong_count", nullable = false)
+    private int wrongCount;
+
+    @Column(name = "resolved_at")
+    private LocalDateTime resolvedAt;
+
     @Builder(access = AccessLevel.PRIVATE)
     private WrongAnsweredNote(
             long problemId,
@@ -31,6 +44,7 @@ public class WrongAnsweredNote {
     ) {
         this.problemId = problemId;
         this.userId = userId;
+        this.wrongCount = INITIAL_WRONG_COUNT;
     }
 
     public static WrongAnsweredNote create(
@@ -41,5 +55,23 @@ public class WrongAnsweredNote {
                 .problemId(problemId)
                 .userId(userId)
                 .build();
+    }
+
+    public WrongAnsweredNote markWrong() {
+        this.wrongCount++;
+        this.resolvedAt = null;
+
+        return this;
+    }
+
+    public void resolve() {
+        if (isResolved())
+            return;
+
+        this.resolvedAt = LocalDateTime.now(TimeZoneConst.KST);
+    }
+
+    public boolean isResolved() {
+        return resolvedAt != null;
     }
 }

@@ -1,10 +1,7 @@
 package gravit.code.lesson.service;
 
-import gravit.code.global.exception.domain.CustomErrorCode;
-import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.domain.LessonSubmission;
 import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
-import gravit.code.lesson.repository.LessonRepository;
 import gravit.code.lesson.repository.LessonSubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,32 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class LessonSubmissionCommandService {
 
     private final LessonSubmissionRepository lessonSubmissionRepository;
-    private final LessonRepository lessonRepository;
 
     @Transactional
-    public void saveLessonSubmission(
+    public long saveLessonSubmission(
         long userId,
-        LessonSubmissionSaveRequest request,
-        boolean isFirstTry
+        LessonSubmissionSaveRequest request
     ) {
-        if(!lessonRepository.existsById(request.lessonId()))
-            throw new RestApiException(CustomErrorCode.LESSON_NOT_FOUND);
+        LessonSubmission lessonSubmission = LessonSubmission.create(
+                request.learningTime(),
+                request.accuracy(),
+                request.lessonId(),
+                userId
+        );
 
-        LessonSubmission lessonSubmission;
-        if(isFirstTry){
-            lessonSubmission = LessonSubmission.create(
-                    request.learningTime(),
-                    request.lessonId(),
-                    userId
-            );
-        }else{
-            lessonSubmission = lessonSubmissionRepository.findByLessonIdAndUserId(request.lessonId(), userId)
-                    .orElseThrow(() -> new RestApiException(CustomErrorCode.LESSON_SUBMISSION_NOT_FOUND));
-
-            lessonSubmission.updateLearningTime(request.learningTime());
-            lessonSubmission.updateTryCount();
-        }
-
-        lessonSubmissionRepository.save(lessonSubmission);
+        return lessonSubmissionRepository.save(lessonSubmission).getId();
     }
 }

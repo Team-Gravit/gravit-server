@@ -1,0 +1,287 @@
+package gravit.code.interview.service;
+
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.interview.domain.InterviewAnswer;
+import gravit.code.interview.domain.InterviewSession;
+import gravit.code.interview.domain.InterviewSessionStatus;
+import gravit.code.interview.domain.InterviewSessionTopic;
+import gravit.code.interview.dto.event.InterviewCompletedEvent;
+import gravit.code.interview.dto.event.InterviewSessionAbandonedEvent;
+import gravit.code.interview.dto.event.InterviewSubmittedEvent;
+import gravit.code.interview.dto.internal.InterviewSessionCreateDto;
+import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
+import gravit.code.interview.dto.response.InterviewSessionStatusResponse;
+import gravit.code.interview.policy.InterviewAudioKeyPolicy;
+import gravit.code.interview.policy.InterviewRewardPolicy;
+import gravit.code.interview.repository.InterviewAnswerRepository;
+import gravit.code.interview.repository.InterviewSessionRepository;
+import gravit.code.interview.repository.InterviewSessionTopicRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_ANSWER_ORDER_INVALID;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_INPUT_TYPE_MISMATCH;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_ACCESS_DENIED;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_SESSION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.INTERVIEW_TRANSCRIPTION_IN_PROGRESS;
+
+@Service
+@RequiredArgsConstructor
+public class InterviewSessionCommandService {
+
+    private static final int FIRST_DISPLAY_ORDER = 1;
+    private static final int NO_REWARD = 0;
+
+    private final InterviewSessionRepository interviewSessionRepository;
+    private final InterviewSessionTopicRepository interviewSessionTopicRepository;
+    private final InterviewAnswerRepository interviewAnswerRepository;
+
+    private final InterviewAudioKeyPolicy interviewAudioKeyPolicy;
+    private final InterviewRewardPolicy interviewRewardPolicy;
+
+    private final ApplicationEventPublisher publisher;
+    private final Clock clock;
+
+    @Transactional
+    public long create(
+            long userId,
+            InterviewSessionCreateDto createDto
+    ) {
+        List<InterviewSession> inProgressSessions = interviewSessionRepository.findAllByUserIdAndStatusForUpdate(
+                userId, InterviewSessionStatus.IN_PROGRESS);
+        abandonAll(inProgressSessions, LocalDateTime.now(clock));
+
+        long attemptCount = interviewSessionRepository.findMaxAttemptCountByUserId(userId) + 1;
+
+        InterviewSession session = interviewSessionRepository.save(
+                InterviewSession.create(
+                        userId,
+                        attemptCount,
+                        createDto.mode(),
+                        createDto.inputType(),
+                        createDto.difficulty(),
+                        createDto.stack()
+                )
+        );
+
+        long sessionId = session.getId();
+
+        interviewSessionTopicRepository.saveAll(
+                createDto.topics().stream()
+                        .map(topic -> InterviewSessionTopic.create(sessionId, topic))
+                        .toList()
+        );
+
+        List<Long> orderedQuestionIds = createDto.orderedQuestionIds();
+        List<InterviewAnswer> answers = new ArrayList<>();
+        for (int index = 0; index < orderedQuestionIds.size(); index++) {
+            answers.add(InterviewAnswer.create(sessionId, orderedQuestionIds.get(index), index + FIRST_DISPLAY_ORDER));
+        }
+        interviewAnswerRepository.saveAll(answers);
+
+        return sessionId;
+    }
+
+    @Transactional
+    public InterviewSessionStatusResponse abandon(
+            long userId,
+            long sessionId
+    ) {
+        InterviewSession session = findSessionForUpdate(sessionId);
+        validateOwner(session, userId);
+
+        abandonAll(List.of(session), LocalDateTime.now(clock));
+
+        return InterviewSessionStatusResponse.of(session.getId(), session.getStatus());
+    }
+
+    @Transactional
+    public InterviewSessionStatusResponse submit(
+            long userId,
+            long sessionId,
+            List<InterviewAnswerSubmitRequest> answerRequests
+    ) {
+        InterviewSession session = findSessionForUpdate(sessionId);
+        validateOwner(session, userId);
+        session.validateInProgress();
+        validateDisplayOrders(answerRequests);
+        validateAudioKeys(session, answerRequests);
+
+        List<InterviewAnswer> answers = interviewAnswerRepository.findAllBySessionIdOrderByDisplayOrderAsc(sessionId);
+        validateAnswerCount(answers);
+
+        LocalDateTime now = LocalDateTime.now(clock);
+        validateTranscriptionsSettled(answers, now);
+
+        submitAnswers(answers, answerRequests, now);
+        session.startGrading(now);
+
+        publisher.publishEvent(InterviewSubmittedEvent.of(sessionId));
+
+        return InterviewSessionStatusResponse.of(session.getId(), session.getStatus());
+    }
+
+    @Transactional
+    public void completeGrading(
+            long sessionId,
+            int accuracyScore,
+            int deliveryScore
+    ) {
+        InterviewSession session = findSessionForUpdate(sessionId);
+
+        session.completeGrading(accuracyScore, deliveryScore);
+
+        publishReward(session);
+    }
+
+    @Transactional
+    public boolean failGradingUnlessAbandoned(long sessionId) {
+        InterviewSession session = findSessionForUpdate(sessionId);
+
+        if (session.isAbandoned()) {
+            return false;
+        }
+
+        session.failGrading();
+
+        return true;
+    }
+
+    private void abandonAll(
+            List<InterviewSession> sessions,
+            LocalDateTime endedAt
+    ) {
+        sessions.forEach(session -> session.abandon(endedAt));
+
+        List<Long> voiceSessionIds = sessions.stream()
+                .filter(session -> !session.isTextInput())
+                .map(InterviewSession::getId)
+                .toList();
+
+        if (voiceSessionIds.isEmpty()) {
+            return;
+        }
+
+        interviewAnswerRepository.findAllBySessionIdInForUpdate(voiceSessionIds)
+                .forEach(InterviewAnswer::discardVoice);
+
+        publisher.publishEvent(InterviewSessionAbandonedEvent.from(voiceSessionIds));
+    }
+
+    private InterviewSession findSessionForUpdate(long sessionId) {
+        return interviewSessionRepository.findByIdForUpdate(sessionId)
+                .orElseThrow(() -> new RestApiException(INTERVIEW_SESSION_NOT_FOUND));
+    }
+
+    private void validateOwner(
+            InterviewSession session,
+            long userId
+    ) {
+        if (!session.isOwnedBy(userId)) {
+            throw new RestApiException(INTERVIEW_SESSION_ACCESS_DENIED);
+        }
+    }
+
+    private void validateDisplayOrders(List<InterviewAnswerSubmitRequest> answerRequests) {
+        Set<Integer> displayOrders = answerRequests.stream()
+                .map(InterviewAnswerSubmitRequest::displayOrder)
+                .collect(Collectors.toSet());
+
+        if (displayOrders.size() != InterviewSession.QUESTION_COUNT) {
+            throw new RestApiException(INTERVIEW_ANSWER_ORDER_INVALID);
+        }
+    }
+
+    private void validateAudioKeys(
+            InterviewSession session,
+            List<InterviewAnswerSubmitRequest> answerRequests
+    ) {
+        if (session.isTextInput()) {
+            validateTextAudioKeysEmpty(answerRequests);
+            return;
+        }
+
+        validateVoiceAudioKeys(session, answerRequests);
+    }
+
+    private void validateTextAudioKeysEmpty(List<InterviewAnswerSubmitRequest> answerRequests) {
+        boolean hasAudioKey = answerRequests.stream()
+                .anyMatch(answerRequest -> answerRequest.audioKey() != null);
+
+        if (hasAudioKey) {
+            throw new RestApiException(INTERVIEW_INPUT_TYPE_MISMATCH);
+        }
+    }
+
+    private void validateVoiceAudioKeys(
+            InterviewSession session,
+            List<InterviewAnswerSubmitRequest> answerRequests
+    ) {
+        for (InterviewAnswerSubmitRequest answerRequest : answerRequests) {
+            String audioKey = answerRequest.audioKey();
+            if (audioKey == null || audioKey.isBlank()) {
+                continue;
+            }
+
+            interviewAudioKeyPolicy.validate(session.getId(), answerRequest.displayOrder(), audioKey);
+        }
+    }
+
+    private void validateAnswerCount(List<InterviewAnswer> answers) {
+        if (answers.size() != InterviewSession.QUESTION_COUNT) {
+            throw new RestApiException(INTERVIEW_ANSWER_NOT_FOUND);
+        }
+    }
+
+    private void validateTranscriptionsSettled(
+            List<InterviewAnswer> answers,
+            LocalDateTime now
+    ) {
+        boolean inProgress = answers.stream()
+                .anyMatch(answer -> answer.isTranscriptionInProgress(now));
+
+        if (inProgress) {
+            throw new RestApiException(INTERVIEW_TRANSCRIPTION_IN_PROGRESS);
+        }
+    }
+
+    private void submitAnswers(
+            List<InterviewAnswer> answers,
+            List<InterviewAnswerSubmitRequest> answerRequests,
+            LocalDateTime answeredAt
+    ) {
+        Map<Integer, InterviewAnswerSubmitRequest> displayOrderToRequest = answerRequests.stream()
+                .collect(Collectors.toMap(InterviewAnswerSubmitRequest::displayOrder, Function.identity()));
+
+        for (InterviewAnswer answer : answers) {
+            InterviewAnswerSubmitRequest answerRequest = displayOrderToRequest.get(answer.getDisplayOrder());
+            if (answerRequest == null) {
+                throw new RestApiException(INTERVIEW_ANSWER_ORDER_INVALID);
+            }
+
+            answer.submit(answerRequest.content(), answerRequest.audioKey(), answeredAt);
+        }
+    }
+
+    private void publishReward(InterviewSession session) {
+        int rewardPoints = interviewRewardPolicy.calculate(session.getScore(), session.getMaxScore());
+
+        if (rewardPoints == NO_REWARD) {
+            return;
+        }
+
+        publisher.publishEvent(InterviewCompletedEvent.of(session.getUserId(), session.getId(), rewardPoints));
+    }
+}

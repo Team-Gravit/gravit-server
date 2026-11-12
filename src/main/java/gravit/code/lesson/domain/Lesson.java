@@ -19,7 +19,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "unit_id", nullable = false)
@@ -42,5 +42,9 @@ public class Lesson {
                 .title(title)
                 .unitId(unitId)
                 .build();
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
     }
 }

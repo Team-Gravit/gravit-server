@@ -10,7 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSearchRepository {
     boolean existsByFollowerIdAndFolloweeId(
@@ -28,12 +30,14 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
                 u.id,
                 u.nickname,
                 u.profileImgNumber,
-                u.handle
+                u.handle,
+                case when f2.id is not null then true else false end
             )
             from Friend f
             join User u on u.id = f.followerId
+            left join Friend f2 on f2.followerId = :followeeId and f2.followeeId = u.id
             where f.followeeId = :followeeId
-            """)
+    """)
     Slice<FollowerResponse> findFollowersByFolloweeId(
             @Param("followeeId") long followeeId,
             Pageable pageable
@@ -49,7 +53,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
             from Friend f
             join User u on u.id = f.followeeId
             where f.followerId = :followerId
-            """)
+    """)
     Slice<FollowingResponse> findFollowingsByFollowerId(
             @Param("followerId") long followerId,
             Pageable pageable
@@ -63,7 +67,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
                 select 1 from User u
                 where u.id = f.followeeId
             )
-            """)
+    """)
     long countByFollowerId(long userId);
 
     @Query("""
@@ -74,6 +78,23 @@ public interface FriendRepository extends JpaRepository<Friend, Long>, FriendSea
                 select 1 from User u
                 where u.id = f.followerId
             )
-            """)
+    """)
     long countByFolloweeId(long userId);
+
+    @Query("""
+            SELECT f.followerId
+            FROM Friend f
+            WHERE f.followeeId = :followeeId
+    """)
+    List<Long> findFollowerIdsByFolloweeId(@Param("followeeId") long followeeId);
+
+    @Query("""
+            SELECT f.followeeId
+            FROM Friend f
+            WHERE f.followerId = :followerId AND f.followeeId IN :followeeIds
+    """)
+    Set<Long> findFollowingIdsAmong(
+            @Param("followerId") long followerId,
+            @Param("followeeIds") Set<Long> followeeIds
+    );
 }

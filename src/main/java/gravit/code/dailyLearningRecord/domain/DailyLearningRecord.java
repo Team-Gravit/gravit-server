@@ -46,7 +46,7 @@ public class DailyLearningRecord {
     ) {
         this.userId = userId;
         this.solvedDate = solvedDate;
-        this.solvedLessonCount = 1;
+        this.solvedLessonCount = 0;
     }
 
     public static DailyLearningRecord create(
@@ -57,5 +57,9 @@ public class DailyLearningRecord {
                 .userId(userId)
                 .solvedDate(solvedDate)
                 .build();
+    }
+
+    public void increaseSolvedLessonCount() {
+        this.solvedLessonCount++;
     }
 }

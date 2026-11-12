@@ -21,11 +21,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_DUPLICATED;
 import static gravit.code.global.exception.domain.CustomErrorCode.BOOKMARK_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,8 +32,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Transactional
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class BookmarkServiceIntegrationTest {
 
     @Autowired
@@ -60,8 +57,8 @@ class BookmarkServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-        unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId()));
+        Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
+        unit = unitRepository.save(Unit.create("연결리스트", "배열과 연결리스트", chapter.getId(), 1));
         Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
         problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
     }

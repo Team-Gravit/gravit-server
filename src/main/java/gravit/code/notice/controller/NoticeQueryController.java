@@ -6,12 +6,13 @@ import gravit.code.notice.dto.response.NoticeDetailResponse;
 import gravit.code.notice.dto.response.NoticeSummaryResponse;
 import gravit.code.notice.service.NoticeQueryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,14 +24,12 @@ public class NoticeQueryController implements NoticeQueryControllerDocs {
     @GetMapping("/summaries/{page}")
     public ResponseEntity<PageResponse<NoticeSummaryResponse>> getNoticeSummaries(@PathVariable("page") int page){
         PageResponse<NoticeSummaryResponse> noticeSummaries = noticeQueryService.getNoticeSummaries(page);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).body(noticeSummaries);
+        return ResponseEntity.status(OK).body(noticeSummaries);
     }
 
     @GetMapping("/{noticeId}")
     public ResponseEntity<NoticeDetailResponse> getNoticeSummary(@PathVariable("noticeId") Long noticeId){
         NoticeDetailResponse noticeDetail = noticeQueryService.getNoticeDetail(noticeId);
-        HttpStatus status = HttpStatus.OK;
-        return ResponseEntity.status(status).body(noticeDetail);
+        return ResponseEntity.status(OK).body(noticeDetail);
     }
 }

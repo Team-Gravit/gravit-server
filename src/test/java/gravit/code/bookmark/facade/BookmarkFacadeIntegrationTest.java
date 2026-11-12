@@ -20,14 +20,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.UNIT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class BookmarkFacadeIntegrationTest {
 
     @Autowired
@@ -59,8 +58,8 @@ class BookmarkFacadeIntegrationTest {
         void 유닛_정보와_북마크된_주관식_문제_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
+            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             Problem problem = problemRepository.save(Problem.create(ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", lesson.getId()));
             answerRepository.save(Answer.create("LIFO", "스택은 Last In First Out 구조입니다.", problem.getId()));
@@ -82,8 +81,8 @@ class BookmarkFacadeIntegrationTest {
         void 북마크된_문제가_없으면_빈_목록을_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초"));
-            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("자료구조", "자료구조 기초", CS));
+            Unit unit = unitRepository.save(Unit.create("스택/큐", "스택과 큐 개념", chapter.getId(), 1));
 
             // when
             BookmarkedProblemResponse result = bookmarkFacade.getAllBookmarkedProblemInUnit(userId, unit.getId());

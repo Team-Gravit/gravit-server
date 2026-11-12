@@ -2,12 +2,11 @@ package gravit.code.problem.controller;
 
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.lesson.dto.response.LessonResponse;
-import gravit.code.problem.dto.request.ProblemSubmissionRequest;
+import gravit.code.problem.controller.docs.ProblemControllerDocs;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.problem.facade.ProblemFacade;
-import gravit.code.problem.service.ProblemSubmissionCommandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,28 +16,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/problems")
 public class ProblemController implements ProblemControllerDocs {
 
     private final ProblemFacade problemFacade;
-    private final ProblemSubmissionCommandService problemSubmissionCommandService;
 
     @GetMapping("/{lessonId}")
     public ResponseEntity<LessonResponse> getAllProblemInLesson(
             @AuthenticationPrincipal LoginUser loginUser,
             @PathVariable("lessonId") Long lessonsId
-    ){
-        return ResponseEntity.status(HttpStatus.OK).body(problemFacade.getAllProblemInLesson(loginUser.getId(), lessonsId));
+    ) {
+        return ResponseEntity.status(OK).body(problemFacade.getAllProblemInLesson(loginUser.getId(), lessonsId));
     }
 
     @PostMapping("/results")
     public ResponseEntity<Void> saveProblemSubmission(
             @AuthenticationPrincipal LoginUser loginUser,
-            @Valid @RequestBody ProblemSubmissionRequest request
-    ){
-        problemSubmissionCommandService.saveProblemSubmission(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
+            @Valid @RequestBody ProblemSubmissionSaveRequest request
+    ) {
+        problemFacade.saveProblemSubmission(loginUser.getId(), request);
+        return ResponseEntity.status(OK).build();
     }
 }

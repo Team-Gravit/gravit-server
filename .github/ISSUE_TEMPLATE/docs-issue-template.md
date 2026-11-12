@@ -27,16 +27,20 @@ assignees:
 ---
 **작업과 연관된 도메인을 선택해주세요.**
 
-- [ ] Authentication
+- [ ] Authentication / Security
 - [ ] User
-- [ ] Friend
+- [ ] Friend / Social
 - [ ] Chapter / Unit / Lesson / Problem / Option
-- [ ] Learning
+- [ ] Learning / Answer / DailyLearningRecord
 - [ ] Bookmark / WrongAnsweredNote
 - [ ] CS Note
-- [ ] League / Season
+- [ ] Interview / InterviewQuestion / InterviewFeedback
+- [ ] League / Season / UserLeague / LeagueHistory
 - [ ] Mission
+- [ ] Notification / FCM
 - [ ] Notice
+- [ ] Inquiry
 - [ ] Admin / Report
-- [ ] Infra / CI·CD
+- [ ] Version
+- [ ] Infra / CICD
 - [ ] Global (공통 모듈)

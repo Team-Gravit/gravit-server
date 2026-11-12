@@ -4,6 +4,7 @@ services:
   redis:
     image: redis:7.0
     container_name: gravit-redis-local
+    command: redis-server --appendonly yes --appendfsync everysec
     ports:
       - "6379:6379"
     volumes:
@@ -12,6 +13,7 @@ services:
   postgres:
     image: postgres:15
     container_name: gravit-postgres-local
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all
     ports:
       - "5433:5432"
     environment:
@@ -20,6 +22,20 @@ services:
       POSTGRES_DB: mydb
     volumes:
       - ./postgres_data_local:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: gravit-pgadmin-local
+    ports:
+      - "5050:80"                # 브라우저: http://localhost:5050
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"          # 단독 로컬용: 로그인 후 마스터 비번 재입력 생략
+    volumes:
+      - ./pgadmin_data_local:/var/lib/pgadmin
+    depends_on:
+      - postgres
 
   alloy:
     image: grafana/alloy:latest

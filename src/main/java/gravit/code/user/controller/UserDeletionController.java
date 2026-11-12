@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users/deletion")
@@ -25,12 +28,12 @@ public class UserDeletionController implements UserDeletionControllerDocs {
     ){
         Long userId = loginUser.getId();
         userDeleteWithMailService.requestDeleteMailWithMailAuthCode(userId, dest);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.status(ACCEPTED).build();
     }
 
     @PostMapping("/confirm")
     public ResponseEntity<Void> confirm(@RequestParam String mailAuthCode){
         userDeleteWithMailService.confirmDeleteByMailAuthCode(mailAuthCode);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(OK).build();
     }
 }

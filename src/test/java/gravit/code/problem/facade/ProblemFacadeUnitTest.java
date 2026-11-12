@@ -48,7 +48,7 @@ class ProblemFacadeUnitTest {
             // given
             long userId = 1L;
             long lessonId = 1L;
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(1L, "연결리스트", "배열과 연결리스트를 학습합니다.");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(1L, 1, "연결리스트", "배열과 연결리스트를 학습합니다.");
             List<ProblemDetailResponse> problemDetailResponses = List.of(
                     new ProblemDetailResponse(1L, ProblemType.SUBJECTIVE, "빈칸을 채우시오.", "스택은 ___구조이다.", false),
                     new ProblemDetailResponse(2L, ProblemType.OBJECTIVE, "다음 중 올바른 것을 고르시오.", "큐의 특성은?", true)
@@ -78,7 +78,7 @@ class ProblemFacadeUnitTest {
             // given
             long userId = 1L;
             long lessonId = 1L;
-            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(1L, "연결리스트", "배열과 연결리스트를 학습합니다.");
+            UnitSummaryResponse unitSummaryResponse = new UnitSummaryResponse(1L, 1, "연결리스트", "배열과 연결리스트를 학습합니다.");
 
             when(unitQueryService.getUnitSummaryByLessonId(lessonId)).thenReturn(unitSummaryResponse);
             when(problemQueryService.getAllProblemInLesson(userId, lessonId)).thenReturn(List.of());

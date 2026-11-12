@@ -1,6 +1,7 @@
 package gravit.code.report.controller;
 
 import gravit.code.auth.domain.LoginUser;
+import gravit.code.report.controller.docs.ReportControllerDocs;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
 import gravit.code.report.service.ReportService;
 import jakarta.validation.Valid;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +28,6 @@ public class ReportController implements ReportControllerDocs {
             @Valid @RequestBody ProblemReportSubmitRequest request
     ){
         reportService.submitProblemReport(loginUser.getId(), request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(OK).build();
     }
 }

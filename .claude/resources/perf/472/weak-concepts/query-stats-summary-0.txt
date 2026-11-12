@@ -1,0 +1,33 @@
+# query-stats-summary-0 — weak-concepts
+
+상태: 0 = 아무것도 적용하지 않은 원본
+측정: VU 50 / 1m / 캐시 cold / 요청 1966건
+
+| # | 요청당 | calls | mean_ms | total_ms | 비중 | 행/호출 | 출처 | 하는 일 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 1.00 | 1966 | 563.81 | 1108458.43 | 100.0% | 7.0 | `ProblemSubmissionRepository.findWeakUnitsByUserId` | 한 유저의 `problem_submission`을 `problem`, `lesson`, `unit`, `chapter`와 조인해 유닛 단위로 오답 수와 풀이 문제 수를 집계하고 상위 7건을 읽는다 |
+| 2 | 1.00 | 1966 | 0.12 | 231.43 | 0.0% | 0.0 | `UserRepository.updateLastAccessedAt` (`LastAccessInterceptor.preHandle` → `UserAccessService.updateLastAccessed`) | 오늘 첫 접근이면 `users.last_accessed_at`을 갱신한다 |
+| 3 | 2.00 | 3932 | 0.04 | 151.13 | 0.0% | 1.0 | `AuthTokenProvider.parseUser` (`JwtAuthFilter:78` `getAuthUser`, `JwtAuthFilter:81` `parseUser`) | 토큰의 subject로 `users` 단건을 읽는다 |
+| 4 | 3.00 | 5898 | 0.02 | 109.39 | 0.0% | 0.0 | - | 트랜잭션 제어 |
+| 5 | 1.00 | 1974 | 0.00 | 3.36 | 0.0% | 0.0 | - | 트랜잭션 제어 |
+| 6 | 0.00 | 8 | 0.04 | 0.29 | 0.0% | 0.0 | `SeasonRepository.findCloseableActiveByNowForUpdate` | 종료 시각이 지난 ACTIVE 시즌을 잠금 조회한다 (스케줄러) |
+| 7 | 0.00 | 5 | 0.00 | 0.01 | 0.0% | 0.0 | - | 트랜잭션 제어 |
+| 8 | 0.00 | 3 | 0.00 | 0.00 | 0.0% | 0.0 | - | 트랜잭션 제어 |
+
+## 쿼리 원문
+
+[1] select u1_0.id,u1_0.title,c1_0.title,count(distinct case when ps1_0.is_correct=false then ps1_0.problem_id end),count(distinct ps1_0.problem_id) from problem_submission ps1_0 join problem p1_0 on p1_0.id=ps1_0.problem_id join lesson l1_0 on l1_0.id=p1_0.lesson_id join unit u1_0 on u1_0.id=l1_0.unit_id join chapter c1_0 on c1_0.id=u1_0.chapter_id where ps1_0.user_id=$1 group by u1_0.id,u1_0.title,c1_0.title having count(distinct case when ps1_0.is_correct=false then ps1_0.problem_id end)>0 order by ((1.0*count(distinct case when ps1_0.is_correct=false then ps1_0.problem_id end))/count(distinct ps1_0.problem_id)) desc,count(distinct case when ps1_0.is_correct=false then ps1_0.problem_id end) desc,u1_0.id fetch first $2 rows only
+
+[2] update users u1_0 set last_accessed_at=$1 where u1_0.id=$2 and (u1_0.last_accessed_at is null or u1_0.last_accessed_at<$3) and (u1_0.deleted_at IS NULL)
+
+[3] select u1_0.id,u1_0.created_at,u1_0.deleted_at,u1_0.email,u1_0.handle,u1_0.is_onboarded,u1_0.last_accessed_at,u1_0.level,u1_0.xp,u1_0.nickname,u1_0.profile_img_number,u1_0.provider_id,u1_0.role,u1_0.status,u1_0.updated_at from users u1_0 where u1_0.id=$1 and (u1_0.deleted_at IS NULL)
+
+[4] BEGIN READ ONLY
+
+[5] BEGIN
+
+[6] select s1_0.id,s1_0.ends_at,s1_0.season_key,s1_0.starts_at,s1_0.status,s1_0.tz from season s1_0 where s1_0.status=$2 and s1_0.ends_at<=$1 for no key update
+
+[7] COMMIT
+
+[8] ROLLBACK

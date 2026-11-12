@@ -1,11 +1,11 @@
 package gravit.code.auth.dto.response;
 
 import gravit.code.auth.domain.AccessToken;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ReissueResponse(
 
-        @NotNull
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String accessToken
 ) {
     public static ReissueResponse from(AccessToken accessToken) {

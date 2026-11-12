@@ -30,7 +30,8 @@ public class OidcConfig {
     @Bean
     public Map<String, JwtDecoder> jwtDecoderMap(
             JwtDecoder googleJwtDecoder,
-            JwtDecoder kakaoJwtDecoder) {
+            JwtDecoder kakaoJwtDecoder
+    ) {
         return Map.of(
                 "google", googleJwtDecoder,
                 "kakao", kakaoJwtDecoder

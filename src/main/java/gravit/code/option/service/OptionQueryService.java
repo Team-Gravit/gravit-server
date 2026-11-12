@@ -25,7 +25,7 @@ public class OptionQueryService {
                 .filter(p -> p.problemType() == ProblemType.OBJECTIVE)
                 .toList();
 
-        Map<Long, List<OptionResponse>> optionMap;
+        Map<Long, List<OptionResponse>> problemIdToOptions;
         if(!objectiveProblems.isEmpty()){
             List<Long> objectiveProblemIds = objectiveProblems.stream()
                     .map(ProblemDetailResponse::id)
@@ -33,11 +33,11 @@ public class OptionQueryService {
 
             List<OptionResponse> optionResponses = optionRepository.findAllByProblemIdIn(objectiveProblemIds);
 
-            optionMap = optionResponses.stream()
+            problemIdToOptions = optionResponses.stream()
                     .collect(Collectors.groupingBy(OptionResponse::problemId));
         } else {
-            optionMap = new HashMap<>();
+            problemIdToOptions = new HashMap<>();
         }
-        return optionMap;
+        return problemIdToOptions;
     }
 }

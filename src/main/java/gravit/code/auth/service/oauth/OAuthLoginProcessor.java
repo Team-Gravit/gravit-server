@@ -1,11 +1,15 @@
 package gravit.code.auth.service.oauth;
 
 import gravit.code.auth.domain.AccessToken;
+import gravit.code.auth.domain.AppleClient;
+import gravit.code.auth.domain.LoginClient;
 import gravit.code.auth.domain.RefreshToken;
+import gravit.code.auth.dto.internal.AppleLoginDto;
 import gravit.code.auth.dto.oauth.OAuthUserInfo;
 import gravit.code.auth.dto.response.LoginResponse;
 import gravit.code.auth.policy.AdminPromotionPolicy;
 import gravit.code.auth.service.AuthTokenProvider;
+import gravit.code.auth.service.oauth.apple.AppleCredentialService;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.User;
 import gravit.code.user.exception.AccountSoftDeletedException;
@@ -21,33 +25,47 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class OAuthLoginProcessor {
 
+    private final AppleCredentialService appleCredentialService;
+
     private final UserRepository userRepository;
+
     private final AuthTokenProvider authTokenProvider;
     private final RandomHandleGenerator handleGenerator;
     private final AdminPromotionPolicy adminPromotionPolicy;
 
     @Transactional
-    public LoginResponse process(OAuthUserInfo oAuthUserInfo) {
+    public LoginResponse process(
+            OAuthUserInfo oAuthUserInfo,
+            LoginClient client
+    ) {
         User user = findOrCreateUser(oAuthUserInfo);
-        boolean isOnboarded = user.isOnboarded();
 
-        AccessToken accessToken = authTokenProvider.generateAccessToken(user);
-        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user);
-
-        return LoginResponse.of(accessToken, refreshToken, isOnboarded);
+        return issueLoginResponse(user, client);
     }
 
     private User findOrCreateUser(OAuthUserInfo oAuthUserInfo) {
         String providerId = oAuthUserInfo.getProvider() + "_" + oAuthUserInfo.getProviderId();
 
         return userRepository.findByProviderId(providerId)
-                .map(u -> {  // 유저가 존재하면 삭제 여부 확인 후, admin 승격 가능성 확인
+                .map(u -> {
                     if(u.isDeleted()){
                         throw new AccountSoftDeletedException(u.getProviderId());
                     }
                     return promoteToAdminByWhitelist(u, oAuthUserInfo);
                 })
-                .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId)); // 유저가 존재하지 않으면 생성
+                .orElseGet(()-> registerNewUser(oAuthUserInfo, providerId));
+    }
+
+    private User promoteToAdminByWhitelist(
+            User user,
+            OAuthUserInfo oAuthUserInfo
+    ) {
+        log.info("oAuthUserInfo.getEmail() : {}", oAuthUserInfo.getEmail());
+        if (user.getRole() != Role.ADMIN && adminPromotionPolicy.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {
+            user.changeRole(Role.ADMIN);
+            log.info("화이트리스트 일치: USER → ADMIN 승격 (userId={})", user.getId());
+        }
+        return user;
     }
 
     private User registerNewUser(
@@ -72,16 +90,38 @@ public class OAuthLoginProcessor {
         return user;
     }
 
-    private User promoteToAdminByWhitelist(
+    private LoginResponse issueLoginResponse(
             User user,
-            OAuthUserInfo oAuthUserInfo
+            LoginClient client
     ) {
-        log.info("oAuthUserInfo.getEmail() : {}", oAuthUserInfo.getEmail());
-        if (user.getRole() != Role.ADMIN && adminPromotionPolicy.shouldPromoteToAdmin(oAuthUserInfo.getEmail())) {
-            user.changeRole(Role.ADMIN);
-            log.info("화이트리스트 일치: USER → ADMIN 승격 (userId={})", user.getId());
+        boolean isOnboarded = user.isOnboarded();
+
+        AccessToken accessToken = authTokenProvider.generateAccessToken(user);
+        RefreshToken refreshToken = authTokenProvider.generateRefreshToken(user, client);
+
+        return LoginResponse.of(accessToken, refreshToken, isOnboarded, user.getRole());
+    }
+
+    @Transactional
+    public LoginResponse processApple(AppleLoginDto appleLoginDto) {
+        User user = findOrCreateUser(appleLoginDto.userInfo());
+
+        saveAppleRefreshToken(user, appleLoginDto.refreshToken(), appleLoginDto.client());
+
+        return issueLoginResponse(user, LoginClient.from(appleLoginDto.client()));
+    }
+
+    private void saveAppleRefreshToken(
+            User user,
+            String appleRefreshToken,
+            AppleClient client
+    ) {
+        if (appleRefreshToken == null || appleRefreshToken.isBlank()) {
+            log.warn("Apple 토큰 응답에 refresh_token 이 없어 저장하지 않습니다. userId={}, client={}", user.getId(), client);
+            return;
         }
-        return user;
+
+        appleCredentialService.save(user.getId(), appleRefreshToken, client);
     }
 
 }

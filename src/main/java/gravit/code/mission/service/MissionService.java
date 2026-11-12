@@ -1,30 +1,35 @@
 package gravit.code.mission.service;
 
-import gravit.code.global.event.badge.MissionCompletedEvent;
-import gravit.code.global.exception.domain.CustomErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
 import gravit.code.mission.domain.Mission;
-import gravit.code.mission.domain.MissionType;
-import gravit.code.mission.domain.RandomMissionGenerator;
+import gravit.code.mission.domain.MissionStatus;
+import gravit.code.mission.domain.UserMission;
+import gravit.code.mission.domain.WeightedMissionPicker;
 import gravit.code.mission.dto.event.FollowMissionEvent;
+import gravit.code.mission.dto.internal.AssignedMissionDto;
 import gravit.code.mission.dto.response.MissionDetailResponse;
-import gravit.code.mission.dto.response.MissionSummaryResponse;
 import gravit.code.mission.repository.MissionRepository;
+import gravit.code.mission.repository.UserMissionRepository;
 import gravit.code.user.domain.User;
 import gravit.code.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
-/**
- * TODO 리팩토링 필요
- */
+import static gravit.code.global.exception.domain.CustomErrorCode.MISSION_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MissionService {
@@ -32,108 +37,148 @@ public class MissionService {
     private final LessonSubmissionQueryService lessonSubmissionQueryService;
 
     private final MissionRepository missionRepository;
+    private final UserMissionRepository userMissionRepository;
     private final UserRepository userRepository;
 
-    private final ApplicationEventPublisher publisher;
+    private final WeightedMissionPicker weightedMissionPicker;
+
+    private final Clock clock;
 
     @Transactional
-    public void reassignMission(){
-        int size = 10;
-        int page = 0;
+    public MissionDetailResponse getMissionDetail(long userId) {
+        LocalDate today = LocalDate.now(clock);
 
-        while(true){
-            Pageable pageable = PageRequest.of(page, size);
-            List<Mission> missions = missionRepository.findAll(pageable).getContent();
+        AssignedMissionDto assigned = userMissionRepository.findAssignedMission(userId, today)
+                .orElseGet(() -> {
+                    assignToday(userId, today);
+                    return findTodayMission(userId);
+                });
 
-            if(missions.isEmpty())
-                break;
-
-            for(Mission mission : missions){
-                mission.reassignMission();
-            }
-
-            page++;
-        }
+        return MissionDetailResponse.of(assigned.mission(), assigned.userMission());
     }
 
-    @Transactional(readOnly = true)
-    public MissionSummaryResponse getMissionSummary(long userId){
-        return missionRepository.findMissionSummaryByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
-    }
-
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleLessonMission(
             long userId,
             long lessonId,
             int learningTime,
             int accuracy
-    ){
-        Mission mission = missionRepository.findByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
+    ) {
+        AssignedMissionDto assigned = findTodayMission(userId);
+        UserMission userMission = assigned.userMission();
+        Mission mission = assigned.mission();
 
-        // 이미 미션을 완료했다면 처리 종료
-        if(mission.isCompleted())
+        if (userMission.isCompleted())
             return;
 
-        MissionType missionType = mission.getMissionType();
-
-        int tryCount = lessonSubmissionQueryService.getLessonSubmissionCount(userId,lessonId);
-
-        if(tryCount > 1)
+        if (lessonSubmissionQueryService.getLessonSubmissionTryCount(userId, lessonId) > 1)
             return;
 
-        // 미션 타입에 맞게 진행도 업데이트
-        if (missionType.name().startsWith("COMPLETE_LESSON")) {
-            mission.updateCompleteLessonProgress();
-        } else if (missionType.name().startsWith("PERFECT_LESSON") && accuracy == 100) {
-            mission.updatePerfectLessonProgress();
-        } else if (missionType.name().startsWith("LEARNING_MINUTES")) {
-            mission.updateLearningMinutesProgress(learningTime);
-        }
+        int increment = mission.calculateLessonIncrement(accuracy, learningTime);
+        if (increment == 0)
+            return;
 
-        // 진행률 체크 후 미션 완료 상태 업데이트
-        mission.checkAndUpdateCompletionStatus();
+        userMission.addProgress(increment);
 
-        // 미션을 완료했다면, 경험치 지급
-        if (mission.isCompleted()){
-            awardMissionXp(userId, mission.getMissionType().getAwardXp());
-            publisher.publishEvent(new MissionCompletedEvent(userId));
-        }
+        completeIfAchieved(userMission, mission);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFollowMission(FollowMissionEvent followMissionDto) {
-        Mission mission = missionRepository.findByUserId(followMissionDto.userId())
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
+        AssignedMissionDto assigned = findTodayMission(followMissionDto.userId());
+        UserMission userMission = assigned.userMission();
+        Mission mission = assigned.mission();
 
-        if (mission.isCompleted()
-                || !mission.getMissionType().name().equals("FOLLOW_NEW_FRIEND"))
+        if (userMission.isCompleted())
             return;
 
-        mission.updateFollowProgress();
+        int increment = mission.calculateFollowIncrement();
+        if (increment == 0)
+            return;
 
-        mission.checkAndUpdateCompletionStatus();
+        userMission.addProgress(increment);
 
-        awardMissionXp(followMissionDto.userId(), mission.getMissionType().getAwardXp());
+        completeIfAchieved(userMission, mission);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createMission(long userId) {
+        assignToday(userId, LocalDate.now(clock));
     }
 
     @Transactional
-    public void createMission(long userId) {
-        Mission mission = Mission.create(
-                RandomMissionGenerator.getRandomMissionType(),
-                userId
-        );
+    public long assignChunk(
+            LocalDate assignedDate,
+            long lastUserId,
+            int chunkSize
+    ) {
+        List<Long> userIds = userRepository.findOnboardedIdsAfter(lastUserId, PageRequest.of(0, chunkSize));
+        if (userIds.isEmpty())
+            return lastUserId;
 
-        missionRepository.save(mission);
+        Set<Long> alreadyAssignedUserIds = userMissionRepository.findAssignedUserIds(assignedDate, userIds);
+
+        List<Mission> activeMissions = missionRepository.findAllByStatus(MissionStatus.ACTIVE);
+
+        int insertedCount = 0;
+        for (Long userId : userIds) {
+            if (alreadyAssignedUserIds.contains(userId))
+                continue;
+
+            Mission picked = weightedMissionPicker.pick(activeMissions);
+            insertedCount += userMissionRepository.insertIfAbsent(
+                    userId,
+                    picked.getId(),
+                    assignedDate,
+                    LocalDateTime.now(clock)
+            );
+        }
+
+        long newLastUserId = userIds.get(userIds.size() - 1);
+        log.info("미션 배정 청크 완료 - 조회 유저 수: {}, 신규 삽입 수: {}, 마지막 유저 id: {}",
+                userIds.size(), insertedCount, newLastUserId);
+
+        return newLastUserId;
     }
 
-    @Transactional(readOnly = true)
-    public MissionDetailResponse getMissionDetail(long userId) {
-        Mission mission = missionRepository.findByUserId(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.MISSION_NOT_FOUND));
+    private void assignToday(
+            long userId,
+            LocalDate assignedDate
+    ) {
+        if (userMissionRepository.existsByUserIdAndAssignedDate(userId, assignedDate))
+            return;
 
-        return MissionDetailResponse.from(mission);
+        List<Mission> activeMissions = missionRepository.findAllByStatus(MissionStatus.ACTIVE);
+        Mission picked = weightedMissionPicker.pick(activeMissions);
+
+        userMissionRepository.insertIfAbsent(
+                userId,
+                picked.getId(),
+                assignedDate,
+                LocalDateTime.now(clock)
+        );
+    }
+
+    private AssignedMissionDto findTodayMission(long userId) {
+        return userMissionRepository.findAssignedMission(userId, LocalDate.now(clock))
+                .orElseThrow(() -> new RestApiException(MISSION_NOT_FOUND));
+    }
+
+    private void completeIfAchieved(
+            UserMission userMission,
+            Mission mission
+    ) {
+        if (!mission.isAchieved(userMission.getProgressCount()))
+            return;
+
+        int completed = userMissionRepository.completeIfNotCompleted(
+                userMission.getId(),
+                LocalDateTime.now(clock)
+        );
+        if (completed == 0)
+            return;
+
+        awardMissionXp(userMission.getUserId(), mission.getAwardXp());
     }
 
     private void awardMissionXp(
@@ -141,11 +186,9 @@ public class MissionService {
             int awardXp
     ) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RestApiException(CustomErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
         user.getLevel().updateXp(awardXp);
         userRepository.save(user);
     }
-
-
 }

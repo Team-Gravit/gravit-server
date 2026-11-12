@@ -5,6 +5,7 @@ import gravit.code.league.dto.response.LeagueDetailResponse;
 import gravit.code.learning.dto.response.LearningDetailResponse;
 import gravit.code.mission.dto.response.MissionDetailResponse;
 import gravit.code.unit.dto.response.RecommendedUnitResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -12,13 +13,28 @@ import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record MainPageResponse(
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         int profileImgNumber,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String nickname,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         UserLevelDetailResponse userLevelDetailResponse,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         LeagueDetailResponse leagueDetailResponse,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         LearningDetailResponse learningDetailResponse,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<RecommendedUnitResponse> recommendedUnitResponses,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         WeeklyLearningRecordResponse weeklyLearningRecordResponse,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         MissionDetailResponse missionDetailResponse
 ) {
     public static MainPageResponse of(

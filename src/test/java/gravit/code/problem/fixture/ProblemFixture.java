@@ -6,6 +6,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class ProblemFixture {
 
+    public static Problem 새_주관식_문제(
+            String content,
+            long lessonId
+    ) {
+        return Problem.create(ProblemType.SUBJECTIVE, "지시문", content, lessonId);
+    }
+
     public static Problem 기본_객관식_문제(long lessonId) {
         Problem problem = Problem.create(
                 ProblemType.OBJECTIVE,

@@ -26,6 +26,36 @@ public class AsyncConfig {
         return executor;
     }
 
+    @Bean(name = "interviewGradingAsync")
+    public Executor interviewGradingAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(100);
+        executor.setKeepAliveSeconds(60);
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setThreadNamePrefix("InterviewGradingAsync - ");
+        executor.initialize();
+
+        return executor;
+    }
+
+    @Bean(name = "interviewTranscriptionAsync")
+    public Executor interviewTranscriptionAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(100);
+        executor.setKeepAliveSeconds(60);
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setThreadNamePrefix("InterviewTranscriptionAsync - ");
+        executor.initialize();
+
+        return executor;
+    }
+
     @Bean(name = "missionAsync")
     public Executor missionAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -36,21 +66,6 @@ public class AsyncConfig {
         executor.setKeepAliveSeconds(60);
         executor.setAllowCoreThreadTimeOut(true);
         executor.setThreadNamePrefix("MissionAsync - ");
-        executor.initialize();
-
-        return executor;
-    }
-
-    @Bean(name = "badgeAsync")
-    public Executor badgeAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(4);
-        executor.setQueueCapacity(20);
-        executor.setKeepAliveSeconds(60);
-        executor.setAllowCoreThreadTimeOut(true);
-        executor.setThreadNamePrefix("BadgeAsync - ");
         executor.initialize();
 
         return executor;

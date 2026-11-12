@@ -20,7 +20,8 @@ public class LoginUser implements OAuth2User {
             Long id,
             String provider,
             Map<String, Object> attributes,
-            Collection<? extends GrantedAuthority> authorities) {
+            Collection<? extends GrantedAuthority> authorities
+    ) {
         this.id = id;
         this.provider = provider;
         this.attributes = attributes;

@@ -10,13 +10,15 @@ import java.util.List;
 public record AnswerResponse(
         @Schema(
                 description = "정답 내용",
-                example = "2"
+                example = "2",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
         List<String> contents,
 
         @Schema(
                 description = "정답 해설",
-                example = "큐는 FIFO 구조로 먼저 들어간 원소가 먼저 나옵니다."
+                example = "큐는 FIFO 구조로 먼저 들어간 원소가 먼저 나옵니다.",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
         String explanation
 ) {

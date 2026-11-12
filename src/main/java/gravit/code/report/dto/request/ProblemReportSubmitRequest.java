@@ -1,6 +1,6 @@
 package gravit.code.report.dto.request;
 
-import gravit.code.global.enums.Enum;
+import gravit.code.global.annotation.EnumValidation;
 import gravit.code.report.domain.ReportType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +14,7 @@ public record ProblemReportSubmitRequest(
                 example = "TYPO_ERROR/CONTENT_ERROR/ANSWER_ERROR/OTHER_ERROR"
         )
         @NotBlank(message = "신고 유형이 비어있습니다.")
-        @Enum(target = ReportType.class, message = "유효하지 않은 신고 유형입니다.")
+        @EnumValidation(target = ReportType.class, message = "유효하지 않은 신고 유형입니다.")
         String reportType,
 
         @Schema(

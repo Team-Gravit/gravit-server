@@ -4,8 +4,10 @@ import gravit.code.auth.domain.LoginUser;
 import gravit.code.friend.dto.internal.SearchUserDto;
 import gravit.code.friend.dto.response.FollowCountsResponse;
 import gravit.code.friend.dto.response.FollowerResponse;
+import gravit.code.friend.dto.response.FollowerSliceResponse;
 import gravit.code.friend.dto.response.FollowingResponse;
 import gravit.code.friend.dto.response.FriendResponse;
+import gravit.code.friend.dto.response.SearchUserSliceResponse;
 import gravit.code.global.dto.response.SliceResponse;
 import gravit.code.global.exception.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -73,10 +75,11 @@ public interface FriendControllerDocs {
             )
     })
     @PostMapping("/following/{followeeId}")
-    ResponseEntity<FriendResponse> following(
+    ResponseEntity<FriendResponse> follow(
             @Parameter(description = "팔로잉할 대상 유저 ID")
             @PathVariable("followeeId") Long followeeId,
-            @AuthenticationPrincipal LoginUser loginUser);
+            @AuthenticationPrincipal LoginUser loginUser
+    );
 
 
     @Operation(summary = "언팔로잉", description = "다른 사용자에 대한 팔로잉을 취소합니다<br>" +
@@ -105,10 +108,11 @@ public interface FriendControllerDocs {
             )
     })
     @PostMapping("/unfollowing/{followeeId}")
-    ResponseEntity<Void> unFollowing(
+    ResponseEntity<Void> unfollow(
             @Parameter(description = "언팔로잉할 대상 유저 ID")
             @PathVariable("followeeId") Long followeeId,
-            @AuthenticationPrincipal LoginUser loginUser);
+            @AuthenticationPrincipal LoginUser loginUser
+    );
 
     @Operation(summary = "팔로잉 거절 ", description = "다른 사용자가 나에게 보낸 팔로잉을 거절합니다.<br>" +
             "🔐 <strong>Jwt 필요</strong><br>")
@@ -139,16 +143,47 @@ public interface FriendControllerDocs {
     ResponseEntity<Void> rejectFollowing(
             @Parameter(description = "나를 팔로잉한 대상 유저 ID")
             @PathVariable("followerId") Long followerId,
-            @AuthenticationPrincipal LoginUser loginUser);
+            @AuthenticationPrincipal LoginUser loginUser
+    );
 
 
     @Operation(summary = "팔로워 목록 조회", description = "현재 사용자를 팔로우하고 있는 사용자 목록을 조회합니다<br>" +
             "🔐 <strong>Jwt 필요</strong><br>" +
             "<strong>Slice 페이징을 적용합니다</strong><br>" +
-            "쿼리 파라미터로 page 값을 보내주세요(0부터 시작)"
+            "쿼리 파라미터로 page 값을 보내주세요(0부터 시작)<br>" +
+            "<strong>isFollowing</strong>: 내가 해당 팔로워를 팔로우하고 있으면 true (맞팔 여부)"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공"),
+            @ApiResponse(responseCode = "200", description = "✅ 팔로워 목록 조회 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = FollowerSliceResponse.class),
+                            examples = @ExampleObject(
+                                    name = "성공 예시",
+                                    value = """
+                                            {
+                                              "hasNextPage": false,
+                                              "contents": [
+                                                {
+                                                  "id": 1,
+                                                  "nickname": "김나영",
+                                                  "profileImgNumber": 2,
+                                                  "handle": "@1235cws",
+                                                  "isFollowing": false
+                                                },
+                                                {
+                                                  "id": 2,
+                                                  "nickname": "이철수",
+                                                  "profileImgNumber": 3,
+                                                  "handle": "@iron99",
+                                                  "isFollowing": true
+                                                }
+                                              ]
+                                            }
+                                            """
+                                    )
+                    )
+            ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -163,7 +198,8 @@ public interface FriendControllerDocs {
     @GetMapping("/follower")
     ResponseEntity<SliceResponse<FollowerResponse>> getFollowers(
             @AuthenticationPrincipal LoginUser loginUser,
-            @RequestParam int page
+            @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0")
+            @RequestParam(defaultValue = "0") int page
     );
 
 
@@ -188,7 +224,8 @@ public interface FriendControllerDocs {
     @GetMapping("/following")
     ResponseEntity<SliceResponse<FollowingResponse>> getFollowings(
             @AuthenticationPrincipal LoginUser loginUser,
-            @RequestParam int page
+            @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0")
+            @RequestParam(defaultValue = "0") int page
     );
 
 
@@ -283,7 +320,7 @@ public interface FriendControllerDocs {
                     description = "✅ 검색 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = SliceResponse.class),
+                            schema = @Schema(implementation = SearchUserSliceResponse.class),
                             examples = @ExampleObject(
                                     name = "검색 결과 예시",
                                     value = """
@@ -316,10 +353,10 @@ public interface FriendControllerDocs {
                     )
             )
     })
-    @GetMapping
+    @GetMapping("/search")
     ResponseEntity<SliceResponse<SearchUserDto>> search(
             @AuthenticationPrincipal LoginUser loginUser,
-            @Parameter(description = "검색할 핸들 문자열 (선두 '@' 허용, 대소문자 무시)") @RequestParam String handleQuery,
+            @Parameter(description = "검색어 (선두가 '@'이면 핸들, 그 외에는 닉네임으로 검색)") @RequestParam String queryText,
             @Parameter(description = "0부터 시작하는 페이지 인덱스", example = "0") @RequestParam(defaultValue = "0") int page
     );
 }

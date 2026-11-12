@@ -8,12 +8,29 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHistory, Long> {
 
+    @Query("""
+            SELECT h
+            FROM UserLeagueHistory h
+            JOIN FETCH h.season s
+            JOIN FETCH h.finalLeague l
+            WHERE h.user.id = :userId
+            ORDER BY s.startsAt ASC
+    """)
+    List<UserLeagueHistory> findAllByUserIdOrderBySeason(@Param("userId") long userId);
+
+    long countByUserId(long userId);
+
     @Modifying(clearAutomatically = false, flushAutomatically = true)
-    @Query("delete from UserLeagueHistory lh where lh.season = :season")
+    @Query("""
+            delete
+            from UserLeagueHistory lh
+            where lh.season = :season
+    """)
     int deleteBySeasonId(@Param("season") Season season);
 
     @Modifying(clearAutomatically = false, flushAutomatically = true)
@@ -27,14 +44,14 @@ public interface UserLeagueHistoryRepository extends JpaRepository<UserLeagueHis
                 ul.league_id AS final_league_id,
                 DENSE_RANK() OVER (
                     PARTITION BY ul.league_id
-                    ORDER BY ul.league_point DESC, ul.updated_at ASC, ul.user_id ASC
+                    ORDER BY ul.league_point DESC, ul.user_id ASC
                 ) AS final_rank,
                 ul.league_point AS final_lp,
                 :nowKst AS created_at,
                 :nowKst AS updated_at
             FROM user_league ul
             WHERE ul.season_id = :seasonId
-            """, nativeQuery = true)
+    """, nativeQuery = true)
     int insertFromCurrent(
             @Param("seasonId") long seasonId,
             @Param("nowKst") LocalDateTime nowKst

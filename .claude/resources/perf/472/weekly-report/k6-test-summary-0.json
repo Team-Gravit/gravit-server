@@ -1,0 +1,46 @@
+{
+  "phase": "measure",
+  "target": "weekly-report",
+  "endpoint": "GET /api/v1/my-pages/learning/weekly-report",
+  "condition": {
+    "vus": 50,
+    "duration": "1m",
+    "cache": "cold",
+    "user_id_start": 1001,
+    "user_count": 1000
+  },
+  "requests": 61306,
+  "rps": 510.87112351348134,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 61306,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 61306,
+      "fails": 0
+    },
+    {
+      "name": "이번 주 학습량이 실려 있다",
+      "passes": 61306,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 42.78,
+    "p95": 203.6272499999999,
+    "p99": 602.2159999999999,
+    "max": 4305.034
+  },
+  "waiting_ms": {
+    "med": 42.63,
+    "p95": 203.38974999999996,
+    "p99": 598.6675999999997,
+    "max": 4304.763
+  },
+  "bytes_received": 33025341
+}

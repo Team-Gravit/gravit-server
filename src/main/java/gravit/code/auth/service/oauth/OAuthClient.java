@@ -15,4 +15,9 @@ public interface OAuthClient {
             String uri,
             String accessToken
     );
+
+    void revokeToken(
+            String revokeUri,
+            MultiValueMap<String, String> revokeRequest
+    );
 }

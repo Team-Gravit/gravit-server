@@ -5,6 +5,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class LessonFixture {
 
+    public static Lesson 새_레슨(
+            String title,
+            long unitId
+    ) {
+        return Lesson.create(title, unitId);
+    }
+
     public static Lesson 기본_레슨(long unitId) {
         Lesson lesson = Lesson.create("프로세스와 스레드", unitId);
         ReflectionTestUtils.setField(lesson, "id", 1L);

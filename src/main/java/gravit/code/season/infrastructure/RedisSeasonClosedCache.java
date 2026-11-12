@@ -10,17 +10,19 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class RedisSeasonClosedCache implements SeasonClosedCache {
+
+    public static final String LAST_CLOSED_SEASON_ID_KEY = "season:lastClosedSeasonId";
+
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String KEY = "season:lastClosedSeasonId";
 
     @Override
     public Optional<Long> getLastClosedSeasonId() {
-        String value = redisTemplate.opsForValue().get(KEY);
+        String value = redisTemplate.opsForValue().get(LAST_CLOSED_SEASON_ID_KEY);
         return value == null ? Optional.empty() : Optional.of(Long.parseLong(value));
     }
 
     @Override
     public void setLastClosedSeasonId(long seasonId) {
-        redisTemplate.opsForValue().set(KEY, String.valueOf(seasonId));
+        redisTemplate.opsForValue().set(LAST_CLOSED_SEASON_ID_KEY, String.valueOf(seasonId));
     }
 }

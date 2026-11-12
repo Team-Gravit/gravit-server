@@ -29,7 +29,7 @@ public class Friend extends BaseEntity {
     private Long followeeId;
 
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Friend(
             long followerId,
             long followeeId

@@ -1,0 +1,52 @@
+                                                                                        QUERY PLAN                                                                                        
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop Left Join  (cost=6.74..327.31 rows=2 width=64) (actual time=1.463..3.344 rows=30 loops=1)
+   Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, CASE WHEN (b1_0.id IS NOT NULL) THEN true ELSE false END
+   Inner Unique: true
+   Buffers: shared hit=440
+   ->  Nested Loop  (cost=6.32..324.39 rows=2 width=63) (actual time=1.305..3.113 rows=30 loops=1)
+         Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content
+         Buffers: shared hit=320
+         ->  Seq Scan on public.unit u1_0  (cost=0.00..2.83 rows=1 width=8) (actual time=0.030..0.036 rows=1 loops=1)
+               Output: u1_0.id, u1_0.chapter_id, u1_0.description, u1_0.title
+               Filter: (u1_0.id = 900002)
+               Rows Removed by Filter: 65
+               Buffers: shared hit=2
+         ->  Nested Loop  (cost=6.32..321.54 rows=2 width=71) (actual time=1.272..3.068 rows=30 loops=1)
+               Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, l1_0.unit_id
+               Inner Unique: true
+               Buffers: shared hit=318
+               ->  Hash Join  (cost=5.90..185.35 rows=60 width=71) (actual time=1.087..2.734 rows=60 loops=1)
+                     Output: p1_0.id, p1_0.problem_type, p1_0.instruction, p1_0.content, l1_0.unit_id
+                     Inner Unique: true
+                     Hash Cond: (p1_0.lesson_id = l1_0.id)
+                     Buffers: shared hit=95
+                     ->  Seq Scan on public.problem p1_0  (cost=0.00..161.00 rows=6900 width=71) (actual time=0.005..0.817 rows=6900 loops=1)
+                           Output: p1_0.id, p1_0.content, p1_0.instruction, p1_0.lesson_id, p1_0.problem_type
+                           Buffers: shared hit=92
+                     ->  Hash  (cost=5.88..5.88 rows=2 width=16) (actual time=0.047..0.048 rows=2 loops=1)
+                           Output: l1_0.id, l1_0.unit_id
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=3
+                           ->  Seq Scan on public.lesson l1_0  (cost=0.00..5.88 rows=2 width=16) (actual time=0.026..0.033 rows=2 loops=1)
+                                 Output: l1_0.id, l1_0.unit_id
+                                 Filter: (l1_0.unit_id = 900002)
+                                 Rows Removed by Filter: 228
+                                 Buffers: shared hit=3
+               ->  Index Scan using ix_wrong_answered_note_user_problem on public.wrong_answered_note wan1_0  (cost=0.42..2.27 rows=1 width=8) (actual time=0.005..0.005 rows=0 loops=60)
+                     Output: wan1_0.problem_id
+                     Index Cond: ((wan1_0.user_id = 1500) AND (wan1_0.problem_id = p1_0.id))
+                     Filter: (wan1_0.resolved_at IS NULL)
+                     Rows Removed by Filter: 0
+                     Buffers: shared hit=223
+   ->  Index Scan using ix_bookmark_user_problem on public.bookmark b1_0  (cost=0.42..1.46 rows=1 width=16) (actual time=0.007..0.007 rows=1 loops=30)
+         Output: b1_0.id, b1_0.created_at, b1_0.problem_id, b1_0.user_id
+         Index Cond: ((b1_0.user_id = 1500) AND (b1_0.problem_id = p1_0.id))
+         Buffers: shared hit=120
+ Query Identifier: 4936570048673794878
+ Planning:
+   Buffers: shared hit=325
+ Planning Time: 6.753 ms
+ Execution Time: 3.617 ms
+(48 rows)
+

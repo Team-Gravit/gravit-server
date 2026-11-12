@@ -1,0 +1,65 @@
+{
+  "phase": "measure",
+  "target": "wrong-answered-notes",
+  "endpoint": "GET /api/v1/wrong-answered-notes/{unitId}",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "cold (measure 직전 FLUSHDB)",
+    "db_cache": "제어하지 않음. FLUSHDB는 PostgreSQL shared_buffers와 OS page cache를 비우지 않는다",
+    "target_unit_id": 900002,
+    "expected_problems_per_request": 30,
+    "user_id_start": 1001,
+    "user_count": 1000,
+    "baseline_precondition": "V38 bookmark (user_id, problem_id) UNIQUE 인덱스가 이미 적용된 상태다. 이 쿼리의 LEFT JOIN Bookmark가 그 인덱스를 탄다"
+  },
+  "requests": 45275,
+  "rps": 377.23077533234846,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 45275,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 45275,
+      "fails": 0
+    },
+    {
+      "name": "problems 30건이 실려 있다",
+      "passes": 45275,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 90.641,
+    "p95": 204.7070999999999,
+    "p99": 372.14019999999977,
+    "max": 1048.058
+  },
+  "waiting_ms": {
+    "med": 90.497,
+    "p95": 204.53359999999998,
+    "p99": 372.07953999999984,
+    "max": 1047.854
+  },
+  "bytes_received": 658397163,
+  "delta_vs_prev": {
+    "from": "k6-test-summary-0.json",
+    "requests": { "before": 45872, "after": 45275 },
+    "rps": { "before": 382.23845109833474, "after": 377.23077533234846 },
+    "duration_med_ms": { "before": 97.561, "after": 90.641 },
+    "duration_p95_ms": { "before": 192.63904999999988, "after": 204.7070999999999 },
+    "duration_p99_ms": { "before": 253.12869999999998, "after": 372.14019999999977 },
+    "duration_max_ms": { "before": 496.084, "after": 1048.058 },
+    "failed_rate": { "before": 0, "after": 0 },
+    "checks_rate": { "before": 1, "after": 1 },
+    "bytes_received": { "before": 667078851, "after": 658397163 }
+  }
+}

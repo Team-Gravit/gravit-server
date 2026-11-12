@@ -1,0 +1,36 @@
+name: PR 머지 디스코드 알림
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - dev
+
+jobs:
+  notify:
+    name: 디스코드 알림 전송
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions: {}
+
+    steps:
+      - name: 디스코드 알림 전송
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TITLE: ${{ github.event.pull_request.title }}
+          URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          payload=$(jq -n \
+            --arg title "$TITLE" --arg url "$URL" \
+            '{
+              content: "<@&1517047746580713512> <@&1517048706992443496> ✅ PR이 Dev 서버에 반영되었습니다.",
+              allowed_mentions: { parse: ["roles"] },
+              embeds: [{
+                title: $title,
+                url: $url
+              }]
+            }')
+          curl -sS --fail-with-body \
+            -H "Content-Type: application/json" \
+            -d "$payload" "$WEBHOOK"

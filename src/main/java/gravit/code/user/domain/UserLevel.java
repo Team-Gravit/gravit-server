@@ -1,15 +1,20 @@
 package gravit.code.user.domain;
 
+import gravit.code.global.util.DecimalRounding;
 import gravit.code.user.dto.response.UserLevelDetailResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class UserLevel {
+
+    private static final double MAX_RATE = 100.0;
 
     @Column(name = "level", nullable = false)
     private int level;
@@ -17,12 +22,23 @@ public class UserLevel {
     @Column(name = "xp", nullable = false)
     private int xp;
 
-    public UserLevel(
+    @Builder(access = AccessLevel.PRIVATE)
+    private UserLevel(
             int level,
             int xp
     ) {
         this.level = level;
         this.xp = xp;
+    }
+
+    public static UserLevel create(
+            int level,
+            int xp
+    ) {
+        return UserLevel.builder()
+                .level(level)
+                .xp(xp)
+                .build();
     }
 
     public void updateXp(int xp){
@@ -31,7 +47,9 @@ public class UserLevel {
     }
 
     public UserLevelDetailResponse getUserLevelDetail() {
-        int maxXp = (this.level == 10) ? this.xp : getMaxXp(this.level);
+        Level currentLevel = Level.fromLevel(this.level);
+        int maxXp = currentLevel.isMax() ? this.xp : currentLevel.getEndXp();
+
         return UserLevelDetailResponse.of(
                 this.level,
                 this.xp,
@@ -41,70 +59,17 @@ public class UserLevel {
     }
 
     private void updateLevel(int totalXp){
-        this.level = calculateLevel(totalXp);
+        this.level = Level.fromXp(totalXp).getLevel();
     }
 
-    private Integer calculateLevel(Integer totalXp){
-        if(totalXp < 100) return 1;
-        if(totalXp < 200) return 2;
-        if(totalXp < 400) return 3;
-        if(totalXp < 700) return 4;
-        if(totalXp < 1100) return 5;
-        if(totalXp < 1600) return 6;
-        if(totalXp < 2200) return 7;
-        if(totalXp < 2900) return 8;
-        if(totalXp < 3700) return 9;
-        else return 10;
-    }
-
-    public double calculateLevelRate(int xp){
-        int levelStart;
-        int levelEnd;
-
-        if(xp < 100) {
-            levelStart = 0;
-            levelEnd = 100;
-        } else if(xp < 200) {
-            levelStart = 100;
-            levelEnd = 200;
-        } else if(xp < 400) {
-            levelStart = 200;
-            levelEnd = 400;
-        } else if(xp < 700) {
-            levelStart = 400;
-            levelEnd = 700;
-        } else if(xp < 1100) {
-            levelStart = 700;
-            levelEnd = 1100;
-        } else if(xp < 1600) {
-            levelStart = 1100;
-            levelEnd = 1600;
-        } else if(xp < 2200) {
-            levelStart = 1600;
-            levelEnd = 2200;
-        } else if(xp < 2900) {
-            levelStart = 2200;
-            levelEnd = 2900;
-        } else if(xp < 3700) {
-            levelStart = 2900;
-            levelEnd = 3700;
-        } else {
-            return 100.0;
+    private double calculateLevelRate(int xp){
+        Level currentLevel = Level.fromXp(xp);
+        if (currentLevel.isMax()) {
+            return MAX_RATE;
         }
 
-        double rate = ((double)(xp - levelStart) / (levelEnd - levelStart)) * 100;
-        return Math.round(rate * 10) / 10.0;
-    }
-
-    private int getMaxXp(int level){
-        if(level == 1) return 100;
-        if(level == 2) return 200;
-        if(level == 3) return 400;
-        if(level == 4) return 700;
-        if(level == 5) return 1100;
-        if(level == 6) return 1600;
-        if(level == 7) return 2200;
-        if(level == 8) return 2900;
-        return 3700;
+        int startXp = currentLevel.getStartXp();
+        double rate = ((double)(xp - startXp) / (currentLevel.getEndXp() - startXp)) * MAX_RATE;
+        return DecimalRounding.roundToFirstDecimal(rate);
     }
 }

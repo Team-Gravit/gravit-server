@@ -1,0 +1,43 @@
+package gravit.code.global.config;
+
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+@Profile("!test")
+@Configuration
+public class FcmConfig {
+
+    @Value("${firebase.config.path}")
+    private String configPath;
+
+    @Bean
+    public FirebaseApp firebaseApp() throws IOException {
+        if (!FirebaseApp.getApps().isEmpty()) {
+            return FirebaseApp.getInstance();
+        }
+
+        ClassPathResource resource = new ClassPathResource(configPath);
+        try (InputStream credentialsStream = resource.getInputStream()) {
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(credentialsStream))
+                    .build();
+
+            return FirebaseApp.initializeApp(options);
+        }
+    }
+
+    @Bean
+    public FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp) {
+        return FirebaseMessaging.getInstance(firebaseApp);
+    }
+}

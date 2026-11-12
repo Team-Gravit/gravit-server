@@ -30,18 +30,13 @@ public class LearningProgressRateService {
         return Math.floor(progressRate);
     }
 
-    @Transactional(readOnly = true)
-    public double getUnitProgress(
-            long unitId,
-            long userId
+    public double calculateProgressRate(
+            long solvedLessonCount,
+            long totalLessonCount
     ) {
-        int solvedLessonCount = lessonSubmissionRepository.countSolvedLessonByUnitIdAndUserId(unitId, userId);
-
         if(solvedLessonCount == 0) {
             return 0.0;
         }
-
-        int totalLessonCount = lessonRepository.countTotalLessonByUnitId(unitId);
 
         double progressRate = ((double) solvedLessonCount / totalLessonCount) * 100;
         return Math.floor(progressRate);
@@ -51,7 +46,7 @@ public class LearningProgressRateService {
     public int getPlanetConquestRate(
             long userId
     ) {
-        long solvedLesson = lessonSubmissionRepository.countByUserId(userId);
+        long solvedLesson = lessonSubmissionRepository.countDistinctLessonByUserId(userId);
 
         if(solvedLesson == 0) {
             return 0;
@@ -62,6 +57,12 @@ public class LearningProgressRateService {
         return Math.toIntExact(
                 Math.round(((double) solvedLesson / totalLesson) * 100)
         );
+    }
+
+    @Transactional(readOnly = true)
+    public int getLearningRankPercentile(long userId) {
+        return lessonSubmissionRepository.findLearningRateTopPercent(userId)
+                .orElse(100);
     }
 
 }

@@ -1,0 +1,60 @@
+package gravit.code.social.service;
+
+import gravit.code.global.consts.TimeZoneConst;
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.social.domain.Congratulation;
+import gravit.code.social.repository.CongratulationRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.ALREADY_CONGRATULATED;
+import static gravit.code.global.exception.domain.CustomErrorCode.CONGRATULATE_LIMIT_EXCEEDED;
+
+@Service
+@RequiredArgsConstructor
+public class CongratulationService {
+
+    private static final int DAILY_LIMIT = 3;
+
+    private final CongratulationRepository congratulationRepository;
+
+    @Transactional
+    public void checkAndRecord(
+            long userId,
+            long actorId,
+            long feedId
+    ) {
+        if (congratulationRepository.existsByUserIdAndFeedId(userId, feedId)) {
+            throw new RestApiException(ALREADY_CONGRATULATED);
+        }
+        LocalDateTime startOfDay = LocalDate.now(TimeZoneConst.KST).atStartOfDay();
+        long todayCount = congratulationRepository.countTodayByUserIdAndActorId(userId, actorId, startOfDay);
+        if (todayCount >= DAILY_LIMIT) {
+            throw new RestApiException(CONGRATULATE_LIMIT_EXCEEDED);
+        }
+        try {
+            congratulationRepository.save(Congratulation.create(userId, actorId, feedId));
+        } catch (DataIntegrityViolationException e) {
+            throw new RestApiException(ALREADY_CONGRATULATED);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Set<Long> getCongratulatedFeedIds(
+            long userId,
+            List<Long> feedIds
+    ) {
+        if (feedIds.isEmpty()) {
+            return Set.of();
+        }
+        return new HashSet<>(congratulationRepository.findCongratulatedFeedIds(userId, feedIds));
+    }
+}

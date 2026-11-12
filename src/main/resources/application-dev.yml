@@ -17,6 +17,20 @@ spring:
         show_sql: true
     open-in-view: false
 
+  ai:
+    openai:
+      base-url: http://litellm-gw:4000
+      api-key: ${LITELLM_MASTER_KEY:dummy}
+      chat:
+        options:
+          model: codex-terra
+      audio:
+        transcription:
+          options:
+            model: gpt-transcribe
+            language: ko
+            temperature: 0
+
   data:
     redis:
       host: gravit-redis-dev
@@ -69,7 +83,7 @@ spring:
             client-name: google
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            redirect-uri: ${DEV_GOOGLE_REDIRECT_URI}
             authorization-grant-type: authorization_code
             scope: profile, email
 
@@ -77,7 +91,7 @@ spring:
             client-name: kakao
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: ${KAKAO_REDIRECT_URI}
+            redirect-uri: ${DEV_KAKAO_REDIRECT_URI}
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             scope: profile_nickname, account_email
@@ -86,7 +100,7 @@ spring:
             client-name: naver
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
-            redirect-uri: ${NAVER_REDIRECT_URI}
+            redirect-uri: ${DEV_NAVER_REDIRECT_URI}
             authorization-grant-type: authorization_code
             scope: name,email
 
@@ -98,6 +112,24 @@ oauth:
     kakao:
       issuer: https://kauth.kakao.com
       client-id: ${KAKAO_NATIVE_APP_KEY}
+  ios:
+    google:
+      issuer: https://accounts.google.com
+      client-id: ${GOOGLE_CLIENT_ID}
+    kakao:
+      issuer: https://kauth.kakao.com
+      client-id: ${KAKAO_NATIVE_APP_KEY}
+  apple:
+    issuer: https://appleid.apple.com
+    token-uri: https://appleid.apple.com/auth/token
+    revoke-uri: https://appleid.apple.com/auth/revoke
+    jwk-set-uri: https://appleid.apple.com/auth/keys
+    team-id: ${APPLE_TEAM_ID}
+    client-id: ${APPLE_CLIENT_ID}
+    ios-bundle-id: ${APPLE_IOS_BUNDLE_ID}
+    key-id: ${APPLE_KEY_ID}
+    private-key: ${APPLE_PRIVATE_KEY}
+    token-encryption-key: ${APPLE_TOKEN_ENCRYPTION_KEY}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -110,6 +142,10 @@ token:
     storage-key-prefix: "refreshToken:"
     expire-time: 14d
 
+auth:
+  cookie:
+    same-site: None
+
 user-delete-mail:
   code-length: 16
   expire-time: 180
@@ -120,11 +156,36 @@ admin:
     enabled: true
     emails: ${ADMIN_BOOTSTRAP_EMAILS}
 
+firebase:
+  config:
+    path: firebase/firebase_service_key.json
+
 springdoc:
   server-url: https://grav-it-dev.inuappcenter.kr
+  paths-to-exclude: /api/v1/admin/**
 
 management:
   endpoints:
     web:
       exposure:
         include: health, prometheus
+  metrics:
+    tags:
+      application: gravit-dev
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        "[http.server.requests]": 100ms,200ms,500ms,1s
+
+app:
+  version: 1.0.0
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: ${S3_INTERVIEW_AUDIO_BUCKET}
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    upload-expiry: 10m
+    download-expiry: 30m

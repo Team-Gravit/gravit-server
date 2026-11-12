@@ -1,10 +1,12 @@
 package gravit.code.security.filter;
 
 import gravit.code.auth.service.AuthTokenProvider;
+import gravit.code.global.consts.AuthHeaderConst;
 import gravit.code.global.exception.domain.ErrorCode;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.security.exception.CustomAuthenticationEntryPoint;
 import gravit.code.security.exception.CustomAuthenticationException;
+import gravit.code.user.domain.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,8 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,17 +26,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    public static final String USER_ID_ATTRIBUTE = "user_id";
+
     private static final List<HttpEndpoint> EXCLUDE_ENDPOINTS = List.of(
             /* swagger */
             HttpEndpoint.prefix("/swagger-ui", HttpMethod.GET),
             HttpEndpoint.prefix("/v3/api-docs", HttpMethod.GET),
 
-            /* oauth signup & reissue */
+            /* oauth signup & reissue & logout */
             HttpEndpoint.prefix("/api/v1/oauth", HttpMethod.GET, HttpMethod.POST),
             HttpEndpoint.exact("/api/v1/auth/reissue", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/auth/logout", HttpMethod.POST),
 
             /* test */
-            HttpEndpoint.prefix("/api/v1/test", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/test/users/create", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/test/users/login", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/test/users/clean", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/test/tokens/custom", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/test/chapter-almost-clear", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/test/consecutive_solved", HttpMethod.POST),
+            HttpEndpoint.exact("/api/v1/test/season/clean", HttpMethod.POST),
 
             /* delete account */
             HttpEndpoint.exact("/api/v1/users/deletion/confirm", HttpMethod.POST),
@@ -46,7 +57,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpEndpoint.prefix("/actuator", HttpMethod.GET),
 
             /* note */
-            HttpEndpoint.prefix("/api/v1/cs-notes", HttpMethod.GET)
+            HttpEndpoint.prefix("/api/v1/cs-notes", HttpMethod.GET),
+
+            /* app version check */
+            HttpEndpoint.exact("/api/v1/version", HttpMethod.GET)
 
     );
 
@@ -60,17 +74,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try{
-            String token = request.getHeader("Authorization");
+            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
             if (checkTokenNotNullAndBearer(token)) {
-                String jwtToken = token.substring(7);
+                String jwtToken = token.substring(AuthHeaderConst.BEARER_PREFIX.length());
 
                 authTokenProvider.validateToken(jwtToken);
-                Authentication authentication = authTokenProvider.getAuthUser(jwtToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                Long userId = authTokenProvider.parseUser(jwtToken).getId();
-                request.setAttribute("user_id", userId);
+                User user = authTokenProvider.parseUser(jwtToken);
+                SecurityContextHolder.getContext().setAuthentication(authTokenProvider.getAuthUser(user));
+
+                request.setAttribute(USER_ID_ATTRIBUTE, user.getId());
 
                 log.info("[doFilterInternal] 토큰 값 검증 완료");
             }
@@ -83,7 +97,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private boolean checkTokenNotNullAndBearer(String token) {
-        return token != null && token.startsWith("Bearer ");
+        return token != null && token.startsWith(AuthHeaderConst.BEARER_PREFIX);
     }
 
     @Override

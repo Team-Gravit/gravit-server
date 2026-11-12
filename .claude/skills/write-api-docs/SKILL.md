@@ -6,6 +6,8 @@ description: |
   Do NOT use for: DTO에 @Schema만 추가하는 작업(직접 Edit), Controller 로직 수정, 기존 Docs 인터페이스의 단순 오타 수정
   Boundary: Controller 자체의 구현 변경은 이 스킬 범위 밖이다. Docs 인터페이스 생성과 Controller의 implements 연결까지만 수행한다.
 allowed-tools: Read, Grep, Glob, Edit, Write
+model: sonnet
+effort: xhigh
 ---
 
 # API 문서 작성
@@ -36,8 +38,8 @@ allowed-tools: Read, Grep, Glob, Edit, Write
 
 ## Phase 3: Docs 인터페이스 작성
 
-1. [references/api-docs-convention.md](references/api-docs-convention.md)를 읽어 어노테이션 규칙과 작성 컨벤션을 확인하라
-2. [references/api-docs-template.md](references/api-docs-template.md)를 읽어 코드 템플릿 구조를 확인하라
+1. `.claude/rules/api-docs-convention.md`를 읽어 어노테이션 규칙과 작성 컨벤션을 확인하라
+2. [template/api-docs-template.md](template/api-docs-template.md)를 읽어 코드 템플릿 구조를 확인하라
 3. 컨벤션과 템플릿에 따라 `controller/docs/{Controller}Docs.java` 파일을 생성하라
 
 > 다음 Phase 조건: Docs 인터페이스 파일이 작성되었을 때

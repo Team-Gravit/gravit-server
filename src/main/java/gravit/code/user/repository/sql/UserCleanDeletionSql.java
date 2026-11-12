@@ -5,20 +5,28 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class UserCleanDeletionSql {
 
-    /**
-     * 사용자 및 관련 데이터를 완전 삭제하는 SQL
-     *
-     * 삭제 순서:
-     * 1. 친구 관계 (양방향)
-     * 2. 공지사항 (notice)
-     * 3. 학습 관련 (learning, lesson_submission, problem_submission, bookmark)
-     * 4. 리그/시즌 (user_league_history, user_league)
-     * 5. 미션/리포트 (mission, report)
-     * 6. 뱃지 및 사용자 통계 (user_badge, user_mission_stat, user_planet_completion, user_qualified_solve_stat)
-     * 7. 사용자 (users)
-     */
     public static final String CLEAN_USER_DELETION_SQL = """
             WITH
+              d_congratulation AS (
+                DELETE FROM congratulation
+                WHERE user_id = :id OR actor_id = :id
+                   OR feed_id IN (SELECT id FROM social_feed WHERE actor_id = :id)
+              ),
+              d_notification AS (
+                DELETE FROM notification WHERE user_id = :id
+              ),
+              d_fcm_token AS (
+                DELETE FROM fcm_token WHERE user_id = :id
+              ),
+              d_apple_credential AS (
+                DELETE FROM apple_credential WHERE user_id = :id
+              ),
+              d_social_feed AS (
+                DELETE FROM social_feed WHERE actor_id = :id
+              ),
+              d_user_feed AS (
+                DELETE FROM user_feed WHERE user_id = :id
+              ),
               d_friends AS (
                 DELETE FROM friends
                 WHERE follower_id = :id OR followee_id = :id
@@ -38,29 +46,48 @@ public class UserCleanDeletionSql {
               d_bookmark AS (
                 DELETE FROM bookmark WHERE user_id = :id
               ),
+              d_wrong_answered_note AS (
+                DELETE FROM wrong_answered_note WHERE user_id = :id
+              ),
+              d_daily_learning_record AS (
+                DELETE FROM daily_learning_record WHERE user_id = :id
+              ),
               d_ulh AS (
                 DELETE FROM user_league_history WHERE user_id = :id
               ),
               d_ul AS (
                 DELETE FROM user_league WHERE user_id = :id
               ),
-              d_mission AS (
-                DELETE FROM mission WHERE user_id = :id
+              d_user_mission AS (
+                DELETE FROM user_mission WHERE user_id = :id
               ),
               d_report AS (
                 DELETE FROM report WHERE user_id = :id
               ),
-              d_ub AS (
-                DELETE FROM user_badge WHERE user_id = :id
+              d_inquiry_answer AS (
+                DELETE FROM inquiry_answer
+                WHERE inquiry_id IN (SELECT id FROM inquiry WHERE user_id = :id)
               ),
-              d_ums AS (
-                DELETE FROM user_mission_stat WHERE user_id = :id
+              d_inquiry AS (
+                DELETE FROM inquiry WHERE user_id = :id
               ),
-              d_upc AS (
-                DELETE FROM user_planet_completion WHERE user_id = :id
+              d_interview_feedback AS (
+                DELETE FROM interview_feedback
+                WHERE answer_id IN (
+                  SELECT id FROM interview_answer
+                  WHERE session_id IN (SELECT id FROM interview_session WHERE user_id = :id)
+                )
               ),
-              d_uqs AS (
-                DELETE FROM user_qualified_solve_stat WHERE user_id = :id
+              d_interview_answer AS (
+                DELETE FROM interview_answer
+                WHERE session_id IN (SELECT id FROM interview_session WHERE user_id = :id)
+              ),
+              d_interview_session_topic AS (
+                DELETE FROM interview_session_topic
+                WHERE session_id IN (SELECT id FROM interview_session WHERE user_id = :id)
+              ),
+              d_interview_session AS (
+                DELETE FROM interview_session WHERE user_id = :id
               )
             DELETE FROM users WHERE id = :id;
         """;

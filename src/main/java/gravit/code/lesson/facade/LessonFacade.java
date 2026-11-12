@@ -1,18 +1,25 @@
 package gravit.code.lesson.facade;
 
 import gravit.code.bookmark.service.BookmarkService;
+import gravit.code.chapter.dto.response.ChapterBriefResponse;
+import gravit.code.chapter.service.ChapterQueryService;
 import gravit.code.global.annotation.Facade;
-import gravit.code.global.event.LessonCompletedEvent;
 import gravit.code.learning.dto.internal.ConsecutiveSolvedDto;
 import gravit.code.learning.dto.internal.LearningIdsDto;
 import gravit.code.learning.dto.request.LearningSubmissionSaveRequest;
-import gravit.code.learning.service.LearningService;
+import gravit.code.learning.service.LearningCommandService;
+import gravit.code.lesson.dto.event.LessonCompletedEvent;
+import gravit.code.lesson.dto.internal.LessonSubmissionSavedDto;
+import gravit.code.lesson.dto.internal.SubmittedLessonDto;
+import gravit.code.lesson.dto.request.LessonSubmissionSaveRequest;
 import gravit.code.lesson.dto.response.LessonDetailResponse;
+import gravit.code.lesson.dto.response.LessonResultResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.lesson.dto.response.LessonSummaryResponse;
 import gravit.code.lesson.service.LessonQueryService;
 import gravit.code.lesson.service.LessonSubmissionCommandService;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
+import gravit.code.problem.dto.request.ProblemSubmissionSaveRequest;
 import gravit.code.problem.service.ProblemSubmissionCommandService;
 import gravit.code.unit.dto.response.UnitSummaryResponse;
 import gravit.code.unit.service.UnitQueryService;
@@ -21,11 +28,15 @@ import gravit.code.user.service.UserService;
 import gravit.code.userLeague.service.UserLeagueService;
 import gravit.code.wrongAnsweredNote.service.WrongAnsweredNoteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Facade
 @RequiredArgsConstructor
 public class LessonFacade {
@@ -35,19 +46,17 @@ public class LessonFacade {
     private final LessonQueryService lessonQueryService;
     private final LessonSubmissionCommandService lessonSubmissionCommandService;
     private final LessonSubmissionQueryService lessonSubmissionQueryService;
-
+    private final ChapterQueryService chapterQueryService;
     private final UnitQueryService unitQueryService;
     private final ProblemSubmissionCommandService problemSubmissionCommandService;
     private final WrongAnsweredNoteService wrongAnsweredNoteService;
     private final BookmarkService bookmarkService;
-
-    private final LearningService learningService;
-
+    private final LearningCommandService learningCommandService;
     private final UserService userService;
     private final UserLeagueService userLeagueService;
 
     private final ApplicationEventPublisher publisher;
-
+    private final TransactionTemplate transactionTemplate;
 
     @Transactional(readOnly = true)
     public LessonDetailResponse getAllLessonInUnit(
@@ -56,12 +65,15 @@ public class LessonFacade {
     ) {
         UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByUnitId(unitId);
 
+        ChapterBriefResponse chapterSummary = chapterQueryService.getChapterBriefByUnitId(unitId);
+
         List<LessonSummaryResponse> lessonSummaries = lessonQueryService.getAllLessonInUnit(userId, unitId);
 
         boolean bookmarkAccessible = bookmarkService.checkBookmarkedProblemExists(userId, unitId);
         boolean wrongAnsweredNoteAccessible = wrongAnsweredNoteService.checkWrongAnsweredProblemExists(userId, unitId);
 
         return LessonDetailResponse.create(
+                chapterSummary,
                 unitSummaryResponse,
                 bookmarkAccessible,
                 wrongAnsweredNoteAccessible,
@@ -70,43 +82,94 @@ public class LessonFacade {
         );
     }
 
-    @Transactional
     public LessonSubmissionSaveResponse saveLessonSubmission(
             long userId,
             LearningSubmissionSaveRequest request
-    ){
-        // 첫번째 풀이인지 체크
-        boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, request.lessonSubmissionSaveRequest().lessonId());
+    ) {
+        LessonSubmissionSaveRequest lessonSubmissionSaveRequest = request.lessonSubmissionSaveRequest();
+        List<ProblemSubmissionSaveRequest> problemSubmissionSaveRequests = request.problemSubmissionSaveRequests();
 
-        // 레슨 풀이 결과, 문제 풀이 결과 저장
-        lessonSubmissionCommandService.saveLessonSubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
-        problemSubmissionCommandService.saveProblemSubmissions(userId, request.problemSubmissionRequests(), isFirstTry);
+        LearningIdsDto learningIdsDto = lessonQueryService.getLearningIdsByLessonId(lessonSubmissionSaveRequest.lessonId());
+        problemSubmissionCommandService.validateProblemSubmissions(problemSubmissionSaveRequests);
+        boolean isFirstTry = lessonSubmissionQueryService.checkFirstLessonSubmission(userId, lessonSubmissionSaveRequest.lessonId());
 
-        // 응답 데이터 조회
-        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(request.lessonSubmissionSaveRequest().lessonId());
-        String leagueName = userLeagueService.getUserLeagueName(userId);
-        UserLevelResponse userLevelResponse = userService.updateUserLevelByLessonSubmission(userId, request.lessonSubmissionSaveRequest(), isFirstTry);
+        Optional<Integer> leagueSortOrderBeforeSubmission = isFirstTry
+                ? userLeagueService.findLeagueSortOrder(userId)
+                : Optional.empty();
 
-        LearningIdsDto learningIdsDto = lessonQueryService.getLearningIdsByLessonId(request.lessonSubmissionSaveRequest().lessonId());
+        LessonSubmissionSavedDto saved = transactionTemplate.execute(status -> {
+            long submissionId = lessonSubmissionCommandService.saveLessonSubmission(userId, lessonSubmissionSaveRequest);
 
-        ConsecutiveSolvedDto consecutiveSolvedDto = learningService.updateLearningStatus(userId, learningIdsDto.chapterId());
-        if(isFirstTry){
-            publisher.publishEvent(new LessonCompletedEvent(
-                    userId,
-                    learningIdsDto.lessonId(),
-                    learningIdsDto.chapterId(),
-                    POINT_PER_LESSON,
-                    request.lessonSubmissionSaveRequest().accuracy(),
-                    request.lessonSubmissionSaveRequest().learningTime(),
-                    consecutiveSolvedDto.before(),
+            List<Long> wrongAnsweredProblemIds = problemSubmissionCommandService.saveProblemSubmissions(userId, problemSubmissionSaveRequests);
+            wrongAnsweredNoteService.saveWrongAnsweredNotes(userId, wrongAnsweredProblemIds);
+
+            boolean isLevelUp = userService.updateUserLevelByLessonSubmission(userId, lessonSubmissionSaveRequest, isFirstTry);
+            ConsecutiveSolvedDto consecutiveSolvedDto = learningCommandService.updateLearningStatus(userId, learningIdsDto.chapterId());
+
+            if(isFirstTry){
+                publisher.publishEvent(new LessonCompletedEvent(
+                        userId,
+                        learningIdsDto.lessonId(),
+                        learningIdsDto.chapterId(),
+                        POINT_PER_LESSON,
+                        lessonSubmissionSaveRequest.accuracy(),
+                        lessonSubmissionSaveRequest.learningTime(),
+                        consecutiveSolvedDto.before(),
+                        consecutiveSolvedDto.after()
+                ));
+            }
+
+            return new LessonSubmissionSavedDto(
+                    submissionId,
+                    isLevelUp,
+                    consecutiveSolvedDto.isUpdated(),
                     consecutiveSolvedDto.after()
-            ));
-        }
+            );
+        });
+
+        boolean isLeaguePromoted = leagueSortOrderBeforeSubmission
+                .map(sortOrderBefore -> checkLeaguePromotedOrFalse(userId, sortOrderBefore))
+                .orElse(false);
 
         return LessonSubmissionSaveResponse.create(
+                saved.lessonSubmissionId(),
+                saved.isLevelUp(),
+                isLeaguePromoted,
+                saved.isStreakUpdated(),
+                saved.consecutiveSolvedDays()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public LessonResultResponse getLessonResult(
+            long userId,
+            long lessonSubmissionId
+    ) {
+        SubmittedLessonDto submittedLesson = lessonSubmissionQueryService.getSubmittedLesson(userId, lessonSubmissionId);
+
+        String leagueName = userLeagueService.getUserLeagueName(userId);
+        UserLevelResponse userLevelResponse = userService.getUserLevel(userId);
+        UnitSummaryResponse unitSummaryResponse = unitQueryService.getUnitSummaryByLessonId(submittedLesson.lessonId());
+
+        return LessonResultResponse.create(
                 leagueName,
                 userLevelResponse,
-                unitSummaryResponse
+                unitSummaryResponse,
+                submittedLesson.accuracy(),
+                submittedLesson.learningTime(),
+                submittedLesson.chapterId()
         );
+    }
+
+    private boolean checkLeaguePromotedOrFalse(
+            long userId,
+            int sortOrderBefore
+    ) {
+        try {
+            return userLeagueService.checkLeaguePromoted(userId, sortOrderBefore);
+        } catch (RuntimeException e) {
+            log.error("리그 승급 여부 조회 실패, 승급 아님으로 응답: userId={}", userId, e);
+            return false;
+        }
     }
 }

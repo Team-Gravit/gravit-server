@@ -18,7 +18,7 @@ public class ProblemQueryService {
     public List<ProblemDetailResponse> getAllProblemInLesson(
         long userId,
         long lessonId
-    ){
+    ) {
         return problemRepository.findAllProblemDetailByLessonIdAndUserId(lessonId, userId);
     }
 }

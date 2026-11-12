@@ -1,25 +1,27 @@
 package gravit.code.chapter.service;
 
 import gravit.code.chapter.domain.Chapter;
+import gravit.code.chapter.dto.response.ChapterBriefResponse;
 import gravit.code.chapter.dto.response.ChapterSummaryResponse;
 import gravit.code.chapter.repository.ChapterRepository;
 import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.support.TCSpringBootTest;
+import gravit.code.unit.domain.Unit;
+import gravit.code.unit.repository.UnitRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.CHAPTER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ChapterQueryServiceIntegrationTest {
 
     @Autowired
@@ -28,6 +30,9 @@ class ChapterQueryServiceIntegrationTest {
     @Autowired
     private ChapterRepository chapterRepository;
 
+    @Autowired
+    private UnitRepository unitRepository;
+
     @Nested
     @DisplayName("전체 챕터를 조회할 때")
     class GetAllChapter {
@@ -35,8 +40,8 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            chapterRepository.save(Chapter.create("네트워크", "네트워크 기초 개념"));
+            chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            chapterRepository.save(Chapter.create("네트워크", "네트워크 기초 개념", CS));
 
             // when
             List<ChapterSummaryResponse> result = chapterQueryService.getAllChapter();
@@ -66,7 +71,7 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             ChapterSummaryResponse result = chapterQueryService.getChapterSummary(saved.getId());
@@ -96,7 +101,7 @@ class ChapterQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
+            Chapter saved = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
 
             // when
             Chapter result = chapterQueryService.getChapter(saved.getId());
@@ -113,6 +118,36 @@ class ChapterQueryServiceIntegrationTest {
         void 존재하지_않으면_예외를_던진다() {
             // when & then
             assertThatThrownBy(() -> chapterQueryService.getChapter(999L))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(CHAPTER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("유닛이 속한 챕터를 조회할 때")
+    class GetChapterBriefByUnitId {
+
+        @Test
+        void 챕터_아이디와_이름을_반환한다() {
+            // given
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+
+            // when
+            ChapterBriefResponse result = chapterQueryService.getChapterBriefByUnitId(unit.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.chapterId()).isEqualTo(chapter.getId());
+                softly.assertThat(result.title()).isEqualTo("운영체제");
+            });
+        }
+
+        @Test
+        void 유닛이_존재하지_않으면_예외를_던진다() {
+            // when & then
+            assertThatThrownBy(() -> chapterQueryService.getChapterBriefByUnitId(999L))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(CHAPTER_NOT_FOUND);

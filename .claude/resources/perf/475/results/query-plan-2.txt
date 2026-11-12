@@ -1,0 +1,37 @@
+BEGIN
+                                                                                                   QUERY PLAN                                                                                                   
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Insert on public.wrong_answered_note  (cost=0.00..0.21 rows=0 width=0) (actual time=1.013..1.019 rows=0 loops=1)
+   Conflict Resolution: UPDATE
+   Conflict Arbiter Indexes: ix_wrong_answered_note_user_problem
+   Tuples Inserted: 4
+   Conflicting Tuples: 5
+   Buffers: shared hit=154 dirtied=1
+   ->  Function Scan on pg_catalog.unnest p  (cost=0.00..0.21 rows=9 width=52) (actual time=0.079..0.102 rows=9 loops=1)
+         Output: nextval('wrong_answered_note_id_seq'), p.problem_id, '1501'::bigint, (now())::timestamp(6) without time zone, (now())::timestamp(6) without time zone, 1, NULL::timestamp(6) without time zone
+         Function Call: unnest('{910035,910036,910037,910038,910039,910040,910041,910042,910043}'::bigint[])
+         Buffers: shared hit=18
+ Query Identifier: -4832975398736845883
+ Planning:
+   Buffers: shared hit=49
+ Planning Time: 0.233 ms
+ Execution Time: 1.371 ms
+(15 rows)
+
+ROLLBACK
+BEGIN
+                                                                                                  QUERY PLAN                                                                                                   
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Insert on public.problem_submission  (cost=0.00..0.02 rows=0 width=0) (actual time=0.940..0.944 rows=0 loops=1)
+   Buffers: shared hit=74 dirtied=1
+   ->  Result  (cost=0.00..0.02 rows=1 width=81) (actual time=0.084..0.085 rows=1 loops=1)
+         Output: nextval('problem_submission_id_seq'), false, '910035'::bigint, '1501'::bigint, (now())::timestamp(6) without time zone, (now())::timestamp(6) without time zone, '910035'::bigint, NULL::text
+         Buffers: shared hit=10
+ Query Identifier: -1029799072597854377
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 0.084 ms
+ Execution Time: 0.992 ms
+(10 rows)
+
+ROLLBACK

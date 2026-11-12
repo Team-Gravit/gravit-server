@@ -1,17 +1,25 @@
 package gravit.code.problem.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gravit.code.problem.domain.ProblemType;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProblemDetailResponse(
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         long id,
-        @NotNull
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         ProblemType problemType,
-        @NotNull
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String instruction,
-        @NotNull
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String content,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        @JsonProperty("isBookmarked")
         boolean isBookmarked
 ) {
 }

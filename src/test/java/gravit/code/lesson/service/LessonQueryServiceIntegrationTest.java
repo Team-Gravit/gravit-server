@@ -16,17 +16,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static gravit.code.chapter.domain.ChapterCategory.CS;
 import static gravit.code.global.exception.domain.CustomErrorCode.LESSON_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
-@Sql(scripts = "classpath:sql/truncate_all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class LessonQueryServiceIntegrationTest {
 
     @Autowired
@@ -52,11 +51,11 @@ class LessonQueryServiceIntegrationTest {
         void 성공한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson1 = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
             lessonRepository.save(Lesson.create("레슨2", unit.getId()));
-            lessonSubmissionRepository.save(LessonSubmission.create(120, lesson1.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 100, lesson1.getId(), userId));
 
             // when
             List<LessonSummaryResponse> result = lessonQueryService.getAllLessonInUnit(userId, unit.getId());
@@ -70,11 +69,34 @@ class LessonQueryServiceIntegrationTest {
         }
 
         @Test
+        void 같은_레슨을_여러_번_제출해도_레슨당_한_건만_반환한다() {
+            // given
+            long userId = 1L;
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+            Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+
+            lessonSubmissionRepository.save(LessonSubmission.create(120, 60, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(90, 80, lesson.getId(), userId));
+            lessonSubmissionRepository.save(LessonSubmission.create(60, 100, lesson.getId(), userId));
+
+            // when
+            List<LessonSummaryResponse> result = lessonQueryService.getAllLessonInUnit(userId, unit.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result).hasSize(1);
+                softly.assertThat(result).extracting(LessonSummaryResponse::lessonId).containsExactly(lesson.getId());
+                softly.assertThat(result.get(0).isSolved()).isTrue();
+            });
+        }
+
+        @Test
         void 레슨이_없으면_빈_리스트를_반환한다() {
             // given
             long userId = 1L;
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
 
             // when
             List<LessonSummaryResponse> result = lessonQueryService.getAllLessonInUnit(userId, unit.getId());
@@ -91,8 +113,8 @@ class LessonQueryServiceIntegrationTest {
         @Test
         void 성공한다() {
             // given
-            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념"));
-            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId()));
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
             Lesson lesson = lessonRepository.save(Lesson.create("레슨1", unit.getId()));
 
             // when
@@ -113,6 +135,36 @@ class LessonQueryServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(LESSON_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("전체 레슨 수를 조회할 때")
+    class GetTotalLessonCount {
+
+        @Test
+        void 등록된_레슨이_여러_개면_그_수를_반환한다() {
+            // given
+            Chapter chapter = chapterRepository.save(Chapter.create("운영체제", "운영체제 기초 개념", CS));
+            Unit unit = unitRepository.save(Unit.create("프로세스", "프로세스 개념", chapter.getId(), 1));
+            lessonRepository.save(Lesson.create("레슨1", unit.getId()));
+            lessonRepository.save(Lesson.create("레슨2", unit.getId()));
+            lessonRepository.save(Lesson.create("레슨3", unit.getId()));
+
+            // when
+            int result = lessonQueryService.getTotalLessonCount();
+
+            // then
+            assertThat(result).isEqualTo(3);
+        }
+
+        @Test
+        void 등록된_레슨이_없으면_0을_반환한다() {
+            // when
+            int result = lessonQueryService.getTotalLessonCount();
+
+            // then
+            assertThat(result).isZero();
         }
     }
 }

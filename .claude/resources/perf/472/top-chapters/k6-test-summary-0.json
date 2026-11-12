@@ -1,0 +1,46 @@
+{
+  "phase": "measure",
+  "target": "top-chapters",
+  "endpoint": "GET /api/v1/my-pages/learning/top-chapters",
+  "condition": {
+    "vus": 50,
+    "duration": "1m",
+    "cache": "cold",
+    "user_id_start": 1001,
+    "user_count": 1000
+  },
+  "requests": 3967,
+  "rps": 33.043953155652545,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 3967,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 3967,
+      "fails": 0
+    },
+    {
+      "name": "상위 챕터가 실려 있다",
+      "passes": 3967,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 1146.894,
+    "p95": 2150.9488,
+    "p99": 3078.142259999996,
+    "max": 5049.652
+  },
+  "waiting_ms": {
+    "med": 1146.676,
+    "p95": 2150.6528,
+    "p99": 3078.037039999996,
+    "max": 5049.382
+  },
+  "bytes_received": 2431980
+}

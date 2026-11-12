@@ -5,41 +5,59 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 
 @Component
 @RequiredArgsConstructor
 public class SeasonCalendar {
+
+    public static final int SEASON_MONTHS = 4;
+    public static final String SEASON_KEY_DELIMITER = "-";
+
+    private static final String SEASON_NUMBER_PREFIX = "S";
+
     private final Clock clock;
 
-    // kst 기준 이번 주 시즌 리턴
-    public SeasonDto currentWeek() {
-        LocalDate monday = weekMonday(LocalDate.now(clock));
-        LocalDateTime start = monday.atStartOfDay();
-        LocalDateTime end = start.plusWeeks(1);
-        return new SeasonDto(isoWeekKey(monday), start, end);
+    public SeasonDto currentSeason() {
+        LocalDate today = LocalDate.now(clock);
+        int year = today.getYear();
+        int sn = seasonNumberOf(today.getMonthValue());
+        LocalDateTime start = seasonStart(year, sn);
+        LocalDateTime end = start.plusMonths(SEASON_MONTHS);
+        return new SeasonDto(formatSeasonKey(year, sn), start, end);
     }
 
-    // 특정 종료시각(=현재 시즌 endsAt) 기준 다음 주 시즌
     public SeasonDto nextFromEndsAt(LocalDateTime currentEndsAt) {
-        LocalDateTime start = currentEndsAt;
-        LocalDateTime end = start.plusWeeks(1);
-        return new SeasonDto(isoWeekKey(start.toLocalDate()), start, end);
+        LocalDate nextDate = currentEndsAt.toLocalDate();
+        int year = nextDate.getYear();
+        int sn = seasonNumberOf(nextDate.getMonthValue());
+        LocalDateTime end = currentEndsAt.plusMonths(SEASON_MONTHS);
+        return new SeasonDto(formatSeasonKey(year, sn), currentEndsAt, end);
     }
 
-    public static String isoWeekKey(LocalDate kstDate) {
-        WeekFields wf = WeekFields.ISO;
-        int week = kstDate.get(wf.weekOfWeekBasedYear());
-        int year = kstDate.get(wf.weekBasedYear());
-        return String.format("%d-W%02d", year, week);
+    public static String seasonKey(LocalDate kstDate) {
+        int year = kstDate.getYear();
+        int sn = seasonNumberOf(kstDate.getMonthValue());
+        return formatSeasonKey(year, sn);
     }
 
-    private static LocalDate weekMonday(LocalDate date) {
-        return date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    private static int seasonNumberOf(int month) {
+        return (month - 1) / SEASON_MONTHS + 1;
     }
 
+    private static LocalDateTime seasonStart(
+            int year,
+            int seasonNumber
+    ) {
+        int startMonth = (seasonNumber - 1) * SEASON_MONTHS + 1;
+        return LocalDate.of(year, startMonth, 1).atStartOfDay();
+    }
+
+    private static String formatSeasonKey(
+            int year,
+            int seasonNumber
+    ) {
+        return year + SEASON_KEY_DELIMITER + SEASON_NUMBER_PREFIX + seasonNumber;
+    }
 }

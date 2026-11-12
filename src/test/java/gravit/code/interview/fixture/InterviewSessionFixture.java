@@ -1,0 +1,158 @@
+package gravit.code.interview.fixture;
+
+import gravit.code.interview.domain.InterviewAnswer;
+import gravit.code.interview.domain.InterviewInputType;
+import gravit.code.interview.domain.InterviewMode;
+import gravit.code.interview.domain.InterviewSession;
+import gravit.code.interview.domain.InterviewSessionStatus;
+import gravit.code.interview.domain.InterviewStack;
+import gravit.code.interview.dto.request.InterviewAnswerSubmitRequest;
+import gravit.code.interview.dto.request.InterviewSessionCreateRequest;
+import gravit.code.interviewQuestion.domain.InterviewDifficulty;
+import gravit.code.interviewQuestion.domain.InterviewTopic;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public class InterviewSessionFixture {
+
+    private static final long ATTEMPT_COUNT = 1L;
+    private static final int FIRST_DISPLAY_ORDER = 1;
+
+    public static InterviewSession 진행중_세션(
+            long userId,
+            InterviewInputType inputType
+    ) {
+        return InterviewSession.create(
+                userId,
+                ATTEMPT_COUNT,
+                InterviewMode.COMMON_CS,
+                inputType,
+                InterviewDifficulty.NORMAL,
+                null
+        );
+    }
+
+    public static InterviewSession 상태_세션(
+            long userId,
+            InterviewSessionStatus status
+    ) {
+        return 상태_세션(userId, status, InterviewInputType.TEXT);
+    }
+
+    public static InterviewSession 상태_세션(
+            long userId,
+            InterviewSessionStatus status,
+            InterviewInputType inputType
+    ) {
+        InterviewSession session = 진행중_세션(userId, inputType);
+        ReflectionTestUtils.setField(session, "status", status);
+        return session;
+    }
+
+    public static InterviewSessionCreateRequest 생성_요청_공통CS(
+            InterviewDifficulty difficulty,
+            InterviewTopic... topics
+    ) {
+        return new InterviewSessionCreateRequest(
+                InterviewInputType.TEXT,
+                InterviewMode.COMMON_CS,
+                difficulty,
+                null,
+                List.of(topics)
+        );
+    }
+
+    public static InterviewSessionCreateRequest 생성_요청_직군(
+            InterviewDifficulty difficulty,
+            InterviewStack stack
+    ) {
+        return new InterviewSessionCreateRequest(
+                InterviewInputType.TEXT,
+                InterviewMode.JOB_SPECIFIC,
+                difficulty,
+                stack,
+                null
+        );
+    }
+
+    public static InterviewSessionCreateRequest 생성_요청(
+            InterviewInputType inputType,
+            InterviewMode mode,
+            InterviewDifficulty difficulty,
+            InterviewStack stack,
+            List<InterviewTopic> topics
+    ) {
+        return new InterviewSessionCreateRequest(inputType, mode, difficulty, stack, topics);
+    }
+
+    public static List<InterviewAnswer> 미제출_답안(
+            long sessionId,
+            List<Long> questionIds
+    ) {
+        List<InterviewAnswer> answers = new ArrayList<>();
+        for (int index = 0; index < questionIds.size(); index++) {
+            answers.add(InterviewAnswer.create(sessionId, questionIds.get(index), FIRST_DISPLAY_ORDER + index));
+        }
+        return answers;
+    }
+
+    public static InterviewAnswer 변환_중_답안(
+            long sessionId,
+            long questionId,
+            int displayOrder,
+            LocalDateTime requestedAt
+    ) {
+        InterviewAnswer answer = InterviewAnswer.create(sessionId, questionId, displayOrder);
+        answer.requestTranscription(InterviewAudioS3Fixture.음성_키(sessionId, displayOrder), requestedAt);
+        return answer;
+    }
+
+    public static InterviewAnswer 변환_완료_답안(
+            long sessionId,
+            long questionId,
+            int displayOrder,
+            LocalDateTime requestedAt,
+            String transcript
+    ) {
+        InterviewAnswer answer = 변환_중_답안(sessionId, questionId, displayOrder, requestedAt);
+        answer.completeTranscription(transcript);
+        return answer;
+    }
+
+    public static InterviewAnswer 변환_실패_답안(
+            long sessionId,
+            long questionId,
+            int displayOrder,
+            LocalDateTime requestedAt
+    ) {
+        InterviewAnswer answer = 변환_중_답안(sessionId, questionId, displayOrder, requestedAt);
+        answer.failTranscription();
+        return answer;
+    }
+
+    public static InterviewAnswerSubmitRequest 답안_요청(
+            int displayOrder,
+            String content
+    ) {
+        return new InterviewAnswerSubmitRequest(displayOrder, content, null);
+    }
+
+    public static InterviewAnswerSubmitRequest 음성_답안_요청(
+            int displayOrder,
+            String content,
+            String audioKey
+    ) {
+        return new InterviewAnswerSubmitRequest(displayOrder, content, audioKey);
+    }
+
+    public static List<InterviewAnswerSubmitRequest> 제출_요청(String... contents) {
+        List<InterviewAnswerSubmitRequest> requests = new ArrayList<>();
+        for (int index = 0; index < contents.length; index++) {
+            requests.add(답안_요청(FIRST_DISPLAY_ORDER + index, contents[index]));
+        }
+        return requests;
+    }
+}

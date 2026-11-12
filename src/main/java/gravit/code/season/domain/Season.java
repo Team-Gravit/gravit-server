@@ -1,5 +1,7 @@
 package gravit.code.season.domain;
 
+import gravit.code.global.consts.TimeZoneConst;
+import gravit.code.global.exception.domain.RestApiException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,6 +18,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.INVALID_SEASON_STATUS_TRANSITION;
+
 @Getter
 @Entity
 @Table(name = "season",
@@ -28,7 +32,6 @@ public class Season {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 2025-W33 (ISO 주차 기반)
     @Column(name = "season_key", nullable = false, length = 16)
     private String seasonKey;
 
@@ -45,7 +48,7 @@ public class Season {
     @Column(name = "tz", nullable = false)
     private String tz;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Season(
             String seasonKey,
             LocalDateTime startsAt,
@@ -56,7 +59,7 @@ public class Season {
         this.startsAt = startsAt;
         this.endsAt = endsAt;
         this.status = status;
-        this.tz = "Asia/Seoul";
+        this.tz = TimeZoneConst.KST.getId();
     }
 
     public static Season prep(
@@ -85,19 +88,16 @@ public class Season {
                 .build();
     }
 
-    /** ACTIVE -> FINALIZING */
     public void finalizing() {
         validateStatus(SeasonStatus.ACTIVE);
         this.status = SeasonStatus.FINALIZING;
     }
 
-    /** PREP -> ACTIVE */
     public void activate() {
         validateStatus(SeasonStatus.PREP);
         this.status = SeasonStatus.ACTIVE;
     }
 
-    /** FINALIZING -> CLOSED */
     public void close() {
         validateStatus(SeasonStatus.FINALIZING);
         this.status = SeasonStatus.CLOSED;
@@ -105,7 +105,7 @@ public class Season {
 
     private void validateStatus(SeasonStatus expected) {
         if (this.status != expected) {
-            throw new RuntimeException();
+            throw new RestApiException(INVALID_SEASON_STATUS_TRANSITION);
         }
     }
 
