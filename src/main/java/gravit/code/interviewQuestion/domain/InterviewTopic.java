@@ -12,6 +12,7 @@ public enum InterviewTopic {
     DATABASE(InterviewTopicKind.CS, "데이터베이스"),
     OPERATING_SYSTEM(InterviewTopicKind.CS, "운영체제"),
     NETWORK(InterviewTopicKind.CS, "네트워크"),
+    WEB_SECURITY(InterviewTopicKind.CS, "웹 보안"),
 
     SERVER_COMMON(InterviewTopicKind.COMMON, "서버 공통"),
     WEB_COMMON(InterviewTopicKind.COMMON, "웹 공통"),

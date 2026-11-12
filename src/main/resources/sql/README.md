@@ -5,8 +5,8 @@
 
 | 폴더 | 내용 | 로컬 자동 실행 |
 |---|---|---|
-| `chapter/` | 챕터. `chapter.sql`(CS 1~5), `chapter_track.sql`(직무 트랙 6~22) | O |
-| `unit/` | 유닛. `unit.sql`(CS 1~69), `unit_track.sql`(직무 트랙 70~227) | O |
+| `chapter/` | 챕터. `chapter.sql` 하나에 전체(CS 1~5·23, 직무 트랙 6~22) | O |
+| `unit/` | 유닛. `unit.sql` 하나에 전체(CS 1~69, 직무 트랙 70~227, CS 추가 228~263) | O |
 | `league/` | 리그 티어 | O |
 | `problem/{챕터}/` | 유닛별 레슨, 문제, 선지, 정답 | O |
 | `interview/{챕터}/` | 유닛별 면접 질문, 핵심 개념 | O |
@@ -44,10 +44,8 @@ spring:
       mode: always
       data-locations:
         - classpath:sql/chapter/chapter.sql
-        - classpath:sql/chapter/chapter_track.sql
         - classpath:sql/league/league.sql
         - classpath:sql/unit/unit.sql
-        - classpath:sql/unit/unit_track.sql
         - classpath*:sql/problem/**/*.sql
         - classpath*:sql/interview/**/*.sql
         - classpath:sql/sync/resync_sequences.sql
