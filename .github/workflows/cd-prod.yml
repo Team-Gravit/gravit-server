@@ -8,7 +8,6 @@ on:
       image_tag:
         description: '배포할 이미지 태그 (예: v1.0.0)'
         required: true
-        default: 'v1.0.0'
 
 jobs:
   build:
@@ -16,6 +15,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 입력값은 체크아웃 ref와 이미지 태그로 함께 쓰인다.
+      # 브랜치 이름(dev 등)이 들어오면 그 브랜치를 운영 설정으로 빌드해 같은 이름의 이미지를 덮어쓰므로 버전 형식만 받는다.
+      - name: 배포 태그 유효성 검사
+        env:
+          IMAGE_TAG: ${{ github.event.inputs.image_tag || github.event.release.tag_name }}
+        run: |
+          if ! [[ "$IMAGE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "오류: 유효하지 않은 배포 태그입니다: $IMAGE_TAG (예: v1.1.0)"
+            exit 1
+          fi
+
       - name: 체크아웃
         uses: actions/checkout@v4
         with:
