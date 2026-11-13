@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,10 +18,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static gravit.code.userLeague.infrastructure.LeagueRankScripts.EVICT_SCRIPT;
+import static gravit.code.userLeague.infrastructure.LeagueRankScripts.PLACE_SCRIPT;
+import static gravit.code.userLeague.infrastructure.LeagueRankScripts.PLACED;
+
 @Component
 public class RedisLeagueRankingStore implements LeagueRankingStore {
 
     private static final String KEY_PREFIX = "league:rank:";
+    private static final String READY_KEY_PREFIX = "league:rank-ready:";
+    private static final String READY_VALUE = "1";
+    private static final String REBUILD_KEY_SUFFIX = ":rebuild";
     private static final String KEY_DELIMITER = ":";
     private static final String SEASON_KEY_PATTERN_SUFFIX = ":*";
     private static final int SCAN_COUNT = 100;
@@ -48,18 +56,57 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     }
 
     @Override
-    public void move(
+    public boolean place(
             long seasonId,
-            long fromLeagueId,
-            long toLeagueId,
+            Collection<Long> leagueIds,
+            long leagueId,
             long userId,
             int leaguePoint
     ) {
-        if (fromLeagueId != toLeagueId) {
-            remove(seasonId, fromLeagueId, userId);
+        String score = String.valueOf((long) LeagueRankScore.encode(leaguePoint, userId));
+        List<String> keys = seasonLeagueKeys(seasonId, leagueIds, leagueId);
+        int targetPosition = keys.indexOf(key(seasonId, leagueId)) + 1;
+
+        Long result = redisTemplate.execute(
+                PLACE_SCRIPT,
+                keys,
+                member(userId),
+                String.valueOf(targetPosition),
+                score
+        );
+
+        return result != null && result == PLACED;
+    }
+
+    private static List<String> seasonLeagueKeys(
+            long seasonId,
+            Collection<Long> leagueIds,
+            long leagueId
+    ) {
+        Set<String> keys = new LinkedHashSet<>();
+
+        leagueIds.forEach(id -> keys.add(key(seasonId, id)));
+        keys.add(key(seasonId, leagueId));
+
+        return new ArrayList<>(keys);
+    }
+
+    @Override
+    public void evict(
+            long seasonId,
+            Collection<Long> leagueIds,
+            long userId
+    ) {
+        if (leagueIds.isEmpty()) {
+            return;
         }
 
-        put(seasonId, toLeagueId, userId, leaguePoint);
+        List<String> keys = leagueIds.stream()
+                .map(leagueId -> key(seasonId, leagueId))
+                .distinct()
+                .toList();
+
+        redisTemplate.execute(EVICT_SCRIPT, keys, member(userId));
     }
 
     @Override
@@ -113,6 +160,38 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     }
 
     @Override
+    public Map<Long, Integer> findLeaguePoints(
+            long seasonId,
+            long leagueId,
+            List<Long> userIds
+    ) {
+        if (userIds.isEmpty()) {
+            return Map.of();
+        }
+
+        Object[] members = userIds.stream()
+                .map(RedisLeagueRankingStore::member)
+                .toArray();
+        List<Double> scores = redisTemplate.opsForZSet().score(key(seasonId, leagueId), members);
+
+        Map<Long, Integer> userIdToLeaguePoint = new LinkedHashMap<>();
+
+        if (scores == null) {
+            return userIdToLeaguePoint;
+        }
+
+        for (int i = 0; i < userIds.size(); i++) {
+            Double score = scores.get(i);
+
+            if (score != null) {
+                userIdToLeaguePoint.put(userIds.get(i), LeagueRankScore.toLeaguePoint(score));
+            }
+        }
+
+        return userIdToLeaguePoint;
+    }
+
+    @Override
     public void replaceAll(
             long seasonId,
             List<LeagueRankEntryDto> entries
@@ -124,12 +203,35 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     }
 
     @Override
+    public void replaceLeague(
+            long seasonId,
+            long leagueId,
+            List<LeagueRankEntryDto> entries
+    ) {
+        String key = key(seasonId, leagueId);
+        String rebuildKey = key + REBUILD_KEY_SUFFIX;
+
+        redisTemplate.unlink(rebuildKey);
+
+        if (entries.isEmpty()) {
+            redisTemplate.unlink(key);
+
+            return;
+        }
+
+        Set<ZSetOperations.TypedTuple<String>> tuples = new LinkedHashSet<>();
+        entries.forEach(entry -> tuples.add(tuple(entry)));
+
+        addInBatches(rebuildKey, tuples);
+        redisTemplate.rename(rebuildKey, key);
+    }
+
+    @Override
     public void deleteSeason(long seasonId) {
         Set<String> keys = scanSeasonKeys(seasonId);
+        keys.add(readyKey(seasonId));
 
-        if (!keys.isEmpty()) {
-            redisTemplate.unlink(keys);
-        }
+        redisTemplate.unlink(keys);
     }
 
     private void addInBatches(
@@ -174,6 +276,26 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
         return total;
     }
 
+    @Override
+    public long countRanked(
+            long seasonId,
+            long leagueId
+    ) {
+        Long ranked = redisTemplate.opsForZSet().zCard(key(seasonId, leagueId));
+
+        return ranked == null ? 0 : ranked;
+    }
+
+    @Override
+    public void markReady(long seasonId) {
+        redisTemplate.opsForValue().set(readyKey(seasonId), READY_VALUE);
+    }
+
+    @Override
+    public boolean isReady(long seasonId) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(readyKey(seasonId)));
+    }
+
     private Set<String> scanSeasonKeys(long seasonId) {
         Set<String> keys = new LinkedHashSet<>();
 
@@ -198,13 +320,17 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
 
         for (LeagueRankEntryDto entry : entries) {
             leagueIdToTuples.computeIfAbsent(entry.leagueId(), leagueId -> new LinkedHashSet<>())
-                    .add(ZSetOperations.TypedTuple.of(
-                            member(entry.userId()),
-                            LeagueRankScore.encode(entry.leaguePoint(), entry.userId())
-                    ));
+                    .add(tuple(entry));
         }
 
         return leagueIdToTuples;
+    }
+
+    private static ZSetOperations.TypedTuple<String> tuple(LeagueRankEntryDto entry) {
+        return ZSetOperations.TypedTuple.of(
+                member(entry.userId()),
+                LeagueRankScore.encode(entry.leaguePoint(), entry.userId())
+        );
     }
 
     private static String key(
@@ -212,6 +338,10 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
             long leagueId
     ) {
         return KEY_PREFIX + seasonId + KEY_DELIMITER + leagueId;
+    }
+
+    private static String readyKey(long seasonId) {
+        return READY_KEY_PREFIX + seasonId;
     }
 
     private static String member(long userId) {

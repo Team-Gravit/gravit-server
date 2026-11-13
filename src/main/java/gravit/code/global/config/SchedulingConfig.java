@@ -16,7 +16,7 @@ public class SchedulingConfig {
 
     @Bean(name = "retrySweepScheduler")
     public ThreadPoolTaskScheduler retrySweepScheduler() {
-        return scheduler(2, "retry-sweep-");
+        return scheduler(4, "retry-sweep-");
     }
 
     private ThreadPoolTaskScheduler scheduler(
