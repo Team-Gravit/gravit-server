@@ -276,3 +276,11 @@ private void queueRankSyncRetry(LeagueRankChangedEvent event, Exception cause) {
 - M1, M3, M4는 결정적 장애 주입 테스트라 1회로 충분하다. 실행 스크립트를 남긴다.
 
 ## Deviation Log
+- `RedisLeagueRankingStore.place`: 목표 리그 키가 넘겨받은 리그 목록에 없어도 키 목록에 더한다 — 이유: 스크립트에 목표 키 위치를 넘겨야 하는데, 목록에 없으면 위치를 정할 수 없다
+- `LeagueRankSyncService`: 캐시한 리그 목록에 목표 리그가 없으면 DB에서 다시 읽는다 — 이유: 기동 뒤 리그가 추가되면(테스트는 매번 새 id로 만든다) 캐시가 낡아 이전 리그 키를 지우지 못한다. 운영에서는 처음 1회만 읽는다
+- `LeagueRankingReconcileService`: `LeagueRepository` 주입 추가 — 이유: 리그별 인원 비교 대상이 전체 리그여야 한다. DB 기대 인원이 0인 리그에 Redis 멤버가 남은 경우도 재구축해야 하기 때문이다
+- `LeagueRankingLossDetectScheduler`, `LeagueRankingReconcileScheduler`: 유실 감지를 `fixedDelay` 30초에서 cron `*/30 * * * * *`로 바꾸고, 두 cron을 `scheduler.league-ranking.loss-detect-cron`, `scheduler.league-ranking.reconcile-cron` 속성으로 뺐다. 테스트 프로필(`application-test.yml`)은 `"-"`로 끈다 — 이유: 테스트 컨텍스트에서도 스케줄이 돌아, 활성 시즌을 만든 다른 테스트의 Redis 랭킹을 도중에 재구축할 수 있다. 시즌 롤오버 cron(`scheduler.season.rollover-cron`) 선례를 따랐다
+- `LeagueRankReconcileResultDto`: `empty()`(활성 시즌 없음), `hasMismatch()`(로그 수준 판정) 추가, `LeagueRankScripts`: 성공 반환값 `PLACED` 상수 추가 — 이유: 호출부에서 0, 1과 합산식을 직접 쓰지 않기 위해
+- 기존 테스트: `RedisLeagueRankingStoreIntegrationTest`의 `move` 두 시나리오를 같은 내용의 `place` 시나리오로 바꿨고, `LeagueRankSyncListenerIntegrationTest`는 리그를 픽스처로 만들게 바꿨다(반영이 DB의 리그 목록을 읽으므로 가짜 리그 id 10, 20으로는 이전 리그 키를 지우지 못한다). 검증 섹션의 새 시나리오와 신규 테스트 클래스는 `write-test`에서 작성한다
+- `LeagueRankSyncService.syncFromDatabase`: 참여 기록이 없거나 시즌이 다를 때 캐시 대신 DB에서 리그 목록을 다시 읽어 제외한다 — 이유: 캐시가 낡으면 유저가 있는 리그 키를 빠뜨린다(테스트에서 재현). 재시도와 대조에서만 타는 경로라 비용이 작다
+- `LeagueRankStateDto`, `UserLeagueRepository`, `LeagueRankSyncService`, `LeagueRankingReconcileService`, `LeagueRankReconcileResultDto`: `active` 필드와 비활성 분기, `evicted` 집계를 뺐다(#624) — 이유: `User`의 `@SQLRestriction("deleted_at IS NULL")` 때문에 `JOIN ul.user u` 조회가 탈퇴 유저를 반환하지 않아 `active`가 항상 참이고 분기가 실행되지 않는다. 탈퇴 유저는 `syncFromDatabase`에서 참여 기록 없음으로 잡혀 `evict`되고, 정기 대조에서는 리그 인원 비교에서 어긋나 `replaceLeague`로 빠진다. 대조에서 남은 탈퇴 유저 한 명이 리그 하나 재구축으로 이어지지만, 탈퇴 반영과 재시도 큐 적재가 모두 실패한 경우(Redis 장애)에만 생긴다
