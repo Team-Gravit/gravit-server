@@ -1,0 +1,58 @@
+┌─ F-AP-1m-after-run2 ────────────────────────────────────────────────────────── 2026-11-12 16:33 ─┐
+│ 친구 검색 · 앱이 실제로 쓰는 실행 계획 (auto_explain, 앱 갱신 재현 상태)                         │
+│ 코드     f07ee5f6 (개선 후)                                                                      │
+│ 인덱스   sql/states/after.sql                                                                    │
+│ 규모     유저 1,000,096 (생성 1,000,000 + 고정 96 · 비탈퇴 970,064 · 혼합 닉네임 15.01%)         │
+│ 부하     1클라이언트 순차 · 검색어 7개 × 50회 번갈아 · 1페이지                                   │
+│          이 DB 에만 auto_explain(analyze, json)                                                  │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+│ PG 설정  DSM sysv · pg_stat_statements track=all · auto_explain 꺼짐 · 병렬 2 · jit on           │
+│ 재실행   F-AP-1m-after 의 재실행 → F-AP-1m-after-run2 (§0-1 규칙 5)                              │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ jar 존재                     ✅ jar 커밋 f07ee5f6            ✅ JWT 키 일치                  
+  ✅ 시드 행 수 1,000,096         ✅ 탈퇴 비율 3.00%              ✅ 혼합 닉네임 15.01%           
+  ✅ 앱 미기동(부하 없음)         ✅ 코드 해시 일치               ✅ PG 설정 = 시드 때            
+  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 2.57 / 3.02 / 4.06 (1/5/15분, 기록)
+
+  실행하면 인덱스 상태를 'after' 로 바꾼다(sql/states/after.sql, VACUUM ANALYZE 포함).
+  인덱스 구성 가드는 상태를 바꾼 뒤 확인한다.
+
+[가드]
+  ✅ 인덱스 구성 = after          ✅ 확장 통계 = after (없음)     
+
+  앱 갱신 재현: 139행 갱신 + VACUUM ANALYZE · all-visible 19,199 / 19,227
+  앱 기동 중… (friend-after.jar)
+  요청 중… (7 × 50 = 350건)
+
+[가드]
+  ✅ DB 설정 원복(auto_explain RESET)✅ HTTP 200 350/350             ✅ 계획 수집 350/350            
+
+[검색어별 · 앱 커넥션이 실행한 계획 (전체 요청 기준)]
+  검색어     쿼리      요청  custom  generic  custom 의 exact 버킷    generic 의 exact 버킷     custom p50 DB ms  generic p50 DB ms  HTTP p50 ms
+  코딩       nick_c      50       3       47  Index(pk) 3             IndexOnly(nick_cover) 47             188.0               31.8         37.0
+  민준       nick_c      50       2       48  Index(pk) 2             IndexOnly(nick_cover) 48             0.435              1.064        6.510
+  김         nick_nc     50      50        0  Index(pk) 50            —                                    174.1                  —        180.0
+  james      nick_c      50       2       48  Index(pk) 2             IndexOnly(nick_cover) 48             0.226              1.907        8.999
+  raread     nick_c      50       2       48  Index(pk) 2             IndexOnly(nick_cover) 48             205.2              136.6        144.0
+  @ab        handle_c    50      50        0  Index(handle_cover) 50  —                                    0.100                  —        7.182
+  @qqbench1  handle_c    50      50        0  Index(handle_cover) 50  —                                    0.100                  —        5.455
+
+[검색어별 · 접두(prefix_all) / 포함(contains_ids) 버킷의 users 접근 노드]
+  검색어     custom prefix             custom contains         generic prefix            generic contains        
+  코딩       IndexOnly(nick_cover) 3   NEVER EXECUTED 3        IndexOnly(nick_cover) 47  NEVER EXECUTED 47       
+  민준       NEVER EXECUTED 2          NEVER EXECUTED 2        NEVER EXECUTED 48         NEVER EXECUTED 48       
+  김         IndexOnly(nick_cover) 50  — 50                    —                         —                       
+  james      NEVER EXECUTED 2          NEVER EXECUTED 2        NEVER EXECUTED 48         NEVER EXECUTED 48       
+  raread     IndexOnly(nick_cover) 2   Bitmap(nick_trgm) 2     IndexOnly(nick_cover) 48  IndexOnly(nick_cover) 48
+  @ab        Index(handle_like) 50     NEVER EXECUTED 50       —                         —                       
+  @qqbench1  Index(handle_like) 50     Bitmap(handle_trgm) 50  —                         —                       
+  앱 커넥션(PG pid) 1개 · 첫 generic 계획: 16번째 요청
+  custom = 계획 조건에 검색어 값이 상수로 들어간 것, generic = 값 없이 외부 파라미터로 남은 것. DB ms 는 auto_explain(analyze) 실행 시간.
+
+[판정]
+  ── 기록됨. generic 계획을 쓴다. 위 표의 generic exact 버킷이 닉네임 인덱스인지 본다.
+└─ 저장: benchmark/_runs/F-AP-1m-after-run2/  (output.log · result.csv · requests.csv · plans.json · meta.json)
