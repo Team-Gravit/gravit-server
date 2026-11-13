@@ -33,6 +33,8 @@ class RedisLeagueRankingStoreIntegrationTest {
     private static final long OTHER_LEAGUE_ID = 20L;
     // RedisLeagueRankingStore.ADD_BATCH_SIZE 와 같은 값. 배치 경계를 넘기는 데 쓴다.
     private static final int BATCH_SIZE = 1_000;
+    private static final String REBUILD_KEY_OF_LEAGUE = "league:rank-rebuild:1:10";
+    private static final String REBUILD_KEY_OF_OTHER_SEASON = "league:rank-rebuild:2:10";
 
     @Autowired
     private RedisLeagueRankingStore leagueRankingStore;
@@ -454,6 +456,34 @@ class RedisLeagueRankingStoreIntegrationTest {
             // then
             assertThat(leagueRankingStore.countRanked(SEASON_ID)).isEqualTo(1);
         }
+
+        @Test
+        void 실패로_남은_임시_키는_시즌_인원에_세지_않는다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_LEAGUE, "2", 200);
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.countRanked(SEASON_ID)).isEqualTo(1);
+                softly.assertThat(leagueRankingStore.hasRanking(OTHER_SEASON_ID)).isFalse();
+            });
+        }
+
+        @Test
+        void 다음_재구축은_남은_임시_키를_섞지_않는다() {
+            // given
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_LEAGUE, "2", 200);
+            List<LeagueRankEntryDto> entries = List.of(new LeagueRankEntryDto(0, 1L, 100, LEAGUE_ID));
+
+            // when
+            leagueRankingStore.replaceLeague(SEASON_ID, LEAGUE_ID, entries);
+
+            // then
+            assertThat(leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10))
+                    .extracting(LeagueRankEntryDto::userId)
+                    .containsExactly(1L);
+        }
     }
 
     @Nested
@@ -671,6 +701,22 @@ class RedisLeagueRankingStoreIntegrationTest {
             assertSoftly(softly -> {
                 softly.assertThat(leagueRankingStore.isReady(SEASON_ID)).isFalse();
                 softly.assertThat(leagueRankingStore.isReady(OTHER_SEASON_ID)).isTrue();
+            });
+        }
+
+        @Test
+        void 실패로_남은_임시_키도_지워진다() {
+            // given
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_LEAGUE, "2", 200);
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_OTHER_SEASON, "3", 300);
+
+            // when
+            leagueRankingStore.deleteSeason(SEASON_ID);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(rankingRedisTemplate.hasKey(REBUILD_KEY_OF_LEAGUE)).isFalse();
+                softly.assertThat(rankingRedisTemplate.hasKey(REBUILD_KEY_OF_OTHER_SEASON)).isTrue();
             });
         }
 
