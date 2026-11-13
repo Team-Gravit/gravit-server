@@ -28,7 +28,7 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     private static final String KEY_PREFIX = "league:rank:";
     private static final String READY_KEY_PREFIX = "league:rank-ready:";
     private static final String READY_VALUE = "1";
-    private static final String REBUILD_KEY_SUFFIX = ":rebuild";
+    private static final String REBUILD_KEY_PREFIX = "league:rank-rebuild:";
     private static final String KEY_DELIMITER = ":";
     private static final String SEASON_KEY_PATTERN_SUFFIX = ":*";
     private static final int SCAN_COUNT = 100;
@@ -209,7 +209,7 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
             List<LeagueRankEntryDto> entries
     ) {
         String key = key(seasonId, leagueId);
-        String rebuildKey = key + REBUILD_KEY_SUFFIX;
+        String rebuildKey = rebuildKey(seasonId, leagueId);
 
         redisTemplate.unlink(rebuildKey);
 
@@ -229,6 +229,7 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     @Override
     public void deleteSeason(long seasonId) {
         Set<String> keys = scanSeasonKeys(seasonId);
+        keys.addAll(scanKeys(seasonScanOptions(REBUILD_KEY_PREFIX, seasonId)));
         keys.add(readyKey(seasonId));
 
         redisTemplate.unlink(keys);
@@ -297,9 +298,13 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     }
 
     private Set<String> scanSeasonKeys(long seasonId) {
+        return scanKeys(seasonKeyScanOptions(seasonId));
+    }
+
+    private Set<String> scanKeys(ScanOptions scanOptions) {
         Set<String> keys = new LinkedHashSet<>();
 
-        try (Cursor<String> cursor = redisTemplate.scan(seasonKeyScanOptions(seasonId))) {
+        try (Cursor<String> cursor = redisTemplate.scan(scanOptions)) {
             while (cursor.hasNext()) {
                 keys.add(cursor.next());
             }
@@ -309,8 +314,15 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
     }
 
     private ScanOptions seasonKeyScanOptions(long seasonId) {
+        return seasonScanOptions(KEY_PREFIX, seasonId);
+    }
+
+    private static ScanOptions seasonScanOptions(
+            String keyPrefix,
+            long seasonId
+    ) {
         return ScanOptions.scanOptions()
-                .match(KEY_PREFIX + seasonId + SEASON_KEY_PATTERN_SUFFIX)
+                .match(keyPrefix + seasonId + SEASON_KEY_PATTERN_SUFFIX)
                 .count(SCAN_COUNT)
                 .build();
     }
@@ -338,6 +350,13 @@ public class RedisLeagueRankingStore implements LeagueRankingStore {
             long leagueId
     ) {
         return KEY_PREFIX + seasonId + KEY_DELIMITER + leagueId;
+    }
+
+    private static String rebuildKey(
+            long seasonId,
+            long leagueId
+    ) {
+        return REBUILD_KEY_PREFIX + seasonId + KEY_DELIMITER + leagueId;
     }
 
     private static String readyKey(long seasonId) {
