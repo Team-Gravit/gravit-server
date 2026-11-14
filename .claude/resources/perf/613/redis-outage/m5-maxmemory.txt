@@ -1,0 +1,93 @@
+===== R-M5-before =====
+┌─ R-M5-before ───────────────────────────────────────────────────────────────── 2026-11-15 02:33 ─┐
+│ Redis 장애 · M5 메모리 상한 (운영 compose 와 같은 옵션·제한의 일회용 Redis 를 채운다)            │
+│ 코드     before: docker-compose-prod.yml redis 의 변경 전 옵션                                   │
+│ 컨테이너 redis:latest · --memory 768m --memory-swap 768m                                         │
+│          redis-server --appendonly yes --appendfsync everysec                                    │
+│ 채우기   EVAL 한 번에 SET 20,000개 × 값 2048B, 오류나 컨테이너 종료까지 최대 60번                │
+│ 확인     회차마다 used_memory·RSS·컨테이너 상태 → 끝에서 쓰기(SET)·읽기(GET)·PING                │
+│ 기대     before: 768M 에 닿으면 OOM 으로 종료 / after: 살아 있고 쓰기만 OOM 오류로 거절          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 포트 비어 있음               ✅ 이미지 있음                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 1.90 / 2.21 / 2.93 (1/5/15분, 기록)
+  redis:latest redis_version 8.8.0 · 설정 maxmemory=0 policy=noeviction
+    # 1 used   54504984 rss   82948096 · running oom=False 
+    # 2 used  106693464 rss  135626752 · running oom=False 
+    # 3 used  158701184 rss  187822080 · running oom=False 
+    # 4 used  211053448 rss  240984064 · running oom=False 
+    # 5 used  263049632 rss  292659200 · running oom=False 
+    # 6 used  315068696 rss  344743936 · running oom=False 
+    # 7 used  369041160 rss  399052800 · running oom=False 
+    # 8 used  419774776 rss  451084288 · running oom=False 
+    # 9 used  471765504 rss  501866496 · running oom=False 
+    #10 used  523783656 rss  553975808 · running oom=False 
+    #11 used  575765944 rss  606126080 · running oom=False 
+    #12 used  627811856 rss  658333696 · running oom=False 
+    #13 used  679867752 rss  710516736 · running oom=False 
+    #14 used          - rss          - · exited oom=True Error: Server closed the connection
+
+[가드]
+  ✅ 한 회차 이상 채움            
+
+[결과]
+  멈춘 이유: 컨테이너 종료 · 컨테이너 exited · OOMKilled True · 종료 코드 137
+  컨테이너 마지막 로그:
+    1:M 14 Nov 2026 17:33:42.031 * Successfully renamed the temporary AOF base file temp-rewriteaof-bg-187.aof into appendonly.aof.6.base.rdb
+    1:M 14 Nov 2026 17:33:42.033 * Removing the history file appendonly.aof.5.incr.aof in the background
+    1:M 14 Nov 2026 17:33:42.033 * Removing the history file appendonly.aof.5.base.rdb in the background
+    1:M 14 Nov 2026 17:33:42.035 * Background AOF rewrite finished successfully
+    1:M 14 Nov 2026 17:33:44.566 * Starting automatic rewriting of AOF on 936% growth
+    1:M 14 Nov 2026 17:33:44.589 * Creating AOF incr file appendonly.aof.7.incr.aof on background rewrite
+    1:M 14 Nov 2026 17:33:44.593 * Background append only file rewriting started by pid 212
+    212:C 14 Nov 2026 17:33:44.854 * BGSAVE done, 240000 keys saved, 0 keys skipped, 10726825 bytes written.
+    212:C 14 Nov 2026 17:33:44.857 * Successfully created the temporary AOF base file temp-rewriteaof-bg-212.aof
+    212:C 14 Nov 2026 17:33:44.861 * Fork CoW for AOF rewrite: current 1 MB, peak 1 MB, average 0 MB
+    1:M 14 Nov 2026 17:33:44.912 * Background AOF rewrite terminated with success
+    1:M 14 Nov 2026 17:33:44.912 * Successfully renamed the temporary AOF base file temp-rewriteaof-bg-212.aof into appendonly.aof.7.base.rdb
+    1:M 14 Nov 2026 17:33:44.914 * Removing the history file appendonly.aof.6.incr.aof in the background
+    1:M 14 Nov 2026 17:33:44.914 * Removing the history file appendonly.aof.6.base.rdb in the background
+    1:M 14 Nov 2026 17:33:44.916 * Background AOF rewrite finished successfully
+
+[판정]
+  ── 기대(PLAN-613 M5): before 768M 에서 OOM 종료 / after 생존, 쓰기만 거절
+└─ 저장: benchmark/_runs/R-M5-before/  (output.log · rounds.csv · meta.json)
+===== R-M5-after =====
+┌─ R-M5-after ────────────────────────────────────────────────────────────────── 2026-11-15 02:33 ─┐
+│ Redis 장애 · M5 메모리 상한 (운영 compose 와 같은 옵션·제한의 일회용 Redis 를 채운다)            │
+│ 코드     after: docker-compose-prod.yml redis 의 변경 후(#613 STEP 5) 옵션                       │
+│ 컨테이너 redis:latest · --memory 768m --memory-swap 768m                                         │
+│          redis-server --appendonly yes --appendfsync everysec --maxmemory 384mb --maxmemory-polic│
+│          y noeviction                                                                            │
+│ 채우기   EVAL 한 번에 SET 20,000개 × 값 2048B, 오류나 컨테이너 종료까지 최대 60번                │
+│ 확인     회차마다 used_memory·RSS·컨테이너 상태 → 끝에서 쓰기(SET)·읽기(GET)·PING                │
+│ 기대     before: 768M 에 닿으면 OOM 으로 종료 / after: 살아 있고 쓰기만 OOM 오류로 거절          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 포트 비어 있음               ✅ 이미지 있음                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 1.98 / 2.23 / 2.95 (1/5/15분, 기록)
+  redis:latest redis_version 8.8.0 · 설정 maxmemory=402653184 policy=noeviction
+    # 1 used   54504408 rss   82464768 · running oom=False 
+    # 2 used  106693592 rss  135143424 · running oom=False 
+    # 3 used  158701952 rss  187289600 · running oom=False 
+    # 4 used  211585568 rss  240513024 · running oom=False 
+    # 5 used  263053216 rss  292175872 · running oom=False 
+    # 6 used  315073176 rss  344272896 · running oom=False 
+    # 7 used  368982248 rss  398516224 · running oom=False 
+    # 8 used  419778728 rss  450691072 · running oom=False 
+    # 9 used  419780688 rss  450691072 · running oom=False OOM command not allowed when used memory > 'maxmemory'. script: 24e206a3b1ce4aa34cae5fe76a37bfae4b7702e9, on @user_script:1.
+
+[가드]
+  ✅ 한 회차 이상 채움            
+
+[결과]
+  멈춘 이유: 쓰기 오류 · 컨테이너 running · OOMKilled False · 종료 코드 0
+  끝에서 쓰기 SET → OOM command not allowed when used memory > 'maxmemory'.
+  끝에서 읽기 GET k:1:1 → 2048B · PING → PONG · DBSIZE 160000
+  INFO memory: {'used_memory': '419830064', 'used_memory_rss': '450691072', 'used_memory_peak': '464391800', 'maxmemory': '402653184', 'maxmemory_policy': 'noeviction'}
+
+[판정]
+  ── 기대(PLAN-613 M5): before 768M 에서 OOM 종료 / after 생존, 쓰기만 거절
+└─ 저장: benchmark/_runs/R-M5-after/  (output.log · rounds.csv · meta.json)

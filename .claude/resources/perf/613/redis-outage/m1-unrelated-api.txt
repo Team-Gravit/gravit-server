@@ -1,0 +1,200 @@
+===== R-M1-pause-before =====
+┌─ R-M1-pause-before ─────────────────────────────────────────────────────────── 2026-11-15 02:09 ─┐
+│ Redis 장애 · M1 Redis 와 무관한 API (혼합 부하 중 Redis pause 60초)                              │
+│ 코드     개선 전 · dev e32ba7e2 (#613 STEP 적용 전)                                              │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53 · Hikari 최대 10                │
+│ 부하     무관 GET /api/v1/chapters 4클라이언트(간격 50ms)                                        │
+│          리그 홈 GET /api/v1/league/home 12클라이언트(간격 200ms, @Transactional 안에서 Redis 조 │
+│          회) · 레슨 제출 POST /api/v1/lessons/results 2클라이언트(간격 100ms, 유저마다 첫 제출)  │
+│ 순서     정상 30초 → docker pause 60초 → 복구 뒤 40초. 구간은 요청을 보낸 시각으로 나눈다        │
+│ 지표     API별 p50/p95/p99·오류율 · Hikari active/pending · Tomcat 바쁜 스레드(프로메테우스 1초) │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ 관리 포트 비어 있음          
+  ✅ jar 존재                     ✅ jar 커밋 e32ba7e2            ✅ JWT 키 일치                  
+  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 2.92 / 4.80 / 5.26 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (redis-outage-before.jar)
+    정상 30초…
+    Redis pause 60초…
+    복구 뒤 40초…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ 주입 전 앱 Redis 연결 정상(리그 홈 200)✅ pause: Redis 응답 없음       
+  ✅ pause 뒤 Redis 복구          ✅ 정상 구간 무관 API 오류 0    
+
+[결과 (구간 = 요청을 보낸 시각, 지연은 전체 응답 기준 ms)]
+  구간         API              요청  오류율      p50      p95      p99     최대  상태 코드              
+  정상         무관(챕터 목록)  1933    0.0%      5.1     12.8     20.5     31.6  200:1933               
+  정상         리그 홈          1704    0.0%      5.9     14.6     21.1     32.0  200:1704               
+  정상         레슨 제출         478    0.0%     17.4     34.9     41.1    160.9  201:478                
+  Redis pause  무관(챕터 목록)    16   25.0%  29884.6  30025.0  30032.1  30032.1  200:12 403:4           
+  Redis pause  리그 홈            17   70.6%  30056.6  60011.8  60012.9  60012.9  200:5 400:7 403:4 500:1
+  Redis pause  레슨 제출           2    0.0%  60017.3  60019.6  60019.6  60019.6  201:2                  
+  복구 뒤      무관(챕터 목록)  2575    0.0%      4.7     13.7     17.9     23.6  200:2575               
+  복구 뒤      리그 홈          2256    0.0%      5.6     14.6     20.6     27.4  200:2256               
+  복구 뒤      레슨 제출         640    0.0%     16.7     32.5     38.8     51.7  201:640                
+
+[자원 (구간 최대값, 프로메테우스 1초 표본)]
+  구간         Hikari active  Hikari pending  Tomcat 바쁜 스레드  표본(빠짐)
+  정상                  10.0             6.0                15.0       30(0)
+  Redis pause           10.0            10.0                18.0       59(0)
+  복구 뒤                6.0             0.0                 6.0       40(0)
+  Hikari 최대 10. 오류 = 200(제출은 201) 외 응답. 장애 구간에 보낸 요청이 복구 뒤에 끝나도 장애 구간에 센다.
+
+[판정]
+  ── 기대(PLAN-613 M1): after 는 장애 구간 무관 API p95·오류율이 정상 구간과 같은 수준
+└─ 저장: benchmark/_runs/R-M1-pause-before/  (output.log · requests.csv · prom.csv · app_log_sample.txt · meta.json)
+===== R-M1-pause-after =====
+┌─ R-M1-pause-after ──────────────────────────────────────────────────────────── 2026-11-15 02:12 ─┐
+│ Redis 장애 · M1 Redis 와 무관한 API (혼합 부하 중 Redis pause 60초)                              │
+│ 코드     개선 후 · #613 59656d8d (STEP 1~5, base e32ba7e2)                                       │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53 · Hikari 최대 10                │
+│ 부하     무관 GET /api/v1/chapters 4클라이언트(간격 50ms)                                        │
+│          리그 홈 GET /api/v1/league/home 12클라이언트(간격 200ms, @Transactional 안에서 Redis 조 │
+│          회) · 레슨 제출 POST /api/v1/lessons/results 2클라이언트(간격 100ms, 유저마다 첫 제출)  │
+│ 순서     정상 30초 → docker pause 60초 → 복구 뒤 40초. 구간은 요청을 보낸 시각으로 나눈다        │
+│ 지표     API별 p50/p95/p99·오류율 · Hikari active/pending · Tomcat 바쁜 스레드(프로메테우스 1초) │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ 관리 포트 비어 있음          
+  ✅ jar 존재                     ✅ jar 커밋 59656d8d            ✅ JWT 키 일치                  
+  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 1.98 / 3.62 / 4.69 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (redis-outage-after.jar)
+    정상 30초…
+    Redis pause 60초…
+    복구 뒤 40초…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ 주입 전 앱 Redis 연결 정상(리그 홈 200)✅ pause: Redis 응답 없음       
+  ✅ pause 뒤 Redis 복구          ✅ 정상 구간 무관 API 오류 0    
+
+[결과 (구간 = 요청을 보낸 시각, 지연은 전체 응답 기준 ms)]
+  구간         API              요청  오류율     p50     p95     p99    최대  상태 코드
+  정상         무관(챕터 목록)  1935    0.0%     5.0    13.2    19.4    34.4  200:1935 
+  정상         리그 홈          1704    0.0%     5.6    13.5    20.2    29.7  200:1704 
+  정상         레슨 제출         480    0.0%    17.3    34.9    40.1   165.0  201:480  
+  Redis pause  무관(챕터 목록)   550    0.0%   297.8   853.7   934.1  1064.0  200:550  
+  Redis pause  리그 홈           454    0.0%  1452.6  1817.3  1856.1  1944.7  200:454  
+  Redis pause  레슨 제출          52    0.0%  1987.1  3737.2  3847.3  3968.8  201:52   
+  복구 뒤      무관(챕터 목록)  2578    0.0%     4.8    13.1    18.3    33.8  200:2578 
+  복구 뒤      리그 홈          2259    0.0%     5.3    13.1    18.7    32.2  200:2259 
+  복구 뒤      레슨 제출         638    0.0%    17.7    31.2    35.6    40.5  201:638  
+
+[자원 (구간 최대값, 프로메테우스 1초 표본)]
+  구간         Hikari active  Hikari pending  Tomcat 바쁜 스레드  표본(빠짐)
+  정상                  10.0             5.0                14.0       30(0)
+  Redis pause           10.0            10.0                18.0       59(0)
+  복구 뒤               10.0             2.0                12.0       40(0)
+  Hikari 최대 10. 오류 = 200(제출은 201) 외 응답. 장애 구간에 보낸 요청이 복구 뒤에 끝나도 장애 구간에 센다.
+
+[판정]
+  ── 기대(PLAN-613 M1): after 는 장애 구간 무관 API p95·오류율이 정상 구간과 같은 수준
+└─ 저장: benchmark/_runs/R-M1-pause-after/  (output.log · requests.csv · prom.csv · app_log_sample.txt · meta.json)
+===== R-M1-stop-before =====
+┌─ R-M1-stop-before ──────────────────────────────────────────────────────────── 2026-11-15 02:15 ─┐
+│ Redis 장애 · M1 Redis 와 무관한 API (혼합 부하 중 Redis stop 60초)                               │
+│ 코드     개선 전 · dev e32ba7e2 (#613 STEP 적용 전)                                              │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53 · Hikari 최대 10                │
+│ 부하     무관 GET /api/v1/chapters 4클라이언트(간격 50ms)                                        │
+│          리그 홈 GET /api/v1/league/home 12클라이언트(간격 200ms, @Transactional 안에서 Redis 조 │
+│          회) · 레슨 제출 POST /api/v1/lessons/results 2클라이언트(간격 100ms, 유저마다 첫 제출)  │
+│ 순서     정상 30초 → docker stop 60초 → 복구 뒤 40초. 구간은 요청을 보낸 시각으로 나눈다         │
+│ 지표     API별 p50/p95/p99·오류율 · Hikari active/pending · Tomcat 바쁜 스레드(프로메테우스 1초) │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ 관리 포트 비어 있음          
+  ✅ jar 존재                     ✅ jar 커밋 e32ba7e2            ✅ JWT 키 일치                  
+  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 3.52 / 3.55 / 4.48 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (redis-outage-before.jar)
+    정상 30초…
+    Redis stop 60초…
+    복구 뒤 40초…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ 주입 전 앱 Redis 연결 정상(리그 홈 200)✅ stop: Redis 응답 없음        
+  ✅ stop 뒤 Redis 복구           ✅ 정상 구간 무관 API 오류 0    
+
+[결과 (구간 = 요청을 보낸 시각, 지연은 전체 응답 기준 ms)]
+  구간        API              요청  오류율      p50      p95      p99     최대  상태 코드        
+  정상        무관(챕터 목록)  1936    0.0%      5.1     12.4     17.4     36.1  200:1936         
+  정상        리그 홈          1704    0.0%      5.9     16.4     21.8     26.0  200:1704         
+  정상        레슨 제출         480    0.0%     17.0     34.1     41.6    167.6  201:480          
+  Redis stop  무관(챕터 목록)    16   25.0%  29845.6  30040.3  30042.2  30042.2  200:12 403:4     
+  Redis stop  리그 홈            12  100.0%  60013.3  60017.5  60017.7  60017.7  400:12           
+  Redis stop  레슨 제출           2    0.0%  60004.0  60004.6  60004.6  60004.6  201:2            
+  복구 뒤     무관(챕터 목록)  2564    0.0%      4.9     13.8     18.1     22.4  200:2564         
+  복구 뒤     리그 홈          2253   47.4%      5.7     15.7     20.8     30.8  200:1185 400:1068
+  복구 뒤     레슨 제출         636    0.0%     17.2     32.9     37.1     51.1  201:636          
+
+[자원 (구간 최대값, 프로메테우스 1초 표본)]
+  구간        Hikari active  Hikari pending  Tomcat 바쁜 스레드  표본(빠짐)
+  정상                 10.0             8.0                18.0       30(0)
+  Redis stop           10.0             9.0                18.0       59(0)
+  복구 뒤              10.0             4.0                14.0       40(0)
+  Hikari 최대 10. 오류 = 200(제출은 201) 외 응답. 장애 구간에 보낸 요청이 복구 뒤에 끝나도 장애 구간에 센다.
+
+[판정]
+  ── 기대(PLAN-613 M1): after 는 장애 구간 무관 API p95·오류율이 정상 구간과 같은 수준
+└─ 저장: benchmark/_runs/R-M1-stop-before/  (output.log · requests.csv · prom.csv · app_log_sample.txt · meta.json)
+===== R-M1-stop-after =====
+┌─ R-M1-stop-after ───────────────────────────────────────────────────────────── 2026-11-15 02:17 ─┐
+│ Redis 장애 · M1 Redis 와 무관한 API (혼합 부하 중 Redis stop 60초)                               │
+│ 코드     개선 후 · #613 59656d8d (STEP 1~5, base e32ba7e2)                                       │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53 · Hikari 최대 10                │
+│ 부하     무관 GET /api/v1/chapters 4클라이언트(간격 50ms)                                        │
+│          리그 홈 GET /api/v1/league/home 12클라이언트(간격 200ms, @Transactional 안에서 Redis 조 │
+│          회) · 레슨 제출 POST /api/v1/lessons/results 2클라이언트(간격 100ms, 유저마다 첫 제출)  │
+│ 순서     정상 30초 → docker stop 60초 → 복구 뒤 40초. 구간은 요청을 보낸 시각으로 나눈다         │
+│ 지표     API별 p50/p95/p99·오류율 · Hikari active/pending · Tomcat 바쁜 스레드(프로메테우스 1초) │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ 관리 포트 비어 있음          
+  ✅ jar 존재                     ✅ jar 커밋 59656d8d            ✅ JWT 키 일치                  
+  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 2.77 / 3.15 / 4.16 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (redis-outage-after.jar)
+    정상 30초…
+    Redis stop 60초…
+    복구 뒤 40초…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ 주입 전 앱 Redis 연결 정상(리그 홈 200)✅ stop: Redis 응답 없음        
+  ✅ stop 뒤 Redis 복구           ✅ 정상 구간 무관 API 오류 0    
+
+[결과 (구간 = 요청을 보낸 시각, 지연은 전체 응답 기준 ms)]
+  구간        API              요청  오류율   p50   p95   p99   최대  상태 코드
+  정상        무관(챕터 목록)  1933    0.0%   5.1  13.2  21.8   32.6  200:1933 
+  정상        리그 홈          1704    0.0%   5.6  15.6  23.3   33.1  200:1704 
+  정상        레슨 제출         480    0.0%  17.2  32.1  43.8  164.1  201:480  
+  Redis stop  무관(챕터 목록)  3841    0.0%   5.1  14.0  18.0   32.7  200:3841 
+  Redis stop  리그 홈          3384    0.0%   6.3  15.9  21.7   35.8  200:3384 
+  Redis stop  레슨 제출         944    0.0%  20.1  33.8  37.1   39.0  201:944  
+  복구 뒤     무관(챕터 목록)  2574    0.0%   5.0  13.4  16.8   30.5  200:2574 
+  복구 뒤     리그 홈          2256    0.0%   5.8  14.3  19.5   27.8  200:2256 
+  복구 뒤     레슨 제출         636    0.0%  18.8  31.0  38.5   46.4  201:636  
+
+[자원 (구간 최대값, 프로메테우스 1초 표본)]
+  구간        Hikari active  Hikari pending  Tomcat 바쁜 스레드  표본(빠짐)
+  정상                 10.0             8.0                18.0       30(0)
+  Redis stop            5.0             0.0                 5.0       59(0)
+  복구 뒤               6.0             0.0                 9.0       40(0)
+  Hikari 최대 10. 오류 = 200(제출은 201) 외 응답. 장애 구간에 보낸 요청이 복구 뒤에 끝나도 장애 구간에 센다.
+
+[판정]
+  ── 기대(PLAN-613 M1): after 는 장애 구간 무관 API p95·오류율이 정상 구간과 같은 수준
+└─ 저장: benchmark/_runs/R-M1-stop-after/  (output.log · requests.csv · prom.csv · app_log_sample.txt · meta.json)
