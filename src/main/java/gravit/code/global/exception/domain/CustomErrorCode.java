@@ -54,6 +54,7 @@ public enum CustomErrorCode implements ErrorCode {
     TOKEN_NOT_SIGNED(UNAUTHORIZED,"JWT_4014","서명되지 않은 토큰입니다."),
     TOKEN_NOT_FOUND(UNAUTHORIZED, "JWT_4015", "토큰을 찾을 수 없습니다."),
     REFRESH_TOKEN_EXPIRED(UNAUTHORIZED,"JWT_4016", "만료된 리프레시 토큰입니다."),
+    TOKEN_USER_NOT_FOUND(UNAUTHORIZED, "JWT_4017", "탈퇴했거나 존재하지 않는 사용자의 토큰입니다."),
 
     // Learning
     LEARNING_NOT_FOUND(NOT_FOUND, "LEARNING_4041", "학습 정보 조회에 실패하였습니다."),
