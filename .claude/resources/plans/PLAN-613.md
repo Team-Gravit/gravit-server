@@ -8,18 +8,19 @@
 Redis가 죽으면 **바로 실패하게** 하고, 알림과 피드는 **큐 적재가 실패하면 그 자리에서 처리**하고, 랭킹 DB 폴백에는 **동시 실행 상한**을 둔다. 운영 Redis에는 `maxmemory`를 걸어 **OOM으로 종료되지 않게** 한다.
 
 ## 선행 조건
-- 없음. #608(`RetryQueueSweeper`, `SchedulingConfig`), #609(`RedisLeagueRankingStore`, `LeagueRankingRebuildService`, `LeagueRankSyncListener`)와 수정 파일이 겹치지 않는다. 머지 순서와 상관없이 구현할 수 있다
+- 없음. #608(`RetryQueueSweeper`, `SchedulingConfig`), #609(`RedisLeagueRankingStore`, `LeagueRankingRebuildService`, `LeagueRankSyncListener`)와 수정 파일이 겹치지 않는다. 두 이슈 모두 dev에 머지됐고(#609 `e32ba7e2`), 이 브랜치는 그 위로 rebase했다
+- 다만 #609가 요청 경로에 기본 연결 호출을 하나 **늘렸다**(F4의 랭킹 반영 실패 시 재시도 적재). 파일은 겹치지 않지만 STEP 1의 효과 범위에 들어간다
 - 다만 **측정 M3(랭킹 폴백 HTTP 측정)은 STEP 4보다 먼저** 한다. 동시 실행 상한(D6)을 이 측정으로 정한다
 
 ## 현재 코드에서 확인한 사실 (계획의 근거)
 | # | 사실 | 위치 |
 |---|---|---|
 | F1 | 기본 연결은 `new LettuceConnectionFactory(host, port)`로 직접 만든다. 그래서 Boot 자동 설정(`spring.data.redis.timeout`)이 적용되지 않고, Spring Data Redis 기본값인 명령 타임아웃 60초가 걸린다. yml에도 timeout 설정이 없다 | `RedisConfig:37-41`, `application*.yml` |
-| F2 | 두 연결 모두 `ClientOptions.disconnectedBehavior`가 기본값이다. Lettuce는 `autoReconnect=true`일 때 기본값으로 끊긴 동안의 명령을 버퍼에 쌓고, 명령 타임아웃이 지나서야 실패시킨다 (라이브러리 기본 동작이고, 코드에서 재현한 적은 없다. M0에서 확인한다) | `RedisConfig:54-67` |
+| F2 | 두 연결 모두 `ClientOptions.disconnectedBehavior`가 기본값이다. Lettuce는 `autoReconnect=true`일 때 기본값으로 끊긴 동안의 명령을 버퍼에 쌓고, 명령 타임아웃이 지나서야 실패시킨다 (라이브러리 기본 동작이다. #609 S-M2-after에서 Redis가 응답 없이 멈춘 순간 보낸 기본 연결 명령이 `QueryTimeoutException: Redis command timed out`까지 약 60초 기다린 것을 확인했다. stop과 pause 각각의 동작은 M0에서 확인한다) | `RedisConfig:54-67` |
 | F3 | 랭킹 연결은 명령, 접속 타임아웃이 100ms라 장애 때도 100ms 안에 실패한다. 버퍼링은 기본 연결과 같다 | `RedisConfig:23, 54-67` |
-| F4 | 요청 스레드에서 기본 연결을 쓰는 곳: 모든 `AFTER_COMMIT` 리스너의 재시도 큐 적재(알림과 피드는 항상, 나머지는 실패할 때), 토큰 재발급과 로그아웃, OAuth state, 메일 인증 코드, 리그 홈 시즌 팝업 | `RedisRetryEventPublisher`, `AuthTokenProvider:61-94`, `LeagueService:73, 85` |
+| F4 | 요청 스레드에서 기본 연결을 쓰는 곳: 모든 `AFTER_COMMIT` 리스너의 재시도 큐 적재(알림과 피드는 항상, 나머지는 실패할 때), 토큰 재발급과 로그아웃, OAuth state, 메일 인증 코드, 리그 홈 시즌 팝업. #609에서 **랭킹 반영 실패 시 재시도 적재**(`LeagueRankSyncListener.queueRankSyncRetry`)가 더해졌다. 랭킹 연결(100ms)이 실패한 뒤 기본 연결로 적재하므로, Redis가 멈추면 레슨 제출마다 이 적재에서 묶인다 | `RedisRetryEventPublisher`, `LeagueRankSyncListener:33-48`, `AuthTokenProvider:61-94`, `LeagueService:73, 85` |
 | F5 | 리그 홈 시즌 팝업의 Redis 호출 두 번은 `@Transactional` 안에 있다. Redis를 기다리는 동안 DB 커넥션도 붙잡는다. Hikari 풀은 설정이 없어 기본값 10이다. 리그 홈 요청 10개만 묶여도 풀이 바닥나고, DB를 쓰는 다른 API가 커넥션을 기다리며 멈춘다(코드 기준 추정, M1에서 확인) | `LeagueService:57-89`, `application-prod.yml` |
-| F6 | 레슨 제출처럼 쓰기 트랜잭션 뒤의 `AFTER_COMMIT` 리스너도 커넥션을 쥔 채 실행된다(`afterCommit`은 커넥션 정리보다 먼저 호출된다). 재시도 큐 적재가 60초 걸리면 그동안 커넥션이 반납되지 않는다(Spring 동작 기준 추정, M1에서 확인) | `facade.md` "어길 수 없는 제약" |
+| F6 | 레슨 제출처럼 쓰기 트랜잭션 뒤의 `AFTER_COMMIT` 리스너도 커넥션을 쥔 채 실행된다(`afterCommit`은 커넥션 정리보다 먼저 호출된다). 재시도 큐 적재가 60초 걸리면 그동안 커넥션이 반납되지 않는다(Spring 동작 기준 추정, M1에서 확인). #609 S-M2-after(Hikari 60)에서 Redis `SHUTDOWN SAVE` 순간 레슨 제출 8건이 모두 약 60,130ms 걸렸다(before 1건). 운영 풀 10이면 같은 상황에서 풀이 바닥날 수 있다 | `facade.md` "어길 수 없는 제약" |
 | F7 | 알림(공지, 팔로우, 문의 답변)과 피드(연속 학습, 레벨업, 티어 승급) 리스너는 큐에 적재만 한다. 적재가 실패하면 error 로그만 남고 유실된다. 나머지 리스너는 먼저 직접 처리하고, 실패할 때만 큐에 넣는다 | `NotificationEventListener:27-62`, `SocialFeedEventListener:30-74`, `facade.md:66-67` |
 | F8 | 알림과 피드의 처리 메서드는 `REQUIRED`다. `AFTER_COMMIT` 리스너에서 그대로 부르면 이미 커밋된 트랜잭션에 참여해, 쓰기가 커밋되지 않는다. 다른 리스너가 `REQUIRES_NEW` 서비스를 부르는 이유가 이것이다 | `SocialFacade:74`, `NotificationService:44`, `UserLeaguePointService:30` |
 | F9 | 랭킹 DB 폴백에는 동시 실행 상한이 없다. 조회 서비스가 `@Transactional(readOnly = true)`라서 폴백 쿼리(100만 명 기준 p95 984ms, 이슈 본문) 동안 요청마다 커넥션을 하나씩 쥔다 | `LeagueRankFinder:59-74`, `UserLeagueQueryService:40-77` |
@@ -247,3 +248,4 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 - 운영 Redis 이미지가 `redis:latest`라 버전이 고정돼 있지 않다. 이번 범위에 넣지 않는다
 
 ## Deviation Log
+- 2026-11-14: dev(`e32ba7e2`, #608·#609·#610·#623 머지 뒤)로 rebase. #609 측정(`.claude/resources/perf/609/rank-sync/record.md` M2)에서 확인한 랭킹 재시도 적재 경로를 F2·F4·F6에 반영. #609에서는 고치지 않고 이 계획의 STEP 1로 해소하기로 함(2026-11-14 결정). `retrySweepScheduler`는 #609에서 4스레드가 됐다(STEP 3 직접 처리와 무관)
