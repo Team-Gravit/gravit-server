@@ -181,7 +181,7 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 
 ### STEP 5. 운영 Redis 메모리 상한 (Infra, D5)
 **`docker-compose-prod.yml`, `docker-compose-dev.yml`**
-- `command: redis-server --appendonly yes --appendfsync everysec --maxmemory {D5} --maxmemory-policy noeviction`
+- `command: redis-server --appendonly yes --appendfsync everysec --maxmemory 384mb --maxmemory-policy noeviction`
 - `noeviction`을 고르는 이유: 리프레시 토큰, 재시도 큐, 랭킹은 캐시가 아니라 원본이다. 키를 지우는 정책을 쓰면 조용히 사라진다. `noeviction`은 상한에서 쓰기만 OOM 오류로 거절하고, 읽기와 프로세스는 살아 있다
 - 상한에 닿았을 때의 앱 동작: 쓰기 명령은 `RedisSystemException`으로 실패한다. 알림과 피드는 STEP 3으로 직접 처리되고, 랭킹 반영은 #609 재시도와 대조로 메워지고, 로그인 토큰 저장은 실패한다(받아들인다. 지표로 상한 도달 전에 알아채는 것이 목표다)
 - 값: 운영 `INFO memory`(`used_memory_peak`, `used_memory_rss`, `mem_fragmentation_ratio`)를 확인한 뒤 확정한다. 768M 안에 AOF 재작성 fork의 copy-on-write와 클라이언트 버퍼 여유를 남겨야 해서, 후보는 512mb(약 2/3)다
@@ -200,7 +200,7 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 - [x] D2. 서킷 브레이커 구현 - **Resilience4j 모듈 직접 사용** (세마포어 직접 구현안은 버림). STEP 1 뒤에는 Redis가 죽어도 조회가 즉시(거절) 또는 100ms(무응답) 안에 실패하므로, 브레이커가 아끼는 것은 무응답 장애 때의 요청당 100ms다. 핵심은 벌크헤드다. Resilience4j를 고르는 이유는 브레이커 상태와 거절 수가 Micrometer 지표로 바로 나와, 측정과 Grafana 관측을 따로 만들지 않아도 되기 때문이다
 - [x] D3. 폴백 상한 초과 시 응답 - **503 + `U_L_5031`** (200 + null안은 버림). 503은 응답 DTO와 기존 필드의 의미를 바꾸지 않는다. null은 "0 = 순위 없음" 규칙과 별개로 클라이언트 분기가 하나 더 생긴다. 어느 쪽이든 프론트와 문구를 맞춰야 한다
 - [x] D4. 리그 홈 시즌 팝업의 Redis 실패 격리(STEP 2) - **포함**. 이슈 본문의 범위(Redis와 무관한 API)에는 들지 않지만, F5대로 이 요청이 DB 커넥션을 쥐고 Redis를 기다린다. STEP 1로 대기는 1초가 되지만, 격리하지 않으면 Redis 장애 동안 리그 홈 자체가 500이 된다
-- [ ] D5. `maxmemory` 값 - 운영 `INFO memory` 확인 후 확정(후보 512mb)
+- [x] D5. `maxmemory` 값 - **384mb** (512mb안은 버림). 벤치 Redis 실측(2026-11-14, #609 S-M6 직후): 랭킹 970,064명(리그 키 15개)이 `used_memory` 84.65M, `used_memory_rss` 98.75M로 한 명당 약 90바이트다. 100만 명 규모에서도 랭킹은 약 100MB라 384mb는 4배 넘는 여유다. 768M 제한의 절반을 AOF 재작성 fork의 copy-on-write와 프로세스 오버헤드 몫으로 남긴다. 512mb는 데이터가 상한까지 찼을 때 fork 복사분이 더해져 768M을 넘을 수 있다. 랭킹 외 키(리프레시 토큰, 메일 인증 코드, 재시도 큐, 시즌 캐시)는 실측에 없으므로 배포 전 운영 `INFO memory`로 사용량이 384mb보다 충분히 작은지 확인한다
 - [ ] D6. 벌크헤드 동시 실행 수와 브레이커 수치 - M3 측정 후 확정(초기값 동시 4, 대기 0)
 
 ## 검증
@@ -237,7 +237,7 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 - M1의 "전"은 이 브랜치의 STEP 1~3 적용 전 jar로 잰다. 커밋 해시를 기록한다
 
 ### 배포 체크리스트
-- [ ] 운영 `INFO memory` 확인 후 D5 확정
+- [ ] 운영 `INFO memory`로 사용량이 D5(384mb)보다 충분히 작은지 확인
 - [ ] `redis-server` 실행 옵션이 바뀌어 운영 Redis 컨테이너가 재생성된다. AOF로 데이터는 유지되지만 수 초간 끊긴다. 사용량이 적은 시간에 배포한다
 - [ ] 배포 뒤 `CONFIG GET maxmemory`, `CONFIG GET maxmemory-policy` 확인
 - [ ] 503 `U_L_5031` 문구와 처리를 프론트와 공유(D3)
