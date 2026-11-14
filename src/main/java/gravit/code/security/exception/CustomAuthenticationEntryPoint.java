@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_EMPTY;
+
 @Component
 @Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -37,8 +39,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     }
 
     private ErrorCode resolveErrorCode(AuthenticationException authException) {
-        CustomAuthenticationException customAuthenticationException = (CustomAuthenticationException) authException;
-        return customAuthenticationException.getErrorCode();
+        if (authException instanceof CustomAuthenticationException customAuthenticationException) {
+            return customAuthenticationException.getErrorCode();
+        }
+        return TOKEN_EMPTY;
     }
 
     private ErrorResponse<String> makeErrorResponse(ErrorCode errorCode) {
