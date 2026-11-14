@@ -184,7 +184,7 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 - `command: redis-server --appendonly yes --appendfsync everysec --maxmemory 384mb --maxmemory-policy noeviction`
 - `noeviction`을 고르는 이유: 리프레시 토큰, 재시도 큐, 랭킹은 캐시가 아니라 원본이다. 키를 지우는 정책을 쓰면 조용히 사라진다. `noeviction`은 상한에서 쓰기만 OOM 오류로 거절하고, 읽기와 프로세스는 살아 있다
 - 상한에 닿았을 때의 앱 동작: 쓰기 명령은 `RedisSystemException`으로 실패한다. 알림과 피드는 STEP 3으로 직접 처리되고, 랭킹 반영은 #609 재시도와 대조로 메워지고, 로그인 토큰 저장은 실패한다(받아들인다. 지표로 상한 도달 전에 알아채는 것이 목표다)
-- 값: 운영 `INFO memory`(`used_memory_peak`, `used_memory_rss`, `mem_fragmentation_ratio`)를 확인한 뒤 확정한다. 768M 안에 AOF 재작성 fork의 copy-on-write와 클라이언트 버퍼 여유를 남겨야 해서, 후보는 512mb(약 2/3)다
+- 값: 384mb(D5). 768M 안에 AOF 재작성 fork의 copy-on-write와 클라이언트 버퍼 여유를 남긴다. 배포 전 운영 `INFO memory`(`used_memory_peak`, `used_memory_rss`, `mem_fragmentation_ratio`)로 사용량이 충분히 작은지 확인한다
 
 ### STEP 6. 정책, 규칙 문서
 - `league-season.md` 14줄 교체: "리그에 참여한 유저는 순위가 집계돼 있지 않아도 즉시 계산해 응답하므로 0이 되지 않는다. 다만 순위 계산 요청이 한꺼번에 몰리면 일부 요청은 순위 대신 '순위 집계 중'(잠시 후 다시 시도) 응답을 받는다"
@@ -248,5 +248,9 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 - 운영 Redis 이미지가 `redis:latest`라 버전이 고정돼 있지 않다. 이번 범위에 넣지 않는다
 
 ## Deviation Log
+- `LeagueService.java`: `findLastClosedSeasonId()` → `findLastClosedSeasonId(long userId)` — 이유: STEP 2의 warn 로그 "시즌 팝업 Redis 조회 실패, 팝업 없이 응답: userId={}"에 userId가 필요하다
+- `RedisConfig.java`: `failFastConnectionFactory`를 처음 쓰는 `redisConnectionFactory()` 바로 아래에 둠 — 이유: `common.md` 메서드 배치 순서
+- `LeagueRankFinder.java`: `fromStore`, `fromDatabase`를 처음 쓰는 `findRank` 바로 아래, `findPage` 위에 둠 — 이유: `common.md` 메서드 배치 순서
+- `PLAN-613.md` STEP 5: "후보는 512mb" 문장을 D5 확정값(384mb)으로 맞춤 — 이유: D5 확정 뒤 남은 낡은 문장
 - 2026-11-14: M0(`R-M0-before-run2`)에서 Redis 장애 중 기본 연결 API가 400 `DB_4001`로 응답하는 것을 확인(`GlobalExceptionHandler`가 `DataAccessException`을 400으로 변환). 이 계획 범위 밖이라 고치지 않고 후속 이슈 후보로 둔다. STEP 1 적용 뒤에도 실패가 빨라질 뿐 응답 코드는 400이다
 - 2026-11-14: dev(`e32ba7e2`, #608·#609·#610·#623 머지 뒤)로 rebase. #609 측정(`.claude/resources/perf/609/rank-sync/record.md` M2)에서 확인한 랭킹 재시도 적재 경로를 F2·F4·F6에 반영. #609에서는 고치지 않고 이 계획의 STEP 1로 해소하기로 함(2026-11-14 결정). `retrySweepScheduler`는 #609에서 4스레드가 됐다(STEP 3 직접 처리와 무관)
