@@ -69,6 +69,11 @@ dependencies {
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework:spring-aspects")
 
+    // Resilience4j
+    implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.3.0'
+    implementation 'io.github.resilience4j:resilience4j-bulkhead:2.3.0'
+    implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
+
     // Mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
