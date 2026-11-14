@@ -1,7 +1,7 @@
 package gravit.code.notification.listener;
 
 import gravit.code.friend.dto.event.FollowedEvent;
-import gravit.code.global.event.retry.RetryEventPublisher;
+import gravit.code.global.event.retry.RetryFallbackProcessor;
 import gravit.code.inquiry.dto.event.InquiryAnsweredEvent;
 import gravit.code.notice.dto.event.NoticeCreatedEvent;
 import gravit.code.notification.infrastructure.FollowedRetryTarget;
@@ -22,12 +22,15 @@ import java.util.Map;
 public class NotificationEventListener {
 
     private final NotificationMessageProvider messageProvider;
-    private final RetryEventPublisher retryEventPublisher;
+    private final RetryFallbackProcessor retryFallbackProcessor;
+    private final NoticeCreatedRetryTarget noticeCreatedRetryTarget;
+    private final FollowedRetryTarget followedRetryTarget;
+    private final InquiryAnsweredRetryTarget inquiryAnsweredRetryTarget;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleNoticeCreated(NoticeCreatedEvent event) {
         try {
-            retryEventPublisher.publish(NoticeCreatedRetryTarget.QUEUE_KEY, Map.of(
+            retryFallbackProcessor.publishOrProcess(noticeCreatedRetryTarget, Map.of(
                     NoticeCreatedRetryTarget.FIELD_HEADLINE, messageProvider.noticeHeadline(),
                     NoticeCreatedRetryTarget.FIELD_TITLE, event.title(),
                     NoticeCreatedRetryTarget.FIELD_NOTICE_ID, String.valueOf(event.noticeId())
@@ -40,7 +43,7 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleFollowed(FollowedEvent event) {
         try {
-            retryEventPublisher.publish(FollowedRetryTarget.QUEUE_KEY, Map.of(
+            retryFallbackProcessor.publishOrProcess(followedRetryTarget, Map.of(
                     FollowedRetryTarget.FIELD_FOLLOWER_ID, String.valueOf(event.followerId()),
                     FollowedRetryTarget.FIELD_FOLLOWEE_ID, String.valueOf(event.followeeId())
             ));
@@ -52,7 +55,7 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleInquiryAnswered(InquiryAnsweredEvent event) {
         try {
-            retryEventPublisher.publish(InquiryAnsweredRetryTarget.QUEUE_KEY, Map.of(
+            retryFallbackProcessor.publishOrProcess(inquiryAnsweredRetryTarget, Map.of(
                     InquiryAnsweredRetryTarget.FIELD_USER_ID, String.valueOf(event.userId()),
                     InquiryAnsweredRetryTarget.FIELD_TITLE, event.title(),
                     InquiryAnsweredRetryTarget.FIELD_INQUIRY_ID, String.valueOf(event.inquiryId())
