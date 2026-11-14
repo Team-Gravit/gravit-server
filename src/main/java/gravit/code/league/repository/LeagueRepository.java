@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LeagueRepository extends JpaRepository<League, Long> {
@@ -17,4 +18,11 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
             order by l.minLp asc
     """)
     Optional<League> findByLpBetween(@Param("lp") int lp);
+
+    @Query("""
+            SELECT l.id
+            FROM League l
+            ORDER BY l.sortOrder
+    """)
+    List<Long> findAllIds();
 }

@@ -188,7 +188,7 @@ class UserLeagueEventListenerIntegrationTest {
             Season season = seasonFixture.진행중인_시즌("S1");
             User user = userFixture.일반_유저(1);
             userLeagueFixture.참여(user, season, 브론즈3, 0);
-            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePointsForLesson(user.getId(), 40, 100);
+            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePointsForLesson(user.getId(), 1L, 40, 100);
 
             LessonCompletedEvent event = new LessonCompletedEvent(user.getId(), 1L, 1L, 40, 100, 120, 0, 1);
 
@@ -200,6 +200,7 @@ class UserLeagueEventListenerIntegrationTest {
             // then
             verify(retryEventPublisher, timeout(3000)).publish("league-points-retry", Map.of(
                     "userId", String.valueOf(user.getId()),
+                    "lessonId", "1",
                     "points", "40",
                     "accuracy", "100"
             ));
@@ -279,7 +280,7 @@ class UserLeagueEventListenerIntegrationTest {
             Season season = seasonFixture.진행중인_시즌("S1");
             User user = userFixture.일반_유저(1);
             userLeagueFixture.참여(user, season, 브론즈3, 0);
-            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePointsForInterview(user.getId(), REWARD_POINTS);
+            doThrow(new RuntimeException("DB 커넥션 실패")).when(pointService).addLeaguePointsForInterview(user.getId(), SESSION_ID, REWARD_POINTS);
 
             InterviewCompletedEvent event = InterviewCompletedEvent.of(user.getId(), SESSION_ID, REWARD_POINTS);
 
@@ -291,6 +292,7 @@ class UserLeagueEventListenerIntegrationTest {
             // then
             verify(retryEventPublisher, timeout(3000)).publish(INTERVIEW_RETRY_QUEUE_KEY, Map.of(
                     "userId", String.valueOf(user.getId()),
+                    "sessionId", String.valueOf(SESSION_ID),
                     "points", String.valueOf(REWARD_POINTS)
             ));
         }

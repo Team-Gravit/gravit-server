@@ -26,6 +26,7 @@ public class LeagueRankingRebuildService {
         List<LeagueRankEntryDto> entries = userLeagueRepository.findRankEntriesBySeasonId(seasonId);
 
         leagueRankingStore.replaceAll(seasonId, entries);
+        leagueRankingStore.markReady(seasonId);
         log.info("랭킹 재구축 완료: seasonId={}, 반영 인원={}", seasonId, entries.size());
 
         return entries.size();
@@ -37,6 +38,7 @@ public class LeagueRankingRebuildService {
         long expected = userLeagueRepository.countRankEntriesBySeasonId(seasonId);
 
         if (ranked == expected) {
+            leagueRankingStore.markReady(seasonId);
             log.info("랭킹 인원이 일치해 재구축을 건너뜀: seasonId={}, 인원={}", seasonId, expected);
 
             return NOTHING_REBUILT;
@@ -45,5 +47,17 @@ public class LeagueRankingRebuildService {
         log.warn("랭킹 인원이 어긋나 재구축: seasonId={}, 저장소={}, DB={}", seasonId, ranked, expected);
 
         return rebuild(seasonId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean rebuildIfLost(long seasonId) {
+        if (leagueRankingStore.isReady(seasonId)) {
+            return false;
+        }
+
+        log.warn("랭킹 준비 표시가 없어 재구축(Redis 데이터 유실 추정): seasonId={}", seasonId);
+        rebuild(seasonId);
+
+        return true;
     }
 }

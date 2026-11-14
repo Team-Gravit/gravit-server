@@ -8,9 +8,12 @@ import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
+import gravit.code.userLeague.domain.LeaguePointGrant;
+import gravit.code.userLeague.domain.LeaguePointSource;
 import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.fixture.UserLeagueFixture;
+import gravit.code.userLeague.repository.LeaguePointGrantRepository;
 import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +37,9 @@ class UserLeaguePointServiceIntegrationTest {
 
     @Autowired
     private UserLeagueRepository userLeagueRepository;
+
+    @Autowired
+    private LeaguePointGrantRepository leaguePointGrantRepository;
 
     @Autowired
     private LeagueRankingStore leagueRankingStore;
@@ -63,7 +69,7 @@ class UserLeaguePointServiceIntegrationTest {
             userLeagueFixture.참여(user, season, 브론즈3, 0);
 
             // when
-            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 40, 100);
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 40, 100);
 
             // then
             // 0 + round(40 * 100 * 0.01) = 40 LP
@@ -80,7 +86,7 @@ class UserLeaguePointServiceIntegrationTest {
             userLeagueFixture.참여(user, season, 브론즈3, 0);
 
             // when
-            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 40, 50);
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 40, 50);
 
             // then
             // round(40 * 50 * 0.01) = round(20) = 20 LP
@@ -98,7 +104,7 @@ class UserLeaguePointServiceIntegrationTest {
             userLeagueFixture.참여(user, season, 브론즈3, 80);
 
             // when - 80 + round(50 * 100 * 0.01) = 130 → 브론즈 2 범위(101-200) 진입
-            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 50, 100);
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 50, 100);
 
             // then
             UserLeague updated = userLeagueRepository.findByUserId(user.getId()).orElseThrow();
@@ -111,7 +117,7 @@ class UserLeaguePointServiceIntegrationTest {
             long nonExistentUserId = 999L;
 
             // when & then
-            assertThatThrownBy(() -> userLeaguePointService.addLeaguePointsForLesson(nonExistentUserId, 10, 100))
+            assertThatThrownBy(() -> userLeaguePointService.addLeaguePointsForLesson(nonExistentUserId, 1L, 10, 100))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_LEAGUE_NOT_FOUND);
@@ -126,10 +132,113 @@ class UserLeaguePointServiceIntegrationTest {
             userLeagueFixture.참여(user, season, 브론즈3, 80);
 
             // when & then - 80 + 100 = 180 LP이지만 브론즈 2(101-200)가 없음
-            assertThatThrownBy(() -> userLeaguePointService.addLeaguePointsForLesson(user.getId(), 100, 100))
+            assertThatThrownBy(() -> userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 100, 100))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(LEAGUE_NOT_MATCH_LEAGUE_POINT);
+        }
+    }
+
+    @Nested
+    @DisplayName("같은 출처의 리그 포인트를 다시 지급할 때")
+    class GrantOnce {
+
+        @Test
+        void 같은_레슨으로_두_번_호출해도_LP는_한_번만_오른다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 0);
+
+            // when
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 20, 100);
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 20, 100);
+
+            // then
+            UserLeague updated = userLeagueRepository.findByUserId(user.getId()).orElseThrow();
+            List<LeaguePointGrant> grants = leaguePointGrantRepository.findAll();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLp()).isEqualTo(20);
+                softly.assertThat(grants).singleElement()
+                        .extracting(LeaguePointGrant::getUserId, LeaguePointGrant::getSourceType, LeaguePointGrant::getSourceId, LeaguePointGrant::getPoints)
+                        .containsExactly(user.getId(), LeaguePointSource.LESSON, 1L, 20);
+            });
+        }
+
+        @Test
+        void 다른_레슨이면_각각_지급한다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 0);
+
+            // when
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 20, 100);
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 2L, 20, 100);
+
+            // then
+            UserLeague updated = userLeagueRepository.findByUserId(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLp()).isEqualTo(40);
+                softly.assertThat(leaguePointGrantRepository.count()).isEqualTo(2);
+            });
+        }
+
+        @Test
+        void 같은_면접_세션으로_두_번_호출해도_LP는_한_번만_오른다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 0);
+
+            // when
+            userLeaguePointService.addLeaguePointsForInterview(user.getId(), 7L, 30);
+            userLeaguePointService.addLeaguePointsForInterview(user.getId(), 7L, 30);
+
+            // then
+            UserLeague updated = userLeagueRepository.findByUserId(user.getId()).orElseThrow();
+            List<LeaguePointGrant> grants = leaguePointGrantRepository.findAll();
+            assertSoftly(softly -> {
+                softly.assertThat(updated.getLp()).isEqualTo(30);
+                softly.assertThat(grants).singleElement()
+                        .extracting(LeaguePointGrant::getSourceType, LeaguePointGrant::getSourceId)
+                        .containsExactly(LeaguePointSource.INTERVIEW, 7L);
+            });
+        }
+
+        @Test
+        void 레슨과_면접의_출처_아이디가_같아도_각각_지급한다() {
+            // given
+            League 브론즈3 = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, 브론즈3, 0);
+
+            // when
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 20, 100);
+            userLeaguePointService.addLeaguePointsForInterview(user.getId(), 1L, 30);
+
+            // then
+            UserLeague updated = userLeagueRepository.findByUserId(user.getId()).orElseThrow();
+            assertThat(updated.getLp()).isEqualTo(50);
+        }
+
+        @Test
+        void 적용이_실패하면_지급_기록이_남지_않는다() {
+            // given
+            long nonExistentUserId = 999L;
+
+            // when
+            assertThatThrownBy(() -> userLeaguePointService.addLeaguePointsForLesson(nonExistentUserId, 1L, 20, 100))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_LEAGUE_NOT_FOUND);
+
+            // then
+            assertThat(leaguePointGrantRepository.count()).isZero();
         }
     }
 
@@ -146,7 +255,7 @@ class UserLeaguePointServiceIntegrationTest {
             userLeagueFixture.참여(user, season, 브론즈3, 10);
 
             // when
-            userLeaguePointService.addLeaguePointsForInterview(user.getId(), 30);
+            userLeaguePointService.addLeaguePointsForInterview(user.getId(), 1L, 30);
 
             // then
             // 10 + 30 = 40 LP, 정답률 비율을 적용하지 않는다
@@ -164,7 +273,7 @@ class UserLeaguePointServiceIntegrationTest {
             userLeagueFixture.참여(user, season, 브론즈3, 90);
 
             // when - 90 + 30 = 120 → 브론즈 2 범위(101-200) 진입
-            userLeaguePointService.addLeaguePointsForInterview(user.getId(), 30);
+            userLeaguePointService.addLeaguePointsForInterview(user.getId(), 1L, 30);
 
             // then
             UserLeague updated = userLeagueRepository.findByUserId(user.getId()).orElseThrow();
@@ -180,7 +289,7 @@ class UserLeaguePointServiceIntegrationTest {
             long nonExistentUserId = 999L;
 
             // when & then
-            assertThatThrownBy(() -> userLeaguePointService.addLeaguePointsForInterview(nonExistentUserId, 30))
+            assertThatThrownBy(() -> userLeaguePointService.addLeaguePointsForInterview(nonExistentUserId, 1L, 30))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_LEAGUE_NOT_FOUND);
@@ -233,7 +342,7 @@ class UserLeaguePointServiceIntegrationTest {
             userLeagueFixture.참여(user, season, 브론즈3, 0);
 
             // when
-            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 40, 100);
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 40, 100);
 
             // then
             List<LeagueRankEntryDto> entries =
@@ -255,7 +364,7 @@ class UserLeaguePointServiceIntegrationTest {
             leagueRankingStore.put(season.getId(), 브론즈3.getId(), user.getId(), 80);
 
             // when - 80 + 50 = 130 → 브론즈 2 진입
-            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 50, 100);
+            userLeaguePointService.addLeaguePointsForLesson(user.getId(), 1L, 50, 100);
 
             // then
             assertSoftly(softly -> {

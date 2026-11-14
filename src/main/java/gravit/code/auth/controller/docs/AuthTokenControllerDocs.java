@@ -30,7 +30,7 @@ public interface AuthTokenControllerDocs {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "✅ 엑세스 토큰 재발급 성공"),
-            @ApiResponse(responseCode = "401", description = "🚨 비어 있거나 만료된 리프레시 토큰",
+            @ApiResponse(responseCode = "401", description = "🚨 비어 있거나 만료된 리프레시 토큰, 또는 탈퇴한 사용자",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -40,16 +40,10 @@ public interface AuthTokenControllerDocs {
                                     @ExampleObject(
                                             name = "만료된 리프레시 토큰",
                                             value = "{\"error\" : \"JWT_4016\", \"message\" : \"만료된 리프레시 토큰입니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "🚨 유저 조회 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
+                                    ),
                                     @ExampleObject(
-                                            name = "유저 조회 실패",
-                                            value = "{\"error\" : \"USER_4041\", \"message\" : \"존재하지 않는 유저입니다.\"}"
+                                            name = "탈퇴했거나 존재하지 않는 사용자",
+                                            value = "{\"error\" : \"JWT_4017\", \"message\" : \"탈퇴했거나 존재하지 않는 사용자의 토큰입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))

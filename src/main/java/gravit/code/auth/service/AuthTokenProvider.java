@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -106,7 +106,7 @@ public class AuthTokenProvider {
         Subject subject = jwtProvider.parseSubject(token);
         long siteUserId = Long.parseLong(subject.value());
         return userRepository.findById(siteUserId)
-                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(TOKEN_USER_NOT_FOUND));
     }
 
     private Subject toSubject(User user) {

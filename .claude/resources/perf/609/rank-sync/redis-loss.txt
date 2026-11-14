@@ -1,0 +1,76 @@
+########## S-M7-before
+┌─ S-M7-before ───────────────────────────────────────────────────────────────── 2026-11-14 15:48 ─┐
+│ 랭킹 동기화 · M7 Redis 유실(FLUSHALL) 뒤 빈 랭킹                                                 │
+│ 코드     개선 전 · merge-base ac4e4ae5 (dev, #609 이전)                                          │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53                                 │
+│ 장애     앱 기동·백필 뒤 40초 → 앱을 켠 채 FLUSHALL                                              │
+│ 관찰     1초마다 Redis 랭킹 인원·준비 표시 키, HTTP GET /api/v1/ranking/leagues/{최대 리그}/page/│
+│          0 항목 수 · 인원 = DB 이고 HTTP 항목이 찰 때까지 또는 180초                             │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 ac4e4ae5            ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 2.83 / 2.93 / 2.86 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (rank-sync-before.jar)
+    백필 끝 · 40초 뒤 FLUSHALL…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ Redis 백필 97,071명          ✅ 유실 전 HTTP 랭킹 첫 페이지가 참
+  ✅ 주입 외 앱 ERROR 0줄         
+
+[결과 (시간은 FLUSHALL 기준)]
+  항목                                                        값
+  유실 전 HTTP 첫 페이지                 200 · 항목 10 · 171.8ms
+  FLUSHALL 직후 HTTP 첫 페이지             200 · 항목 0 · 14.5ms
+  빈 목록(200, 항목 0) 응답                181회 (관찰 181회 중)
+  Redis 인원이 DB 와 같아진 시점                               —
+  HTTP 첫 페이지가 다시 찬 시점                                —
+  유실 감지 재구축 로그                        해당 없음(before)
+  관찰 끝 Redis 인원              0 / DB 97,071 · 준비 표시 없음
+  관찰 시간                                              180.2초
+
+[판정]
+  ── 기대: before 앱 재기동 전까지 빈 목록, after 30초 + 재구축 시간 이내 (PLAN-609 M7)
+└─ 저장: benchmark/_runs/S-M7-before/  (output.log · timeline.csv · app_log_sample.txt · meta.json)
+
+########## S-M7-after
+┌─ S-M7-after ────────────────────────────────────────────────────────────────── 2026-11-14 15:52 ─┐
+│ 랭킹 동기화 · M7 Redis 유실(FLUSHALL) 뒤 빈 랭킹                                                 │
+│ 코드     개선 후 · #609 0b72af43 (재시도 + 정기 대조 + 원자 반영)                                │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53                                 │
+│ 장애     앱 기동·백필 뒤 40초 → 앱을 켠 채 FLUSHALL                                              │
+│ 관찰     1초마다 Redis 랭킹 인원·준비 표시 키, HTTP GET /api/v1/ranking/leagues/{최대 리그}/page/│
+│          0 항목 수 · 인원 = DB 이고 HTTP 항목이 찰 때까지 또는 180초                             │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0b72af43            ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 5.06 / 3.50 / 3.09 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (rank-sync-after.jar)
+    백필 끝 · 40초 뒤 FLUSHALL…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ Redis 백필 97,071명          ✅ 유실 전 HTTP 랭킹 첫 페이지가 참
+  ✅ 주입 외 앱 ERROR 0줄         
+
+[결과 (시간은 FLUSHALL 기준)]
+  항목                                                             값
+  유실 전 HTTP 첫 페이지                      200 · 항목 10 · 192.0ms
+  FLUSHALL 직후 HTTP 첫 페이지                  200 · 항목 0 · 21.4ms
+  빈 목록(200, 항목 0) 응답                       11회 (관찰 13회 중)
+  Redis 인원이 DB 와 같아진 시점                               12.2초
+  HTTP 첫 페이지가 다시 찬 시점                                12.2초
+  유실 감지 재구축 로그                                           1줄
+  관찰 끝 Redis 인원              97,071 / DB 97,071 · 준비 표시 있음
+  관찰 시간                                                    12.2초
+
+[판정]
+  ── 기대: before 앱 재기동 전까지 빈 목록, after 30초 + 재구축 시간 이내 (PLAN-609 M7)
+└─ 저장: benchmark/_runs/S-M7-after/  (output.log · timeline.csv · app_log_sample.txt · meta.json)
+

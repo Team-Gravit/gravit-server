@@ -16,6 +16,7 @@ import gravit.code.lesson.dto.response.LessonDetailResponse;
 import gravit.code.lesson.dto.response.LessonResultResponse;
 import gravit.code.lesson.dto.response.LessonSubmissionSaveResponse;
 import gravit.code.lesson.dto.response.LessonSummaryResponse;
+import gravit.code.lesson.policy.LessonRewardPolicy;
 import gravit.code.lesson.service.LessonQueryService;
 import gravit.code.lesson.service.LessonSubmissionCommandService;
 import gravit.code.lesson.service.LessonSubmissionQueryService;
@@ -40,8 +41,6 @@ import java.util.Optional;
 @Facade
 @RequiredArgsConstructor
 public class LessonFacade {
-
-    private static final int POINT_PER_LESSON = 20;
 
     private final LessonQueryService lessonQueryService;
     private final LessonSubmissionCommandService lessonSubmissionCommandService;
@@ -111,7 +110,7 @@ public class LessonFacade {
                         userId,
                         learningIdsDto.lessonId(),
                         learningIdsDto.chapterId(),
-                        POINT_PER_LESSON,
+                        LessonRewardPolicy.BASE_REWARD_POINTS,
                         lessonSubmissionSaveRequest.accuracy(),
                         lessonSubmissionSaveRequest.learningTime(),
                         consecutiveSolvedDto.before(),

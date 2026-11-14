@@ -30,7 +30,10 @@ public class RetryQueueSweeper {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(
+            fixedDelay = 30000,
+            scheduler = "retrySweepScheduler"
+    )
     public void sweep() {
         for (RetrySweepTarget target : targets) {
             Set<String> due = redisTemplate.opsForZSet()
@@ -53,17 +56,19 @@ public class RetryQueueSweeper {
             attempt = Integer.parseInt(fields.remove(ATTEMPT_FIELD));
             fields.remove(RETRY_ID_FIELD);
         } catch (Exception e) {
-            redisTemplate.opsForZSet().remove(target.queueKey(), json);
-            deadLetter(target, json);
             log.error("재시도 큐 페이로드 파싱 실패, 데드레터 처리: queueKey={}, raw={}", target.queueKey(), json, e);
+            if (deadLetter(target, json)) {
+                removeQuietly(target, json);
+            }
             return;
         }
 
         try {
             target.reprocess(fields);
         } catch (Exception e) {
-            removeQuietly(target, json);
-            requeueOrDeadLetter(target, fields, attempt, e);
+            if (requeueOrDeadLetter(target, fields, attempt, e)) {
+                removeQuietly(target, json);
+            }
             return;
         }
 
@@ -77,11 +82,11 @@ public class RetryQueueSweeper {
         try {
             redisTemplate.opsForZSet().remove(target.queueKey(), json);
         } catch (Exception e) {
-            log.warn("재시도 큐 항목 제거 실패, 다음 스윕에서 재정리 기대: queueKey={}, raw={}", target.queueKey(), json, e);
+            log.warn("재시도 큐 항목 제거 실패, 다음 스윕에서 다시 처리됨: queueKey={}, raw={}", target.queueKey(), json, e);
         }
     }
 
-    private void requeueOrDeadLetter(
+    private boolean requeueOrDeadLetter(
             RetrySweepTarget target,
             Map<String, String> fields,
             int attempt,
@@ -89,8 +94,7 @@ public class RetryQueueSweeper {
     ) {
         if (attempt + 1 >= target.maxAttempts()) {
             log.error("재시도 한도 초과, 데드레터 처리: queueKey={}, fields={}", target.queueKey(), fields, cause);
-            deadLetterFields(target, fields);
-            return;
+            return deadLetterFields(target, fields);
         }
 
         try {
@@ -100,30 +104,35 @@ public class RetryQueueSweeper {
             long backoffMs = Math.min(BASE_BACKOFF_MS * (1L << attempt), MAX_BACKOFF_MS);
             String requeued = objectMapper.writeValueAsString(fields);
             redisTemplate.opsForZSet().add(target.queueKey(), requeued, System.currentTimeMillis() + backoffMs);
+            return true;
         } catch (Exception e) {
-            log.error("재시도 큐 재적재 실패, 유실: queueKey={}, fields={}", target.queueKey(), fields, e);
+            log.error("재시도 큐 재적재 실패, 원본 항목을 남겨 다음 스윕에서 다시 처리: queueKey={}, fields={}", target.queueKey(), fields, e);
+            return false;
         }
     }
 
-    private void deadLetterFields(
+    private boolean deadLetterFields(
             RetrySweepTarget target,
             Map<String, String> fields
     ) {
         try {
-            deadLetter(target, objectMapper.writeValueAsString(fields));
+            return deadLetter(target, objectMapper.writeValueAsString(fields));
         } catch (Exception e) {
-            log.error("데드레터 적재 실패, 유실: queueKey={}, fields={}", target.queueKey(), fields, e);
+            log.error("데드레터 직렬화 실패, 원본 항목을 남겨 다음 스윕에서 다시 처리: queueKey={}, fields={}", target.queueKey(), fields, e);
+            return false;
         }
     }
 
-    private void deadLetter(
+    private boolean deadLetter(
             RetrySweepTarget target,
             String rawJson
     ) {
         try {
             redisTemplate.opsForList().leftPush(target.queueKey() + DEAD_LETTER_KEY_SUFFIX, rawJson);
+            return true;
         } catch (Exception e) {
-            log.error("데드레터 적재 실패, 유실: queueKey={}, raw={}", target.queueKey(), rawJson, e);
+            log.error("데드레터 적재 실패, 원본 항목을 남겨 다음 스윕에서 다시 처리: queueKey={}, raw={}", target.queueKey(), rawJson, e);
+            return false;
         }
     }
 }

@@ -20,7 +20,7 @@ import org.springframework.security.core.Authentication;
 import java.time.Duration;
 import java.util.Map;
 
-import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -78,7 +78,7 @@ class AuthTokenProviderIntegrationTest {
             assertThatThrownBy(() -> authTokenProvider.parseUser(token))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(USER_NOT_FOUND);
+                    .isEqualTo(TOKEN_USER_NOT_FOUND);
         }
 
         @Test
@@ -92,7 +92,7 @@ class AuthTokenProviderIntegrationTest {
             assertThatThrownBy(() -> authTokenProvider.parseUser(token))
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
-                    .isEqualTo(USER_NOT_FOUND);
+                    .isEqualTo(TOKEN_USER_NOT_FOUND);
         }
     }
 

@@ -26,7 +26,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_EXPIRED;
-import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+import static gravit.code.global.exception.domain.CustomErrorCode.TOKEN_USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -183,7 +183,7 @@ class JwtAuthFilterIntegrationTest {
         }
 
         @Test
-        void 존재하지_않는_유저의_토큰이면_USER_NOT_FOUND를_응답한다() throws Exception {
+        void 존재하지_않는_유저의_토큰이면_TOKEN_USER_NOT_FOUND를_응답한다() throws Exception {
             // given
             String token = 토큰(9_999_999L);
 
@@ -197,15 +197,15 @@ class JwtAuthFilterIntegrationTest {
             // then
             String body = response.getContentAsString();
             assertSoftly(softly -> {
-                softly.assertThat(response.getStatus()).isEqualTo(USER_NOT_FOUND.getHttpStatus().value());
-                softly.assertThat(body).contains(USER_NOT_FOUND.getCode());
+                softly.assertThat(response.getStatus()).isEqualTo(TOKEN_USER_NOT_FOUND.getHttpStatus().value());
+                softly.assertThat(body).contains(TOKEN_USER_NOT_FOUND.getCode());
                 softly.assertThat(filterChain.getRequest()).isNull();
                 softly.assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
             });
         }
 
         @Test
-        void 탈퇴한_유저의_토큰이면_USER_NOT_FOUND를_응답한다() throws Exception {
+        void 탈퇴한_유저의_토큰이면_TOKEN_USER_NOT_FOUND를_응답한다() throws Exception {
             // given
             User user = userFixture.일반_유저(1);
             String token = 유효한_토큰(user);
@@ -221,8 +221,9 @@ class JwtAuthFilterIntegrationTest {
             // then
             String body = response.getContentAsString();
             assertSoftly(softly -> {
-                softly.assertThat(response.getStatus()).isEqualTo(USER_NOT_FOUND.getHttpStatus().value());
-                softly.assertThat(body).contains(USER_NOT_FOUND.getCode());
+                softly.assertThat(response.getStatus()).isEqualTo(TOKEN_USER_NOT_FOUND.getHttpStatus().value());
+                softly.assertThat(body).contains(TOKEN_USER_NOT_FOUND.getCode());
+                softly.assertThat(filterChain.getRequest()).isNull();
                 softly.assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
             });
         }

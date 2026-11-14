@@ -4,8 +4,10 @@ import gravit.code.userLeague.domain.UserLeague;
 import gravit.code.userLeague.dto.internal.LeagueRankEntryDto;
 import gravit.code.userLeague.dto.internal.LeagueRankKeyDto;
 import gravit.code.userLeague.dto.internal.LeagueRankProfileDto;
+import gravit.code.userLeague.dto.internal.LeagueRankStateDto;
 import gravit.code.userLeague.dto.internal.MyLeagueProfileDto;
 import gravit.code.userLeague.repository.custom.LeagueRankQueryRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +26,42 @@ public interface UserLeagueRepository extends JpaRepository<UserLeague,Long>, Le
               AND u.deletedAt IS NULL
     """)
     List<LeagueRankEntryDto> findRankEntriesBySeasonId(@Param("seasonId") long seasonId);
+
+    @Query("""
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankEntryDto(0, u.id, ul.lp, ul.league.id)
+            FROM UserLeague ul
+            JOIN ul.user u
+            WHERE ul.season.id = :seasonId
+              AND ul.league.id = :leagueId
+              AND u.deletedAt IS NULL
+    """)
+    List<LeagueRankEntryDto> findRankEntriesBySeasonIdAndLeagueId(
+            @Param("seasonId") long seasonId,
+            @Param("leagueId") long leagueId
+    );
+
+    @Query("""
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankStateDto(
+                       ul.id, u.id, ul.season.id, ul.league.id, ul.lp)
+            FROM UserLeague ul
+            JOIN ul.user u
+            WHERE u.id = :userId
+    """)
+    Optional<LeagueRankStateDto> findRankStateByUserId(@Param("userId") long userId);
+
+    @Query("""
+            SELECT new gravit.code.userLeague.dto.internal.LeagueRankStateDto(
+                       ul.id, u.id, ul.season.id, ul.league.id, ul.lp)
+            FROM UserLeague ul
+            JOIN ul.user u
+            WHERE ul.season.id = :seasonId AND ul.id > :lastUserLeagueId
+            ORDER BY ul.id
+    """)
+    List<LeagueRankStateDto> findRankStatesAfterId(
+            @Param("seasonId") long seasonId,
+            @Param("lastUserLeagueId") long lastUserLeagueId,
+            Pageable pageable
+    );
 
     @Query("""
             SELECT COUNT(ul)

@@ -1,0 +1,351 @@
+round,term,query,status,http_ms,pid,plan,exact_node,pages,db_ms,prefix_node,contains_node
+1,코딩,nick_c,200,370.828,70475,custom,Index(pk),22167,201.736,IndexOnly(nick_cover),NEVER EXECUTED
+1,민준,nick_c,200,9.647,70475,custom,Index(pk),245,0.435,NEVER EXECUTED,NEVER EXECUTED
+1,김,nick_nc,200,194.394,70475,custom,Index(pk),22160,184.364,IndexOnly(nick_cover),—
+1,james,nick_c,200,8.994,70475,custom,Index(pk),223,0.226,NEVER EXECUTED,NEVER EXECUTED
+1,raread,nick_c,200,215.341,70475,custom,Index(pk),22174,205.168,IndexOnly(nick_cover),Bitmap(nick_trgm)
+1,@ab,handle_c,200,9.826,70475,custom,Index(handle_cover),20,0.115,Index(handle_like),NEVER EXECUTED
+1,@qqbench1,handle_c,200,7.698,70475,custom,Index(handle_cover),30,0.152,Index(handle_like),Bitmap(handle_trgm)
+2,코딩,nick_c,200,192.005,70475,custom,Index(pk),22159,183.288,IndexOnly(nick_cover),NEVER EXECUTED
+2,민준,nick_c,200,7.827,70475,custom,Index(pk),245,0.371,NEVER EXECUTED,NEVER EXECUTED
+2,김,nick_nc,200,190.995,70475,custom,Index(pk),22160,183.01,IndexOnly(nick_cover),—
+2,james,nick_c,200,8.033,70475,custom,Index(pk),223,0.207,NEVER EXECUTED,NEVER EXECUTED
+2,raread,nick_c,200,194.559,70475,custom,Index(pk),22174,187.043,IndexOnly(nick_cover),Bitmap(nick_trgm)
+2,@ab,handle_c,200,7.704,70475,custom,Index(handle_cover),20,0.102,Index(handle_like),NEVER EXECUTED
+2,@qqbench1,handle_c,200,6.931,70475,custom,Index(handle_cover),30,0.121,Index(handle_like),Bitmap(handle_trgm)
+3,코딩,nick_c,200,195.671,70475,custom,Index(pk),22159,187.965,IndexOnly(nick_cover),NEVER EXECUTED
+3,민준,nick_c,200,8.472,70475,generic,IndexOnly(nick_cover),65,1.193,NEVER EXECUTED,NEVER EXECUTED
+3,김,nick_nc,200,190.858,70475,custom,Index(pk),22160,183.738,IndexOnly(nick_cover),—
+3,james,nick_c,200,8.987,70475,generic,IndexOnly(nick_cover),116,2.329,NEVER EXECUTED,NEVER EXECUTED
+3,raread,nick_c,200,151.588,70475,generic,IndexOnly(nick_cover),16710,144.667,IndexOnly(nick_cover),IndexOnly(nick_cover)
+3,@ab,handle_c,200,7.115,70475,custom,Index(handle_cover),20,0.108,Index(handle_like),NEVER EXECUTED
+3,@qqbench1,handle_c,200,6.344,70475,custom,Index(handle_cover),30,0.115,Index(handle_like),Bitmap(handle_trgm)
+4,코딩,nick_c,200,44.754,70475,generic,IndexOnly(nick_cover),7497,38.07,IndexOnly(nick_cover),NEVER EXECUTED
+4,민준,nick_c,200,7.454,70475,generic,IndexOnly(nick_cover),65,1.224,NEVER EXECUTED,NEVER EXECUTED
+4,김,nick_nc,200,180.858,70475,custom,Index(pk),22160,174.237,IndexOnly(nick_cover),—
+4,james,nick_c,200,9.752,70475,generic,IndexOnly(nick_cover),116,2.19,NEVER EXECUTED,NEVER EXECUTED
+4,raread,nick_c,200,156.145,70475,generic,IndexOnly(nick_cover),16706,147.265,IndexOnly(nick_cover),IndexOnly(nick_cover)
+4,@ab,handle_c,200,9.254,70475,custom,Index(handle_cover),20,0.1,Index(handle_like),NEVER EXECUTED
+4,@qqbench1,handle_c,200,6.433,70475,custom,Index(handle_cover),30,0.11,Index(handle_like),Bitmap(handle_trgm)
+5,코딩,nick_c,200,42.374,70475,generic,IndexOnly(nick_cover),7510,35.779,IndexOnly(nick_cover),NEVER EXECUTED
+5,민준,nick_c,200,6.534,70475,generic,IndexOnly(nick_cover),65,1.146,NEVER EXECUTED,NEVER EXECUTED
+5,김,nick_nc,200,180.198,70475,custom,Index(pk),22160,174.147,IndexOnly(nick_cover),—
+5,james,nick_c,200,12.927,70475,generic,IndexOnly(nick_cover),116,1.907,NEVER EXECUTED,NEVER EXECUTED
+5,raread,nick_c,200,148.13,70475,generic,IndexOnly(nick_cover),16704,136.616,IndexOnly(nick_cover),IndexOnly(nick_cover)
+5,@ab,handle_c,200,9.306,70475,custom,Index(handle_cover),20,0.108,Index(handle_like),NEVER EXECUTED
+5,@qqbench1,handle_c,200,5.949,70475,custom,Index(handle_cover),30,0.094,Index(handle_like),Bitmap(handle_trgm)
+6,코딩,nick_c,200,43.638,70475,generic,IndexOnly(nick_cover),7501,37.894,IndexOnly(nick_cover),NEVER EXECUTED
+6,민준,nick_c,200,6.842,70475,generic,IndexOnly(nick_cover),65,1.114,NEVER EXECUTED,NEVER EXECUTED
+6,김,nick_nc,200,178.468,70475,custom,Index(pk),22160,170.51,IndexOnly(nick_cover),—
+6,james,nick_c,200,11.578,70475,generic,IndexOnly(nick_cover),116,2.053,NEVER EXECUTED,NEVER EXECUTED
+6,raread,nick_c,200,144.237,70475,generic,IndexOnly(nick_cover),16701,135.265,IndexOnly(nick_cover),IndexOnly(nick_cover)
+6,@ab,handle_c,200,10.083,70475,custom,Index(handle_cover),20,0.091,Index(handle_like),NEVER EXECUTED
+6,@qqbench1,handle_c,200,6.9,70475,custom,Index(handle_cover),30,0.1,Index(handle_like),Bitmap(handle_trgm)
+7,코딩,nick_c,200,39.535,70475,generic,IndexOnly(nick_cover),7505,32.642,IndexOnly(nick_cover),NEVER EXECUTED
+7,민준,nick_c,200,6.51,70475,generic,IndexOnly(nick_cover),65,1.024,NEVER EXECUTED,NEVER EXECUTED
+7,김,nick_nc,200,178.905,70475,custom,Index(pk),22160,170.057,IndexOnly(nick_cover),—
+7,james,nick_c,200,10.923,70475,generic,IndexOnly(nick_cover),116,1.85,NEVER EXECUTED,NEVER EXECUTED
+7,raread,nick_c,200,142.141,70475,generic,IndexOnly(nick_cover),16705,135.115,IndexOnly(nick_cover),IndexOnly(nick_cover)
+7,@ab,handle_c,200,8.688,70475,custom,Index(handle_cover),20,0.094,Index(handle_like),NEVER EXECUTED
+7,@qqbench1,handle_c,200,6.123,70475,custom,Index(handle_cover),30,0.089,Index(handle_like),Bitmap(handle_trgm)
+8,코딩,nick_c,200,38.438,70475,generic,IndexOnly(nick_cover),7502,31.969,IndexOnly(nick_cover),NEVER EXECUTED
+8,민준,nick_c,200,8.154,70475,generic,IndexOnly(nick_cover),65,1.007,NEVER EXECUTED,NEVER EXECUTED
+8,김,nick_nc,200,177.741,70475,custom,Index(pk),22160,170.177,IndexOnly(nick_cover),—
+8,james,nick_c,200,8.849,70475,generic,IndexOnly(nick_cover),116,2.071,NEVER EXECUTED,NEVER EXECUTED
+8,raread,nick_c,200,142.193,70475,generic,IndexOnly(nick_cover),16704,134.292,IndexOnly(nick_cover),IndexOnly(nick_cover)
+8,@ab,handle_c,200,8.296,70475,custom,Index(handle_cover),20,0.093,Index(handle_like),NEVER EXECUTED
+8,@qqbench1,handle_c,200,5.522,70475,custom,Index(handle_cover),30,0.098,Index(handle_like),Bitmap(handle_trgm)
+9,코딩,nick_c,200,36.956,70475,generic,IndexOnly(nick_cover),7502,31.937,IndexOnly(nick_cover),NEVER EXECUTED
+9,민준,nick_c,200,6.448,70475,generic,IndexOnly(nick_cover),65,1.132,NEVER EXECUTED,NEVER EXECUTED
+9,김,nick_nc,200,178.378,70475,custom,Index(pk),22160,170.361,IndexOnly(nick_cover),—
+9,james,nick_c,200,12.287,70475,generic,IndexOnly(nick_cover),116,2.049,NEVER EXECUTED,NEVER EXECUTED
+9,raread,nick_c,200,141.388,70475,generic,IndexOnly(nick_cover),16702,133.643,IndexOnly(nick_cover),IndexOnly(nick_cover)
+9,@ab,handle_c,200,9.904,70475,custom,Index(handle_cover),20,0.093,Index(handle_like),NEVER EXECUTED
+9,@qqbench1,handle_c,200,5.855,70475,custom,Index(handle_cover),30,0.094,Index(handle_like),Bitmap(handle_trgm)
+10,코딩,nick_c,200,46.833,70475,generic,IndexOnly(nick_cover),7503,38.882,IndexOnly(nick_cover),NEVER EXECUTED
+10,민준,nick_c,200,8.796,70475,generic,IndexOnly(nick_cover),65,1.227,NEVER EXECUTED,NEVER EXECUTED
+10,김,nick_nc,200,191.856,70475,custom,Index(pk),22160,182.786,IndexOnly(nick_cover),—
+10,james,nick_c,200,12.054,70475,generic,IndexOnly(nick_cover),116,1.933,NEVER EXECUTED,NEVER EXECUTED
+10,raread,nick_c,200,149.264,70475,generic,IndexOnly(nick_cover),16701,142.068,IndexOnly(nick_cover),IndexOnly(nick_cover)
+10,@ab,handle_c,200,11.313,70475,custom,Index(handle_cover),20,0.1,Index(handle_like),NEVER EXECUTED
+10,@qqbench1,handle_c,200,8.844,70475,custom,Index(handle_cover),30,0.115,Index(handle_like),Bitmap(handle_trgm)
+11,코딩,nick_c,200,40.229,70475,generic,IndexOnly(nick_cover),7502,33.434,IndexOnly(nick_cover),NEVER EXECUTED
+11,민준,nick_c,200,7.01,70475,generic,IndexOnly(nick_cover),65,1.112,NEVER EXECUTED,NEVER EXECUTED
+11,김,nick_nc,200,181.937,70475,custom,Index(pk),22160,176.056,IndexOnly(nick_cover),—
+11,james,nick_c,200,7.951,70475,generic,IndexOnly(nick_cover),116,2.022,NEVER EXECUTED,NEVER EXECUTED
+11,raread,nick_c,200,146.578,70475,generic,IndexOnly(nick_cover),16713,137.81,IndexOnly(nick_cover),IndexOnly(nick_cover)
+11,@ab,handle_c,200,10.315,70475,custom,Index(handle_cover),20,0.109,Index(handle_like),NEVER EXECUTED
+11,@qqbench1,handle_c,200,6.395,70475,custom,Index(handle_cover),30,0.112,Index(handle_like),Bitmap(handle_trgm)
+12,코딩,nick_c,200,39.177,70475,generic,IndexOnly(nick_cover),7507,33.369,IndexOnly(nick_cover),NEVER EXECUTED
+12,민준,nick_c,200,6.469,70475,generic,IndexOnly(nick_cover),65,1.173,NEVER EXECUTED,NEVER EXECUTED
+12,김,nick_nc,200,179.208,70475,custom,Index(pk),22160,173.572,IndexOnly(nick_cover),—
+12,james,nick_c,200,7.861,70475,generic,IndexOnly(nick_cover),116,1.938,NEVER EXECUTED,NEVER EXECUTED
+12,raread,nick_c,200,146.962,70475,generic,IndexOnly(nick_cover),16703,140.819,IndexOnly(nick_cover),IndexOnly(nick_cover)
+12,@ab,handle_c,200,11.108,70475,custom,Index(handle_cover),20,0.099,Index(handle_like),NEVER EXECUTED
+12,@qqbench1,handle_c,200,5.42,70475,custom,Index(handle_cover),30,0.1,Index(handle_like),Bitmap(handle_trgm)
+13,코딩,nick_c,200,36.739,70475,generic,IndexOnly(nick_cover),7498,30.889,IndexOnly(nick_cover),NEVER EXECUTED
+13,민준,nick_c,200,6.961,70475,generic,IndexOnly(nick_cover),65,1.142,NEVER EXECUTED,NEVER EXECUTED
+13,김,nick_nc,200,180.123,70475,custom,Index(pk),22160,171.754,IndexOnly(nick_cover),—
+13,james,nick_c,200,11.342,70475,generic,IndexOnly(nick_cover),116,1.839,NEVER EXECUTED,NEVER EXECUTED
+13,raread,nick_c,200,141.788,70475,generic,IndexOnly(nick_cover),16700,135.272,IndexOnly(nick_cover),IndexOnly(nick_cover)
+13,@ab,handle_c,200,8.958,70475,custom,Index(handle_cover),20,0.091,Index(handle_like),NEVER EXECUTED
+13,@qqbench1,handle_c,200,5.863,70475,custom,Index(handle_cover),30,0.102,Index(handle_like),Bitmap(handle_trgm)
+14,코딩,nick_c,200,37.011,70475,generic,IndexOnly(nick_cover),7504,30.864,IndexOnly(nick_cover),NEVER EXECUTED
+14,민준,nick_c,200,6.82,70475,generic,IndexOnly(nick_cover),65,0.998,NEVER EXECUTED,NEVER EXECUTED
+14,김,nick_nc,200,179.677,70475,custom,Index(pk),22160,174.424,IndexOnly(nick_cover),—
+14,james,nick_c,200,6.765,70475,generic,IndexOnly(nick_cover),116,1.815,NEVER EXECUTED,NEVER EXECUTED
+14,raread,nick_c,200,142.58,70475,generic,IndexOnly(nick_cover),16704,136.945,IndexOnly(nick_cover),IndexOnly(nick_cover)
+14,@ab,handle_c,200,5.477,70475,custom,Index(handle_cover),20,0.099,Index(handle_like),NEVER EXECUTED
+14,@qqbench1,handle_c,200,4.54,70475,custom,Index(handle_cover),30,0.093,Index(handle_like),Bitmap(handle_trgm)
+15,코딩,nick_c,200,39.984,70475,generic,IndexOnly(nick_cover),7506,33.992,IndexOnly(nick_cover),NEVER EXECUTED
+15,민준,nick_c,200,9.105,70475,generic,IndexOnly(nick_cover),65,1.036,NEVER EXECUTED,NEVER EXECUTED
+15,김,nick_nc,200,182.963,70475,custom,Index(pk),22160,176.74,IndexOnly(nick_cover),—
+15,james,nick_c,200,9.464,70475,generic,IndexOnly(nick_cover),116,2.219,NEVER EXECUTED,NEVER EXECUTED
+15,raread,nick_c,200,151.826,70475,generic,IndexOnly(nick_cover),16706,144.246,IndexOnly(nick_cover),IndexOnly(nick_cover)
+15,@ab,handle_c,200,7.045,70475,custom,Index(handle_cover),20,0.109,Index(handle_like),NEVER EXECUTED
+15,@qqbench1,handle_c,200,5.355,70475,custom,Index(handle_cover),30,0.104,Index(handle_like),Bitmap(handle_trgm)
+16,코딩,nick_c,200,38.164,70475,generic,IndexOnly(nick_cover),7508,32.535,IndexOnly(nick_cover),NEVER EXECUTED
+16,민준,nick_c,200,6.384,70475,generic,IndexOnly(nick_cover),65,1.092,NEVER EXECUTED,NEVER EXECUTED
+16,김,nick_nc,200,182.542,70475,custom,Index(pk),22160,176.252,IndexOnly(nick_cover),—
+16,james,nick_c,200,8.499,70475,generic,IndexOnly(nick_cover),116,1.931,NEVER EXECUTED,NEVER EXECUTED
+16,raread,nick_c,200,150.048,70475,generic,IndexOnly(nick_cover),16709,143.966,IndexOnly(nick_cover),IndexOnly(nick_cover)
+16,@ab,handle_c,200,6.52,70475,custom,Index(handle_cover),20,0.107,Index(handle_like),NEVER EXECUTED
+16,@qqbench1,handle_c,200,5.227,70475,custom,Index(handle_cover),30,0.127,Index(handle_like),Bitmap(handle_trgm)
+17,코딩,nick_c,200,39.631,70475,generic,IndexOnly(nick_cover),7510,34.078,IndexOnly(nick_cover),NEVER EXECUTED
+17,민준,nick_c,200,6.939,70475,generic,IndexOnly(nick_cover),65,1.064,NEVER EXECUTED,NEVER EXECUTED
+17,김,nick_nc,200,186.275,70475,custom,Index(pk),22160,180.542,IndexOnly(nick_cover),—
+17,james,nick_c,200,6.643,70475,generic,IndexOnly(nick_cover),116,1.827,NEVER EXECUTED,NEVER EXECUTED
+17,raread,nick_c,200,149.884,70475,generic,IndexOnly(nick_cover),16703,143.597,IndexOnly(nick_cover),IndexOnly(nick_cover)
+17,@ab,handle_c,200,6.409,70475,custom,Index(handle_cover),20,0.118,Index(handle_like),NEVER EXECUTED
+17,@qqbench1,handle_c,200,5.632,70475,custom,Index(handle_cover),30,0.104,Index(handle_like),Bitmap(handle_trgm)
+18,코딩,nick_c,200,38.968,70475,generic,IndexOnly(nick_cover),7501,32.961,IndexOnly(nick_cover),NEVER EXECUTED
+18,민준,nick_c,200,6.383,70475,generic,IndexOnly(nick_cover),65,1.048,NEVER EXECUTED,NEVER EXECUTED
+18,김,nick_nc,200,185.78,70475,custom,Index(pk),22160,180.361,IndexOnly(nick_cover),—
+18,james,nick_c,200,7.712,70475,generic,IndexOnly(nick_cover),116,1.957,NEVER EXECUTED,NEVER EXECUTED
+18,raread,nick_c,200,147.12,70475,generic,IndexOnly(nick_cover),16710,141.203,IndexOnly(nick_cover),IndexOnly(nick_cover)
+18,@ab,handle_c,200,6.914,70475,custom,Index(handle_cover),20,0.106,Index(handle_like),NEVER EXECUTED
+18,@qqbench1,handle_c,200,5.455,70475,custom,Index(handle_cover),30,0.139,Index(handle_like),Bitmap(handle_trgm)
+19,코딩,nick_c,200,41.03,70475,generic,IndexOnly(nick_cover),7502,34.604,IndexOnly(nick_cover),NEVER EXECUTED
+19,민준,nick_c,200,9.038,70475,generic,IndexOnly(nick_cover),65,1.178,NEVER EXECUTED,NEVER EXECUTED
+19,김,nick_nc,200,182.354,70475,custom,Index(pk),22160,175.855,IndexOnly(nick_cover),—
+19,james,nick_c,200,6.908,70475,generic,IndexOnly(nick_cover),116,1.751,NEVER EXECUTED,NEVER EXECUTED
+19,raread,nick_c,200,144.1,70475,generic,IndexOnly(nick_cover),16709,137.456,IndexOnly(nick_cover),IndexOnly(nick_cover)
+19,@ab,handle_c,200,9.324,70475,custom,Index(handle_cover),20,0.094,Index(handle_like),NEVER EXECUTED
+19,@qqbench1,handle_c,200,6.746,70475,custom,Index(handle_cover),30,0.086,Index(handle_like),Bitmap(handle_trgm)
+20,코딩,nick_c,200,36.53,70475,generic,IndexOnly(nick_cover),7509,29.749,IndexOnly(nick_cover),NEVER EXECUTED
+20,민준,nick_c,200,12.656,70475,generic,IndexOnly(nick_cover),65,1.037,NEVER EXECUTED,NEVER EXECUTED
+20,김,nick_nc,200,178.914,70475,custom,Index(pk),22160,169.187,IndexOnly(nick_cover),—
+20,james,nick_c,200,10.635,70475,generic,IndexOnly(nick_cover),116,2.161,NEVER EXECUTED,NEVER EXECUTED
+20,raread,nick_c,200,145.679,70475,generic,IndexOnly(nick_cover),16710,137.622,IndexOnly(nick_cover),IndexOnly(nick_cover)
+20,@ab,handle_c,200,9.465,70475,custom,Index(handle_cover),20,0.09,Index(handle_like),NEVER EXECUTED
+20,@qqbench1,handle_c,200,4.841,70475,custom,Index(handle_cover),30,0.102,Index(handle_like),Bitmap(handle_trgm)
+21,코딩,nick_c,200,35.613,70475,generic,IndexOnly(nick_cover),7504,30.85,IndexOnly(nick_cover),NEVER EXECUTED
+21,민준,nick_c,200,5.816,70475,generic,IndexOnly(nick_cover),65,1.086,NEVER EXECUTED,NEVER EXECUTED
+21,김,nick_nc,200,178.075,70475,custom,Index(pk),22160,172.336,IndexOnly(nick_cover),—
+21,james,nick_c,200,8.006,70475,generic,IndexOnly(nick_cover),116,2.046,NEVER EXECUTED,NEVER EXECUTED
+21,raread,nick_c,200,141.795,70475,generic,IndexOnly(nick_cover),16697,135.988,IndexOnly(nick_cover),IndexOnly(nick_cover)
+21,@ab,handle_c,200,5.351,70475,custom,Index(handle_cover),20,0.108,Index(handle_like),NEVER EXECUTED
+21,@qqbench1,handle_c,200,5.507,70475,custom,Index(handle_cover),30,0.106,Index(handle_like),Bitmap(handle_trgm)
+22,코딩,nick_c,200,37.277,70475,generic,IndexOnly(nick_cover),7507,31.994,IndexOnly(nick_cover),NEVER EXECUTED
+22,민준,nick_c,200,5.662,70475,generic,IndexOnly(nick_cover),65,1.057,NEVER EXECUTED,NEVER EXECUTED
+22,김,nick_nc,200,183.644,70475,custom,Index(pk),22160,175.664,IndexOnly(nick_cover),—
+22,james,nick_c,200,11.94,70475,generic,IndexOnly(nick_cover),116,1.935,NEVER EXECUTED,NEVER EXECUTED
+22,raread,nick_c,200,141.222,70475,generic,IndexOnly(nick_cover),16703,134.353,IndexOnly(nick_cover),IndexOnly(nick_cover)
+22,@ab,handle_c,200,10.301,70475,custom,Index(handle_cover),20,0.088,Index(handle_like),NEVER EXECUTED
+22,@qqbench1,handle_c,200,5.894,70475,custom,Index(handle_cover),30,0.091,Index(handle_like),Bitmap(handle_trgm)
+23,코딩,nick_c,200,35.46,70475,generic,IndexOnly(nick_cover),7508,29.827,IndexOnly(nick_cover),NEVER EXECUTED
+23,민준,nick_c,200,6.627,70475,generic,IndexOnly(nick_cover),65,1.036,NEVER EXECUTED,NEVER EXECUTED
+23,김,nick_nc,200,177.704,70475,custom,Index(pk),22160,171.362,IndexOnly(nick_cover),—
+23,james,nick_c,200,12.724,70475,generic,IndexOnly(nick_cover),116,1.806,NEVER EXECUTED,NEVER EXECUTED
+23,raread,nick_c,200,141.603,70475,generic,IndexOnly(nick_cover),16710,132.66,IndexOnly(nick_cover),IndexOnly(nick_cover)
+23,@ab,handle_c,200,9.103,70475,custom,Index(handle_cover),20,0.093,Index(handle_like),NEVER EXECUTED
+23,@qqbench1,handle_c,200,5.711,70475,custom,Index(handle_cover),30,0.095,Index(handle_like),Bitmap(handle_trgm)
+24,코딩,nick_c,200,35.821,70475,generic,IndexOnly(nick_cover),7499,30.756,IndexOnly(nick_cover),NEVER EXECUTED
+24,민준,nick_c,200,5.368,70475,generic,IndexOnly(nick_cover),65,1.021,NEVER EXECUTED,NEVER EXECUTED
+24,김,nick_nc,200,177.446,70475,custom,Index(pk),22160,172.626,IndexOnly(nick_cover),—
+24,james,nick_c,200,6.826,70475,generic,IndexOnly(nick_cover),116,1.853,NEVER EXECUTED,NEVER EXECUTED
+24,raread,nick_c,200,144.787,70475,generic,IndexOnly(nick_cover),16706,138.668,IndexOnly(nick_cover),IndexOnly(nick_cover)
+24,@ab,handle_c,200,10.546,70475,custom,Index(handle_cover),20,0.093,Index(handle_like),NEVER EXECUTED
+24,@qqbench1,handle_c,200,6.486,70475,custom,Index(handle_cover),30,0.095,Index(handle_like),Bitmap(handle_trgm)
+25,코딩,nick_c,200,52.408,70475,generic,IndexOnly(nick_cover),7496,29.363,IndexOnly(nick_cover),NEVER EXECUTED
+25,민준,nick_c,200,13.804,70475,generic,IndexOnly(nick_cover),65,1.217,NEVER EXECUTED,NEVER EXECUTED
+25,김,nick_nc,200,178.894,70475,custom,Index(pk),22160,170.331,IndexOnly(nick_cover),—
+25,james,nick_c,200,9.529,70475,generic,IndexOnly(nick_cover),116,1.838,NEVER EXECUTED,NEVER EXECUTED
+25,raread,nick_c,200,140.945,70475,generic,IndexOnly(nick_cover),16707,135.15,IndexOnly(nick_cover),IndexOnly(nick_cover)
+25,@ab,handle_c,200,8.241,70475,custom,Index(handle_cover),20,0.095,Index(handle_like),NEVER EXECUTED
+25,@qqbench1,handle_c,200,5.391,70475,custom,Index(handle_cover),30,0.091,Index(handle_like),Bitmap(handle_trgm)
+26,코딩,nick_c,200,34.951,70475,generic,IndexOnly(nick_cover),7507,29.872,IndexOnly(nick_cover),NEVER EXECUTED
+26,민준,nick_c,200,6.581,70475,generic,IndexOnly(nick_cover),65,1.013,NEVER EXECUTED,NEVER EXECUTED
+26,김,nick_nc,200,179.291,70475,custom,Index(pk),22160,172.336,IndexOnly(nick_cover),—
+26,james,nick_c,200,12.028,70475,generic,IndexOnly(nick_cover),116,1.881,NEVER EXECUTED,NEVER EXECUTED
+26,raread,nick_c,200,140.069,70475,generic,IndexOnly(nick_cover),16710,133.763,IndexOnly(nick_cover),IndexOnly(nick_cover)
+26,@ab,handle_c,200,5.521,70475,custom,Index(handle_cover),20,0.1,Index(handle_like),NEVER EXECUTED
+26,@qqbench1,handle_c,200,5.55,70475,custom,Index(handle_cover),30,0.127,Index(handle_like),Bitmap(handle_trgm)
+27,코딩,nick_c,200,38.144,70475,generic,IndexOnly(nick_cover),7507,32.918,IndexOnly(nick_cover),NEVER EXECUTED
+27,민준,nick_c,200,5.981,70475,generic,IndexOnly(nick_cover),65,1.153,NEVER EXECUTED,NEVER EXECUTED
+27,김,nick_nc,200,177.481,70475,custom,Index(pk),22160,172.674,IndexOnly(nick_cover),—
+27,james,nick_c,200,6.766,70475,generic,IndexOnly(nick_cover),116,1.87,NEVER EXECUTED,NEVER EXECUTED
+27,raread,nick_c,200,143.448,70475,generic,IndexOnly(nick_cover),16711,138.904,IndexOnly(nick_cover),IndexOnly(nick_cover)
+27,@ab,handle_c,200,4.999,70475,custom,Index(handle_cover),20,0.1,Index(handle_like),NEVER EXECUTED
+27,@qqbench1,handle_c,200,4.269,70475,custom,Index(handle_cover),30,0.096,Index(handle_like),Bitmap(handle_trgm)
+28,코딩,nick_c,200,36.134,70475,generic,IndexOnly(nick_cover),7500,30.753,IndexOnly(nick_cover),NEVER EXECUTED
+28,민준,nick_c,200,6.407,70475,generic,IndexOnly(nick_cover),65,1.134,NEVER EXECUTED,NEVER EXECUTED
+28,김,nick_nc,200,183.415,70475,custom,Index(pk),22160,175.485,IndexOnly(nick_cover),—
+28,james,nick_c,200,12.921,70475,generic,IndexOnly(nick_cover),116,1.86,NEVER EXECUTED,NEVER EXECUTED
+28,raread,nick_c,200,141.246,70475,generic,IndexOnly(nick_cover),16714,136.319,IndexOnly(nick_cover),IndexOnly(nick_cover)
+28,@ab,handle_c,200,5.749,70475,custom,Index(handle_cover),20,0.125,Index(handle_like),NEVER EXECUTED
+28,@qqbench1,handle_c,200,5.622,70475,custom,Index(handle_cover),30,0.138,Index(handle_like),Bitmap(handle_trgm)
+29,코딩,nick_c,200,34.772,70475,generic,IndexOnly(nick_cover),7506,29.776,IndexOnly(nick_cover),NEVER EXECUTED
+29,민준,nick_c,200,5.699,70475,generic,IndexOnly(nick_cover),65,1.062,NEVER EXECUTED,NEVER EXECUTED
+29,김,nick_nc,200,178.97,70475,custom,Index(pk),22160,174.288,IndexOnly(nick_cover),—
+29,james,nick_c,200,7.761,70475,generic,IndexOnly(nick_cover),116,2.065,NEVER EXECUTED,NEVER EXECUTED
+29,raread,nick_c,200,150.092,70475,generic,IndexOnly(nick_cover),16704,143.379,IndexOnly(nick_cover),IndexOnly(nick_cover)
+29,@ab,handle_c,200,6.028,70475,custom,Index(handle_cover),20,0.091,Index(handle_like),NEVER EXECUTED
+29,@qqbench1,handle_c,200,4.273,70475,custom,Index(handle_cover),30,0.105,Index(handle_like),Bitmap(handle_trgm)
+30,코딩,nick_c,200,36.557,70475,generic,IndexOnly(nick_cover),7509,31.939,IndexOnly(nick_cover),NEVER EXECUTED
+30,민준,nick_c,200,5.84,70475,generic,IndexOnly(nick_cover),65,1.087,NEVER EXECUTED,NEVER EXECUTED
+30,김,nick_nc,200,180.436,70475,custom,Index(pk),22160,174.129,IndexOnly(nick_cover),—
+30,james,nick_c,200,8.319,70475,generic,IndexOnly(nick_cover),116,1.885,NEVER EXECUTED,NEVER EXECUTED
+30,raread,nick_c,200,144.028,70475,generic,IndexOnly(nick_cover),16711,137.9,IndexOnly(nick_cover),IndexOnly(nick_cover)
+30,@ab,handle_c,200,10.266,70475,custom,Index(handle_cover),20,0.096,Index(handle_like),NEVER EXECUTED
+30,@qqbench1,handle_c,200,5.688,70475,custom,Index(handle_cover),30,0.091,Index(handle_like),Bitmap(handle_trgm)
+31,코딩,nick_c,200,36.295,70475,generic,IndexOnly(nick_cover),7506,31.71,IndexOnly(nick_cover),NEVER EXECUTED
+31,민준,nick_c,200,6.484,70475,generic,IndexOnly(nick_cover),65,1.013,NEVER EXECUTED,NEVER EXECUTED
+31,김,nick_nc,200,183.381,70475,custom,Index(pk),22160,177.939,IndexOnly(nick_cover),—
+31,james,nick_c,200,8.848,70475,generic,IndexOnly(nick_cover),116,1.904,NEVER EXECUTED,NEVER EXECUTED
+31,raread,nick_c,200,145.748,70475,generic,IndexOnly(nick_cover),16709,139.31,IndexOnly(nick_cover),IndexOnly(nick_cover)
+31,@ab,handle_c,200,6.039,70475,custom,Index(handle_cover),20,0.098,Index(handle_like),NEVER EXECUTED
+31,@qqbench1,handle_c,200,4.204,70475,custom,Index(handle_cover),30,0.095,Index(handle_like),Bitmap(handle_trgm)
+32,코딩,nick_c,200,33.16,70475,generic,IndexOnly(nick_cover),7507,28.852,IndexOnly(nick_cover),NEVER EXECUTED
+32,민준,nick_c,200,5.637,70475,generic,IndexOnly(nick_cover),65,1.104,NEVER EXECUTED,NEVER EXECUTED
+32,김,nick_nc,200,184.181,70475,custom,Index(pk),22160,178.917,IndexOnly(nick_cover),—
+32,james,nick_c,200,6.712,70475,generic,IndexOnly(nick_cover),116,1.961,NEVER EXECUTED,NEVER EXECUTED
+32,raread,nick_c,200,147.382,70475,generic,IndexOnly(nick_cover),16706,142.308,IndexOnly(nick_cover),IndexOnly(nick_cover)
+32,@ab,handle_c,200,5.953,70475,custom,Index(handle_cover),20,0.105,Index(handle_like),NEVER EXECUTED
+32,@qqbench1,handle_c,200,5.165,70475,custom,Index(handle_cover),30,0.109,Index(handle_like),Bitmap(handle_trgm)
+33,코딩,nick_c,200,38.791,70475,generic,IndexOnly(nick_cover),7515,33.161,IndexOnly(nick_cover),NEVER EXECUTED
+33,민준,nick_c,200,6.147,70475,generic,IndexOnly(nick_cover),65,1.181,NEVER EXECUTED,NEVER EXECUTED
+33,김,nick_nc,200,184.376,70475,custom,Index(pk),22160,179.481,IndexOnly(nick_cover),—
+33,james,nick_c,200,7.47,70475,generic,IndexOnly(nick_cover),116,2.115,NEVER EXECUTED,NEVER EXECUTED
+33,raread,nick_c,200,146.206,70475,generic,IndexOnly(nick_cover),16701,141.078,IndexOnly(nick_cover),IndexOnly(nick_cover)
+33,@ab,handle_c,200,5.526,70475,custom,Index(handle_cover),20,0.102,Index(handle_like),NEVER EXECUTED
+33,@qqbench1,handle_c,200,4.787,70475,custom,Index(handle_cover),30,0.11,Index(handle_like),Bitmap(handle_trgm)
+34,코딩,nick_c,200,38.741,70475,generic,IndexOnly(nick_cover),7503,33.494,IndexOnly(nick_cover),NEVER EXECUTED
+34,민준,nick_c,200,5.895,70475,generic,IndexOnly(nick_cover),65,1.0,NEVER EXECUTED,NEVER EXECUTED
+34,김,nick_nc,200,176.506,70475,custom,Index(pk),22160,171.878,IndexOnly(nick_cover),—
+34,james,nick_c,200,7.229,70475,generic,IndexOnly(nick_cover),116,1.976,NEVER EXECUTED,NEVER EXECUTED
+34,raread,nick_c,200,144.224,70475,generic,IndexOnly(nick_cover),16704,139.8,IndexOnly(nick_cover),IndexOnly(nick_cover)
+34,@ab,handle_c,200,4.885,70475,custom,Index(handle_cover),20,0.106,Index(handle_like),NEVER EXECUTED
+34,@qqbench1,handle_c,200,4.492,70475,custom,Index(handle_cover),30,0.116,Index(handle_like),Bitmap(handle_trgm)
+35,코딩,nick_c,200,34.572,70475,generic,IndexOnly(nick_cover),7501,30.382,IndexOnly(nick_cover),NEVER EXECUTED
+35,민준,nick_c,200,6.274,70475,generic,IndexOnly(nick_cover),65,1.03,NEVER EXECUTED,NEVER EXECUTED
+35,김,nick_nc,200,187.735,70475,custom,Index(pk),22160,182.613,IndexOnly(nick_cover),—
+35,james,nick_c,200,9.461,70475,generic,IndexOnly(nick_cover),116,2.197,NEVER EXECUTED,NEVER EXECUTED
+35,raread,nick_c,200,152.266,70475,generic,IndexOnly(nick_cover),16702,142.313,IndexOnly(nick_cover),IndexOnly(nick_cover)
+35,@ab,handle_c,200,12.098,70475,custom,Index(handle_cover),20,0.126,Index(handle_like),NEVER EXECUTED
+35,@qqbench1,handle_c,200,5.351,70475,custom,Index(handle_cover),30,0.119,Index(handle_like),Bitmap(handle_trgm)
+36,코딩,nick_c,200,39.138,70475,generic,IndexOnly(nick_cover),7508,32.76,IndexOnly(nick_cover),NEVER EXECUTED
+36,민준,nick_c,200,5.795,70475,generic,IndexOnly(nick_cover),65,1.033,NEVER EXECUTED,NEVER EXECUTED
+36,김,nick_nc,200,179.907,70475,custom,Index(pk),22160,173.282,IndexOnly(nick_cover),—
+36,james,nick_c,200,8.781,70475,generic,IndexOnly(nick_cover),116,1.901,NEVER EXECUTED,NEVER EXECUTED
+36,raread,nick_c,200,138.582,70475,generic,IndexOnly(nick_cover),16699,133.96,IndexOnly(nick_cover),IndexOnly(nick_cover)
+36,@ab,handle_c,200,5.917,70475,custom,Index(handle_cover),20,0.109,Index(handle_like),NEVER EXECUTED
+36,@qqbench1,handle_c,200,4.982,70475,custom,Index(handle_cover),30,0.108,Index(handle_like),Bitmap(handle_trgm)
+37,코딩,nick_c,200,38.721,70475,generic,IndexOnly(nick_cover),7505,32.927,IndexOnly(nick_cover),NEVER EXECUTED
+37,민준,nick_c,200,6.406,70475,generic,IndexOnly(nick_cover),65,1.023,NEVER EXECUTED,NEVER EXECUTED
+37,김,nick_nc,200,185.925,70475,custom,Index(pk),22160,180.377,IndexOnly(nick_cover),—
+37,james,nick_c,200,9.516,70475,generic,IndexOnly(nick_cover),116,1.969,NEVER EXECUTED,NEVER EXECUTED
+37,raread,nick_c,200,148.649,70475,generic,IndexOnly(nick_cover),16713,142.488,IndexOnly(nick_cover),IndexOnly(nick_cover)
+37,@ab,handle_c,200,5.669,70475,custom,Index(handle_cover),20,0.147,Index(handle_like),NEVER EXECUTED
+37,@qqbench1,handle_c,200,4.458,70475,custom,Index(handle_cover),30,0.096,Index(handle_like),Bitmap(handle_trgm)
+38,코딩,nick_c,200,37.688,70475,generic,IndexOnly(nick_cover),7510,32.361,IndexOnly(nick_cover),NEVER EXECUTED
+38,민준,nick_c,200,5.737,70475,generic,IndexOnly(nick_cover),65,1.042,NEVER EXECUTED,NEVER EXECUTED
+38,김,nick_nc,200,185.913,70475,custom,Index(pk),22160,180.258,IndexOnly(nick_cover),—
+38,james,nick_c,200,7.605,70475,generic,IndexOnly(nick_cover),116,2.315,NEVER EXECUTED,NEVER EXECUTED
+38,raread,nick_c,200,146.388,70475,generic,IndexOnly(nick_cover),16698,141.045,IndexOnly(nick_cover),IndexOnly(nick_cover)
+38,@ab,handle_c,200,4.857,70475,custom,Index(handle_cover),20,0.111,Index(handle_like),NEVER EXECUTED
+38,@qqbench1,handle_c,200,4.208,70475,custom,Index(handle_cover),30,0.122,Index(handle_like),Bitmap(handle_trgm)
+39,코딩,nick_c,200,36.297,70475,generic,IndexOnly(nick_cover),7500,32.048,IndexOnly(nick_cover),NEVER EXECUTED
+39,민준,nick_c,200,6.013,70475,generic,IndexOnly(nick_cover),65,1.17,NEVER EXECUTED,NEVER EXECUTED
+39,김,nick_nc,200,180.15,70475,custom,Index(pk),22160,175.007,IndexOnly(nick_cover),—
+39,james,nick_c,200,6.35,70475,generic,IndexOnly(nick_cover),116,1.815,NEVER EXECUTED,NEVER EXECUTED
+39,raread,nick_c,200,135.644,70475,generic,IndexOnly(nick_cover),16707,131.578,IndexOnly(nick_cover),IndexOnly(nick_cover)
+39,@ab,handle_c,200,4.902,70475,custom,Index(handle_cover),20,0.106,Index(handle_like),NEVER EXECUTED
+39,@qqbench1,handle_c,200,3.663,70475,custom,Index(handle_cover),30,0.09,Index(handle_like),Bitmap(handle_trgm)
+40,코딩,nick_c,200,35.895,70475,generic,IndexOnly(nick_cover),7497,31.158,IndexOnly(nick_cover),NEVER EXECUTED
+40,민준,nick_c,200,5.332,70475,generic,IndexOnly(nick_cover),65,1.162,NEVER EXECUTED,NEVER EXECUTED
+40,김,nick_nc,200,180.011,70475,custom,Index(pk),22160,172.612,IndexOnly(nick_cover),—
+40,james,nick_c,200,11.467,70475,generic,IndexOnly(nick_cover),116,1.884,NEVER EXECUTED,NEVER EXECUTED
+40,raread,nick_c,200,139.319,70475,generic,IndexOnly(nick_cover),16702,132.979,IndexOnly(nick_cover),IndexOnly(nick_cover)
+40,@ab,handle_c,200,9.213,70475,custom,Index(handle_cover),20,0.095,Index(handle_like),NEVER EXECUTED
+40,@qqbench1,handle_c,200,8.07,70475,custom,Index(handle_cover),30,0.1,Index(handle_like),Bitmap(handle_trgm)
+41,코딩,nick_c,200,34.501,70475,generic,IndexOnly(nick_cover),7504,27.969,IndexOnly(nick_cover),NEVER EXECUTED
+41,민준,nick_c,200,7.467,70475,generic,IndexOnly(nick_cover),65,0.976,NEVER EXECUTED,NEVER EXECUTED
+41,김,nick_nc,200,182.115,70475,custom,Index(pk),22160,175.825,IndexOnly(nick_cover),—
+41,james,nick_c,200,11.517,70475,generic,IndexOnly(nick_cover),116,1.876,NEVER EXECUTED,NEVER EXECUTED
+41,raread,nick_c,200,138.532,70475,generic,IndexOnly(nick_cover),16703,132.373,IndexOnly(nick_cover),IndexOnly(nick_cover)
+41,@ab,handle_c,200,8.668,70475,custom,Index(handle_cover),20,0.1,Index(handle_like),NEVER EXECUTED
+41,@qqbench1,handle_c,200,4.164,70475,custom,Index(handle_cover),30,0.095,Index(handle_like),Bitmap(handle_trgm)
+42,코딩,nick_c,200,33.581,70475,generic,IndexOnly(nick_cover),7505,28.837,IndexOnly(nick_cover),NEVER EXECUTED
+42,민준,nick_c,200,7.033,70475,generic,IndexOnly(nick_cover),65,0.985,NEVER EXECUTED,NEVER EXECUTED
+42,김,nick_nc,200,178.42,70475,custom,Index(pk),22160,171.992,IndexOnly(nick_cover),—
+42,james,nick_c,200,10.414,70475,generic,IndexOnly(nick_cover),116,1.881,NEVER EXECUTED,NEVER EXECUTED
+42,raread,nick_c,200,141.231,70475,generic,IndexOnly(nick_cover),16708,135.569,IndexOnly(nick_cover),IndexOnly(nick_cover)
+42,@ab,handle_c,200,6.842,70475,custom,Index(handle_cover),20,0.105,Index(handle_like),NEVER EXECUTED
+42,@qqbench1,handle_c,200,4.757,70475,custom,Index(handle_cover),30,0.106,Index(handle_like),Bitmap(handle_trgm)
+43,코딩,nick_c,200,36.274,70475,generic,IndexOnly(nick_cover),7501,31.718,IndexOnly(nick_cover),NEVER EXECUTED
+43,민준,nick_c,200,5.043,70475,generic,IndexOnly(nick_cover),65,1.127,NEVER EXECUTED,NEVER EXECUTED
+43,김,nick_nc,200,178.497,70475,custom,Index(pk),22160,174.271,IndexOnly(nick_cover),—
+43,james,nick_c,200,8.255,70475,generic,IndexOnly(nick_cover),116,1.782,NEVER EXECUTED,NEVER EXECUTED
+43,raread,nick_c,200,142.277,70475,generic,IndexOnly(nick_cover),16706,135.706,IndexOnly(nick_cover),IndexOnly(nick_cover)
+43,@ab,handle_c,200,8.104,70475,custom,Index(handle_cover),20,0.106,Index(handle_like),NEVER EXECUTED
+43,@qqbench1,handle_c,200,6.478,70475,custom,Index(handle_cover),30,0.083,Index(handle_like),Bitmap(handle_trgm)
+44,코딩,nick_c,200,33.676,70475,generic,IndexOnly(nick_cover),7503,27.545,IndexOnly(nick_cover),NEVER EXECUTED
+44,민준,nick_c,200,9.44,70475,generic,IndexOnly(nick_cover),65,1.014,NEVER EXECUTED,NEVER EXECUTED
+44,김,nick_nc,200,178.453,70475,custom,Index(pk),22160,172.205,IndexOnly(nick_cover),—
+44,james,nick_c,200,11.209,70475,generic,IndexOnly(nick_cover),116,1.918,NEVER EXECUTED,NEVER EXECUTED
+44,raread,nick_c,200,138.434,70475,generic,IndexOnly(nick_cover),16697,132.936,IndexOnly(nick_cover),IndexOnly(nick_cover)
+44,@ab,handle_c,200,5.306,70475,custom,Index(handle_cover),20,0.117,Index(handle_like),NEVER EXECUTED
+44,@qqbench1,handle_c,200,4.44,70475,custom,Index(handle_cover),30,0.099,Index(handle_like),Bitmap(handle_trgm)
+45,코딩,nick_c,200,35.187,70475,generic,IndexOnly(nick_cover),7509,29.399,IndexOnly(nick_cover),NEVER EXECUTED
+45,민준,nick_c,200,7.282,70475,generic,IndexOnly(nick_cover),65,1.003,NEVER EXECUTED,NEVER EXECUTED
+45,김,nick_nc,200,177.259,70475,custom,Index(pk),22160,171.396,IndexOnly(nick_cover),—
+45,james,nick_c,200,10.788,70475,generic,IndexOnly(nick_cover),116,1.815,NEVER EXECUTED,NEVER EXECUTED
+45,raread,nick_c,200,140.67,70475,generic,IndexOnly(nick_cover),16710,132.237,IndexOnly(nick_cover),IndexOnly(nick_cover)
+45,@ab,handle_c,200,7.182,70475,custom,Index(handle_cover),20,0.093,Index(handle_like),NEVER EXECUTED
+45,@qqbench1,handle_c,200,4.896,70475,custom,Index(handle_cover),30,0.086,Index(handle_like),Bitmap(handle_trgm)
+46,코딩,nick_c,200,33.328,70475,generic,IndexOnly(nick_cover),7510,29.204,IndexOnly(nick_cover),NEVER EXECUTED
+46,민준,nick_c,200,5.238,70475,generic,IndexOnly(nick_cover),65,1.126,NEVER EXECUTED,NEVER EXECUTED
+46,김,nick_nc,200,178.383,70475,custom,Index(pk),22160,171.968,IndexOnly(nick_cover),—
+46,james,nick_c,200,13.119,70475,generic,IndexOnly(nick_cover),116,2.133,NEVER EXECUTED,NEVER EXECUTED
+46,raread,nick_c,200,139.543,70475,generic,IndexOnly(nick_cover),16705,134.42,IndexOnly(nick_cover),IndexOnly(nick_cover)
+46,@ab,handle_c,200,4.676,70475,custom,Index(handle_cover),20,0.099,Index(handle_like),NEVER EXECUTED
+46,@qqbench1,handle_c,200,3.778,70475,custom,Index(handle_cover),30,0.089,Index(handle_like),Bitmap(handle_trgm)
+47,코딩,nick_c,200,36.135,70475,generic,IndexOnly(nick_cover),7510,31.775,IndexOnly(nick_cover),NEVER EXECUTED
+47,민준,nick_c,200,8.338,70475,generic,IndexOnly(nick_cover),65,1.064,NEVER EXECUTED,NEVER EXECUTED
+47,김,nick_nc,200,176.726,70475,custom,Index(pk),22160,171.076,IndexOnly(nick_cover),—
+47,james,nick_c,200,5.993,70475,generic,IndexOnly(nick_cover),116,1.902,NEVER EXECUTED,NEVER EXECUTED
+47,raread,nick_c,200,137.769,70475,generic,IndexOnly(nick_cover),16698,132.863,IndexOnly(nick_cover),IndexOnly(nick_cover)
+47,@ab,handle_c,200,7.182,70475,custom,Index(handle_cover),20,0.089,Index(handle_like),NEVER EXECUTED
+47,@qqbench1,handle_c,200,4.955,70475,custom,Index(handle_cover),30,0.09,Index(handle_like),Bitmap(handle_trgm)
+48,코딩,nick_c,200,34.44,70475,generic,IndexOnly(nick_cover),7504,29.673,IndexOnly(nick_cover),NEVER EXECUTED
+48,민준,nick_c,200,7.512,70475,generic,IndexOnly(nick_cover),65,1.059,NEVER EXECUTED,NEVER EXECUTED
+48,김,nick_nc,200,176.802,70475,custom,Index(pk),22160,172.317,IndexOnly(nick_cover),—
+48,james,nick_c,200,8.999,70475,generic,IndexOnly(nick_cover),116,1.9,NEVER EXECUTED,NEVER EXECUTED
+48,raread,nick_c,200,141.704,70475,generic,IndexOnly(nick_cover),16711,135.561,IndexOnly(nick_cover),IndexOnly(nick_cover)
+48,@ab,handle_c,200,5.247,70475,custom,Index(handle_cover),20,0.096,Index(handle_like),NEVER EXECUTED
+48,@qqbench1,handle_c,200,3.562,70475,custom,Index(handle_cover),30,0.11,Index(handle_like),Bitmap(handle_trgm)
+49,코딩,nick_c,200,34.538,70475,generic,IndexOnly(nick_cover),7505,30.322,IndexOnly(nick_cover),NEVER EXECUTED
+49,민준,nick_c,200,5.014,70475,generic,IndexOnly(nick_cover),65,1.005,NEVER EXECUTED,NEVER EXECUTED
+49,김,nick_nc,200,178.63,70475,custom,Index(pk),22160,172.095,IndexOnly(nick_cover),—
+49,james,nick_c,200,10.837,70475,generic,IndexOnly(nick_cover),116,1.793,NEVER EXECUTED,NEVER EXECUTED
+49,raread,nick_c,200,142.835,70475,generic,IndexOnly(nick_cover),16715,132.876,IndexOnly(nick_cover),IndexOnly(nick_cover)
+49,@ab,handle_c,200,7.38,70475,custom,Index(handle_cover),20,0.096,Index(handle_like),NEVER EXECUTED
+49,@qqbench1,handle_c,200,5.475,70475,custom,Index(handle_cover),30,0.087,Index(handle_like),Bitmap(handle_trgm)
+50,코딩,nick_c,200,33.851,70475,generic,IndexOnly(nick_cover),7503,29.877,IndexOnly(nick_cover),NEVER EXECUTED
+50,민준,nick_c,200,5.121,70475,generic,IndexOnly(nick_cover),65,1.035,NEVER EXECUTED,NEVER EXECUTED
+50,김,nick_nc,200,178.582,70475,custom,Index(pk),22160,173.179,IndexOnly(nick_cover),—
+50,james,nick_c,200,10.504,70475,generic,IndexOnly(nick_cover),116,1.885,NEVER EXECUTED,NEVER EXECUTED
+50,raread,nick_c,200,141.836,70475,generic,IndexOnly(nick_cover),16702,131.133,IndexOnly(nick_cover),IndexOnly(nick_cover)
+50,@ab,handle_c,200,6.953,70475,custom,Index(handle_cover),20,0.095,Index(handle_like),NEVER EXECUTED
+50,@qqbench1,handle_c,200,4.115,70475,custom,Index(handle_cover),30,0.089,Index(handle_like),Bitmap(handle_trgm)

@@ -1,0 +1,202 @@
+┌─ Q-DUP-before ──────────────────────────────────────────────────────────────── 2026-11-13 01:08 ─┐
+│ 재시도 큐 · M1 제거 실패 주입 → LP 중복 (ACL 로 앱의 ZREM 차단)                                  │
+│ 코드     개선 전 · merge-base 0eced9c7                                                           │
+│ DB       gravit_bench_10k → 복제 gravit_bench_10k_q                                              │
+│ 부하     LP 재시도 항목 100건(정답률 50% → 10LP) · 스윕 2회 · 2회차 제거 실패 로그에서 앱 종료   │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0eced9c7            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 8.67 / 5.08 / 3.61 (1/5/15분, 기록)
+
+[결과 (DB user_league 기준)]
+  항목                                                    값
+  재시도 항목                                          100건
+  적재부터 스윕 2회 끝까지                            57.2초
+  제거 실패 로그                                       200건
+  1번 지급된 유저                                        0명
+  LP 중복 지급                                         100건
+  지급 기록(league_point_grant)                  테이블 없음
+  큐에 남은 항목                 100건 (ZREM 이 막혀 남는다)
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0eced9c7            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ✅ 스키마 = before              ✅ 제거 실패 로그 200건(스윕 2회)✅ LP 증가가 지급 단위의 배수   
+  ✅ ACL 원복                     
+
+[판정]
+  ── 중복 100건. 기대: before 100건, after 0건 (PLAN-608 M1)
+└─ 저장: benchmark/_runs/Q-DUP-before/  (output.log · result.csv · app_log_sample.txt · meta.json)
+
+┌─ Q-LOST-before ─────────────────────────────────────────────────────────────── 2026-11-13 01:09 ─┐
+│ 재시도 큐 · M5 재적재 실패 주입 → 항목 유실 (ACL 로 앱의 ZADD 차단)                              │
+│ 코드     개선 전 · merge-base 0eced9c7                                                           │
+│ DB       gravit_bench_10k → 복제 gravit_bench_10k_q                                              │
+│ 부하     재처리가 실패하는 LP 항목 100건(points 가 숫자 아님) · 스윕 1회                         │
+│          재적재 실패 로그 100건에서 앱 종료                                                      │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0eced9c7            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 3.50 / 4.28 / 3.43 (1/5/15분, 기록)
+
+[결과 (Redis 기준)]
+  항목                        값
+  재시도 항목              100건
+  적재부터 스윕 처리까지  26.5초
+  재적재 실패 로그         100건
+  큐에 남은 원본             0건
+  데드레터                   0건
+  유실                     100건
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0eced9c7            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ✅ 스키마 = before              ✅ 적재 100건                   ✅ 재적재 실패 로그 100건(스윕 1회)
+  ✅ ACL 원복                     
+
+[판정]
+  ── 유실 100건. 기대: before 100건, after 0건(원본 100건 잔존) (PLAN-608 M5)
+└─ 저장: benchmark/_runs/Q-LOST-before/  (output.log · app_log_sample.txt · meta.json)
+
+┌─ Q-MISS-before ─────────────────────────────────────────────────────────────── 2026-11-13 01:10 ─┐
+│ 재시도 큐 · M2 리스너 없이 커밋한 첫 제출 → 미지급                                               │
+│ 코드     개선 전 · merge-base 0eced9c7                                                           │
+│ DB       gravit_bench_10k → 복제 gravit_bench_10k_q                                              │
+│ 부하     첫 제출 100건을 SQL 로 직접 커밋(1시간 전, 서버 종료 모사)                              │
+│          앱 기동 뒤 12분 대기(after 대조 initialDelay 10분)                                      │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0eced9c7            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 2.81 / 4.04 / 3.38 (1/5/15분, 기록)
+
+[결과 (DB user_league 기준)]
+  항목                                   값
+  첫 제출(리스너 없이 커밋)           100건
+  앱 기동 뒤 관찰                   728.5초
+  지급됨                                0명
+  미지급                              100명
+  전원 지급 시점(앱 기동 기준)            —
+  지급 기록                     테이블 없음
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0eced9c7            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ✅ 스키마 = before              ✅ LP 증가가 0 또는 지급 단위   ✅ ACL 원복                     
+
+[판정]
+  ── 미지급 100건. 기대: before 100건(찾을 수단 없음), after 대조 1회 뒤 0건 (PLAN-608 M2)
+└─ 저장: benchmark/_runs/Q-MISS-before/  (output.log · timeline.csv · app_log_sample.txt · meta.json)
+
+┌─ Q-DUP-after ───────────────────────────────────────────────────────────────── 2026-11-13 01:22 ─┐
+│ 재시도 큐 · M1 제거 실패 주입 → LP 중복 (ACL 로 앱의 ZREM 차단)                                  │
+│ 코드     개선 후 · #608 22ec1a8d (V52 지급 기록)                                                 │
+│ DB       gravit_bench_10k → 복제 gravit_bench_10k_q + V52                                        │
+│ 부하     LP 재시도 항목 100건(정답률 50% → 10LP) · 스윕 2회 · 2회차 제거 실패 로그에서 앱 종료   │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 22ec1a8d            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 1.10 / 1.48 / 2.18 (1/5/15분, 기록)
+
+[결과 (DB user_league 기준)]
+  항목                                                    값
+  재시도 항목                                          100건
+  적재부터 스윕 2회 끝까지                            57.4초
+  제거 실패 로그                                       200건
+  1번 지급된 유저                                      100명
+  LP 중복 지급                                           0건
+  지급 기록(league_point_grant)                        100건
+  큐에 남은 항목                 100건 (ZREM 이 막혀 남는다)
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 22ec1a8d            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ✅ 스키마 = after               ✅ 제거 실패 로그 200건(스윕 2회)✅ LP 증가가 지급 단위의 배수   
+  ✅ ACL 원복                     
+
+[판정]
+  ── 중복 0건. 기대: before 100건, after 0건 (PLAN-608 M1)
+└─ 저장: benchmark/_runs/Q-DUP-after/  (output.log · result.csv · app_log_sample.txt · meta.json)
+
+┌─ Q-LOST-after ──────────────────────────────────────────────────────────────── 2026-11-13 01:23 ─┐
+│ 재시도 큐 · M5 재적재 실패 주입 → 항목 유실 (ACL 로 앱의 ZADD 차단)                              │
+│ 코드     개선 후 · #608 22ec1a8d (V52 지급 기록)                                                 │
+│ DB       gravit_bench_10k → 복제 gravit_bench_10k_q + V52                                        │
+│ 부하     재처리가 실패하는 LP 항목 100건(points 가 숫자 아님) · 스윕 1회                         │
+│          재적재 실패 로그 100건에서 앱 종료                                                      │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 22ec1a8d            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 1.54 / 1.47 / 2.12 (1/5/15분, 기록)
+
+[결과 (Redis 기준)]
+  항목                        값
+  재시도 항목              100건
+  적재부터 스윕 처리까지  26.5초
+  재적재 실패 로그         100건
+  큐에 남은 원본           100건
+  데드레터                   0건
+  유실                       0건
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 22ec1a8d            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ✅ 스키마 = after               ✅ 적재 100건                   ✅ 재적재 실패 로그 100건(스윕 1회)
+  ✅ ACL 원복                     
+
+[판정]
+  ── 유실 0건. 기대: before 100건, after 0건(원본 100건 잔존) (PLAN-608 M5)
+└─ 저장: benchmark/_runs/Q-LOST-after/  (output.log · app_log_sample.txt · meta.json)
+
+┌─ Q-MISS-after ──────────────────────────────────────────────────────────────── 2026-11-13 01:24 ─┐
+│ 재시도 큐 · M2 리스너 없이 커밋한 첫 제출 → 미지급                                               │
+│ 코드     개선 후 · #608 22ec1a8d (V52 지급 기록)                                                 │
+│ DB       gravit_bench_10k → 복제 gravit_bench_10k_q + V52                                        │
+│ 부하     첫 제출 100건을 SQL 로 직접 커밋(1시간 전, 서버 종료 모사)                              │
+│          앱 기동 뒤 12분 대기(after 대조 initialDelay 10분)                                      │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 22ec1a8d            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 1.33 / 1.43 / 2.07 (1/5/15분, 기록)
+
+[결과 (DB user_league 기준)]
+  항목                               값
+  첫 제출(리스너 없이 커밋)       100건
+  앱 기동 뒤 관찰               611.2초
+  지급됨                          100명
+  미지급                            0명
+  전원 지급 시점(앱 기동 기준)  610.4초
+  지급 기록                       100건
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 22ec1a8d            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ✅ 스키마 = after               ✅ LP 증가가 0 또는 지급 단위   ✅ ACL 원복                     
+
+[판정]
+  ── 미지급 0건. 기대: before 100건(찾을 수단 없음), after 대조 1회 뒤 0건 (PLAN-608 M2)
+└─ 저장: benchmark/_runs/Q-MISS-after/  (output.log · timeline.csv · app_log_sample.txt · meta.json)
+

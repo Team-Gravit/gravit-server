@@ -1,0 +1,98 @@
+########## S-M2-before
+┌─ S-M2-before ───────────────────────────────────────────────────────────────── 2026-11-14 15:17 ─┐
+│ 랭킹 동기화 · M2 Redis 장애(데이터 유지 재시작) 뒤 어긋남                                        │
+│ 코드     개선 전 · merge-base ac4e4ae5 (dev, #609 이전)                                          │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53                                 │
+│ 부하     유저 최대 8,000명이 레슨 1 1회씩(+20LP, 리그 그대로) · 8워커 · 요청 사이 0.1초          │
+│ 장애     부하 20초 → Redis SHUTDOWN SAVE · 60초 정지 → docker start(RDB 로드) → 부하 20초 더     │
+│ 관찰     Redis 재기동부터 2초마다 제출 유저 DB↔Redis 대조, 어긋남 0 또는 180초까지               │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 ac4e4ae5            ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 2.37 / 3.23 / 3.05 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (rank-sync-before.jar)
+    부하 시작 · 20초 뒤 Redis 정지…
+    Redis 정지 (20.0초) · 60초 대기…
+    Redis 재기동 (80.3초, RDB 로드 인원 97,071) · 부하 20초 더…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ Redis 백필 97,071명          ✅ Redis 재기동 뒤 RDB 로드(인원 = 백필)
+  ✅ 장애 구간 제출 있음          ✅ DB LP 변화가 0 또는 +20      ✅ 201 받은 유저는 DB LP +20    
+
+[부하 (구간별)]
+  구간              요청    201  p50 ms   max ms  상태    
+  장애 전 20초     1,208  1,208    24.9    376.5  201:1208
+  Redis 정지 60초  3,151  3,151    29.5  60022.8  201:3151
+  재기동 뒤 20초   1,223  1,223    26.0     52.3  201:1223
+
+[결과 (제출 유저 DB user_league ↔ Redis league:rank 대조, 시간은 Redis 재기동 기준)]
+  항목                                                                                값
+  제출 유저                                                  5,582명 (DB LP +20 5,582명)
+  Redis 재기동 직후 어긋남         3406명 (빠짐 0 · 다른 리그 0 · LP 다름 3406 · 중복 0)
+  어긋남 0 도달                                                                        —
+  관찰 끝 어긋남                                          3406명 (빠짐 0 · LP 다름 3406)
+  관찰 시간                                                                      180.8초
+  랭킹 반영 실패 로그                                                            3,406줄
+  재시도 큐 적재 / 적재 실패 로그                                      해당 없음(before)
+  정기 대조가 고친 로그                                                해당 없음(before)
+  Redis 랭킹 인원(끝)                                                 97,071 / DB 97,071
+  참고: Redis 외 ERROR 756줄 → app_log_sample.txt
+
+[판정]
+  ── 기대: before 장애 중 변경분이 그대로 남음, after 대조 1회 뒤 0 (PLAN-609 M2)
+└─ 저장: benchmark/_runs/S-M2-before/  (output.log · timeline.csv · requests.csv · app_log_sample.txt · meta.json)
+
+########## S-M2-after
+┌─ S-M2-after ────────────────────────────────────────────────────────────────── 2026-11-14 15:22 ─┐
+│ 랭킹 동기화 · M2 Redis 장애(데이터 유지 재시작) 뒤 어긋남                                        │
+│ 코드     개선 후 · #609 0b72af43 (재시도 + 정기 대조 + 원자 반영)                                │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53                                 │
+│ 부하     유저 최대 8,000명이 레슨 1 1회씩(+20LP, 리그 그대로) · 8워커 · 요청 사이 0.1초          │
+│ 장애     부하 20초 → Redis SHUTDOWN SAVE · 60초 정지 → docker start(RDB 로드) → 부하 20초 더     │
+│ 관찰     Redis 재기동부터 2초마다 제출 유저 DB↔Redis 대조, 어긋남 0 또는 180초까지               │
+│          대조 cron '0 * * * * *'(1분마다)                                                        │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 0b72af43            ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 2.58 / 3.36 / 3.20 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (rank-sync-after.jar)
+    부하 시작 · 20초 뒤 Redis 정지…
+    Redis 정지 (20.0초) · 60초 대기…
+    Redis 재기동 (80.3초, RDB 로드 인원 97,071) · 부하 20초 더…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ Redis 백필 97,071명          ✅ Redis 재기동 뒤 RDB 로드(인원 = 백필)
+  ✅ 준비 표시 키 유지(유실 재구축 없음)✅ 장애 구간 제출 있음          ✅ DB LP 변화가 0 또는 +20      
+  ✅ 201 받은 유저는 DB LP +20    
+
+[부하 (구간별)]
+  구간              요청    201   p50 ms   max ms  상태    
+  장애 전 20초     1,200  1,200     25.8    400.9  201:1200
+  Redis 정지 60초      8      8  60132.6  60135.7  201:8   
+  재기동 뒤 20초   1,096  1,096     28.9    157.5  201:1096
+
+[결과 (제출 유저 DB user_league ↔ Redis league:rank 대조, 시간은 Redis 재기동 기준)]
+  항목                                                                              값
+  제출 유저                                                2,304명 (DB LP +20 2,304명)
+  Redis 재기동 직후 어긋남         136명 (빠짐 0 · 다른 리그 0 · LP 다름 136 · 중복 0)
+  어긋남 0 도달                                                 Redis 재기동 61.1초 뒤
+  관찰 끝 어긋남                                              0명 (빠짐 0 · LP 다름 0)
+  관찰 시간                                                                     61.1초
+  랭킹 반영 실패 로그                                                            136줄
+  재시도 큐 적재 / 적재 실패 로그                                            136 / 136
+  정기 대조가 고친 로그                                                            1줄
+  Redis 랭킹 인원(끝)                                               97,071 / DB 97,071
+  참고: Redis 외 ERROR 284줄 → app_log_sample.txt
+
+[판정]
+  ── 기대: before 장애 중 변경분이 그대로 남음, after 대조 1회 뒤 0 (PLAN-609 M2)
+└─ 저장: benchmark/_runs/S-M2-after/  (output.log · timeline.csv · requests.csv · app_log_sample.txt · meta.json)
+

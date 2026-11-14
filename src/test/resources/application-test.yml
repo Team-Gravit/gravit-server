@@ -115,6 +115,9 @@ token:
 scheduler:
   season:
     rollover-cron: "-"
+  league-ranking:
+    reconcile-cron: "-"
+    loss-detect-cron: "-"
 
 oauth:
   android:

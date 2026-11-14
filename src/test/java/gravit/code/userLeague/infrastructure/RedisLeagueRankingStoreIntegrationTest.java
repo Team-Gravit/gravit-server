@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.IntStream;
@@ -32,6 +33,8 @@ class RedisLeagueRankingStoreIntegrationTest {
     private static final long OTHER_LEAGUE_ID = 20L;
     // RedisLeagueRankingStore.ADD_BATCH_SIZE 와 같은 값. 배치 경계를 넘기는 데 쓴다.
     private static final int BATCH_SIZE = 1_000;
+    private static final String REBUILD_KEY_OF_LEAGUE = "league:rank-rebuild:1:10";
+    private static final String REBUILD_KEY_OF_OTHER_SEASON = "league:rank-rebuild:2:10";
 
     @Autowired
     private RedisLeagueRankingStore leagueRankingStore;
@@ -221,8 +224,10 @@ class RedisLeagueRankingStoreIntegrationTest {
     }
 
     @Nested
-    @DisplayName("리그를 옮길 때")
-    class Move {
+    @DisplayName("리그에 배치할 때")
+    class Place {
+
+        private final List<Long> seasonLeagueIds = List.of(LEAGUE_ID, OTHER_LEAGUE_ID);
 
         @Test
         void 티어가_바뀌면_이전_리그에서_제거된다() {
@@ -230,7 +235,7 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
 
             // when
-            leagueRankingStore.move(SEASON_ID, LEAGUE_ID, OTHER_LEAGUE_ID, 1L, 350);
+            leagueRankingStore.place(SEASON_ID, seasonLeagueIds, OTHER_LEAGUE_ID, 1L, 350);
 
             // then
             assertSoftly(softly -> {
@@ -246,7 +251,7 @@ class RedisLeagueRankingStoreIntegrationTest {
             leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 2L, 200);
 
             // when
-            leagueRankingStore.move(SEASON_ID, LEAGUE_ID, LEAGUE_ID, 1L, 300);
+            leagueRankingStore.place(SEASON_ID, seasonLeagueIds, LEAGUE_ID, 1L, 300);
 
             // then
             List<LeagueRankEntryDto> entries = leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10);
@@ -256,6 +261,286 @@ class RedisLeagueRankingStoreIntegrationTest {
                             tuple(1L, 300),
                             tuple(2L, 200)
                     );
+        }
+
+        @Test
+        void 반영하면_참을_반환한다() {
+            // when
+            boolean placed = leagueRankingStore.place(SEASON_ID, seasonLeagueIds, LEAGUE_ID, 1L, 100);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(placed).isTrue();
+                softly.assertThat(leagueRankingStore.findRank(SEASON_ID, LEAGUE_ID, 1L)).contains(1);
+            });
+        }
+
+        @Test
+        void 어느_리그에든_더_큰_점수가_있으면_바꾸지_않고_거짓을_반환한다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, OTHER_LEAGUE_ID, 1L, 350);
+
+            // when
+            boolean placed = leagueRankingStore.place(SEASON_ID, seasonLeagueIds, LEAGUE_ID, 1L, 100);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(placed).isFalse();
+                softly.assertThat(leagueRankingStore.findRank(SEASON_ID, LEAGUE_ID, 1L)).isEmpty();
+                softly.assertThat(leagueRankingStore.findLeaguePoints(SEASON_ID, OTHER_LEAGUE_ID, List.of(1L)))
+                        .containsExactly(Map.entry(1L, 350));
+            });
+        }
+
+        @Test
+        void 같은_점수면_다시_반영한다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+
+            // when
+            boolean placed = leagueRankingStore.place(SEASON_ID, seasonLeagueIds, LEAGUE_ID, 1L, 100);
+
+            // then
+            assertThat(placed).isTrue();
+        }
+
+        @Test
+        void 목표_리그가_목록에_없어도_목표_리그에_넣는다() {
+            // when
+            leagueRankingStore.place(SEASON_ID, List.of(LEAGUE_ID), OTHER_LEAGUE_ID, 1L, 100);
+
+            // then
+            assertThat(leagueRankingStore.findRank(SEASON_ID, OTHER_LEAGUE_ID, 1L)).contains(1);
+        }
+
+        @Test
+        void 다른_시즌_키는_건드리지_않는다() {
+            // given
+            leagueRankingStore.put(OTHER_SEASON_ID, LEAGUE_ID, 1L, 900);
+
+            // when
+            leagueRankingStore.place(SEASON_ID, seasonLeagueIds, LEAGUE_ID, 1L, 100);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.findRank(SEASON_ID, LEAGUE_ID, 1L)).contains(1);
+                softly.assertThat(leagueRankingStore.findRank(OTHER_SEASON_ID, LEAGUE_ID, 1L)).contains(1);
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("시즌 랭킹에서 제외할 때")
+    class Evict {
+
+        @Test
+        void 시즌의_모든_리그_키에서_지운다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            leagueRankingStore.put(SEASON_ID, OTHER_LEAGUE_ID, 1L, 100);
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 2L, 200);
+
+            // when
+            leagueRankingStore.evict(SEASON_ID, List.of(LEAGUE_ID, OTHER_LEAGUE_ID), 1L);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.findRank(SEASON_ID, LEAGUE_ID, 1L)).isEmpty();
+                softly.assertThat(leagueRankingStore.findRank(SEASON_ID, OTHER_LEAGUE_ID, 1L)).isEmpty();
+                softly.assertThat(leagueRankingStore.findRank(SEASON_ID, LEAGUE_ID, 2L)).contains(1);
+            });
+        }
+
+        @Test
+        void 리그_목록이_비어_있으면_아무것도_지우지_않는다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+
+            // when
+            leagueRankingStore.evict(SEASON_ID, List.of(), 1L);
+
+            // then
+            assertThat(leagueRankingStore.findRank(SEASON_ID, LEAGUE_ID, 1L)).contains(1);
+        }
+    }
+
+    @Nested
+    @DisplayName("여러 유저의 리그 점수를 한 번에 조회할 때")
+    class FindLeaguePoints {
+
+        @Test
+        void 랭킹에_있는_유저만_점수와_함께_돌려준다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 2L, 250);
+
+            // when
+            Map<Long, Integer> userIdToLeaguePoint =
+                    leagueRankingStore.findLeaguePoints(SEASON_ID, LEAGUE_ID, List.of(1L, 2L, 3L));
+
+            // then
+            assertThat(userIdToLeaguePoint).containsOnly(
+                    Map.entry(1L, 100),
+                    Map.entry(2L, 250)
+            );
+        }
+
+        @Test
+        void 유저_목록이_비어_있으면_빈_결과다() {
+            // when & then
+            assertThat(leagueRankingStore.findLeaguePoints(SEASON_ID, LEAGUE_ID, List.of())).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("리그 하나를 통째로 바꿀 때")
+    class ReplaceLeague {
+
+        @Test
+        void 기존_멤버를_대상_목록으로_바꾼다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 2L, 200);
+            List<LeagueRankEntryDto> entries = List.of(
+                    new LeagueRankEntryDto(0, 2L, 210, LEAGUE_ID),
+                    new LeagueRankEntryDto(0, 3L, 300, LEAGUE_ID)
+            );
+
+            // when
+            leagueRankingStore.replaceLeague(SEASON_ID, LEAGUE_ID, entries);
+
+            // then
+            assertThat(leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10))
+                    .extracting(LeagueRankEntryDto::userId, LeagueRankEntryDto::leaguePoint)
+                    .containsExactly(
+                            tuple(3L, 300),
+                            tuple(2L, 210)
+                    );
+        }
+
+        @Test
+        void 다른_리그는_건드리지_않는다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, OTHER_LEAGUE_ID, 1L, 100);
+
+            // when
+            leagueRankingStore.replaceLeague(SEASON_ID, LEAGUE_ID, List.of(new LeagueRankEntryDto(0, 2L, 200, LEAGUE_ID)));
+
+            // then
+            assertThat(leagueRankingStore.findRank(SEASON_ID, OTHER_LEAGUE_ID, 1L)).contains(1);
+        }
+
+        @Test
+        void 대상이_없으면_리그_키가_사라진다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+
+            // when
+            leagueRankingStore.replaceLeague(SEASON_ID, LEAGUE_ID, List.of());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.countRanked(SEASON_ID, LEAGUE_ID)).isZero();
+                softly.assertThat(leagueRankingStore.hasRanking(SEASON_ID)).isFalse();
+            });
+        }
+
+        @Test
+        void 임시_키를_남기지_않는다() {
+            // given
+            List<LeagueRankEntryDto> entries = List.of(new LeagueRankEntryDto(0, 1L, 100, LEAGUE_ID));
+
+            // when
+            leagueRankingStore.replaceLeague(SEASON_ID, LEAGUE_ID, entries);
+
+            // then
+            assertThat(leagueRankingStore.countRanked(SEASON_ID)).isEqualTo(1);
+        }
+
+        @Test
+        void 실패로_남은_임시_키는_시즌_인원에_세지_않는다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_LEAGUE, "2", 200);
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.countRanked(SEASON_ID)).isEqualTo(1);
+                softly.assertThat(leagueRankingStore.hasRanking(OTHER_SEASON_ID)).isFalse();
+            });
+        }
+
+        @Test
+        void 다음_재구축은_남은_임시_키를_섞지_않는다() {
+            // given
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_LEAGUE, "2", 200);
+            List<LeagueRankEntryDto> entries = List.of(new LeagueRankEntryDto(0, 1L, 100, LEAGUE_ID));
+
+            // when
+            leagueRankingStore.replaceLeague(SEASON_ID, LEAGUE_ID, entries);
+
+            // then
+            assertThat(leagueRankingStore.findPage(SEASON_ID, LEAGUE_ID, 0, 10))
+                    .extracting(LeagueRankEntryDto::userId)
+                    .containsExactly(1L);
+        }
+    }
+
+    @Nested
+    @DisplayName("리그 하나의 인원을 셀 때")
+    class CountRankedInLeague {
+
+        @Test
+        void 해당_리그_인원만_센다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 2L, 200);
+            leagueRankingStore.put(SEASON_ID, OTHER_LEAGUE_ID, 3L, 300);
+
+            // when & then
+            assertThat(leagueRankingStore.countRanked(SEASON_ID, LEAGUE_ID)).isEqualTo(2);
+        }
+
+        @Test
+        void 리그_키가_없으면_0이다() {
+            // when & then
+            assertThat(leagueRankingStore.countRanked(SEASON_ID, LEAGUE_ID)).isZero();
+        }
+    }
+
+    @Nested
+    @DisplayName("랭킹 준비 표시를 다룰 때")
+    class ReadyMark {
+
+        @Test
+        void 표시하면_준비된_것으로_본다() {
+            // when
+            leagueRankingStore.markReady(SEASON_ID);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.isReady(SEASON_ID)).isTrue();
+                softly.assertThat(leagueRankingStore.isReady(OTHER_SEASON_ID)).isFalse();
+            });
+        }
+
+        @Test
+        void 표시가_없으면_준비되지_않은_것으로_본다() {
+            // when & then
+            assertThat(leagueRankingStore.isReady(SEASON_ID)).isFalse();
+        }
+
+        @Test
+        void 표시_키는_시즌_랭킹_키로_세지_않는다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            leagueRankingStore.markReady(SEASON_ID);
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.countRanked(SEASON_ID)).isEqualTo(1);
+                softly.assertThat(leagueRankingStore.hasRanking(OTHER_SEASON_ID)).isFalse();
+            });
         }
     }
 
@@ -401,6 +686,39 @@ class RedisLeagueRankingStoreIntegrationTest {
     @Nested
     @DisplayName("시즌 랭킹을 삭제할 때")
     class DeleteSeason {
+
+        @Test
+        void 준비_표시도_지워진다() {
+            // given
+            leagueRankingStore.put(SEASON_ID, LEAGUE_ID, 1L, 100);
+            leagueRankingStore.markReady(SEASON_ID);
+            leagueRankingStore.markReady(OTHER_SEASON_ID);
+
+            // when
+            leagueRankingStore.deleteSeason(SEASON_ID);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStore.isReady(SEASON_ID)).isFalse();
+                softly.assertThat(leagueRankingStore.isReady(OTHER_SEASON_ID)).isTrue();
+            });
+        }
+
+        @Test
+        void 실패로_남은_임시_키도_지워진다() {
+            // given
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_LEAGUE, "2", 200);
+            rankingRedisTemplate.opsForZSet().add(REBUILD_KEY_OF_OTHER_SEASON, "3", 300);
+
+            // when
+            leagueRankingStore.deleteSeason(SEASON_ID);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(rankingRedisTemplate.hasKey(REBUILD_KEY_OF_LEAGUE)).isFalse();
+                softly.assertThat(rankingRedisTemplate.hasKey(REBUILD_KEY_OF_OTHER_SEASON)).isTrue();
+            });
+        }
 
         @Test
         void 해당_시즌의_모든_리그가_지워진다() {
