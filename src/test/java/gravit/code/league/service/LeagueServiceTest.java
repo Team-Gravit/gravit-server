@@ -6,6 +6,7 @@ import gravit.code.league.fixture.LeagueFixture;
 import gravit.code.season.domain.Season;
 import gravit.code.season.fixture.SeasonFixture;
 import gravit.code.season.service.port.SeasonClosedCache;
+import gravit.code.season.service.port.SeasonPopupSeenStore;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.fixture.UserFixture;
@@ -16,16 +17,25 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.willCallRealMethod;
+import static org.mockito.BDDMockito.willThrow;
 
 
 @TCSpringBootTest
 class LeagueServiceTest {
 
     @Autowired LeagueService leagueService;
-    @Autowired SeasonClosedCache seasonClosedCache;
+    @MockitoSpyBean SeasonClosedCache seasonClosedCache;
+    @MockitoSpyBean SeasonPopupSeenStore seasonPopupSeenStore;
 
     @Autowired SeasonFixture seasonFixture;
     @Autowired UserFixture userFixture;
@@ -113,6 +123,69 @@ class LeagueServiceTest {
 
             // then
             assertThat(result.containsPopup()).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("리그 홈 팝업 Redis 장애")
+    class LeagueHomePopupRedisFailure {
+
+        @BeforeEach
+        void setUpPopupCondition() {
+            seasonClosedCache.setLastClosedSeasonId(closedSeason.getId());
+            historyFixture.히스토리_생성(closedSeason, user, league, 3, 900);
+            userLeagueFixture.참여(user, activeSeason, nextLeague, 321);
+        }
+
+        @Test
+        void 직전_시즌_조회가_실패하면_팝업_없이_응답한다() {
+            // given
+            willThrow(new RedisConnectionFailureException("Redis 연결 실패"))
+                    .given(seasonClosedCache).getLastClosedSeasonId();
+
+            // when
+            LeagueHomeResponse result = leagueService.enterLeagueHome(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.containsPopup()).isFalse();
+                softly.assertThat(result.lastSeasonPopupDto()).isNull();
+            });
+        }
+
+        @Test
+        void 팝업_확인_기록이_실패하면_팝업_없이_응답한다() {
+            // given
+            willThrow(new RedisConnectionFailureException("Redis 연결 실패"))
+                    .given(seasonPopupSeenStore).markSeenIfFirst(anyLong(), anyLong(), any(Duration.class));
+
+            // when
+            LeagueHomeResponse result = leagueService.enterLeagueHome(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.containsPopup()).isFalse();
+                softly.assertThat(result.lastSeasonPopupDto()).isNull();
+            });
+        }
+
+        @Test
+        void 팝업_확인_기록이_실패했으면_Redis_회복_뒤_다음_접속에서_팝업이_나온다() {
+            // given
+            willThrow(new RedisConnectionFailureException("Redis 연결 실패"))
+                    .given(seasonPopupSeenStore).markSeenIfFirst(anyLong(), anyLong(), any(Duration.class));
+            leagueService.enterLeagueHome(user.getId()); // 장애 중 접속 → 팝업 없음
+            willCallRealMethod()
+                    .given(seasonPopupSeenStore).markSeenIfFirst(anyLong(), anyLong(), any(Duration.class));
+
+            // when
+            LeagueHomeResponse result = leagueService.enterLeagueHome(user.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(result.containsPopup()).isTrue();
+                softly.assertThat(result.lastSeasonPopupDto().rank()).isEqualTo(3);
+            });
         }
     }
 }

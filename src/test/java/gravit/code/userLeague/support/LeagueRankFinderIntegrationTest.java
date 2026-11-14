@@ -1,6 +1,7 @@
 package gravit.code.userLeague.support;
 
 import gravit.code.global.dto.response.SliceResponse;
+import gravit.code.global.exception.domain.RestApiException;
 import gravit.code.league.domain.League;
 import gravit.code.league.dto.response.LeagueHistoryResponse;
 import gravit.code.league.fixture.LeagueFixture;
@@ -16,6 +17,9 @@ import gravit.code.userLeague.fixture.UserLeagueFixture;
 import gravit.code.userLeague.service.UserLeagueQueryService;
 import gravit.code.userLeague.service.port.LeagueRankingStore;
 import gravit.code.userLeagueHistory.service.LeagueHistoryService;
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,11 +29,19 @@ import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+
+import static gravit.code.global.exception.domain.CustomErrorCode.LEAGUE_RANKING_TEMPORARILY_UNAVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @TCSpringBootTest
 @DisplayName("랭킹 저장소가 장애일 때")
@@ -43,6 +55,15 @@ class LeagueRankFinderIntegrationTest {
 
     @Autowired
     private LeagueHistoryService leagueHistoryService;
+
+    @Autowired
+    private LeagueRankFinder leagueRankFinder;
+
+    @Autowired
+    private CircuitBreaker leagueRankingStoreCircuitBreaker;
+
+    @Autowired
+    private Bulkhead leagueRankDatabaseBulkhead;
 
     @Autowired
     private UserRepository userRepository;
@@ -59,6 +80,11 @@ class LeagueRankFinderIntegrationTest {
     @Autowired
     private UserLeagueFixture userLeagueFixture;
 
+    @BeforeEach
+    void resetCircuitBreaker() {
+        leagueRankingStoreCircuitBreaker.reset();
+    }
+
     private void 저장소_장애(RuntimeException failure) {
         given(leagueRankingStore.findRank(anyLong(), anyLong(), anyLong())).willThrow(failure);
         given(leagueRankingStore.findPage(anyLong(), anyLong(), anyInt(), anyInt())).willThrow(failure);
@@ -66,6 +92,17 @@ class LeagueRankFinderIntegrationTest {
 
     private RedisConnectionFailureException 연결_실패() {
         return new RedisConnectionFailureException("랭킹 저장소 연결 실패");
+    }
+
+    private <T> T DB_폴백_상한을_채운_채로(Supplier<T> action) {
+        int maxConcurrentCalls = leagueRankDatabaseBulkhead.getBulkheadConfig().getMaxConcurrentCalls();
+        IntStream.range(0, maxConcurrentCalls)
+                .forEach(i -> assertThat(leagueRankDatabaseBulkhead.tryAcquirePermission()).isTrue());
+        try {
+            return action.get();
+        } finally {
+            IntStream.range(0, maxConcurrentCalls).forEach(i -> leagueRankDatabaseBulkhead.onComplete());
+        }
     }
 
     @Nested
@@ -393,6 +430,112 @@ class LeagueRankFinderIntegrationTest {
                 softly.assertThat(rankResult.rank()).isEqualTo(1);
                 softly.assertThat(pageResult.contents()).hasSize(1);
             });
+        }
+    }
+
+    @Nested
+    @DisplayName("저장소 장애가 이어지면")
+    class CircuitBreakerOpen {
+
+        @Test
+        void 서킷_브레이커가_열려_저장소를_부르지_않고_DB로_응답한다() {
+            // given
+            League league = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User first = userFixture.일반_유저(1);
+            User second = userFixture.일반_유저(2);
+            userLeagueFixture.참여(first, season, league, 80);
+            userLeagueFixture.참여(second, season, league, 50);
+            저장소_장애(연결_실패());
+            int minimumNumberOfCalls = leagueRankingStoreCircuitBreaker.getCircuitBreakerConfig().getMinimumNumberOfCalls();
+
+            IntStream.range(0, minimumNumberOfCalls)
+                    .forEach(i -> leagueRankFinder.findRank(season.getId(), league.getId(), second.getId(), 50));
+
+            // when
+            int rank = leagueRankFinder.findRank(season.getId(), league.getId(), second.getId(), 50);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(leagueRankingStoreCircuitBreaker.getState()).isEqualTo(CircuitBreaker.State.OPEN);
+                softly.assertThat(rank).isEqualTo(2);
+            });
+            verify(leagueRankingStore, times(minimumNumberOfCalls)).findRank(anyLong(), anyLong(), anyLong());
+        }
+    }
+
+    @Nested
+    @DisplayName("DB 폴백 동시 실행이 상한에 닿으면")
+    class DatabaseFallbackBulkheadFull {
+
+        @Test
+        void 단건_순위_조회는_순위_집계중_예외를_던진다() {
+            // given
+            League league = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, league, 50);
+            저장소_장애(연결_실패());
+
+            // when & then
+            assertThatThrownBy(() -> DB_폴백_상한을_채운_채로(
+                    () -> leagueRankFinder.findRank(season.getId(), league.getId(), user.getId(), 50)))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(LEAGUE_RANKING_TEMPORARILY_UNAVAILABLE);
+        }
+
+        @Test
+        void 순위_페이지_조회는_순위_집계중_예외를_던진다() {
+            // given
+            League league = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, league, 50);
+            저장소_장애(연결_실패());
+
+            // when & then
+            assertThatThrownBy(() -> DB_폴백_상한을_채운_채로(
+                    () -> leagueRankFinder.findPage(season.getId(), league.getId(), 0, 10)))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(LEAGUE_RANKING_TEMPORARILY_UNAVAILABLE);
+        }
+
+        @Test
+        void 저장소에_순위가_없어_DB로_조회할_때도_순위_집계중_예외를_던진다() {
+            // given
+            League league = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, league, 50);
+            given(leagueRankingStore.findRank(anyLong(), anyLong(), anyLong())).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> DB_폴백_상한을_채운_채로(
+                    () -> leagueRankFinder.findRank(season.getId(), league.getId(), user.getId(), 50)))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(LEAGUE_RANKING_TEMPORARILY_UNAVAILABLE);
+        }
+
+        @Test
+        void 상한이_비면_다시_DB로_응답한다() {
+            // given
+            League league = leagueFixture.브론즈_3();
+            Season season = seasonFixture.진행중인_시즌("S1");
+            User user = userFixture.일반_유저(1);
+            userLeagueFixture.참여(user, season, league, 50);
+            저장소_장애(연결_실패());
+            assertThatThrownBy(() -> DB_폴백_상한을_채운_채로(
+                    () -> leagueRankFinder.findRank(season.getId(), league.getId(), user.getId(), 50)))
+                    .isInstanceOf(RestApiException.class);
+
+            // when
+            int rank = leagueRankFinder.findRank(season.getId(), league.getId(), user.getId(), 50);
+
+            // then
+            assertThat(rank).isEqualTo(1);
         }
     }
 }
