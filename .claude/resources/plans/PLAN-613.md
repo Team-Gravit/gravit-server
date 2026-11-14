@@ -141,7 +141,7 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
   - `recordExceptions(RedisConnectionFailureException.class, RedisSystemException.class, QueryTimeoutException.class)`
   - 이름 `league-ranking-store`. `CircuitBreakerRegistry`에 등록한 뒤 `TaggedCircuitBreakerMetrics.ofCircuitBreakerRegistry(registry).bindTo(meterRegistry)`
 - `@Bean Bulkhead leagueRankDatabaseBulkhead(MeterRegistry meterRegistry)`
-  - `maxConcurrentCalls(D6, 초기값 4)`, `maxWaitDuration(Duration.ZERO)`
+  - `maxConcurrentCalls(4)`(D6), `maxWaitDuration(Duration.ZERO)`
   - 이름 `league-rank-db-fallback`. `TaggedBulkheadMetrics`로 연결
 - 수치는 `ResilienceConfig`의 상수로 둔다. 근거(M3 측정 ID)는 코드 주석이 아니라 이 계획서와 측정 기록에 남긴다
 
@@ -201,7 +201,7 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 - [x] D3. 폴백 상한 초과 시 응답 - **503 + `U_L_5031`** (200 + null안은 버림). 503은 응답 DTO와 기존 필드의 의미를 바꾸지 않는다. null은 "0 = 순위 없음" 규칙과 별개로 클라이언트 분기가 하나 더 생긴다. 어느 쪽이든 프론트와 문구를 맞춰야 한다
 - [x] D4. 리그 홈 시즌 팝업의 Redis 실패 격리(STEP 2) - **포함**. 이슈 본문의 범위(Redis와 무관한 API)에는 들지 않지만, F5대로 이 요청이 DB 커넥션을 쥐고 Redis를 기다린다. STEP 1로 대기는 1초가 되지만, 격리하지 않으면 Redis 장애 동안 리그 홈 자체가 500이 된다
 - [x] D5. `maxmemory` 값 - **384mb** (512mb안은 버림). 벤치 Redis 실측(2026-11-14, #609 S-M6 직후): 랭킹 970,064명(리그 키 15개)이 `used_memory` 84.65M, `used_memory_rss` 98.75M로 한 명당 약 90바이트다. 100만 명 규모에서도 랭킹은 약 100MB라 384mb는 4배 넘는 여유다. 768M 제한의 절반을 AOF 재작성 fork의 copy-on-write와 프로세스 오버헤드 몫으로 남긴다. 512mb는 데이터가 상한까지 찼을 때 fork 복사분이 더해져 768M을 넘을 수 있다. 랭킹 외 키(리프레시 토큰, 메일 인증 코드, 재시도 큐, 시즌 캐시)는 실측에 없으므로 배포 전 운영 `INFO memory`로 사용량이 384mb보다 충분히 작은지 확인한다
-- [ ] D6. 벌크헤드 동시 실행 수와 브레이커 수치 - M3 측정 후 확정(초기값 동시 4, 대기 0)
+- [x] D6. 벌크헤드 동시 실행 수 - **4, 대기 0** (앱 인스턴스마다 랭킹 DB 폴백 동시 실행 최대 4, 넘으면 즉시 503). M3(`R-M3-1m-before`, 97만 명, Redis stop, Hikari 10): 동시 4에서 무관한 API(`GET /api/v1/chapters`) p95 5.4ms(정상 3.9ms), PG CPU 388%. 동시 8은 PG CPU 704%로 거의 포화되고 무관 p95 12.5ms, 동시 16은 폴백이 풀 10을 차지해 무관 p95 383.2ms. 8 → 16의 랭킹 TPS 증가는 10%(25.6 → 28.3)뿐이다. 브레이커 수치는 STEP 4에 적은 값 그대로
 
 ## 검증
 ### 대상 테스트
@@ -248,4 +248,5 @@ implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 - 운영 Redis 이미지가 `redis:latest`라 버전이 고정돼 있지 않다. 이번 범위에 넣지 않는다
 
 ## Deviation Log
+- 2026-11-14: M0(`R-M0-before-run2`)에서 Redis 장애 중 기본 연결 API가 400 `DB_4001`로 응답하는 것을 확인(`GlobalExceptionHandler`가 `DataAccessException`을 400으로 변환). 이 계획 범위 밖이라 고치지 않고 후속 이슈 후보로 둔다. STEP 1 적용 뒤에도 실패가 빨라질 뿐 응답 코드는 400이다
 - 2026-11-14: dev(`e32ba7e2`, #608·#609·#610·#623 머지 뒤)로 rebase. #609 측정(`.claude/resources/perf/609/rank-sync/record.md` M2)에서 확인한 랭킹 재시도 적재 경로를 F2·F4·F6에 반영. #609에서는 고치지 않고 이 계획의 STEP 1로 해소하기로 함(2026-11-14 결정). `retrySweepScheduler`는 #609에서 4스레드가 됐다(STEP 3 직접 처리와 무관)
