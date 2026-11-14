@@ -267,4 +267,79 @@ class LeagueRankingRebuildServiceIntegrationTest {
             });
         }
     }
+
+    @Nested
+    @DisplayName("재구축이 끝나면")
+    class ReadyMark {
+
+        @Test
+        void 재구축_뒤_준비_표시가_생긴다() {
+            // given
+            User participant = userFixture.일반_유저(1);
+            userLeagueFixture.참여(participant, activeSeason, bronze3, 50);
+
+            // when
+            leagueRankingRebuildService.rebuild(activeSeason.getId());
+
+            // then
+            assertThat(leagueRankingStore.isReady(activeSeason.getId())).isTrue();
+        }
+
+        @Test
+        void 인원이_일치해_건너뛰어도_준비_표시가_생긴다() {
+            // given
+            User participant = userFixture.일반_유저(1);
+            userLeagueFixture.참여(participant, activeSeason, bronze3, 50);
+            leagueRankingStore.put(activeSeason.getId(), bronze3.getId(), participant.getId(), 50);
+
+            // when
+            int rebuilt = leagueRankingRebuildService.rebuildIfStale(activeSeason.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(rebuilt).isZero();
+                softly.assertThat(leagueRankingStore.isReady(activeSeason.getId())).isTrue();
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("랭킹 데이터 유실을 확인할 때")
+    class RebuildIfLost {
+
+        @Test
+        void 준비_표시가_없으면_재구축한다() {
+            // given
+            User participant = userFixture.일반_유저(1);
+            userLeagueFixture.참여(participant, activeSeason, bronze3, 50);
+
+            // when
+            boolean rebuilt = leagueRankingRebuildService.rebuildIfLost(activeSeason.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(rebuilt).isTrue();
+                softly.assertThat(leagueRankingStore.findRank(activeSeason.getId(), bronze3.getId(), participant.getId()))
+                        .contains(1);
+                softly.assertThat(leagueRankingStore.isReady(activeSeason.getId())).isTrue();
+            });
+        }
+
+        @Test
+        void 준비_표시가_있으면_아무것도_하지_않는다() {
+            // given
+            User participant = userFixture.일반_유저(1);
+            userLeagueFixture.참여(participant, activeSeason, bronze3, 50);
+            leagueRankingStore.markReady(activeSeason.getId());
+
+            // when
+            boolean rebuilt = leagueRankingRebuildService.rebuildIfLost(activeSeason.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(rebuilt).isFalse();
+                softly.assertThat(leagueRankingStore.hasRanking(activeSeason.getId())).isFalse();
+            });
+        }
+    }
 }
