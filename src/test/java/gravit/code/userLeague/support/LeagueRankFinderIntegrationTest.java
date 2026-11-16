@@ -529,7 +529,9 @@ class LeagueRankFinderIntegrationTest {
             저장소_장애(연결_실패());
             assertThatThrownBy(() -> DB_폴백_상한을_채운_채로(
                     () -> leagueRankFinder.findRank(season.getId(), league.getId(), user.getId(), 50)))
-                    .isInstanceOf(RestApiException.class);
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(LEAGUE_RANKING_TEMPORARILY_UNAVAILABLE);
 
             // when
             int rank = leagueRankFinder.findRank(season.getId(), league.getId(), user.getId(), 50);
