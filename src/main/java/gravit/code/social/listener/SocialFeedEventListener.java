@@ -1,6 +1,6 @@
 package gravit.code.social.listener;
 
-import gravit.code.global.event.retry.RetryEventPublisher;
+import gravit.code.global.event.retry.RetryFallbackProcessor;
 import gravit.code.lesson.dto.event.LessonCompletedEvent;
 import gravit.code.social.infrastructure.SocialFeedLevelUpRetryTarget;
 import gravit.code.social.infrastructure.SocialFeedStreakRetryTarget;
@@ -25,14 +25,17 @@ public class SocialFeedEventListener {
     private static final int LAST_FIXED_STREAK_MILESTONE = 365;
     private static final int STREAK_MILESTONE_INTERVAL = 100;
 
-    private final RetryEventPublisher retryEventPublisher;
+    private final RetryFallbackProcessor retryFallbackProcessor;
+    private final SocialFeedStreakRetryTarget socialFeedStreakRetryTarget;
+    private final SocialFeedLevelUpRetryTarget socialFeedLevelUpRetryTarget;
+    private final SocialFeedTierPromotionRetryTarget socialFeedTierPromotionRetryTarget;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleLessonCompleted(LessonCompletedEvent event) {
         try {
             int days = event.afterConsecutiveSolved();
             if (isStreakMilestone(days)) {
-                retryEventPublisher.publish(SocialFeedStreakRetryTarget.QUEUE_KEY, Map.of(
+                retryFallbackProcessor.publishOrProcess(socialFeedStreakRetryTarget, Map.of(
                         SocialFeedStreakRetryTarget.FIELD_USER_ID, String.valueOf(event.userId()),
                         SocialFeedStreakRetryTarget.FIELD_DAYS, String.valueOf(days)
                 ));
@@ -52,7 +55,7 @@ public class SocialFeedEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleLevelUp(LevelUpFeedEvent event) {
         try {
-            retryEventPublisher.publish(SocialFeedLevelUpRetryTarget.QUEUE_KEY, Map.of(
+            retryFallbackProcessor.publishOrProcess(socialFeedLevelUpRetryTarget, Map.of(
                     SocialFeedLevelUpRetryTarget.FIELD_USER_ID, String.valueOf(event.userId()),
                     SocialFeedLevelUpRetryTarget.FIELD_NEW_LEVEL, String.valueOf(event.newLevel())
             ));
@@ -64,7 +67,7 @@ public class SocialFeedEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleTierPromotion(TierPromotionFeedEvent event) {
         try {
-            retryEventPublisher.publish(SocialFeedTierPromotionRetryTarget.QUEUE_KEY, Map.of(
+            retryFallbackProcessor.publishOrProcess(socialFeedTierPromotionRetryTarget, Map.of(
                     SocialFeedTierPromotionRetryTarget.FIELD_USER_ID, String.valueOf(event.userId()),
                     SocialFeedTierPromotionRetryTarget.FIELD_TIER_NAME, event.tierName()
             ));

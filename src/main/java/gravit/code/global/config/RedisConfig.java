@@ -20,6 +20,8 @@ import java.time.Duration;
 @EnableRedisRepositories
 public class RedisConfig {
 
+    private static final Duration DEFAULT_COMMAND_TIMEOUT = Duration.ofSeconds(1);
+    private static final Duration DEFAULT_CONNECT_TIMEOUT = Duration.ofSeconds(1);
     private static final Duration RANKING_COMMAND_TIMEOUT = Duration.ofMillis(100);
 
     private final String redisHost;
@@ -36,7 +38,30 @@ public class RedisConfig {
     @Bean
     @Primary
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(redisHost, redisPort);
+        return failFastConnectionFactory(DEFAULT_COMMAND_TIMEOUT, DEFAULT_CONNECT_TIMEOUT);
+    }
+
+    private LettuceConnectionFactory failFastConnectionFactory(
+            Duration commandTimeout,
+            Duration connectTimeout
+    ) {
+        ClientOptions clientOptions = ClientOptions.builder()
+                .autoReconnect(true)
+                .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+                .socketOptions(SocketOptions.builder()
+                        .connectTimeout(connectTimeout)
+                        .build())
+                .build();
+
+        LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
+                .commandTimeout(commandTimeout)
+                .clientOptions(clientOptions)
+                .build();
+
+        return new LettuceConnectionFactory(
+                new RedisStandaloneConfiguration(redisHost, redisPort),
+                clientConfiguration
+        );
     }
 
     @Bean
@@ -52,19 +77,7 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory rankingRedisConnectionFactory() {
-        LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
-                .commandTimeout(RANKING_COMMAND_TIMEOUT)
-                .clientOptions(ClientOptions.builder()
-                        .socketOptions(SocketOptions.builder()
-                                .connectTimeout(RANKING_COMMAND_TIMEOUT)
-                                .build())
-                        .build())
-                .build();
-
-        return new LettuceConnectionFactory(
-                new RedisStandaloneConfiguration(redisHost, redisPort),
-                clientConfiguration
-        );
+        return failFastConnectionFactory(RANKING_COMMAND_TIMEOUT, RANKING_COMMAND_TIMEOUT);
     }
 
     private RedisTemplate<String, String> stringRedisTemplate(RedisConnectionFactory connectionFactory) {

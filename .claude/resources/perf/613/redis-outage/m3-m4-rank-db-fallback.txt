@@ -1,0 +1,154 @@
+===== R-M3-1m-before =====
+┌─ R-M3-1m-before ────────────────────────────────────────────────────────────── 2026-11-14 18:09 ─┐
+│ Redis 장애 · M3 랭킹 DB 폴백 동시 실행 (100만 명, Redis stop)                                    │
+│ 코드     개선 전 · dev e32ba7e2 (#613 STEP 적용 전)                                              │
+│ DB       템플릿 gravit_bench_1m_s4 → 복제 gravit_bench_1m_run + V52·V53 · Hikari 최대 10         │
+│ 규모     user_league 1,000,096행 (비탈퇴 970,064 · 최대 파티션 브론즈 3 278,200명                │
+│          다이아 1 42명) · history 0행                                                            │
+│ 부하     랭킹(내 순위 /ranking/me 50                                                             │
+│          리그 목록 /ranking/leagues/{id}/page/{n} 50) 동시 1/2/4/8/16 단계마다 30초, 단계 사이 10│
+│          초 · 같은 시간 무관한 API GET /api/v1/chapters 2클라이언트(요청 사이 50ms)              │
+│ 순서     Redis 정상에서 동시 4 기준 30초 → docker stop → 동시 1→16                               │
+│ 지표     p50/p95/p99 · TPS · 오류 · DB 연결 active 최대/평균(pg_stat_activity 1초)               │
+│          PG·앱 CPU(docker stats/ps 2초)                                                          │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+│ PG 설정  DSM sysv · pg_stat_statements track=all · auto_explain 꺼짐 · 병렬 2 · jit on           │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 리그 시드 무결 (user_league 1,000,096행)✅ history 0행                  ✅ 제출 기록 0행                
+  ✅ 앱 미기동                    ✅ jar 존재                     ✅ jar 커밋 e32ba7e2            
+  ✅ JWT 키 일치                  ✅ PG 설정 = 시드 때            ✅ 다른 DB 세션 없음            
+  ⚠️ 벤치와 무관한 컨테이너가 떠 있다: agent-test-pg (기록만 한다. 끌지는 사람이 정한다)
+  ⚠️ 호스트 load average 3.21 / 3.90 / 3.73 (1/5/15분, 기록)
+  복제 → gravit_bench_1m_run (0.8s) · 앱 기동 중… (redis-outage-before.jar)
+    기준: Redis 정상 · 동시 4 · 30초…
+    Redis 정지 · 동시 1 · 30초…
+    Redis 정지 · 동시 2 · 30초…
+    Redis 정지 · 동시 4 · 30초…
+    Redis 정지 · 동시 8 · 30초…
+    Redis 정지 · 동시 16 · 30초…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ Redis 백필 970,064명         ✅ Redis stop 확인              
+  ✅ 동시 1: 랭킹 요청 있음       ✅ 동시 2: 랭킹 요청 있음       ✅ 동시 4: 랭킹 요청 있음       
+  ✅ 동시 8: 랭킹 요청 있음       ✅ 동시 16: 랭킹 요청 있음      
+
+[결과 (ms, 200 응답 기준 · 오류는 200 외 건수)]
+  단계                랭킹 TPS    p50    p95     p99  오류  내 순위 p95  목록 p95  무관 p50  무관 p95  무관 오류  DB active 최대  평균  PG CPU%  앱 CPU%
+  정상(Redis) 동시 4   1,741.1    2.1    3.4     5.3     0          3.1       3.6       2.2       3.9          0               4   0.7     90.9    167.9
+  Redis 정지 동시 1        5.2  178.2  311.4   374.4     0        193.2     366.2       5.3       9.4          0               5   2.0    107.1     15.8
+  Redis 정지 동시 2        8.4  186.4  464.7   585.9     0        194.6     517.5       4.7       8.0          0               6   3.5    186.5     11.5
+  Redis 정지 동시 4       15.8  189.6  542.2   660.7     0        208.4     584.5       3.2       5.4          0               9   6.3    388.4     10.9
+  Redis 정지 동시 8       25.6  239.7  692.4   855.8     0        400.7     798.9       4.9      12.5          0              15  10.1    703.6     16.3
+  Redis 정지 동시 16      28.3  501.0  966.4  1234.6     0        645.7    1059.0     249.2     383.2          0              17  13.4    748.4     11.1
+  무관한 API = GET /api/v1/chapters. Hikari 최대 10. DB active 는 앱 연결 중 쿼리 실행 중인 수.
+
+[판정]
+  ── D6 근거: 무관한 API p95 가 정상 수준을 지키는 최대 동시 수 (PLAN-613 M3)
+└─ 저장: benchmark/_runs/R-M3-1m-before/  (output.log · levels.json · requests.csv · active.csv · resources.csv · app_log_sample.txt · meta.json)
+===== R-M3-1m-before-run3 =====
+┌─ R-M3-1m-before-run3 ───────────────────────────────────────────────────────── 2026-11-15 01:58 ─┐
+│ Redis 장애 · M3 랭킹 DB 폴백 동시 실행 (100만 명, Redis stop)                                    │
+│ 코드     개선 전 · dev e32ba7e2 (#613 STEP 적용 전)                                              │
+│ DB       템플릿 gravit_bench_1m_s4 → 복제 gravit_bench_1m_run + V52·V53 · Hikari 최대 10         │
+│ 규모     user_league 1,000,096행 (비탈퇴 970,064 · 최대 파티션 브론즈 3 278,200명                │
+│          다이아 1 42명) · history 0행                                                            │
+│ 부하     랭킹(내 순위 /ranking/me 50                                                             │
+│          리그 목록 /ranking/leagues/{id}/page/{n} 50) 동시 1/2/4/8/16 단계마다 30초, 단계 사이 10│
+│          초 · 같은 시간 무관한 API GET /api/v1/chapters 2클라이언트(요청 사이 50ms)              │
+│ 순서     Redis 정상에서 동시 4 기준 30초 → docker stop → 동시 1→16                               │
+│ 지표     p50/p95/p99 · TPS · 오류 · DB 연결 active 최대/평균(pg_stat_activity 1초)               │
+│          PG·앱 CPU(docker stats/ps 2초)                                                          │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+│ PG 설정  DSM sysv · pg_stat_statements track=all · auto_explain 꺼짐 · 병렬 2 · jit on           │
+│ 재실행   R-M3-1m-before 의 재실행 → R-M3-1m-before-run3 (§0-1 규칙 5)                            │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 리그 시드 무결 (user_league 1,000,096행)✅ history 0행                  ✅ 제출 기록 0행                
+  ✅ 앱 미기동                    ✅ jar 존재                     ✅ jar 커밋 e32ba7e2            
+  ✅ JWT 키 일치                  ✅ PG 설정 = 시드 때            ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 9.28 / 7.38 / 5.84 (1/5/15분, 기록)
+  복제 → gravit_bench_1m_run (0.4s) · 앱 기동 중… (redis-outage-before.jar)
+    기준: Redis 정상 · 동시 4 · 30초…
+    Redis 정지 · 동시 1 · 30초…
+    Redis 정지 · 동시 2 · 30초…
+    Redis 정지 · 동시 4 · 30초…
+    Redis 정지 · 동시 8 · 30초…
+    Redis 정지 · 동시 16 · 30초…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ Redis 백필 970,064명         ✅ Redis stop 확인              
+  ✅ 동시 1: 랭킹 요청 있음       ✅ 동시 2: 랭킹 요청 있음       ✅ 동시 4: 랭킹 요청 있음       
+  ✅ 동시 8: 랭킹 요청 있음       ✅ 동시 16: 랭킹 요청 있음      
+
+[결과 (ms, 200 응답 기준 · 오류는 200 외 건수)]
+  단계                랭킹 TPS    p50    p95     p99  오류  503 거절  내 순위 p95  목록 p95  무관 p50  무관 p95  무관 오류  랭킹 쿼리 최대  평균  앱 연결 active 최대  평균  워커 포함 최대  평균  PG CPU%  앱 CPU%
+  정상(Redis) 동시 4   1,890.3    2.0    3.0     4.7     0  0 (0.0%)          2.7       3.2       2.1       3.8          0               0   0.0                    3   0.7               3   0.7     87.0    163.1
+  Redis 정지 동시 1        5.2  178.2  298.4   362.7     0  0 (0.0%)        189.7     314.6       4.8       7.9          0               1   0.2                    1   0.2               3   0.6    105.5     18.0
+  Redis 정지 동시 2        8.8  179.4  412.9   541.7     0  0 (0.0%)        188.6     471.5       4.6       6.6          0               2   1.0                    2   1.0               6   3.0    178.4     16.6
+  Redis 정지 동시 4       16.2  186.5  497.6   611.3     0  0 (0.0%)        208.3     568.4       3.7       4.8          0               4   1.7                    4   1.7              11   4.8    364.2     15.1
+  Redis 정지 동시 8       27.8  223.3  597.8   807.2     0  0 (0.0%)        366.1     703.6       4.2       6.9          0               7   4.4                    7   4.4              14   9.2    687.6     18.4
+  Redis 정지 동시 16      30.7  472.8  868.7  1074.9     0  0 (0.0%)        610.4     968.9     224.5     348.3          0              10   6.2                   10   6.3              17  11.5    748.9     13.3
+  오류 = 200·503 외 응답. 503 거절 = 벌크헤드 상한 초과(U_L_5031). p50~p99·TPS 는 200 응답만.
+  무관한 API = GET /api/v1/chapters. Hikari 최대 10. 앱 연결 active = client backend 중 쿼리 실행 중인 수(무관한 API 포함). 워커 포함 = PG 병렬 워커까지 센 값(R-M3-1m-before 의 'DB active').
+  랭킹 쿼리 = 앱 연결 중 랭킹 DB 폴백 SQL(순위 계산·순위 페이지)을 실행 중인 수(1초 표본).
+
+[판정]
+  ── D6 근거: 무관한 API p95 가 정상 수준을 지키는 최대 동시 수 (PLAN-613 M3)
+└─ 저장: benchmark/_runs/R-M3-1m-before-run3/  (output.log · levels.json · requests.csv · active.csv · resources.csv · app_log_sample.txt · meta.json)
+===== R-M4-1m-after-run3 =====
+┌─ R-M4-1m-after-run3 ────────────────────────────────────────────────────────── 2026-11-15 02:02 ─┐
+│ Redis 장애 · M4 랭킹 DB 폴백 동시 실행 (100만 명, Redis stop)                                    │
+│ 코드     개선 후 · #613 59656d8d (STEP 1~5, base e32ba7e2)                                       │
+│ DB       템플릿 gravit_bench_1m_s4 → 복제 gravit_bench_1m_run + V52·V53 · Hikari 최대 10         │
+│ 규모     user_league 1,000,096행 (비탈퇴 970,064 · 최대 파티션 브론즈 3 278,200명                │
+│          다이아 1 42명) · history 0행                                                            │
+│ 부하     랭킹(내 순위 /ranking/me 50                                                             │
+│          리그 목록 /ranking/leagues/{id}/page/{n} 50) 동시 1/2/4/8/16 단계마다 30초, 단계 사이 10│
+│          초 · 같은 시간 무관한 API GET /api/v1/chapters 2클라이언트(요청 사이 50ms)              │
+│ 순서     Redis 정상에서 동시 4 기준 30초 → docker stop → 동시 1→16                               │
+│ 지표     p50/p95/p99 · TPS · 오류 · DB 연결 active 최대/평균(pg_stat_activity 1초)               │
+│          PG·앱 CPU(docker stats/ps 2초)                                                          │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+│ PG 설정  DSM sysv · pg_stat_statements track=all · auto_explain 꺼짐 · 병렬 2 · jit on           │
+│ 재실행   R-M4-1m-after 의 재실행 → R-M4-1m-after-run3 (§0-1 규칙 5)                              │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 리그 시드 무결 (user_league 1,000,096행)✅ history 0행                  ✅ 제출 기록 0행                
+  ✅ 앱 미기동                    ✅ jar 존재                     ✅ jar 커밋 59656d8d            
+  ✅ JWT 키 일치                  ✅ PG 설정 = 시드 때            ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 5.74 / 6.13 / 5.66 (1/5/15분, 기록)
+  복제 → gravit_bench_1m_run (0.8s) · 앱 기동 중… (redis-outage-after.jar)
+    기준: Redis 정상 · 동시 4 · 30초…
+    Redis 정지 · 동시 1 · 30초…
+    Redis 정지 · 동시 2 · 30초…
+    Redis 정지 · 동시 4 · 30초…
+    Redis 정지 · 동시 8 · 30초…
+    Redis 정지 · 동시 16 · 30초…
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ Redis 백필 970,064명         ✅ Redis stop 확인              
+  ✅ 동시 1: 랭킹 요청 있음       ✅ 동시 2: 랭킹 요청 있음       ✅ 동시 4: 랭킹 요청 있음       
+  ✅ 동시 8: 랭킹 요청 있음       ✅ 동시 16: 랭킹 요청 있음      
+
+[결과 (ms, 200 응답 기준 · 오류는 200 외 건수)]
+  단계                랭킹 TPS    p50    p95     p99  오류       503 거절  내 순위 p95  목록 p95  무관 p50  무관 p95  무관 오류  랭킹 쿼리 최대  평균  앱 연결 active 최대  평균  워커 포함 최대  평균  PG CPU%  앱 CPU%
+  정상(Redis) 동시 4   1,872.1    2.0    3.0     4.9     0       0 (0.0%)          2.8       3.2       2.1       3.9          0               0   0.0                    3   1.1               3   1.1     84.1    167.6
+  Redis 정지 동시 1       11.2   64.4  227.0   303.6     0       0 (0.0%)         73.1     266.8       4.4       6.5          0               1   1.0                    3   1.1               5   3.1    204.8     16.9
+  Redis 정지 동시 2       15.0   75.8  368.8   469.3     0       0 (0.0%)         85.5     414.2       4.4       5.8          0               2   1.9                    3   2.0               7   5.8    329.7     13.8
+  Redis 정지 동시 4       24.3   96.9  471.3   582.9     0       0 (0.0%)        126.8     511.9       3.6       4.9          0               4   3.9                    4   3.9              11  10.5    627.0     13.0
+  Redis 정지 동시 8       20.0  112.7  628.7   863.8     0  38164 (98.4%)        148.8     752.0       3.4       6.5          0               4   3.9                   10   5.1              17  12.0    724.0    101.5
+  Redis 정지 동시 16      17.5  120.8  730.6  1300.9     0  55837 (99.1%)        157.8     857.3       6.8      13.6          0               4   4.0                    8   5.3              15  12.4    691.9    148.8
+  오류 = 200·503 외 응답. 503 거절 = 벌크헤드 상한 초과(U_L_5031). p50~p99·TPS 는 200 응답만.
+  무관한 API = GET /api/v1/chapters. Hikari 최대 10. 앱 연결 active = client backend 중 쿼리 실행 중인 수(무관한 API 포함). 워커 포함 = PG 병렬 워커까지 센 값(R-M3-1m-before 의 'DB active').
+  랭킹 쿼리 = 앱 연결 중 랭킹 DB 폴백 SQL(순위 계산·순위 페이지)을 실행 중인 수(1초 표본).
+
+[판정]
+  ── 기대(PLAN-613 M4): 랭킹 DB active ≤ 4(D6) · 동시 16에서도 무관한 API p95 정상 수준 · 넘치는 요청은 503
+└─ 저장: benchmark/_runs/R-M4-1m-after-run3/  (output.log · levels.json · requests.csv · active.csv · resources.csv · app_log_sample.txt · meta.json)

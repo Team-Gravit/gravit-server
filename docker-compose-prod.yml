@@ -32,7 +32,7 @@ services:
     logging: *default-logging
     container_name: gravit-redis-prod
     image: redis:latest
-    command: redis-server --appendonly yes --appendfsync everysec
+    command: redis-server --appendonly yes --appendfsync everysec --maxmemory 384mb --maxmemory-policy noeviction
     ports:
       - "6388:6379"
     volumes:

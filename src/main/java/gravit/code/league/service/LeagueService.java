@@ -17,6 +17,7 @@ import gravit.code.userLeague.repository.UserLeagueRepository;
 import gravit.code.userLeagueHistory.repository.UserLeagueHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,7 +71,7 @@ public class LeagueService {
             long userId,
             Season activeSeason
     ) {
-        Long lastClosedSeasonId = seasonClosedCache.getLastClosedSeasonId().orElse(null);
+        Long lastClosedSeasonId = findLastClosedSeasonId(userId).orElse(null);
         if (lastClosedSeasonId == null) return Optional.empty();
 
         boolean hasUserLeagueHistory = userLeagueHistoryRepository.existsByUserIdAndSeasonId(userId, lastClosedSeasonId);
@@ -82,10 +83,19 @@ public class LeagueService {
 
         if (popup.isEmpty()) return Optional.empty();
         Duration ttl = ttlUntil(activeSeason.getEndsAt());
-        boolean firstSeen = seasonPopupSeenStore.markSeenIfFirst(userId, lastClosedSeasonId, ttl);
+        boolean firstSeen = markPopupSeenIfFirst(userId, lastClosedSeasonId, ttl);
         if (!firstSeen) return Optional.empty();
 
         return popup;
+    }
+
+    private Optional<Long> findLastClosedSeasonId(long userId) {
+        try {
+            return seasonClosedCache.getLastClosedSeasonId();
+        } catch (DataAccessException e) {
+            log.warn("시즌 팝업 Redis 조회 실패, 팝업 없이 응답: userId={}", userId, e);
+            return Optional.empty();
+        }
     }
 
     private Duration ttlUntil(LocalDateTime activeSeasonEndedAt) {
@@ -94,5 +104,18 @@ public class LeagueService {
         Instant expiredAt = activeSeasonEndedAt.atZone(clock.getZone()).plus(TTL_BUFFER).toInstant();
         Duration ttl = Duration.between(now, expiredAt);
         return ttl.isNegative() ? DEFAULT_TTL : ttl;
+    }
+
+    private boolean markPopupSeenIfFirst(
+            long userId,
+            long seasonId,
+            Duration ttl
+    ) {
+        try {
+            return seasonPopupSeenStore.markSeenIfFirst(userId, seasonId, ttl);
+        } catch (DataAccessException e) {
+            log.warn("시즌 팝업 Redis 조회 실패, 팝업 없이 응답: userId={}", userId, e);
+            return false;
+        }
     }
 }

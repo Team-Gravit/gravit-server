@@ -4,19 +4,28 @@ import gravit.code.friend.dto.event.FollowedEvent;
 import gravit.code.global.event.retry.RetryEventPublisher;
 import gravit.code.inquiry.dto.event.InquiryAnsweredEvent;
 import gravit.code.notice.dto.event.NoticeCreatedEvent;
+import gravit.code.notification.domain.NotificationType;
+import gravit.code.notification.repository.NotificationRepository;
 import gravit.code.notification.support.NotificationMessageProvider;
 import gravit.code.support.TCSpringBootTest;
+import gravit.code.user.domain.User;
+import gravit.code.user.fixture.UserFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -28,6 +37,12 @@ class NotificationEventListenerIntegrationTest {
 
     @Autowired
     private NotificationMessageProvider messageProvider;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserFixture userFixture;
 
     @MockitoBean
     private RetryEventPublisher retryEventPublisher;
@@ -72,6 +87,28 @@ class NotificationEventListenerIntegrationTest {
                     "followerId", "2",
                     "followeeId", "1"
             ));
+        }
+
+        @Test
+        @Transactional
+        @DisplayName("재시도 큐 적재가 실패해도 팔로우 알림이 저장된다")
+        void 큐_적재가_실패해도_팔로우_알림이_저장된다() {
+            // given
+            User follower = userFixture.일반_유저(1);
+            User followee = userFixture.일반_유저(2);
+            willThrow(new RedisConnectionFailureException("재시도 큐 연결 실패"))
+                    .given(retryEventPublisher).publish(anyString(), anyMap());
+
+            // when
+            publisher.publishEvent(new FollowedEvent(follower.getId(), followee.getId()));
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            assertThat(notificationRepository.findAll())
+                    .anyMatch(n -> n.getUserId() == followee.getId()
+                            && n.getType() == NotificationType.FOLLOW
+                            && follower.getId().equals(n.getTargetId()));
         }
     }
 

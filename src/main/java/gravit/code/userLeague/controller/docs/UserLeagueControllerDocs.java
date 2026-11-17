@@ -61,6 +61,18 @@ public interface UserLeagueControllerDocs {
                     )
             ),
             @ApiResponse(
+                    responseCode = "503",
+                    description = "🚨 순위 계산 요청이 몰려 일시적으로 순위를 주지 않음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "순위 집계 중",
+                                    value = "{\"error\": \"U_L_5031\", \"message\": \"순위를 집계하고 있습니다. 잠시 후 다시 시도해주세요.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
@@ -120,6 +132,18 @@ public interface UserLeagueControllerDocs {
                     )
             ),
             @ApiResponse(
+                    responseCode = "503",
+                    description = "🚨 순위 계산 요청이 몰려 일시적으로 순위를 주지 않음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "순위 집계 중",
+                                    value = "{\"error\": \"U_L_5031\", \"message\": \"순위를 집계하고 있습니다. 잠시 후 다시 시도해주세요.\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "🚨 예기치 못한 예외 발생",
                     content = @Content(
@@ -164,6 +188,18 @@ public interface UserLeagueControllerDocs {
                             examples = @ExampleObject(
                                     name = "유저 리그 조회 실패",
                                     value = "{\"error\": \"U_L_4041\", \"message\": \"유저의 리그가 존재하지 않습니다\"}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "503",
+                    description = "🚨 순위 계산 요청이 몰려 일시적으로 순위를 주지 않음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    name = "순위 집계 중",
+                                    value = "{\"error\": \"U_L_5031\", \"message\": \"순위를 집계하고 있습니다. 잠시 후 다시 시도해주세요.\"}"
                             )
                     )
             ),

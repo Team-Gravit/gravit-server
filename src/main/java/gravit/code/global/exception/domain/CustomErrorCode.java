@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Getter
@@ -122,6 +123,7 @@ public enum CustomErrorCode implements ErrorCode {
     USER_LEAGUE_NOT_FOUND(NOT_FOUND, "U_L_4041", "유저의 리그가 존재하지 않습니다"),
     LEAGUE_POINT_MUST_BE_POSITIVE(BAD_REQUEST,"U_L_4001", "리그 포인트는 양수여야 합니다."),
     LEAGUE_RANK_USER_ID_OUT_OF_RANGE(HttpStatus.INTERNAL_SERVER_ERROR, "U_L_5001", "리그 순위를 매길 수 없는 유저 식별자입니다."),
+    LEAGUE_RANKING_TEMPORARILY_UNAVAILABLE(SERVICE_UNAVAILABLE, "U_L_5031", "순위를 집계하고 있습니다. 잠시 후 다시 시도해주세요."),
 
     // Season
     ACTIVE_SEASON_NOT_FOUND(NOT_FOUND, "SEASON_4041", "ACTIVE 시즌이 없습니다."),
