@@ -165,6 +165,8 @@ springdoc:
   paths-to-exclude: /api/v1/admin/**
 
 management:
+  server:
+    port: 8081
   endpoints:
     web:
       exposure:
@@ -174,7 +176,7 @@ management:
       application: gravit-dev
     distribution:
       percentiles-histogram:
-        http.server.requests: true
+        "[http.server.requests]": true
       slo:
         "[http.server.requests]": 100ms,200ms,500ms,1s
 
