@@ -169,10 +169,20 @@ springdoc:
   paths-to-exclude: /api/v1/admin/**
 
 management:
+  server:
+    port: 8081
   endpoints:
     web:
       exposure:
-        include: prometheus
+        include: health, prometheus
+  metrics:
+    tags:
+      application: gravit-prod
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+      slo:
+        "[http.server.requests]": 100ms,200ms,500ms,1s
 
 app:
   version: 1.0.0
