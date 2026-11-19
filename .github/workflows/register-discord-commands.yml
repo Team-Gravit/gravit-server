@@ -1,0 +1,33 @@
+name: 디스코드 슬래시 커맨드 등록
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    paths:
+      - infra/discord/commands.json
+  workflow_dispatch:
+
+jobs:
+  register:
+    name: 슬래시 커맨드 등록
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 디스코드에 커맨드 등록
+        env:
+          BOT_TOKEN: ${{ github.ref_name == 'main' && secrets.PROD_DISCORD_BOT_TOKEN || secrets.DEV_DISCORD_BOT_TOKEN }}
+          APP_ID: ${{ github.ref_name == 'main' && secrets.PROD_DISCORD_APPLICATION_ID || secrets.DEV_DISCORD_APPLICATION_ID }}
+          GUILD_ID: ${{ github.ref_name == 'main' && secrets.PROD_DISCORD_GUILD_ID || secrets.DEV_DISCORD_GUILD_ID }}
+        run: |
+          curl -sS --fail-with-body -X PUT \
+            "https://discord.com/api/v10/applications/$APP_ID/guilds/$GUILD_ID/commands" \
+            -H "Authorization: Bot $BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data @infra/discord/commands.json
