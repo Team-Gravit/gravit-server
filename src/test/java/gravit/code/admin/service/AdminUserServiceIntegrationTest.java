@@ -1,18 +1,29 @@
 package gravit.code.admin.service;
 
+import gravit.code.admin.domain.audit.AuditAction;
+import gravit.code.admin.dto.response.NicknameResetResponse;
 import gravit.code.admin.dto.response.UserDetailResponse;
+import gravit.code.admin.repository.AuditLogRepository;
 import gravit.code.admin.dto.response.UserListItemResponse;
 import gravit.code.global.dto.response.PageResponse;
+import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.report.domain.UserReport;
+import gravit.code.report.repository.UserReportRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserStatus;
 import gravit.code.user.fixture.UserFixture;
 import gravit.code.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND;
+import static gravit.code.report.fixture.UserReportFixture.미처리_기타_신고;
+import static gravit.code.report.fixture.UserReportFixture.미처리_닉네임_신고;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @TCSpringBootTest
@@ -28,6 +39,12 @@ class AdminUserServiceIntegrationTest {
 
     @Autowired
     private UserFixture userFixture;
+
+    @Autowired
+    private UserReportRepository userReportRepository;
+
+    @Autowired
+    private AuditLogRepository auditLogRepository;
 
     @Test
     @DisplayName("유저 목록 native projection 매핑이 정상 동작한다")
@@ -132,5 +149,91 @@ class AdminUserServiceIntegrationTest {
         UserDetailResponse restored = adminUserService.getUser(user.getId());
         assertThat(restored.status()).isEqualTo(UserStatus.ACTIVE);
         assertThat(restored.handle()).isNotBlank(); // 재발급됨
+    }
+
+    @Nested
+    @DisplayName("닉네임을 초기화할 때")
+    class ResetNickname {
+
+        private static final String DEFAULT_NICKNAME_PATTERN = "^유저[0-9]{6}$";
+
+        @Test
+        void 기본_닉네임으로_바뀌고_새_닉네임을_돌려준다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            NicknameResetResponse result = adminUserService.resetNickname(ADMIN_ID, user.getId());
+
+            // then
+            String nickname = userRepository.findById(user.getId()).orElseThrow().getNickname();
+            assertSoftly(softly -> {
+                softly.assertThat(result.userId()).isEqualTo(user.getId());
+                softly.assertThat(result.nickname()).matches(DEFAULT_NICKNAME_PATTERN);
+                softly.assertThat(nickname).isEqualTo(result.nickname());
+            });
+        }
+
+        @Test
+        void 대상에게_걸린_처리되지_않은_닉네임_신고만_처리_완료된다() {
+            // given
+            User target = userFixture.일반_유저(1);
+            User reporter = userFixture.일반_유저(2);
+            User otherReporter = userFixture.일반_유저(3);
+            User otherReasonReporter = userFixture.일반_유저(4);
+            User otherTarget = userFixture.일반_유저(5);
+            UserReport nicknameReport = userReportRepository.save(미처리_닉네임_신고(reporter.getId(), target.getId()));
+            UserReport otherReporterNicknameReport = userReportRepository.save(미처리_닉네임_신고(otherReporter.getId(), target.getId()));
+            UserReport otherReasonReport = userReportRepository.save(미처리_기타_신고(otherReasonReporter.getId(), target.getId()));
+            UserReport otherTargetReport = userReportRepository.save(미처리_닉네임_신고(reporter.getId(), otherTarget.getId()));
+
+            // when
+            adminUserService.resetNickname(ADMIN_ID, target.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(처리_여부(nicknameReport)).isTrue();
+                softly.assertThat(처리_여부(otherReporterNicknameReport)).isTrue();
+                softly.assertThat(처리_여부(otherReasonReport)).isFalse();
+                softly.assertThat(처리_여부(otherTargetReport)).isFalse();
+            });
+        }
+
+        @Test
+        void 감사_로그에_이전과_이후_닉네임이_남는다() {
+            // given
+            User user = userFixture.일반_유저(1);
+
+            // when
+            NicknameResetResponse result = adminUserService.resetNickname(ADMIN_ID, user.getId());
+
+            // then
+            assertThat(auditLogRepository.findAll())
+                    .singleElement()
+                    .satisfies(log -> assertSoftly(softly -> {
+                        softly.assertThat(log.getAdminId()).isEqualTo(ADMIN_ID);
+                        softly.assertThat(log.getAction()).isEqualTo(AuditAction.USER_NICKNAME_RESET);
+                        softly.assertThat(log.getTargetId()).isEqualTo(String.valueOf(user.getId()));
+                        softly.assertThat(log.getBeforeValue()).isEqualTo("유저1");
+                        softly.assertThat(log.getAfterValue()).isEqualTo(result.nickname());
+                    }));
+        }
+
+        @Test
+        void 없는_유저이면_예외를_던진다() {
+            // given
+            long nonExistentUserId = 99_999L;
+
+            // when & then
+            assertThatThrownBy(() -> adminUserService.resetNickname(ADMIN_ID, nonExistentUserId))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(USER_NOT_FOUND);
+            assertThat(auditLogRepository.count()).isZero();
+        }
+
+        private boolean 처리_여부(UserReport userReport) {
+            return userReportRepository.findById(userReport.getId()).orElseThrow().isResolved();
+        }
     }
 }

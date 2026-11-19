@@ -177,6 +177,25 @@ class UserServiceIntegrationTest {
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(PROFILE_IMG_NUM_INVALID);
         }
+
+        @Test
+        void 닉네임에_금지어가_들어_있으면_예외를_던지고_온보딩되지_않는다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            OnboardingRequest request = new OnboardingRequest("나는금지야", 1);
+
+            // when & then
+            assertThatThrownBy(() -> userService.onboard(user.getId(), request))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(NICKNAME_BANNED_WORD);
+
+            User found = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(found.isOnboarded()).isFalse();
+                softly.assertThat(found.getNickname()).isEqualTo("유저1");
+            });
+        }
     }
 
     @Nested
@@ -209,6 +228,39 @@ class UserServiceIntegrationTest {
                     .isInstanceOf(RestApiException.class)
                     .extracting(e -> ((RestApiException) e).getErrorCode())
                     .isEqualTo(USER_NOT_FOUND);
+        }
+
+        @Test
+        void 닉네임에_금지어가_들어_있으면_예외를_던지고_닉네임이_바뀌지_않는다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            int profileImgNumberBefore = user.getProfileImgNumber();
+            UserProfileUpdateRequest request = new UserProfileUpdateRequest("BADWORD1", profileImgNumberBefore + 1);
+
+            // when & then
+            assertThatThrownBy(() -> userService.updateUserProfile(user.getId(), request))
+                    .isInstanceOf(RestApiException.class)
+                    .extracting(e -> ((RestApiException) e).getErrorCode())
+                    .isEqualTo(NICKNAME_BANNED_WORD);
+
+            User found = userRepository.findById(user.getId()).orElseThrow();
+            assertSoftly(softly -> {
+                softly.assertThat(found.getNickname()).isEqualTo("유저1");
+                softly.assertThat(found.getProfileImgNumber()).isEqualTo(profileImgNumberBefore);
+            });
+        }
+
+        @Test
+        void 허용_단어인_닉네임이면_프로필_수정에_성공한다() {
+            // given
+            User user = userFixture.일반_유저(1);
+            UserProfileUpdateRequest request = new UserProfileUpdateRequest("금지옥엽", 5);
+
+            // when
+            UserResponse result = userService.updateUserProfile(user.getId(), request);
+
+            // then
+            assertThat(result.nickname()).isEqualTo("금지옥엽");
         }
     }
 
