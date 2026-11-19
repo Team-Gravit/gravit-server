@@ -187,3 +187,9 @@ discord:
   allowed-role-ids:
     - test-role
   list-limit: 10
+
+metric-report:
+  summary:
+    enabled: false
+    model: ops-analyst
+    timeout: 2s

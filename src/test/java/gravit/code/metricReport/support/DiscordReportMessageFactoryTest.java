@@ -147,7 +147,7 @@ class DiscordReportMessageFactoryTest {
         @Test
         void 처리_필요_줄에_어드민_링크를_달고_목록은_넣지_않는다() {
             // when
-            String body = 본문(factory.createScheduledReport(최근_7일_리포트()));
+            String body = 본문(factory.createScheduledReport(최근_7일_리포트(), null));
 
             // then
             assertThat(body)
@@ -176,7 +176,7 @@ class DiscordReportMessageFactoryTest {
             ServiceMetricReportDto report = ServiceMetricReportDto.of(MetricPeriod.YESTERDAY, current, previous, 신고_문의(), GENERATED_AT);
 
             // when
-            String body = 본문(factory.createScheduledReport(report));
+            String body = 본문(factory.createScheduledReport(report, null));
 
             // then
             assertSoftly(softly -> {
@@ -209,6 +209,53 @@ class DiscordReportMessageFactoryTest {
     }
 
     @Nested
+    @DisplayName("AI 요약을 붙일 때")
+    class Summary {
+
+        @Test
+        void 요약이_있으면_결론_줄_자리에_AI_요약을_인용으로_넣고_섹션은_그대로_둔다() {
+            // given
+            String summary = "레슨 제출이 늘었지만 정답률이 낮다.\n\n미처리 신고 9건을 확인해야 한다.";
+
+            // when
+            String body = 본문(factory.createScheduledReport(최근_7일_리포트(), summary));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(body).contains("""
+                        > 🧠 **AI 요약**
+                        > 레슨 제출이 늘었지만 정답률이 낮다.
+                        > 미처리 신고 9건을 확인해야 한다.
+
+                        ### 👥 사용자""");
+                softly.assertThat(body).doesNotContain("> 레슨 제출 0건 → 8건");
+                softly.assertThat(body).contains("### 🔁 리텐션", "### 📚 학습 · 🎤 면접", "### 🚨 처리 필요");
+            });
+        }
+
+        @Test
+        void 요약이_없으면_규칙_결론_줄을_쓴다() {
+            // when
+            String body = 본문(factory.createScheduledReport(최근_7일_리포트(), null));
+
+            // then
+            assertThat(body).contains("> 레슨 제출 0건 → 8건").doesNotContain("AI 요약");
+        }
+
+        @Test
+        void 요약_입력에는_섹션만_넣고_결론_줄_어드민_링크_목록은_넣지_않는다() {
+            // when
+            String input = factory.createSummaryInput(최근_7일_리포트());
+
+            // then
+            assertThat(input)
+                    .startsWith("-# 11-12 ~ 11-18 · 직전 같은 기간(11-05 ~ 11-11) 대비\n\n### 👥 사용자")
+                    .contains("### 🔁 리텐션", "### 📚 학습 · 🎤 면접", "미처리 신고 **9건** · 미답변 문의 **3건**")
+                    .doesNotContain("> ", "어드민 열기", ADMIN_URL, "문제 #", "Quiz problem", "사용자가 쓴 문의 제목");
+        }
+    }
+
+    @Nested
     @DisplayName("메시지 종류별로 만들 때")
     class MessageTypes {
 
@@ -218,7 +265,7 @@ class DiscordReportMessageFactoryTest {
             ServiceMetricReportDto report = ServiceMetricReportDto.of(MetricPeriod.LAST_WEEK, 이번_주(), 지난_주(), 신고_문의(), GENERATED_AT);
 
             // when
-            DiscordMessageDto message = factory.createScheduledReport(report);
+            DiscordMessageDto message = factory.createScheduledReport(report, null);
 
             // then
             DiscordEmbedDto embed = message.embeds().getFirst();
