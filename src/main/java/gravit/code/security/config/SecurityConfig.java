@@ -65,6 +65,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/cs-notes/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/version").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/discord/interactions").permitAll() // 디스코드 서명으로 검증
                 .anyRequest().authenticated());
 
         http.addFilterBefore(new JwtAuthFilter(authTokenProvider, authenticationEntryPoint), UsernamePasswordAuthenticationFilter.class);
