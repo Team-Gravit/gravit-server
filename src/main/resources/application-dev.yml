@@ -197,6 +197,7 @@ discord:
   interaction-enabled: true
   public-key: ${DISCORD_PUBLIC_KEY:}
   report-webhook-url: ${DISCORD_REPORT_WEBHOOK_URL:}
+  admin-url: https://gravit-admin.inuappcenter.kr/
   allowed-channel-ids:
     - "1572862393602539540"
   allowed-role-ids:

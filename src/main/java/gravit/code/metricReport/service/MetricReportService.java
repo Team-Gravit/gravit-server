@@ -17,19 +17,11 @@ public class MetricReportService {
     private final DiscordReportMessageFactory discordReportMessageFactory;
     private final DiscordWebhookClient discordWebhookClient;
 
-    public void sendDailyReport() {
-        sendScheduledReport(MetricPeriod.YESTERDAY);
-    }
-
-    private void sendScheduledReport(MetricPeriod period) {
-        ServiceMetricReportDto report = serviceMetricQueryService.getReport(period);
+    public void sendWeeklyReport() {
+        ServiceMetricReportDto report = serviceMetricQueryService.getReport(MetricPeriod.LAST_WEEK);
 
         DiscordMessageDto message = discordReportMessageFactory.createScheduledReport(report);
 
         discordWebhookClient.send(message);
-    }
-
-    public void sendWeeklyReport() {
-        sendScheduledReport(MetricPeriod.LAST_WEEK);
     }
 }

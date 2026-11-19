@@ -10,6 +10,7 @@ public record DiscordProps(
         boolean interactionEnabled,
         String publicKey,
         String reportWebhookUrl,
+        String adminUrl,
         List<String> allowedChannelIds,
         List<String> allowedRoleIds,
         int listLimit
