@@ -2,15 +2,19 @@ package gravit.code.admin.service;
 
 import gravit.code.admin.domain.AdminUser;
 import gravit.code.admin.domain.audit.AuditAction;
+import gravit.code.admin.dto.response.NicknameResetResponse;
 import gravit.code.admin.dto.response.UserDetailResponse;
 import gravit.code.admin.dto.response.UserListItemResponse;
+import gravit.code.admin.repository.AdminUserReportRepository;
 import gravit.code.admin.repository.AdminUserRepository;
 import gravit.code.admin.support.AdminPages;
 import gravit.code.admin.support.AuditLogRecorder;
 import gravit.code.global.dto.response.PageResponse;
 import gravit.code.global.exception.domain.RestApiException;
+import gravit.code.report.domain.UserReportType;
 import gravit.code.user.domain.Role;
 import gravit.code.user.domain.UserStatus;
+import gravit.code.user.support.DefaultNicknameGenerator;
 import gravit.code.user.support.RandomHandleGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +28,11 @@ import static gravit.code.global.exception.domain.CustomErrorCode.USER_NOT_FOUND
 public class AdminUserService {
 
     private final AdminUserRepository adminUserRepository;
+    private final AdminUserReportRepository adminUserReportRepository;
 
     private final AuditLogRecorder auditLogRecorder;
     private final RandomHandleGenerator handleGenerator;
+    private final DefaultNicknameGenerator defaultNicknameGenerator;
 
     @Transactional(readOnly = true)
     public PageResponse<UserListItemResponse> getUsers(
@@ -89,6 +95,26 @@ public class AdminUserService {
         adminUserRepository.updateRoleById(userId, role.name());
 
         auditLogRecorder.record(adminId, AuditAction.USER_ROLE_CHANGE, String.valueOf(userId), before, role.name());
+    }
+
+    @Transactional
+    public NicknameResetResponse resetNickname(
+            long adminId,
+            long userId
+    ) {
+        AdminUser user = adminUserRepository.findRowById(userId)
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+
+        String before = user.getNickname();
+        String after = defaultNicknameGenerator.generate();
+
+        adminUserRepository.updateNicknameById(userId, after);
+
+        adminUserReportRepository.resolveUnresolvedByTargetUserIdAndReportType(userId, UserReportType.INAPPROPRIATE_NICKNAME);
+
+        auditLogRecorder.record(adminId, AuditAction.USER_NICKNAME_RESET, String.valueOf(userId), before, after);
+
+        return NicknameResetResponse.of(userId, after);
     }
 
     private boolean isRestore(
