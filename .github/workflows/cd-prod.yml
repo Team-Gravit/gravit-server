@@ -81,6 +81,9 @@ jobs:
 
           spring.ai.openai.api-key: ${{ secrets.LITELLM_MASTER_KEY }}
 
+          discord.public-key: ${{ secrets.PROD_DISCORD_PUBLIC_KEY }}
+          discord.report-webhook-url: ${{ secrets.PROD_DISCORD_REPORT_WEBHOOK_URL }}
+
           aws.s3.bucket: ${{ secrets.PROD_S3_INTERVIEW_AUDIO_BUCKET }}
           aws.s3.access-key: ${{ secrets.PROD_S3_ACCESS_KEY }}
           aws.s3.secret-key: ${{ secrets.PROD_S3_SECRET_KEY }}
