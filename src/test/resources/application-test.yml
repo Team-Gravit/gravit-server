@@ -181,6 +181,7 @@ discord:
   # 테스트 전용 Ed25519 공개키. 짝이 되는 개인키는 테스트 fixture에 있다
   public-key: 00bd47945d101cd0be3bbbe44b74b05ea2ebdadb059b3aa73f536255a682ac70
   report-webhook-url: https://discord.test/api/webhooks/test
+  admin-url: https://admin.test/
   allowed-channel-ids:
     - test-channel
   allowed-role-ids:

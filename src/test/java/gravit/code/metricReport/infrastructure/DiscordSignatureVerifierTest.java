@@ -20,7 +20,7 @@ class DiscordSignatureVerifierTest {
             boolean interactionEnabled,
             String publicKey
     ) {
-        return new DiscordProps(false, interactionEnabled, publicKey, null, List.of(), List.of(), 10);
+        return new DiscordProps(false, interactionEnabled, publicKey, null, null, List.of(), List.of(), 10);
     }
 
     @Nested
