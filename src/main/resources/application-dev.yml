@@ -203,3 +203,9 @@ discord:
   allowed-role-ids:
     - "1572870189614366780"
   list-limit: 10
+
+metric-report:
+  summary:
+    enabled: true
+    model: ops-analyst
+    timeout: 20s

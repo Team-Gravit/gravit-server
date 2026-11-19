@@ -48,6 +48,7 @@ public class DiscordReportMessageFactory {
     private static final String SECTION_PREFIX = "### ";
     private static final String QUOTE_PREFIX = "> ";
     private static final String INLINE_SEPARATOR = " · ";
+    private static final String AI_SUMMARY_HEADER = "🧠 **AI 요약**";
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter SHORT_DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd");
@@ -73,14 +74,17 @@ public class DiscordReportMessageFactory {
 
     private final DiscordProps discordProps;
 
-    public DiscordMessageDto createScheduledReport(ServiceMetricReportDto report) {
+    public DiscordMessageDto createScheduledReport(
+            ServiceMetricReportDto report,
+            String summary
+    ) {
         String title = report.period() == MetricPeriod.LAST_WEEK
                 ? "📊 주간 리포트 · " + formatRange(report.current().range())
                 : buildStatusTitle(report);
 
         return DiscordMessageDto.of(
                 null,
-                List.of(buildReportEmbed(title, report)),
+                List.of(buildReportEmbed(title, report, summary)),
                 null,
                 FLAG_SUPPRESS_NOTIFICATIONS
         );
@@ -100,12 +104,13 @@ public class DiscordReportMessageFactory {
 
     private DiscordEmbedDto buildReportEmbed(
             String title,
-            ServiceMetricReportDto report
+            ServiceMetricReportDto report,
+            String summary
     ) {
         return DiscordEmbedDto.of(
                 title,
                 adminUrlOrNull(),
-                buildBody(report),
+                buildBody(report, summary),
                 EMBED_COLOR,
                 null,
                 DiscordEmbedFooterDto.from(buildFooter(report))
@@ -116,22 +121,28 @@ public class DiscordReportMessageFactory {
         return StringUtils.hasText(discordProps.adminUrl()) ? discordProps.adminUrl() : null;
     }
 
-    private String buildBody(ServiceMetricReportDto report) {
+    private String buildBody(
+            ServiceMetricReportDto report,
+            String summary
+    ) {
         return String.join(
                 BLOCK_SEPARATOR,
                 buildRangeLine(report),
-                buildHighlights(report),
-                buildSections(report)
+                buildHighlights(report, summary),
+                buildSections(report, true)
         );
     }
 
-    private String buildSections(ServiceMetricReportDto report) {
+    private String buildSections(
+            ServiceMetricReportDto report,
+            boolean withAdminLink
+    ) {
         return String.join(
                 LINE_SEPARATOR,
                 buildUserSection(report),
                 buildRetentionSection(report),
                 buildLearningSection(report),
-                buildPendingSection(report)
+                buildPendingSection(report, withAdminLink)
         );
     }
 
@@ -252,14 +263,17 @@ public class DiscordReportMessageFactory {
         return metric("평균 정답률", String.format("%.1f%%", accuracy), change);
     }
 
-    private String buildPendingSection(ServiceMetricReportDto report) {
+    private String buildPendingSection(
+            ServiceMetricReportDto report,
+            boolean withAdminLink
+    ) {
         ReportInquiryMetricDto metric = report.reportsAndInquiries();
 
         String pendingLine = metric("미처리 신고", metricChangeFormatter.number(metric.unresolvedReportCount()) + "건", "")
                 + INLINE_SEPARATOR + metric("미답변 문의", metricChangeFormatter.number(metric.pendingInquiryCount()) + "건", "");
 
         String adminUrl = adminUrlOrNull();
-        if (adminUrl != null) {
+        if (withAdminLink && adminUrl != null) {
             pendingLine += " → [어드민 열기](" + adminUrl + ")";
         }
 
@@ -281,7 +295,17 @@ public class DiscordReportMessageFactory {
                 + " · 직전 같은 기간(" + formatRange(report.previous().range()) + ") 대비";
     }
 
-    private String buildHighlights(ServiceMetricReportDto report) {
+    private String buildHighlights(
+            ServiceMetricReportDto report,
+            String summary
+    ) {
+        if (summary != null) {
+            return QUOTE_PREFIX + AI_SUMMARY_HEADER + LINE_SEPARATOR + summary.lines()
+                    .filter(line -> !line.isBlank())
+                    .map(line -> QUOTE_PREFIX + line.strip())
+                    .collect(Collectors.joining(LINE_SEPARATOR));
+        }
+
         return metricHighlightSelector.select(report).stream()
                 .map(highlight -> QUOTE_PREFIX + highlight)
                 .collect(Collectors.joining(LINE_SEPARATOR));
@@ -301,7 +325,7 @@ public class DiscordReportMessageFactory {
 
         return DiscordMessageDto.of(
                 null,
-                List.of(buildReportEmbed(buildStatusTitle(report), report)),
+                List.of(buildReportEmbed(buildStatusTitle(report), report, null)),
                 List.of(DiscordActionRowDto.of(buttons)),
                 FLAG_EPHEMERAL
         );
@@ -320,7 +344,7 @@ public class DiscordReportMessageFactory {
 
         return DiscordMessageDto.of(
                 null,
-                List.of(buildReportEmbed(buildStatusTitle(report), report)),
+                List.of(buildReportEmbed(buildStatusTitle(report), report, null)),
                 buttons.isEmpty() ? null : List.of(DiscordActionRowDto.of(buttons)),
                 FLAG_SUPPRESS_NOTIFICATIONS
         );
@@ -460,6 +484,14 @@ public class DiscordReportMessageFactory {
                 null,
                 null,
                 FLAG_EPHEMERAL
+        );
+    }
+
+    public String createSummaryInput(ServiceMetricReportDto report) {
+        return String.join(
+                BLOCK_SEPARATOR,
+                buildRangeLine(report),
+                buildSections(report, false)
         );
     }
 }

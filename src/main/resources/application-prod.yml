@@ -205,3 +205,9 @@ discord:
   allowed-channel-ids: [ ]
   allowed-role-ids: [ ]
   list-limit: 10
+
+metric-report:
+  summary:
+    enabled: true
+    model: ops-analyst
+    timeout: 20s
