@@ -197,6 +197,8 @@ discord:
   interaction-enabled: true
   public-key: ${DISCORD_PUBLIC_KEY:}
   report-webhook-url: ${DISCORD_REPORT_WEBHOOK_URL:}
-  allowed-channel-ids: [ ]
-  allowed-role-ids: [ ]
+  allowed-channel-ids:
+    - "1572862393602539540"
+  allowed-role-ids:
+    - "1572870189614366780"
   list-limit: 10
