@@ -93,6 +93,9 @@ public enum CustomErrorCode implements ErrorCode {
     // Report
     REPORT_NOT_FOUND(NOT_FOUND, "REPORT_4041", "신고 조회에 실패하였습니다."),
     REPORT_TYPE_NOT_AVAILABLE(BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
+    USER_REPORT_SELF_NOT_ALLOWED(BAD_REQUEST, "REPORT_4002", "자기 자신은 신고할 수 없습니다."),
+    USER_REPORT_NOT_FOUND(NOT_FOUND, "REPORT_4042", "사용자 신고 조회에 실패하였습니다."),
+    USER_REPORT_DUPLICATED(CONFLICT, "REPORT_4091", "이미 처리를 기다리는 신고가 있습니다."),
 
     // Bookmark
     BOOKMARK_DUPLICATED(CONFLICT, "BOOKMARK_4091", "이미 북마크한 문제입니다."),
