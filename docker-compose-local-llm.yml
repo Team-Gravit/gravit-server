@@ -1,0 +1,15 @@
+# 지표 리포트 LLM 요약 로컬 미리보기용 LiteLLM 게이트웨이.
+# 실행: GROQ_API_KEY=<키> docker compose -f docker-compose-local-llm.yml up -d
+# 서버는 base-url http://localhost:4000, api-key sk-local-preview, model ops-analyst 로 호출한다.
+services:
+  litellm-local:
+    image: ghcr.io/berriai/litellm:v1.106.6
+    container_name: gravit-litellm-local
+    command: [ "--config", "/app/config.yaml", "--port", "4000" ]
+    ports:
+      - "4000:4000"
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY:?GROQ_API_KEY 환경변수가 필요합니다}
+      LITELLM_MASTER_KEY: sk-local-preview
+    volumes:
+      - ./infra/litellm/config.local.yaml:/app/config.yaml:ro
