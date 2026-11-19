@@ -9,6 +9,8 @@ public record DiscordEmbedDto(
 
         String title,
 
+        String url,
+
         String description,
 
         Integer color,
@@ -19,11 +21,12 @@ public record DiscordEmbedDto(
 ) {
     public static DiscordEmbedDto of(
             String title,
+            String url,
             String description,
             Integer color,
             List<DiscordEmbedFieldDto> fields,
             DiscordEmbedFooterDto footer
     ) {
-        return new DiscordEmbedDto(title, description, color, fields, footer);
+        return new DiscordEmbedDto(title, url, description, color, fields, footer);
     }
 }

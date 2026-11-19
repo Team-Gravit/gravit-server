@@ -1,0 +1,7 @@
+# 로컬 미리보기 전용 LiteLLM 설정. 지표 리포트 요약 별칭(ops-analyst)만 Groq로 연결한다.
+# 운영 LiteLLM(앱센터 서버)에도 같은 model_name으로 추가한다. 키는 환경변수로만 받는다.
+model_list:
+  - model_name: ops-analyst
+    litellm_params:
+      model: groq/openai/gpt-oss-120b
+      api_key: os.environ/GROQ_API_KEY

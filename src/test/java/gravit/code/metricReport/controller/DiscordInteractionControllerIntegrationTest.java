@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static gravit.code.global.exception.domain.CustomErrorCode.DISCORD_INVALID_SIGNATURE;
 import static gravit.code.global.exception.domain.CustomErrorCode.DISCORD_UNSUPPORTED_INTERACTION;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +30,7 @@ class DiscordInteractionControllerIntegrationTest {
     private static final String PING = "{\"type\":1}";
     private static final int FLAG_EPHEMERAL = 64;
     private static final int FLAG_SUPPRESS_NOTIFICATIONS = 4096;
+    private static final String ADMIN_URL = "https://admin.test/";
 
     @Autowired
     private MockMvc mockMvc;
@@ -108,10 +110,15 @@ class DiscordInteractionControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.type").value(4))
                     .andExpect(jsonPath("$.data.flags").value(FLAG_EPHEMERAL))
-                    .andExpect(jsonPath("$.data.embeds[0].title").value("📊 서비스 현황 · 최근 7일 (07-29 ~ 08-04)"))
-                    .andExpect(jsonPath("$.data.embeds[0].fields.length()").value(6))
+                    .andExpect(jsonPath("$.data.embeds[0].title").value("📊 서비스 현황 · 최근 7일"))
+                    .andExpect(jsonPath("$.data.embeds[0].url").value(ADMIN_URL))
+                    .andExpect(jsonPath("$.data.embeds[0].description").value(startsWith("-# 07-29 ~ 08-04 · 직전 같은 기간(07-22 ~ 07-28) 대비")))
+                    .andExpect(jsonPath("$.data.embeds[0].fields").doesNotExist())
                     .andExpect(jsonPath("$.data.components[0].type").value(1))
-                    .andExpect(jsonPath("$.data.components[0].components[0].custom_id").value("metric-share:7d"));
+                    .andExpect(jsonPath("$.data.components[0].components[0].custom_id").value("metric-share:7d"))
+                    .andExpect(jsonPath("$.data.components[0].components[1].custom_id").value("metric-list:7d"))
+                    .andExpect(jsonPath("$.data.components[0].components[2].style").value(5))
+                    .andExpect(jsonPath("$.data.components[0].components[2].url").value(ADMIN_URL));
         }
 
         @Test
@@ -119,7 +126,7 @@ class DiscordInteractionControllerIntegrationTest {
             // when & then
             서명해서_보낸다(현황_명령("test-channel", "test-role", null))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.data.embeds[0].title").value("📊 서비스 현황 · 오늘 (2025-08-05)"))
+                    .andExpect(jsonPath("$.data.embeds[0].title").value("📊 서비스 현황 · 오늘"))
                     .andExpect(jsonPath("$.data.components[0].components[0].custom_id").value("metric-share:today"));
         }
 
@@ -175,7 +182,7 @@ class DiscordInteractionControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("채널에 공유 버튼을 받을 때")
+    @DisplayName("공유와 목록 버튼을 받을 때")
     class ShareButton {
 
         @Test
@@ -185,12 +192,38 @@ class DiscordInteractionControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.type").value(4))
                     .andExpect(jsonPath("$.data.flags").value(FLAG_SUPPRESS_NOTIFICATIONS))
-                    .andExpect(jsonPath("$.data.embeds[0].title").value("📊 서비스 현황 · 어제 (2025-08-04)"))
-                    .andExpect(jsonPath("$.data.components").doesNotExist());
+                    .andExpect(jsonPath("$.data.embeds[0].title").value("📊 서비스 현황 · 어제"))
+                    .andExpect(jsonPath("$.data.components[0].components.length()").value(1))
+                    .andExpect(jsonPath("$.data.components[0].components[0].url").value(ADMIN_URL));
         }
 
         @Test
-        void 공유_버튼이_아닌_컴포넌트면_400을_반환한다() throws Exception {
+        void 목록_버튼은_같은_기간의_신고와_문의_목록을_요청자에게만_보여준다() throws Exception {
+            // when & then
+            서명해서_보낸다(공유_버튼("metric-list:yesterday"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.type").value(4))
+                    .andExpect(jsonPath("$.data.flags").value(FLAG_EPHEMERAL))
+                    .andExpect(jsonPath("$.data.embeds[0].title").value("🗂️ 신고·문의 목록 · 어제"))
+                    .andExpect(jsonPath("$.data.embeds[0].fields.length()").value(2))
+                    .andExpect(jsonPath("$.data.embeds[0].fields[0].value").value("신규 0건 · 미처리 총 0건\n새로 들어온 신고 없음"));
+        }
+
+        @Test
+        void 허용되지_않은_채널에서_목록_버튼을_누르면_거부한다() throws Exception {
+            // given
+            String body = "{\"type\":3,\"channel_id\":\"other-channel\","
+                    + "\"member\":{\"roles\":[\"test-role\"]},"
+                    + "\"data\":{\"custom_id\":\"metric-list:7d\",\"component_type\":2}}";
+
+            // when & then
+            서명해서_보낸다(body)
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.content").value("이 채널이나 역할에서는 현황을 조회할 수 없습니다."));
+        }
+
+        @Test
+        void 공유나_목록_버튼이_아닌_컴포넌트면_400을_반환한다() throws Exception {
             // when & then
             서명해서_보낸다(공유_버튼("other-button"))
                     .andExpect(status().isBadRequest())

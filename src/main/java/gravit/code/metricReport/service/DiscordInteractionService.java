@@ -25,6 +25,7 @@ import static gravit.code.global.exception.domain.CustomErrorCode.DISCORD_UNSUPP
 import static gravit.code.metricReport.dto.internal.DiscordInteractionDto.TYPE_APPLICATION_COMMAND;
 import static gravit.code.metricReport.dto.internal.DiscordInteractionDto.TYPE_MESSAGE_COMPONENT;
 import static gravit.code.metricReport.dto.internal.DiscordInteractionDto.TYPE_PING;
+import static gravit.code.metricReport.support.DiscordReportMessageFactory.LIST_CUSTOM_ID_PREFIX;
 import static gravit.code.metricReport.support.DiscordReportMessageFactory.SHARE_CUSTOM_ID_PREFIX;
 
 @Slf4j
@@ -61,7 +62,7 @@ public class DiscordInteractionService {
         return switch (interaction.type()) {
             case TYPE_PING -> DiscordInteractionResponseDto.pong();
             case TYPE_APPLICATION_COMMAND -> handleStatusCommand(interaction);
-            case TYPE_MESSAGE_COMPONENT -> handleShare(interaction);
+            case TYPE_MESSAGE_COMPONENT -> handleComponent(interaction);
             default -> throw new RestApiException(DISCORD_UNSUPPORTED_INTERACTION);
         };
     }
@@ -124,9 +125,16 @@ public class DiscordInteractionService {
         return report;
     }
 
-    private DiscordInteractionResponseDto handleShare(DiscordInteractionDto interaction) {
+    private DiscordInteractionResponseDto handleComponent(DiscordInteractionDto interaction) {
         DiscordInteractionDataDto data = interaction.data();
-        if (data == null || data.customId() == null || !data.customId().startsWith(SHARE_CUSTOM_ID_PREFIX)) {
+        String customId = data == null ? null : data.customId();
+        if (customId == null) {
+            throw new RestApiException(DISCORD_UNSUPPORTED_INTERACTION);
+        }
+
+        boolean isShare = customId.startsWith(SHARE_CUSTOM_ID_PREFIX);
+        boolean isList = customId.startsWith(LIST_CUSTOM_ID_PREFIX);
+        if (!isShare && !isList) {
             throw new RestApiException(DISCORD_UNSUPPORTED_INTERACTION);
         }
 
@@ -134,10 +142,19 @@ public class DiscordInteractionService {
             return DiscordInteractionResponseDto.message(discordReportMessageFactory.createDeniedReply());
         }
 
-        MetricPeriod period = MetricPeriod.fromOptionValue(data.customId().substring(SHARE_CUSTOM_ID_PREFIX.length()));
+        MetricPeriod period = parsePeriod(customId, isShare ? SHARE_CUSTOM_ID_PREFIX : LIST_CUSTOM_ID_PREFIX);
 
         ServiceMetricReportDto report = getReportWithTiming(period);
 
-        return DiscordInteractionResponseDto.message(discordReportMessageFactory.createSharedReport(report));
+        return DiscordInteractionResponseDto.message(isShare
+                ? discordReportMessageFactory.createSharedReport(report)
+                : discordReportMessageFactory.createListReply(report));
+    }
+
+    private MetricPeriod parsePeriod(
+            String customId,
+            String prefix
+    ) {
+        return MetricPeriod.fromOptionValue(customId.substring(prefix.length()));
     }
 }

@@ -16,20 +16,7 @@ public class MetricReportScheduler {
 
     private final DiscordProps discordProps;
 
-    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
-    public void sendDailyReport() {
-        if (!discordProps.reportEnabled()) {
-            return;
-        }
-
-        try {
-            metricReportService.sendDailyReport();
-        } catch (Exception e) {
-            log.error("일간 지표 리포트 전송 실패", e);
-        }
-    }
-
-    @Scheduled(cron = "0 5 9 * * MON", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 9 * * MON", zone = "Asia/Seoul")
     public void sendWeeklyReport() {
         if (!discordProps.reportEnabled()) {
             return;

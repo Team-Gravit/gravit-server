@@ -1,5 +1,6 @@
 package gravit.code.metricReport.support;
 
+import gravit.code.metricReport.config.DiscordProps;
 import gravit.code.metricReport.domain.MetricPeriod;
 import gravit.code.metricReport.dto.internal.DiscordActionRowDto;
 import gravit.code.metricReport.dto.internal.DiscordButtonDto;
@@ -13,13 +14,15 @@ import gravit.code.metricReport.dto.internal.LessonMetricDto;
 import gravit.code.metricReport.dto.internal.MetricRangeDto;
 import gravit.code.metricReport.dto.internal.ReportInquiryMetricDto;
 import gravit.code.metricReport.dto.internal.ReportItemDto;
-import gravit.code.metricReport.dto.internal.RetentionDto;
 import gravit.code.metricReport.dto.internal.ServiceMetricReportDto;
 import gravit.code.metricReport.dto.internal.ServiceMetricSnapshotDto;
 import gravit.code.metricReport.dto.internal.TypeCountDto;
 import gravit.code.metricReport.dto.internal.UserMetricDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +30,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class DiscordReportMessageFactory {
 
     public static final String SHARE_CUSTOM_ID_PREFIX = "metric-share:";
+    public static final String LIST_CUSTOM_ID_PREFIX = "metric-list:";
 
     private static final int FLAG_EPHEMERAL = 1 << 6;
     private static final int FLAG_SUPPRESS_NOTIFICATIONS = 1 << 12;
@@ -38,11 +43,16 @@ public class DiscordReportMessageFactory {
     private static final int INQUIRY_TITLE_MAX_LENGTH = 50;
     private static final String TRUNCATION_SUFFIX = "…";
     private static final String LINE_SEPARATOR = "\n";
-    private static final double UNCHANGED_THRESHOLD = 0.05;
+    private static final String BLOCK_SEPARATOR = "\n\n";
+    private static final String SMALL_TEXT_PREFIX = "-# ";
+    private static final String SECTION_PREFIX = "### ";
+    private static final String QUOTE_PREFIX = "> ";
+    private static final String INLINE_SEPARATOR = " · ";
+    private static final String AI_SUMMARY_HEADER = "🧠 **AI 요약**";
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter SHORT_DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd");
-    private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
+    private static final DateTimeFormatter MONTH_DAY_FORMATTER = DateTimeFormatter.ofPattern("M월 d일");
     private static final DateTimeFormatter GENERATED_AT_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private static final Map<String, String> REPORT_TYPE_LABELS = Map.of(
@@ -59,16 +69,22 @@ public class DiscordReportMessageFactory {
             "OTHER", "기타"
     );
 
-    public DiscordMessageDto createScheduledReport(ServiceMetricReportDto report) {
-        String title = switch (report.period()) {
-            case YESTERDAY -> "📊 일간 리포트 · " + formatRange(report.current().range());
-            case LAST_WEEK -> "📊 주간 리포트 · " + formatRange(report.current().range());
-            default -> buildStatusTitle(report);
-        };
+    private final MetricChangeFormatter metricChangeFormatter;
+    private final MetricHighlightSelector metricHighlightSelector;
+
+    private final DiscordProps discordProps;
+
+    public DiscordMessageDto createScheduledReport(
+            ServiceMetricReportDto report,
+            String summary
+    ) {
+        String title = report.period() == MetricPeriod.LAST_WEEK
+                ? "📊 주간 리포트 · " + formatRange(report.current().range())
+                : buildStatusTitle(report);
 
         return DiscordMessageDto.of(
                 null,
-                List.of(buildEmbed(title, report)),
+                List.of(buildReportEmbed(title, report, summary)),
                 null,
                 FLAG_SUPPRESS_NOTIFICATIONS
         );
@@ -83,190 +99,287 @@ public class DiscordReportMessageFactory {
     }
 
     private String buildStatusTitle(ServiceMetricReportDto report) {
-        return "📊 서비스 현황 · " + report.period().getLabel() + " (" + formatRange(report.current().range()) + ")";
+        return "📊 서비스 현황 · " + report.period().getLabel();
     }
 
-    private DiscordEmbedDto buildEmbed(
+    private DiscordEmbedDto buildReportEmbed(
             String title,
-            ServiceMetricReportDto report
+            ServiceMetricReportDto report,
+            String summary
     ) {
-        ServiceMetricSnapshotDto current = report.current();
-        ServiceMetricSnapshotDto previous = report.previous();
-
-        List<DiscordEmbedFieldDto> fields = List.of(
-                DiscordEmbedFieldDto.of("👥 사용자", formatUsers(current, previous)),
-                DiscordEmbedFieldDto.of("🔁 재방문", formatRetention(current.users(), previous == null ? null : previous.users())),
-                DiscordEmbedFieldDto.of("📚 레슨", formatLessons(current.lessons(), previous == null ? null : previous.lessons())),
-                DiscordEmbedFieldDto.of("🎤 면접", formatInterviews(current.interviews(), previous == null ? null : previous.interviews())),
-                DiscordEmbedFieldDto.of("🚨 신고", formatReports(report.reportsAndInquiries())),
-                DiscordEmbedFieldDto.of("💬 문의", formatInquiries(report.reportsAndInquiries()))
-        );
-
         return DiscordEmbedDto.of(
                 title,
-                buildDescription(report),
+                adminUrlOrNull(),
+                buildBody(report, summary),
                 EMBED_COLOR,
-                fields,
+                null,
                 DiscordEmbedFooterDto.from(buildFooter(report))
         );
     }
 
-    private String formatUsers(
-            ServiceMetricSnapshotDto current,
-            ServiceMetricSnapshotDto previous
-    ) {
-        UserMetricDto users = current.users();
-        UserMetricDto previousUsers = previous == null ? null : previous.users();
-        boolean isSingleDay = current.range().isSingleDay();
-
-        List<String> lines = new ArrayList<>();
-        lines.add("총 가입자 " + formatNumber(users.totalUsers()) + "명");
-        lines.add("신규 가입 " + formatCount(users.newSignups(), previousUsers == null ? null : previousUsers.newSignups(), "명"));
-
-        if (isSingleDay) {
-            lines.add("DAU " + formatCount(users.activeUsers(), previousUsers == null ? null : previousUsers.activeUsers(), "명"));
-        } else {
-            lines.add("평균 DAU " + formatAverage(users.averageDailyActiveUsers(), previousUsers == null ? null : previousUsers.averageDailyActiveUsers(), "명"));
-            lines.add("기간 활성 " + formatCount(users.activeUsers(), previousUsers == null ? null : previousUsers.activeUsers(), "명"));
-        }
-
-        String mauStatus = users.mauInProgress() ? ", 진행 중" : "";
-        lines.add("MAU (" + users.mauMonth().format(MONTH_FORMATTER) + mauStatus + ") " + formatNumber(users.monthlyActiveUsers()) + "명");
-
-        return String.join(LINE_SEPARATOR, lines);
+    private String adminUrlOrNull() {
+        return StringUtils.hasText(discordProps.adminUrl()) ? discordProps.adminUrl() : null;
     }
 
-    private String formatNumber(long value) {
-        return String.format("%,d", value);
-    }
-
-    private String formatCount(
-            long current,
-            Long previous,
-            String unit
-    ) {
-        String value = formatNumber(current) + unit;
-        if (previous == null) {
-            return value;
-        }
-
-        long diff = current - previous;
-        if (diff == 0) {
-            return value + " (→)";
-        }
-
-        String arrow = diff > 0 ? "▲" : "▼";
-        if (previous == 0) {
-            return value + " (" + arrow + formatNumber(Math.abs(diff)) + ")";
-        }
-
-        double changeRate = (double) diff / previous * 100;
-        return value + " (" + arrow + formatNumber(Math.abs(diff)) + ", " + String.format("%+.1f%%", changeRate) + ")";
-    }
-
-    private String formatAverage(
-            double current,
-            Double previous,
-            String unit
-    ) {
-        String value = String.format("%,.1f", current) + unit;
-        if (previous == null) {
-            return value;
-        }
-
-        double diff = current - previous;
-        if (Math.abs(diff) < UNCHANGED_THRESHOLD) {
-            return value + " (→)";
-        }
-
-        String arrow = diff > 0 ? "▲" : "▼";
-        return value + " (" + arrow + String.format("%.1f", Math.abs(diff)) + ")";
-    }
-
-    private String formatRetention(
-            UserMetricDto current,
-            UserMetricDto previous
+    private String buildBody(
+            ServiceMetricReportDto report,
+            String summary
     ) {
         return String.join(
-                LINE_SEPARATOR,
-                "D1 " + formatRetentionRate(current.d1Retention(), previous == null ? null : previous.d1Retention()),
-                "D7 " + formatRetentionRate(current.d7Retention(), previous == null ? null : previous.d7Retention())
+                BLOCK_SEPARATOR,
+                buildRangeLine(report),
+                buildHighlights(report, summary),
+                buildSections(report, true)
         );
     }
 
-    private String formatRetentionRate(
-            RetentionDto current,
-            RetentionDto previous
+    private String buildSections(
+            ServiceMetricReportDto report,
+            boolean withAdminLink
     ) {
-        Double rate = current.rate();
-        if (rate == null) {
-            return "- (가입자 없음)";
-        }
-
-        String value = String.format("%.1f%%", rate * 100)
-                + " (" + formatNumber(current.retainedCount()) + "/" + formatNumber(current.cohortSize()) + "명)";
-
-        Double previousRate = previous == null ? null : previous.rate();
-        return appendPercentPointChange(value, rate * 100, previousRate == null ? null : previousRate * 100);
+        return String.join(
+                LINE_SEPARATOR,
+                buildUserSection(report),
+                buildRetentionSection(report),
+                buildLearningSection(report),
+                buildPendingSection(report, withAdminLink)
+        );
     }
 
-    private String appendPercentPointChange(
-            String value,
-            double currentPercent,
-            Double previousPercent
-    ) {
-        if (previousPercent == null) {
-            return value;
-        }
+    private String buildUserSection(ServiceMetricReportDto report) {
+        ServiceMetricSnapshotDto current = report.current();
+        UserMetricDto users = current.users();
+        UserMetricDto previousUsers = report.hasPrevious() ? report.previous().users() : null;
 
-        double diff = currentPercent - previousPercent;
-        if (Math.abs(diff) < UNCHANGED_THRESHOLD) {
-            return value + " →";
-        }
-
-        String arrow = diff > 0 ? "▲" : "▼";
-        return value + " " + arrow + String.format("%.1f%%p", Math.abs(diff));
-    }
-
-    private String formatLessons(
-            LessonMetricDto current,
-            LessonMetricDto previous
-    ) {
         List<String> lines = new ArrayList<>();
-        lines.add("제출 " + formatCount(current.submissionCount(), previous == null ? null : previous.submissionCount(), "건"));
-        lines.add("학습자 " + formatCount(current.learnerCount(), previous == null ? null : previous.learnerCount(), "명"));
-        lines.add("평균 정답률 " + formatAccuracy(current.averageAccuracy(), previous == null ? null : previous.averageAccuracy()));
+        lines.add(SECTION_PREFIX + "👥 사용자");
+        lines.add(metric("신규 가입", metricChangeFormatter.number(users.newSignups()) + "명", countChange(users.newSignups(), previousUsers == null ? null : previousUsers.newSignups())));
+
+        if (current.range().isSingleDay()) {
+            lines.add(metric("DAU", metricChangeFormatter.number(users.activeUsers()) + "명", countChange(users.activeUsers(), previousUsers == null ? null : previousUsers.activeUsers())));
+        } else {
+            lines.add(String.join(
+                    INLINE_SEPARATOR,
+                    metric(
+                            "평균 DAU",
+                            metricChangeFormatter.decimal(users.averageDailyActiveUsers()) + "명",
+                            previousUsers == null ? "" : metricChangeFormatter.averageChange(users.averageDailyActiveUsers(), previousUsers.averageDailyActiveUsers())
+                    ),
+                    metric("기간 활성", metricChangeFormatter.number(users.activeUsers()) + "명", countChange(users.activeUsers(), previousUsers == null ? null : previousUsers.activeUsers()))
+            ));
+        }
+
+        lines.add(metric("총 가입자", metricChangeFormatter.number(users.totalUsers()) + "명", "")
+                + INLINE_SEPARATOR + metric("MAU", metricChangeFormatter.number(users.monthlyActiveUsers()) + "명", ""));
+        lines.add(SMALL_TEXT_PREFIX + describeMau(users, current.range().endDate()));
 
         return String.join(LINE_SEPARATOR, lines);
     }
 
-    private String formatAccuracy(
-            Double current,
-            Double previous
+    private String metric(
+            String label,
+            String value,
+            String change
     ) {
-        if (current == null) {
-            return "-";
-        }
+        String line = label + " **" + value + "**";
+        String pill = metricChangeFormatter.pill(change);
 
-        return appendPercentPointChange(String.format("%.1f%%", current), current, previous);
+        return pill.isEmpty() ? line : line + " " + pill;
     }
 
-    private String formatInterviews(
-            InterviewMetricDto current,
-            InterviewMetricDto previous
+    private String countChange(
+            long current,
+            Long previous
     ) {
+        return metricChangeFormatter.countChange(current, previous);
+    }
+
+    private String describeMau(
+            UserMetricDto users,
+            LocalDate endDate
+    ) {
+        int month = users.mauMonth().getMonthValue();
+        if (!users.mauInProgress()) {
+            return "MAU는 " + month + "월 전체";
+        }
+
+        return "MAU는 " + month + "월 1일부터 " + endDate.format(MONTH_DAY_FORMATTER) + "까지 집계 중";
+    }
+
+    private String buildRetentionSection(ServiceMetricReportDto report) {
+        UserMetricDto users = report.current().users();
+        UserMetricDto previousUsers = report.hasPrevious() ? report.previous().users() : null;
+
         return String.join(
                 LINE_SEPARATOR,
-                "시작 " + formatCount(current.startedCount(), previous == null ? null : previous.startedCount(), "건"),
-                "제출 " + formatCount(current.submittedCount(), previous == null ? null : previous.submittedCount(), "건"),
-                "채점된 답변 " + formatCount(current.gradedAnswerCount(), previous == null ? null : previous.gradedAnswerCount(), "건")
+                SECTION_PREFIX + "🔁 리텐션",
+                "가입 다음 날 다시 온 사람 " + metricChangeFormatter.retention(users.d1Retention(), previousUsers == null ? null : previousUsers.d1Retention()),
+                "가입 7일째 다시 온 사람 " + metricChangeFormatter.retention(users.d7Retention(), previousUsers == null ? null : previousUsers.d7Retention()),
+                SMALL_TEXT_PREFIX + "D1, D7 · 대상 " + MetricChangeFormatter.SMALL_SAMPLE_THRESHOLD + "명 미만은 비율 비교 생략"
+        );
+    }
+
+    private String buildLearningSection(ServiceMetricReportDto report) {
+        LessonMetricDto lessons = report.current().lessons();
+        InterviewMetricDto interviews = report.current().interviews();
+        LessonMetricDto previousLessons = report.hasPrevious() ? report.previous().lessons() : null;
+        InterviewMetricDto previousInterviews = report.hasPrevious() ? report.previous().interviews() : null;
+
+        String lessonLine = String.join(
+                INLINE_SEPARATOR,
+                metric("레슨 제출", metricChangeFormatter.number(lessons.submissionCount()) + "건", countChange(lessons.submissionCount(), previousLessons == null ? null : previousLessons.submissionCount())),
+                metric("학습자", metricChangeFormatter.number(lessons.learnerCount()) + "명", countChange(lessons.learnerCount(), previousLessons == null ? null : previousLessons.learnerCount()))
+        );
+
+        String interviewLine = String.join(
+                INLINE_SEPARATOR,
+                metric("면접 시작", metricChangeFormatter.number(interviews.startedCount()) + "건", countChange(interviews.startedCount(), previousInterviews == null ? null : previousInterviews.startedCount())),
+                metric("제출", metricChangeFormatter.number(interviews.submittedCount()) + "건", countChange(interviews.submittedCount(), previousInterviews == null ? null : previousInterviews.submittedCount())),
+                metric("채점된 답변", metricChangeFormatter.number(interviews.gradedAnswerCount()) + "건", countChange(interviews.gradedAnswerCount(), previousInterviews == null ? null : previousInterviews.gradedAnswerCount()))
+        );
+
+        return String.join(
+                LINE_SEPARATOR,
+                SECTION_PREFIX + "📚 학습 · 🎤 면접",
+                lessonLine,
+                formatAccuracy(lessons, previousLessons),
+                interviewLine
+        );
+    }
+
+    private String formatAccuracy(
+            LessonMetricDto lessons,
+            LessonMetricDto previousLessons
+    ) {
+        Double accuracy = lessons.averageAccuracy();
+        if (accuracy == null) {
+            return metric("평균 정답률", "-", "제출 없음");
+        }
+
+        String change = previousLessons == null
+                ? ""
+                : metricChangeFormatter.percentPointChange(accuracy, previousLessons.averageAccuracy());
+
+        return metric("평균 정답률", String.format("%.1f%%", accuracy), change);
+    }
+
+    private String buildPendingSection(
+            ServiceMetricReportDto report,
+            boolean withAdminLink
+    ) {
+        ReportInquiryMetricDto metric = report.reportsAndInquiries();
+
+        String pendingLine = metric("미처리 신고", metricChangeFormatter.number(metric.unresolvedReportCount()) + "건", "")
+                + INLINE_SEPARATOR + metric("미답변 문의", metricChangeFormatter.number(metric.pendingInquiryCount()) + "건", "");
+
+        String adminUrl = adminUrlOrNull();
+        if (withAdminLink && adminUrl != null) {
+            pendingLine += " → [어드민 열기](" + adminUrl + ")";
+        }
+
+        return String.join(
+                LINE_SEPARATOR,
+                SECTION_PREFIX + "🚨 처리 필요",
+                pendingLine,
+                SMALL_TEXT_PREFIX + "이번 기간 신규 신고 " + metricChangeFormatter.number(metric.newReportTotal())
+                        + "건, 문의 " + metricChangeFormatter.number(metric.newInquiryTotal()) + "건"
+        );
+    }
+
+    private String buildRangeLine(ServiceMetricReportDto report) {
+        if (!report.hasPrevious()) {
+            return SMALL_TEXT_PREFIX + "오늘 0시부터 지금까지 · 비교 없음";
+        }
+
+        return SMALL_TEXT_PREFIX + formatRange(report.current().range())
+                + " · 직전 같은 기간(" + formatRange(report.previous().range()) + ") 대비";
+    }
+
+    private String buildHighlights(
+            ServiceMetricReportDto report,
+            String summary
+    ) {
+        if (summary != null) {
+            return QUOTE_PREFIX + AI_SUMMARY_HEADER + LINE_SEPARATOR + summary.lines()
+                    .filter(line -> !line.isBlank())
+                    .map(line -> QUOTE_PREFIX + line.strip())
+                    .collect(Collectors.joining(LINE_SEPARATOR));
+        }
+
+        return metricHighlightSelector.select(report).stream()
+                .map(highlight -> QUOTE_PREFIX + highlight)
+                .collect(Collectors.joining(LINE_SEPARATOR));
+    }
+
+    private String buildFooter(ServiceMetricReportDto report) {
+        return "생성 " + report.generatedAt().format(GENERATED_AT_FORMATTER) + " KST";
+    }
+
+    public DiscordMessageDto createStatusReply(ServiceMetricReportDto report) {
+        String periodValue = report.period().getOptionValue();
+
+        List<DiscordButtonDto> buttons = new ArrayList<>();
+        buttons.add(DiscordButtonDto.secondary("채널에 공유", SHARE_CUSTOM_ID_PREFIX + periodValue));
+        buttons.add(DiscordButtonDto.secondary("신고·문의 목록", LIST_CUSTOM_ID_PREFIX + periodValue));
+        addAdminLinkButton(buttons);
+
+        return DiscordMessageDto.of(
+                null,
+                List.of(buildReportEmbed(buildStatusTitle(report), report, null)),
+                List.of(DiscordActionRowDto.of(buttons)),
+                FLAG_EPHEMERAL
+        );
+    }
+
+    private void addAdminLinkButton(List<DiscordButtonDto> buttons) {
+        String adminUrl = adminUrlOrNull();
+        if (adminUrl != null) {
+            buttons.add(DiscordButtonDto.link("어드민 열기", adminUrl));
+        }
+    }
+
+    public DiscordMessageDto createSharedReport(ServiceMetricReportDto report) {
+        List<DiscordButtonDto> buttons = new ArrayList<>();
+        addAdminLinkButton(buttons);
+
+        return DiscordMessageDto.of(
+                null,
+                List.of(buildReportEmbed(buildStatusTitle(report), report, null)),
+                buttons.isEmpty() ? null : List.of(DiscordActionRowDto.of(buttons)),
+                FLAG_SUPPRESS_NOTIFICATIONS
+        );
+    }
+
+    public DiscordMessageDto createListReply(ServiceMetricReportDto report) {
+        ReportInquiryMetricDto metric = report.reportsAndInquiries();
+
+        DiscordEmbedDto embed = DiscordEmbedDto.of(
+                "🗂️ 신고·문의 목록 · " + report.period().getLabel(),
+                adminUrlOrNull(),
+                SMALL_TEXT_PREFIX + formatRange(report.current().range()) + " 접수분 · 최근순",
+                EMBED_COLOR,
+                List.of(
+                        DiscordEmbedFieldDto.of("🚨 신고", formatReports(metric)),
+                        DiscordEmbedFieldDto.of("💬 문의", formatInquiries(metric))
+                ),
+                DiscordEmbedFooterDto.from(buildFooter(report))
+        );
+
+        List<DiscordButtonDto> buttons = new ArrayList<>();
+        addAdminLinkButton(buttons);
+
+        return DiscordMessageDto.of(
+                null,
+                List.of(embed),
+                buttons.isEmpty() ? null : List.of(DiscordActionRowDto.of(buttons)),
+                FLAG_EPHEMERAL
         );
     }
 
     private String formatReports(ReportInquiryMetricDto metric) {
         long newTotal = metric.newReportTotal();
-        String header = "신규 " + formatNumber(newTotal) + "건" + formatTypeBreakdown(metric.newReportCounts(), REPORT_TYPE_LABELS)
-                + " · 미처리 총 " + formatNumber(metric.unresolvedReportCount()) + "건";
+        String header = "신규 " + metricChangeFormatter.number(newTotal) + "건" + formatTypeBreakdown(metric.newReportCounts(), REPORT_TYPE_LABELS)
+                + " · 미처리 총 " + metricChangeFormatter.number(metric.unresolvedReportCount()) + "건";
 
         if (newTotal == 0) {
             return header + LINE_SEPARATOR + "새로 들어온 신고 없음";
@@ -288,7 +401,7 @@ public class DiscordReportMessageFactory {
         }
 
         return typeCounts.stream()
-                .map(typeCount -> toTypeLabel(typeCount.type(), typeLabels) + " " + formatNumber(typeCount.count()))
+                .map(typeCount -> toTypeLabel(typeCount.type(), typeLabels) + " " + metricChangeFormatter.number(typeCount.count()))
                 .collect(Collectors.joining(", ", " (", ")"));
     }
 
@@ -331,7 +444,7 @@ public class DiscordReportMessageFactory {
 
         long hiddenCount = total - shownItems.size();
         if (hiddenCount > 0) {
-            lines.add("외 " + formatNumber(hiddenCount) + "건");
+            lines.add("외 " + metricChangeFormatter.number(hiddenCount) + "건");
         }
 
         return String.join(LINE_SEPARATOR, lines);
@@ -339,8 +452,8 @@ public class DiscordReportMessageFactory {
 
     private String formatInquiries(ReportInquiryMetricDto metric) {
         long newTotal = metric.newInquiryTotal();
-        String header = "신규 " + formatNumber(newTotal) + "건" + formatTypeBreakdown(metric.newInquiryCounts(), INQUIRY_TYPE_LABELS)
-                + " · 미답변 총 " + formatNumber(metric.pendingInquiryCount()) + "건";
+        String header = "신규 " + metricChangeFormatter.number(newTotal) + "건" + formatTypeBreakdown(metric.newInquiryCounts(), INQUIRY_TYPE_LABELS)
+                + " · 미답변 총 " + metricChangeFormatter.number(metric.pendingInquiryCount()) + "건";
 
         if (newTotal == 0) {
             return header + LINE_SEPARATOR + "새로 들어온 문의 없음";
@@ -365,52 +478,20 @@ public class DiscordReportMessageFactory {
         return title.substring(0, INQUIRY_TITLE_MAX_LENGTH) + TRUNCATION_SUFFIX;
     }
 
-    private String buildDescription(ServiceMetricReportDto report) {
-        if (!report.hasPrevious()) {
-            return "오늘 0시부터 지금까지의 값입니다. 진행 중이라 비교하지 않습니다.";
-        }
-
-        return "괄호 안은 직전 같은 기간(" + formatRange(report.previous().range()) + ") 대비 증감입니다.";
-    }
-
-    private String buildFooter(ServiceMetricReportDto report) {
-        String footer = "생성 " + report.generatedAt().format(GENERATED_AT_FORMATTER) + " KST";
-        if (report.period() == MetricPeriod.TODAY) {
-            return footer + " · 오늘은 진행 중인 값";
-        }
-
-        return footer;
-    }
-
-    public DiscordMessageDto createStatusReply(ServiceMetricReportDto report) {
-        DiscordButtonDto shareButton = DiscordButtonDto.secondary(
-                "채널에 공유",
-                SHARE_CUSTOM_ID_PREFIX + report.period().getOptionValue()
-        );
-
-        return DiscordMessageDto.of(
-                null,
-                List.of(buildEmbed(buildStatusTitle(report), report)),
-                List.of(DiscordActionRowDto.of(List.of(shareButton))),
-                FLAG_EPHEMERAL
-        );
-    }
-
-    public DiscordMessageDto createSharedReport(ServiceMetricReportDto report) {
-        return DiscordMessageDto.of(
-                null,
-                List.of(buildEmbed(buildStatusTitle(report), report)),
-                null,
-                FLAG_SUPPRESS_NOTIFICATIONS
-        );
-    }
-
     public DiscordMessageDto createDeniedReply() {
         return DiscordMessageDto.of(
                 "이 채널이나 역할에서는 현황을 조회할 수 없습니다.",
                 null,
                 null,
                 FLAG_EPHEMERAL
+        );
+    }
+
+    public String createSummaryInput(ServiceMetricReportDto report) {
+        return String.join(
+                BLOCK_SEPARATOR,
+                buildRangeLine(report),
+                buildSections(report, false)
         );
     }
 }

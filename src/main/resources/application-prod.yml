@@ -201,6 +201,13 @@ discord:
   interaction-enabled: true
   public-key: ${DISCORD_PUBLIC_KEY:}
   report-webhook-url: ${DISCORD_REPORT_WEBHOOK_URL:}
+  admin-url: https://gravit-admin.inuappcenter.kr/
   allowed-channel-ids: [ ]
   allowed-role-ids: [ ]
   list-limit: 10
+
+metric-report:
+  summary:
+    enabled: true
+    model: ops-analyst
+    timeout: 20s
