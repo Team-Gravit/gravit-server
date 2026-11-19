@@ -45,6 +45,7 @@ src/main/java/gravit/code/
 ├── report/              # 신고
 │
 ├── admin/               # 관리자 기능
+├── metricReport/        # 서비스 지표 집계, 디스코드 정기 리포트와 /현황 조회
 ├── version/             # 앱 버전 관리
 └── test/                # QA 전용 API (시나리오 세팅, 데이터 정리, 알림 생성, 면접 채점 수동 호출)
 ```

@@ -41,4 +41,5 @@ Gravit 서비스 정책의 단일 출처다. 정책을 확인할 때 코드를 �
 | `notice.md` | 공지 |
 | `inquiry.md` | 문의와 답변 |
 | `admin-report.md` | 어드민 권한, 콘텐츠 승격, 신고 |
+| `metric-report.md` | 디스코드 지표 리포트 주기, 조회 기간, 지표 정의, 공개 범위 |
 | `version.md` | 앱 버전 |

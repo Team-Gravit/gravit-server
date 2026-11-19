@@ -16,6 +16,7 @@ paths:
 ## 적용 범위
 
 - 관리자 API(`/api/v1/admin/**`)는 `springdoc.paths-to-exclude`로 Swagger에서 빠져 있다. admin Docs에는 아래 응답 규칙(✅/🚨 표기, 에러 예시, `GLOBAL_5001`)을 적용하지 않는다
+- 디스코드 인터랙션(`/api/v1/discord/**`)은 외부 웹훅 계약이라 `springdoc.paths-to-exclude`로 Swagger에서 빠져 있다. Docs는 `@Tag`만 필수다
 - QA API(`test/`) Docs는 `@Tag` name을 `"Test "`로 시작하는 것만 필수다 (`SwaggerConfig`의 `TEST_TAG_PREFIX`). 응답 규칙은 선택이다
 
 ## 어노테이션 규칙
