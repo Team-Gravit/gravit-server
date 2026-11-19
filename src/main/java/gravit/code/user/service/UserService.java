@@ -12,6 +12,7 @@ import gravit.code.user.dto.request.UserProfileUpdateRequest;
 import gravit.code.user.dto.response.MyPageResponse;
 import gravit.code.user.dto.response.UserLevelResponse;
 import gravit.code.user.dto.response.UserResponse;
+import gravit.code.user.policy.NicknameBannedWordPolicy;
 import gravit.code.user.repository.UserRepository;
 import gravit.code.user.support.RandomHandleGenerator;
 import gravit.code.userLeague.dto.event.LeagueRankChangedEvent;
@@ -40,6 +41,7 @@ public class UserService {
 
     private final RandomHandleGenerator handleGenerator;
     private final LessonRewardPolicy lessonRewardPolicy;
+    private final NicknameBannedWordPolicy nicknameBannedWordPolicy;
 
     private final ApplicationEventPublisher publisher;
 
@@ -58,6 +60,8 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new RestApiException(USER_NOT_FOUND));
 
+        nicknameBannedWordPolicy.validate(request.nickname());
+
         user.onboard(request.nickname(), request.profilePhotoNumber());
         publisher.publishEvent(new OnboardingCompletedEvent(user.getId()));
 
@@ -71,6 +75,8 @@ public class UserService {
     ){
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new RestApiException(USER_NOT_FOUND));
+
+        nicknameBannedWordPolicy.validate(request.nickname());
 
         user.updateProfile(request.nickname(), request.profilePhotoNumber());
 

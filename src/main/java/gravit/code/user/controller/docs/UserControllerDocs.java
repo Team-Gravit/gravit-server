@@ -97,6 +97,16 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
+            @ApiResponse(responseCode = "400", description = "🚨 금지어 포함 닉네임",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "금지어 포함 닉네임",
+                                            value = "{\"error\" : \"USER_4008\", \"message\" : \"사용할 수 없는 단어가 포함된 닉네임입니다.\"}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
             @ApiResponse(responseCode = "500", description = "🚨 예기치 못한 예외 발생",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
@@ -142,6 +152,16 @@ public interface UserControllerDocs {
                                     @ExampleObject(
                                             name = "복수 필드 위반",
                                             value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 필수입니다. ][  ]\", \"[ profilePhotoNumber ][ 프로필 사진 번호는 필수입니다. ][ null ]\"]}"
+                                    )
+                            },
+                            schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "🚨 금지어 포함 닉네임",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "금지어 포함 닉네임",
+                                            value = "{\"error\" : \"USER_4008\", \"message\" : \"사용할 수 없는 단어가 포함된 닉네임입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))

@@ -1,0 +1,4 @@
+# 테스트용 샘플 금지어 목록. 실제 목록은 GitHub Secret NICKNAME_BANNED_WORDS로 관리한다(secret-convention.md)
+금지
+badword
+운영자

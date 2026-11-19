@@ -57,6 +57,9 @@ pgadmin_data_local
 /scripts/dev-seed/01_reset.sql
 /scripts/dev-seed/02_seed.sql
 
+### 닉네임 금지어 목록 (GitHub Secret NICKNAME_BANNED_WORDS로 CD에서 생성) ###
+/src/main/resources/policy/nickname-banned-words.txt
+
 ### 로컬 작업 메모 (커밋 제외) ###
 /.claude/resources/code-cleanup-todo.md
 
