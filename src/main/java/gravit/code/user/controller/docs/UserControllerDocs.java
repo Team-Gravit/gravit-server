@@ -69,19 +69,13 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "400", description = "🚨 이미 온보딩 완료된 유저",
+            @ApiResponse(responseCode = "400", description = "🚨 이미 온보딩 완료, 유효성 검사 실패, 금지어 포함 닉네임",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
                                             name = "이미 온보딩 완료된 유저",
                                             value = "{\"error\" : \"USER_4001\", \"message\" : \"이미 온보딩이 완료된 유저입니다.\"}"
-                                    )
-                            },
-                            schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(responseCode = "400", description = "🚨 유효성 검사 실패",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = {
+                                    ),
                                     @ExampleObject(
                                             name = "닉네임 길이 위반",
                                             value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 2자 이상 8자 이하이어야 합니다. ][ 가 ]\"]}"
@@ -93,6 +87,10 @@ public interface UserControllerDocs {
                                     @ExampleObject(
                                             name = "복수 필드 위반",
                                             value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 필수입니다. ][  ]\", \"[ profilePhotoNumber ][ 프로필 사진 번호는 필수입니다. ][ null ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "금지어 포함 닉네임",
+                                            value = "{\"error\" : \"USER_4008\", \"message\" : \"사용할 수 없는 단어가 포함된 닉네임입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
@@ -128,7 +126,7 @@ public interface UserControllerDocs {
                             },
                             schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(responseCode = "400", description = "🚨 유효성 검사 실패",
+            @ApiResponse(responseCode = "400", description = "🚨 유효성 검사 실패, 금지어 포함 닉네임",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
@@ -142,6 +140,10 @@ public interface UserControllerDocs {
                                     @ExampleObject(
                                             name = "복수 필드 위반",
                                             value = "{\"error\" : \"GLOBAL_4001\", \"message\" : [\"[ nickname ][ 닉네임은 필수입니다. ][  ]\", \"[ profilePhotoNumber ][ 프로필 사진 번호는 필수입니다. ][ null ]\"]}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "금지어 포함 닉네임",
+                                            value = "{\"error\" : \"USER_4008\", \"message\" : \"사용할 수 없는 단어가 포함된 닉네임입니다.\"}"
                                     )
                             },
                             schema = @Schema(implementation = ErrorResponse.class))

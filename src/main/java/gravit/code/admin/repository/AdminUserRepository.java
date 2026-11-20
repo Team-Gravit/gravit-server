@@ -70,6 +70,17 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
             UPDATE users
+            SET nickname = :nickname
+            WHERE id = :id
+    """, nativeQuery = true)
+    int updateNicknameById(
+            @Param("id") long id,
+            @Param("nickname") String nickname
+    );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = """
+            UPDATE users
             SET status = :status,
                 deleted_at = CASE WHEN :status = 'DELETED' THEN NOW() ELSE NULL END,
                 handle = CASE WHEN :status = 'DELETED' THEN NULL ELSE handle END

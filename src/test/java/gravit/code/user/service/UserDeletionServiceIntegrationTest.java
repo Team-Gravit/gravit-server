@@ -16,6 +16,8 @@ import gravit.code.league.domain.League;
 import gravit.code.league.fixture.LeagueFixture;
 import gravit.code.season.domain.Season;
 import gravit.code.season.fixture.SeasonFixture;
+import gravit.code.report.domain.UserReport;
+import gravit.code.report.repository.UserReportRepository;
 import gravit.code.support.TCSpringBootTest;
 import gravit.code.user.domain.User;
 import gravit.code.user.domain.UserStatus;
@@ -47,6 +49,7 @@ import static gravit.code.interview.fixture.InterviewSessionFixture.상태_세�
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.답변한_답안;
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.세션_주제;
 import static gravit.code.interviewFeedback.fixture.InterviewFeedbackFixture.피드백;
+import static gravit.code.report.fixture.UserReportFixture.미처리_닉네임_신고;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -117,6 +120,9 @@ class UserDeletionServiceIntegrationTest {
 
     @MockitoBean
     private MailSender mailSender;
+
+    @Autowired
+    private UserReportRepository userReportRepository;
 
     private User 탈퇴_회원(int index) {
         User user = userFixture.일반_유저(index);
@@ -253,6 +259,28 @@ class UserDeletionServiceIntegrationTest {
                 softly.assertThat(interviewSessionTopicRepository.findById(otherTopic.getId())).isPresent();
                 softly.assertThat(interviewAnswerRepository.findById(otherAnswer.getId())).isPresent();
                 softly.assertThat(interviewFeedbackRepository.findById(otherFeedback.getId())).isPresent();
+            });
+        }
+
+        @Test
+        void 탈퇴_회원이_보내거나_받은_사용자_신고만_지우고_다른_신고는_남긴다() {
+            // given
+            User target = 탈퇴_회원(1);
+            User other = userFixture.일반_유저(2);
+            User another = userFixture.일반_유저(3);
+
+            UserReport sentReport = userReportRepository.save(미처리_닉네임_신고(target.getId(), other.getId()));
+            UserReport receivedReport = userReportRepository.save(미처리_닉네임_신고(other.getId(), target.getId()));
+            UserReport unrelatedReport = userReportRepository.save(미처리_닉네임_신고(other.getId(), another.getId()));
+
+            // when
+            userDeletionService.cleanUserDeletion(target.getId());
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(userReportRepository.findById(sentReport.getId())).isEmpty();
+                softly.assertThat(userReportRepository.findById(receivedReport.getId())).isEmpty();
+                softly.assertThat(userReportRepository.findById(unrelatedReport.getId())).isPresent();
             });
         }
 

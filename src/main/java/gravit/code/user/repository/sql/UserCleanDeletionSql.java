@@ -64,6 +64,9 @@ public class UserCleanDeletionSql {
               d_report AS (
                 DELETE FROM report WHERE user_id = :id
               ),
+              d_user_report AS (
+                DELETE FROM user_report WHERE reporter_id = :id OR target_user_id = :id
+              ),
               d_inquiry_answer AS (
                 DELETE FROM inquiry_answer
                 WHERE inquiry_id IN (SELECT id FROM inquiry WHERE user_id = :id)

@@ -26,6 +26,7 @@ public enum CustomErrorCode implements ErrorCode {
     PROFILE_IMG_NUM_INVALID(BAD_REQUEST,"USER_4005","유효하지 않은 프로필 이미지 번호입니다."),
     USER_STATUS_NOT_VALID(BAD_REQUEST, "USER_4006", "유저 삭제하기 위한 상태가 유효하지 않습니다."),
     USER_RESTORE_ONLY_POSSIBLE_DELETED_STATUS_USER(BAD_REQUEST, "USER_4007", "유저 복구는 반드시 삭제 상태인 유저만 가능합니다."),
+    NICKNAME_BANNED_WORD(BAD_REQUEST, "USER_4008", "사용할 수 없는 단어가 포함된 닉네임입니다."),
 
     // Auth
     PROVIDER_INVALID(BAD_REQUEST, "AUTH_4001","유효하지 않은 OAuth 제공자 이름입니다."),
@@ -92,6 +93,9 @@ public enum CustomErrorCode implements ErrorCode {
     // Report
     REPORT_NOT_FOUND(NOT_FOUND, "REPORT_4041", "신고 조회에 실패하였습니다."),
     REPORT_TYPE_NOT_AVAILABLE(BAD_REQUEST, "REPORT_4001", "지원하지 않는 신고 유형입니다."),
+    USER_REPORT_SELF_NOT_ALLOWED(BAD_REQUEST, "REPORT_4002", "자기 자신은 신고할 수 없습니다."),
+    USER_REPORT_NOT_FOUND(NOT_FOUND, "REPORT_4042", "사용자 신고 조회에 실패하였습니다."),
+    USER_REPORT_DUPLICATED(CONFLICT, "REPORT_4091", "이미 처리를 기다리는 신고가 있습니다."),
 
     // Bookmark
     BOOKMARK_DUPLICATED(CONFLICT, "BOOKMARK_4091", "이미 북마크한 문제입니다."),

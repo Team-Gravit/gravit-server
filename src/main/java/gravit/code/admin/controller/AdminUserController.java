@@ -3,6 +3,7 @@ package gravit.code.admin.controller;
 import gravit.code.admin.controller.docs.AdminUserControllerDocs;
 import gravit.code.admin.dto.request.UserRoleUpdateRequest;
 import gravit.code.admin.dto.request.UserStatusUpdateRequest;
+import gravit.code.admin.dto.response.NicknameResetResponse;
 import gravit.code.admin.dto.response.UserDetailResponse;
 import gravit.code.admin.dto.response.UserListItemResponse;
 import gravit.code.admin.service.AdminUserService;
@@ -64,5 +65,13 @@ public class AdminUserController implements AdminUserControllerDocs {
     ) {
         adminUserService.updateRole(loginUser.getId(), userId, request.role());
         return ResponseEntity.status(OK).build();
+    }
+
+    @PatchMapping("/{userId}/nickname/reset")
+    public ResponseEntity<NicknameResetResponse> resetNickname(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @PathVariable("userId") Long userId
+    ) {
+        return ResponseEntity.status(OK).body(adminUserService.resetNickname(loginUser.getId(), userId));
     }
 }

@@ -3,6 +3,7 @@ package gravit.code.report.controller;
 import gravit.code.auth.domain.LoginUser;
 import gravit.code.report.controller.docs.ReportControllerDocs;
 import gravit.code.report.dto.request.ProblemReportSubmitRequest;
+import gravit.code.report.dto.request.UserReportSubmitRequest;
 import gravit.code.report.service.ReportService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,15 @@ public class ReportController implements ReportControllerDocs {
             @Valid @RequestBody ProblemReportSubmitRequest request
     ){
         reportService.submitProblemReport(loginUser.getId(), request);
+        return ResponseEntity.status(OK).build();
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<Void> submitUserReport(
+            @AuthenticationPrincipal LoginUser loginUser,
+            @Valid @RequestBody UserReportSubmitRequest request
+    ){
+        reportService.submitUserReport(loginUser.getId(), request);
         return ResponseEntity.status(OK).build();
     }
 }

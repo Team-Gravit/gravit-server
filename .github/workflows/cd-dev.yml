@@ -77,6 +77,13 @@ jobs:
           mkdir -p ./src/main/resources/firebase
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ./src/main/resources/firebase/firebase_service_key.json
 
+      - name: 닉네임 금지어 목록 파일 생성
+        env:
+          NICKNAME_BANNED_WORDS: ${{ secrets.NICKNAME_BANNED_WORDS }}
+        run: |
+          mkdir -p ./src/main/resources/policy
+          printf '%s\n' "$NICKNAME_BANNED_WORDS" > ./src/main/resources/policy/nickname-banned-words.txt
+
       - name: JAR 빌드
         run: |
           chmod +x ./gradlew
