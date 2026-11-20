@@ -65,6 +65,9 @@ jobs:
 
           spring.ai.openai.api-key: ${{ secrets.LITELLM_MASTER_KEY }}
 
+          discord.public-key: ${{ secrets.DEV_DISCORD_PUBLIC_KEY }}
+          discord.report-webhook-url: ${{ secrets.DEV_DISCORD_REPORT_WEBHOOK_URL }}
+
           aws.s3.bucket: ${{ secrets.DEV_S3_INTERVIEW_AUDIO_BUCKET }}
           aws.s3.access-key: ${{ secrets.DEV_S3_ACCESS_KEY }}
           aws.s3.secret-key: ${{ secrets.DEV_S3_SECRET_KEY }}
@@ -127,6 +130,9 @@ jobs:
 
             # LLM 게이트웨이(litellm-gw)와 통신할 외부 네트워크. 없으면 만들어 compose 기동이 막히지 않게 한다.
             docker network inspect llm-net >/dev/null 2>&1 || docker network create llm-net
+
+            # 중앙 모니터링 스택(Prometheus, Grafana)이 external로 참조하는 서비스 네트워크. compose도 external로 쓰므로 여기서 존재를 보장한다.
+            docker network inspect dev_gravit-dev >/dev/null 2>&1 || docker network create dev_gravit-dev
 
             # Alloy 읽기 위치를 볼륨으로 옮긴다 (볼륨이 없을 때 한 번만).
             # 위치를 잃으면 남은 로그 파일을 처음부터 다시 보내 Loki에 수집 시각으로 중복 저장된다.

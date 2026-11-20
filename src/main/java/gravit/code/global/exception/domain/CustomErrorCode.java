@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Getter
@@ -122,6 +123,7 @@ public enum CustomErrorCode implements ErrorCode {
     USER_LEAGUE_NOT_FOUND(NOT_FOUND, "U_L_4041", "유저의 리그가 존재하지 않습니다"),
     LEAGUE_POINT_MUST_BE_POSITIVE(BAD_REQUEST,"U_L_4001", "리그 포인트는 양수여야 합니다."),
     LEAGUE_RANK_USER_ID_OUT_OF_RANGE(HttpStatus.INTERNAL_SERVER_ERROR, "U_L_5001", "리그 순위를 매길 수 없는 유저 식별자입니다."),
+    LEAGUE_RANKING_TEMPORARILY_UNAVAILABLE(SERVICE_UNAVAILABLE, "U_L_5031", "순위를 집계하고 있습니다. 잠시 후 다시 시도해주세요."),
 
     // Season
     ACTIVE_SEASON_NOT_FOUND(NOT_FOUND, "SEASON_4041", "ACTIVE 시즌이 없습니다."),
@@ -207,6 +209,11 @@ public enum CustomErrorCode implements ErrorCode {
     INTERVIEW_GRADING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5001", "면접 답변 채점 판정 요청이 실패했습니다."),
     INTERVIEW_AUDIO_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5002", "면접 음성 파일 삭제에 실패했습니다."),
     INTERVIEW_TRANSCRIPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INTERVIEW_5003", "면접 답변 음성 변환 요청이 실패했습니다."),
+
+    // Discord
+    DISCORD_UNSUPPORTED_INTERACTION(BAD_REQUEST, "DISCORD_4001", "지원하지 않는 디스코드 요청입니다."),
+    DISCORD_INVALID_SIGNATURE(UNAUTHORIZED, "DISCORD_4011", "디스코드 요청 서명이 올바르지 않습니다."),
+    DISCORD_INTERACTION_DISABLED(NOT_FOUND, "DISCORD_4041", "디스코드 조회 기능이 꺼져 있습니다."),
 
     // QA Fixture
     QA_FIXTURE_SET_INVALID(BAD_REQUEST, "QA_FIXTURE_4001", "지원하지 않는 QA 페르소나 세트입니다."),

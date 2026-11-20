@@ -162,9 +162,11 @@ firebase:
 
 springdoc:
   server-url: https://grav-it-dev.inuappcenter.kr
-  paths-to-exclude: /api/v1/admin/**
+  paths-to-exclude: /api/v1/admin/**, /api/v1/discord/**
 
 management:
+  server:
+    port: 8081
   endpoints:
     web:
       exposure:
@@ -174,7 +176,7 @@ management:
       application: gravit-dev
     distribution:
       percentiles-histogram:
-        http.server.requests: true
+        "[http.server.requests]": true
       slo:
         "[http.server.requests]": 100ms,200ms,500ms,1s
 
@@ -189,3 +191,21 @@ aws:
     secret-key: ${S3_SECRET_KEY}
     upload-expiry: 10m
     download-expiry: 30m
+
+discord:
+  report-enabled: true
+  interaction-enabled: true
+  public-key: ${DISCORD_PUBLIC_KEY:}
+  report-webhook-url: ${DISCORD_REPORT_WEBHOOK_URL:}
+  admin-url: https://gravit-admin.inuappcenter.kr/
+  allowed-channel-ids:
+    - "1572862393602539540"
+  allowed-role-ids:
+    - "1572870189614366780"
+  list-limit: 10
+
+metric-report:
+  summary:
+    enabled: true
+    model: ops-analyst
+    timeout: 20s

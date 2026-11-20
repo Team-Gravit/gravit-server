@@ -67,3 +67,6 @@ pgadmin_data_local
 /benchmark
 /docs
 .claude/skills/grill-me
+### 로컬 환경변수 (토큰, 키) ###
+.env
+.env.*

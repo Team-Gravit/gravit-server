@@ -6,6 +6,7 @@ import gravit.code.security.exception.CustomAccessDeniedHandler;
 import gravit.code.security.exception.CustomAuthenticationEntryPoint;
 import gravit.code.security.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -52,7 +53,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/actuator/**").permitAll() // 모니터링 경로
+                .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll() // 모니터링 경로
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 관련 경로 허용
                 .requestMatchers("/api/v1/oauth/**").permitAll()
                 .requestMatchers("/api/v1/users/deletion/confirm").permitAll()
@@ -64,6 +65,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/cs-notes/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/version").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/discord/interactions").permitAll() // 디스코드 서명으로 검증
                 .anyRequest().authenticated());
 
         http.addFilterBefore(new JwtAuthFilter(authTokenProvider, authenticationEntryPoint), UsernamePasswordAuthenticationFilter.class);

@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,10 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -134,6 +138,23 @@ class SocialFeedEventListenerIntegrationTest {
                     "userId", "1",
                     "newLevel", "5"
             ));
+        }
+
+        @Test
+        @Transactional
+        void 재시도_큐_적재가_실패해도_레벨업_피드가_저장된다() {
+            // given
+            willThrow(new RedisConnectionFailureException("재시도 큐 연결 실패"))
+                    .given(retryEventPublisher).publish(anyString(), anyMap());
+
+            // when
+            publisher.publishEvent(new LevelUpFeedEvent(1L, 5));
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            // then
+            assertThat(socialFeedRepository.findAll())
+                    .anyMatch(f -> f.getEventType() == FeedEventType.LEVEL_UP && f.getEventValue().equals("5"));
         }
 
         @Test

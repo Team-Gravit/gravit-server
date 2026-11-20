@@ -60,7 +60,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpEndpoint.prefix("/api/v1/cs-notes", HttpMethod.GET),
 
             /* app version check */
-            HttpEndpoint.exact("/api/v1/version", HttpMethod.GET)
+            HttpEndpoint.exact("/api/v1/version", HttpMethod.GET),
+
+            /* discord interactions */
+            HttpEndpoint.exact("/api/v1/discord/interactions", HttpMethod.POST)
 
     );
 

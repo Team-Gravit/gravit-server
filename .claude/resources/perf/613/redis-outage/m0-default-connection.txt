@@ -1,0 +1,102 @@
+===== R-M0-before-run2 =====
+┌─ R-M0-before-run2 ──────────────────────────────────────────────────────────── 2026-11-14 18:01 ─┐
+│ Redis 장애 · M0 Lettuce 기본 동작 (기본 연결을 쓰는 API 응답 시간)                               │
+│ 코드     개선 전 · dev e32ba7e2 (#613 STEP 적용 전)                                              │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53 · Hikari 최대 10                │
+│ 대상     GET /api/v1/league/home (시즌 종료 캐시 조회)                                           │
+│          POST /api/v1/auth/reissue (리프레시 토큰 조회)                                          │
+│ 장애     stop(docker stop -t 0) · pause(docker pause) 각각. 주입 2초 뒤 API마다 3회 순서대로     │
+│ 기준     정상(Redis 살아 있음) 같은 호출 3회                                                     │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+│ 재실행   R-M0-before 의 재실행 → R-M0-before-run2 (§0-1 규칙 5)                                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 e32ba7e2            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 벤치와 무관한 컨테이너가 떠 있다: agent-test-pg (기록만 한다. 끌지는 사람이 정한다)
+  ⚠️ 호스트 load average 3.67 / 3.90 / 3.60 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (redis-outage-before.jar)
+    장애 주입: stop (앱 연결 확인 0.0초)…
+      stop · 리그 홈 #1: 400 · 60,043.5ms
+      stop · 리그 홈 #2: 400 · 12.2ms
+      stop · 리그 홈 #3: 400 · 9.4ms
+      stop · 토큰 재발급 #1: 400 · 5.7ms
+      stop · 토큰 재발급 #2: 400 · 3.4ms
+      stop · 토큰 재발급 #3: 400 · 3.1ms
+    장애 주입: pause (앱 연결 확인 7.3초)…
+      pause · 리그 홈 #1: 400 · 60,025.8ms
+      pause · 리그 홈 #2: 400 · 60,026.0ms
+      pause · 리그 홈 #3: 400 · 59,962.6ms
+      pause · 토큰 재발급 #1: 400 · 60,021.1ms
+      pause · 토큰 재발급 #2: 400 · 60,020.5ms
+      pause · 토큰 재발급 #3: 400 · 60,019.7ms
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ stop 전 앱 Redis 연결 정상(리그 홈 200)✅ stop: Redis 응답 없음        
+  ✅ stop 뒤 Redis 복구           ✅ pause 전 앱 Redis 연결 정상(리그 홈 200)✅ pause: Redis 응답 없음       
+  ✅ pause 뒤 Redis 복구          ✅ 정상 기준 호출 응답          
+
+[결과 (응답 시간 ms, 순서대로 3회)]
+  상태   API                                 응답 ms  상태 코드      
+  정상   리그 홈                 189.2 / 14.2 / 11.6  200 / 200 / 200
+  정상   토큰 재발급                25.4 / 4.5 / 4.3  401 / 401 / 401
+  stop   리그 홈               60,043.5 / 12.2 / 9.4  400 / 400 / 400
+  stop   토큰 재발급                 5.7 / 3.4 / 3.1  400 / 400 / 400
+  pause  리그 홈      60,025.8 / 60,026.0 / 59,962.6  400 / 400 / 400
+  pause  토큰 재발급  60,021.1 / 60,020.5 / 60,019.7  400 / 400 / 400
+
+[판정]
+  ── 기대(PLAN-613 M0): before 약 60초(F1·F2), after 1초 이내
+└─ 저장: benchmark/_runs/R-M0-before-run2/  (output.log · result.csv · meta.json)
+===== R-M0-after =====
+┌─ R-M0-after ────────────────────────────────────────────────────────────────── 2026-11-15 01:41 ─┐
+│ Redis 장애 · M0 Lettuce 기본 동작 (기본 연결을 쓰는 API 응답 시간)                               │
+│ 코드     개선 후 · #613 59656d8d (STEP 1~5, base e32ba7e2)                                       │
+│ DB       gravit_bench_100k → 복제 gravit_bench_100k_rs + V52·V53 · Hikari 최대 10                │
+│ 대상     GET /api/v1/league/home (시즌 종료 캐시 조회)                                           │
+│          POST /api/v1/auth/reissue (리프레시 토큰 조회)                                          │
+│ 장애     stop(docker stop -t 0) · pause(docker pause) 각각. 주입 2초 뒤 API마다 3회 순서대로     │
+│ 기준     정상(Redis 살아 있음) 같은 호출 3회                                                     │
+│ 환경     PostgreSQL 15.18 · shared_buffers 128MB · datcollate en_US.utf8 · docker aarch64        │
+│          shm 64MB                                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+[가드]
+  ✅ 시드 존재                    ✅ 앱 미기동                    ✅ jar 존재                     
+  ✅ jar 커밋 59656d8d            ✅ JWT 키 일치                  ✅ 다른 DB 세션 없음            
+  ⚠️ 호스트 load average 5.66 / 3.85 / 4.04 (1/5/15분, 기록)
+  복제 → gravit_bench_100k_rs · 앱 기동 중… (redis-outage-after.jar)
+    장애 주입: stop (앱 연결 확인 0.0초)…
+      stop · 리그 홈 #1: 200 · 14.7ms
+      stop · 리그 홈 #2: 200 · 9.3ms
+      stop · 리그 홈 #3: 200 · 8.4ms
+      stop · 토큰 재발급 #1: 400 · 7.5ms
+      stop · 토큰 재발급 #2: 400 · 2.6ms
+      stop · 토큰 재발급 #3: 400 · 2.0ms
+    장애 주입: pause (앱 연결 확인 0.0초)…
+      pause · 리그 홈 #1: 200 · 1,055.3ms
+      pause · 리그 홈 #2: 200 · 1,040.4ms
+      pause · 리그 홈 #3: 200 · 1,034.2ms
+      pause · 토큰 재발급 #1: 400 · 1,015.0ms
+      pause · 토큰 재발급 #2: 400 · 1,021.0ms
+      pause · 토큰 재발급 #3: 400 · 1,022.8ms
+
+[가드]
+  ✅ 스키마 V52(league_point_grant)✅ stop 전 앱 Redis 연결 정상(리그 홈 200)✅ stop: Redis 응답 없음        
+  ✅ stop 뒤 Redis 복구           ✅ pause 전 앱 Redis 연결 정상(리그 홈 200)✅ pause: Redis 응답 없음       
+  ✅ pause 뒤 Redis 복구          ✅ 정상 기준 호출 응답          
+
+[결과 (응답 시간 ms, 순서대로 3회)]
+  상태   API                              응답 ms  상태 코드      
+  정상   리그 홈               194.4 / 11.9 / 9.4  200 / 200 / 200
+  정상   토큰 재발급             21.0 / 4.5 / 3.6  401 / 401 / 401
+  stop   리그 홈                 14.7 / 9.3 / 8.4  200 / 200 / 200
+  stop   토큰 재발급              7.5 / 2.6 / 2.0  400 / 400 / 400
+  pause  리그 홈      1,055.3 / 1,040.4 / 1,034.2  200 / 200 / 200
+  pause  토큰 재발급  1,015.0 / 1,021.0 / 1,022.8  400 / 400 / 400
+
+[판정]
+  ── 기대(PLAN-613 M0): before 약 60초(F1·F2), after 1초 이내
+└─ 저장: benchmark/_runs/R-M0-after/  (output.log · result.csv · meta.json)

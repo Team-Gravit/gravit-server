@@ -26,6 +26,11 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 | S3 액세스 키 | `DEV_S3_ACCESS_KEY` | `PROD_S3_ACCESS_KEY` |
 | S3 시크릿 키 | `DEV_S3_SECRET_KEY` | `PROD_S3_SECRET_KEY` |
 | Apple refresh_token 암호화 키 | `DEV_APPLE_TOKEN_ENCRYPTION_KEY` | `PROD_APPLE_TOKEN_ENCRYPTION_KEY` |
+| 디스코드 애플리케이션 공개키 | `DEV_DISCORD_PUBLIC_KEY` | `PROD_DISCORD_PUBLIC_KEY` |
+| 디스코드 지표 리포트 웹훅 URL | `DEV_DISCORD_REPORT_WEBHOOK_URL` | `PROD_DISCORD_REPORT_WEBHOOK_URL` |
+| 디스코드 봇 토큰 (커맨드 등록 전용) | `DEV_DISCORD_BOT_TOKEN` | `PROD_DISCORD_BOT_TOKEN` |
+| 디스코드 애플리케이션 id (커맨드 등록 전용) | `DEV_DISCORD_APPLICATION_ID` | `PROD_DISCORD_APPLICATION_ID` |
+| 디스코드 서버(길드) id (커맨드 등록 전용) | `DEV_DISCORD_GUILD_ID` | `PROD_DISCORD_GUILD_ID` |
 
 ### 아직 분리되지 않은 값
 
@@ -51,6 +56,25 @@ description: GitHub Secrets 네이밍 규칙과 발급, 교체 절차
 
 `DEV_GOOGLE_REDIRECT_URI`, `GOOGLE_REDIRECT_URI` 등 redirect-uri 계열 6종은 워크플로가 주입하지만
 런타임에서 참조하지 않는다. 실제 redirect_uri는 요청의 `dest` 파라미터로 결정된다. 이 역시 #467 범위다.
+
+## 디스코드 지표 리포트 설정 절차
+
+dev와 prod는 디스코드 애플리케이션을 따로 만든다. 애플리케이션 하나에 Interactions Endpoint URL을 하나만 둘 수 있기 때문이다.
+
+1. Discord Developer Portal에서 환경별 애플리케이션을 만들고, General Information의 Public Key를 `{DEV|PROD}_DISCORD_PUBLIC_KEY`로 등록한다
+2. 리포트 채널에 웹훅을 만들어 URL을 `{DEV|PROD}_DISCORD_REPORT_WEBHOOK_URL`로 등록한다
+3. 봇을 `applications.commands` 범위로 팀 디스코드 서버에 초대한다. Bot 탭의 토큰을 `{DEV|PROD}_DISCORD_BOT_TOKEN`, 애플리케이션 id와 서버 id를 `{DEV|PROD}_DISCORD_APPLICATION_ID`, `{DEV|PROD}_DISCORD_GUILD_ID`로 등록한다
+4. `/현황`을 허용할 채널 id와 역할 id를 `application-{profile}.yml`의 `discord.allowed-channel-ids`, `discord.allowed-role-ids`에 적는다. 비밀 값이 아니라 yml에 그대로 둔다
+5. 배포 후 애플리케이션의 Interactions Endpoint URL에 `https://{도메인}/api/v1/discord/interactions`를 저장한다. 디스코드가 PING과 잘못된 서명을 보내 응답을 검증하므로 배포가 먼저다
+6. `디스코드 슬래시 커맨드 등록` 워크플로를 `workflow_dispatch`로 한 번 실행한다. 이후에는 `infra/discord/commands.json`이 바뀐 채 dev, main에 머지되면 자동으로 다시 등록된다
+
+7. 정기 리포트 AI 요약용으로 앱센터 서버 LiteLLM 설정의 `model_list`에 `ops-analyst` 별칭을 추가하고, LiteLLM 컨테이너 환경변수에 `GROQ_API_KEY`를 넣고 재시작한다. 형식은 `infra/litellm/config.local.yaml`과 같다
+   - Groq 키는 LiteLLM 쪽에만 둔다. 서버 설정, GitHub Secrets에는 넣지 않는다. 서버는 기존 `LITELLM_MASTER_KEY`로 별칭만 부른다
+   - 별칭이 없거나 Groq 호출이 실패해도 리포트는 AI 요약 없이 나간다
+
+- 봇 토큰, 애플리케이션 id, 서버 id는 커맨드 등록 워크플로만 쓴다. CD 워크플로와 서버 설정에는 넣지 않는다
+- `discord.interaction-enabled`가 켜져 있는데 공개키가 비어 있거나 형식이 틀리면 서버가 기동을 거부한다. 공개키를 먼저 등록하고 머지하라
+- 웹훅 URL에는 토큰이 들어 있다. 유출되면 디스코드에서 웹훅을 지우고 새로 만들어 시크릿을 교체한다
 
 ## JWT 시크릿 교체 절차
 

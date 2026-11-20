@@ -12,6 +12,7 @@ services:
     logging: *default-logging
     container_name: gravit-server-dev
     image: ${DOCKER_HUB_USERNAME}/gravit-server:dev
+    # 관리 포트(8081, actuator)는 공개하지 않는다. 중앙 Prometheus가 gravit-dev 네트워크에서 컨테이너 이름으로 수집한다.
     ports:
       - "8521:8080"
     environment:
@@ -32,7 +33,7 @@ services:
     logging: *default-logging
     container_name: gravit-redis-dev
     image: redis:latest
-    command: redis-server --appendonly yes --appendfsync everysec
+    command: redis-server --appendonly yes --appendfsync everysec --maxmemory 384mb --maxmemory-policy noeviction
     ports:
       - "6389:6379"
     volumes:
@@ -84,8 +85,11 @@ volumes:
     name: gravit-alloy-dev-data
 
 networks:
+  # 중앙 모니터링 스택(Prometheus, Grafana)이 external로 참조하는 이름이라 배포 디렉터리 이름과 상관없이 고정한다.
+  # 지금 서버에 있는 이름을 그대로 쓴다. 배포 스크립트가 존재를 보장한다.
   gravit-dev:
-    driver: bridge
+    name: dev_gravit-dev
+    external: true
   # LLM 게이트웨이(LiteLLM, llm-net 상 이름 litellm-gw)가 속한 서버 공용 네트워크. 배포 스크립트가 존재를 보장한다.
   llm-net:
     external: true
