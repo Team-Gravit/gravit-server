@@ -54,6 +54,7 @@ psql -h localhost -p 5433 -U postgres -d mydb -f $PERF_DIR/seeds.sql
 | `league.sql` | `league`, `season`, `user_league`, `user_league_history` | `user` |
 | `review.sql` | `answer`, `option`, `bookmark`, `wrong_answered_note` | `content`, `user` |
 | `friend.sql` | `friends` | `user` |
+| `feed.sql` | `social_feed`, `user_feed`, `congratulation` | `user`, `friend` |
 
 `\i` 순서가 곧 FK 의존 순서다. 표의 위에서 아래로 부른다.
 
@@ -94,6 +95,11 @@ psql -h localhost -p 5433 -U postgres -d mydb -f $PERF_DIR/seeds.sql
 | `follow_stride` | friend | 팔로우 대상을 고르는 간격. `k * stride mod (user_count - hot_user_count)`가 k = 1..follows_per_user에서 서로 다르고 0이 아니어야 한다 |
 | `mutual_pct` | friend | 측정 사용자가 자기 팔로워를 맞팔로우하는 비율(%) |
 | `follow_window_days` | friend | 팔로우 `created_at`이 퍼지는 기간(일) |
+| `feed_id_base` | feed | 시드 피드 id 오프셋. 앱이 만든 피드와 겹치지 않게 충분히 큰 값을 쓴다. 적재 후 IDENTITY 시퀀스를 max(id)로 맞춘다 |
+| `feeds_per_actor` | feed | 사용자 1명이 작성한 피드 수. 사용자가 보는 피드 수 = 팔로잉 수 × 이 값, `user_feed` 전체는 약 `friends` 행 수 × 이 값 |
+| `feed_window_days` | feed | 피드 `created_at`이 퍼지는 기간(일). `created_at`은 id 순서와 같게 증가한다 |
+| `hidden_pct` | feed | 숨김 처리할 `user_feed` 비율(%) |
+| `congrats_per_hot_user` | feed | `hot_user_count` 명 각자가 숨기지 않은 최신 피드 중 축하한 수 |
 
 ## 모듈을 고칠 때
 
