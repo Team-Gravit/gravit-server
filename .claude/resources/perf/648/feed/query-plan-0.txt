@@ -1,0 +1,57 @@
+=== [A] findVisibleFeedsByUserId (대상, pg_stat_statements 원문, $1=1050, $2=5, $3=false)
+BEGIN
+                                                                                                                         QUERY PLAN                                                                                                                         
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=19850.94..19853.19 rows=5 width=65) (actual time=15.799..17.662 rows=5 loops=1)
+   Output: sf1_0.id, sf1_0.actor_id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at
+   Buffers: shared hit=6036
+   ->  Nested Loop  (cost=19850.94..21040.26 rows=2647 width=65) (actual time=15.797..17.659 rows=5 loops=1)
+         Output: sf1_0.id, sf1_0.actor_id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at
+         Inner Unique: true
+         Buffers: shared hit=6036
+         ->  Gather Merge  (cost=19850.65..20157.68 rows=2694 width=42) (actual time=15.751..17.607 rows=5 loops=1)
+               Output: sf1_0.id, sf1_0.actor_id, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at
+               Workers Planned: 1
+               Workers Launched: 1
+               Buffers: shared hit=6021
+               ->  Sort  (cost=18850.64..18854.60 rows=1585 width=42) (actual time=1.700..1.701 rows=2 loops=2)
+                     Output: sf1_0.id, sf1_0.actor_id, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at
+                     Sort Key: sf1_0.created_at DESC, sf1_0.id DESC
+                     Sort Method: quicksort  Memory: 171kB
+                     Buffers: shared hit=6021
+                     Worker 0:  actual time=0.064..0.064 rows=0 loops=1
+                       Sort Method: quicksort  Memory: 25kB
+                       Buffers: shared hit=14
+                     ->  Nested Loop  (cost=34.81..18766.39 rows=1585 width=42) (actual time=0.208..1.457 rows=712 loops=2)
+                           Output: sf1_0.id, sf1_0.actor_id, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at
+                           Inner Unique: true
+                           Buffers: shared hit=6007
+                           Worker 0:  actual time=0.028..0.028 rows=0 loops=1
+                           ->  Parallel Bitmap Heap Scan on public.user_feed uf1_0  (cost=34.39..9839.23 rows=1585 width=8) (actual time=0.197..0.556 rows=712 loops=2)
+                                 Output: uf1_0.id, uf1_0.user_id, uf1_0.feed_id, uf1_0.is_hidden, uf1_0.congratulated_at, uf1_0.created_at, uf1_0.updated_at
+                                 Recheck Cond: (uf1_0.user_id = 1050)
+                                 Filter: (NOT uf1_0.is_hidden)
+                                 Rows Removed by Filter: 38
+                                 Heap Blocks: exact=300
+                                 Buffers: shared hit=307
+                                 Worker 0:  actual time=0.028..0.028 rows=0 loops=1
+                                 ->  Bitmap Index Scan on ix_user_feed_user_id  (cost=0.00..33.71 rows=2837 width=0) (actual time=0.330..0.330 rows=1500 loops=1)
+                                       Index Cond: (uf1_0.user_id = 1050)
+                                       Buffers: shared hit=7
+                           ->  Index Scan using social_feed_pkey on public.social_feed sf1_0  (cost=0.42..5.63 rows=1 width=42) (actual time=0.001..0.001 rows=1 loops=1425)
+                                 Output: sf1_0.id, sf1_0.actor_id, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at, sf1_0.updated_at
+                                 Index Cond: (sf1_0.id = uf1_0.feed_id)
+                                 Buffers: shared hit=5700
+         ->  Index Scan using users_pkey on public.users u1_0  (cost=0.29..0.33 rows=1 width=31) (actual time=0.008..0.008 rows=1 loops=5)
+               Output: u1_0.is_onboarded, u1_0.level, u1_0.profile_img_number, u1_0.xp, u1_0.created_at, u1_0.deleted_at, u1_0.id, u1_0.updated_at, u1_0.email, u1_0.handle, u1_0.nickname, u1_0.provider_id, u1_0.role, u1_0.status, u1_0.last_accessed_at
+               Index Cond: (u1_0.id = sf1_0.actor_id)
+               Filter: (u1_0.deleted_at IS NULL)
+               Buffers: shared hit=15
+ Query Identifier: -1832497529186848477
+ Planning:
+   Buffers: shared hit=461
+ Planning Time: 5.684 ms
+ Execution Time: 17.777 ms
+(50 rows)
+
+ROLLBACK
