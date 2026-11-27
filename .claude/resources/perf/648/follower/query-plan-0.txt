@@ -1,0 +1,142 @@
+=== [A] findFollowersByFolloweeId (대상, pg_stat_statements 원문, $1=$2=1050, $3=11)
+BEGIN
+                                                                                                                            QUERY PLAN                                                                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=29849.49..29899.38 rows=11 width=40) (actual time=152.845..155.919 rows=11 loops=1)
+   Output: u1_0.id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, (CASE WHEN (f2_0.id IS NOT NULL) THEN true ELSE false END), f1_0.created_at
+   Buffers: shared hit=16410 read=1726
+   ->  Nested Loop Left Join  (cost=29849.49..36285.76 rows=1419 width=40) (actual time=152.843..155.915 rows=11 loops=1)
+         Output: u1_0.id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, CASE WHEN (f2_0.id IS NOT NULL) THEN true ELSE false END, f1_0.created_at
+         Join Filter: (f2_0.followee_id = u1_0.id)
+         Rows Removed by Join Filter: 3000
+         Buffers: shared hit=16410 read=1726
+         ->  Nested Loop  (cost=29844.88..35701.74 rows=1419 width=39) (actual time=151.956..154.133 rows=11 loops=1)
+               Output: f1_0.created_at, u1_0.id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle
+               Inner Unique: true
+               Buffers: shared hit=16155 read=1724
+               ->  Gather Merge  (cost=29844.58..30009.85 rows=1419 width=16) (actual time=151.916..154.056 rows=11 loops=1)
+                     Output: f1_0.created_at, f1_0.follower_id
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=16122 read=1724
+                     ->  Sort  (cost=28844.56..28846.04 rows=591 width=16) (actual time=136.023..136.033 rows=229 loops=3)
+                           Output: f1_0.created_at, f1_0.follower_id
+                           Sort Key: f1_0.created_at DESC
+                           Sort Method: quicksort  Memory: 42kB
+                           Buffers: shared hit=16122 read=1724
+                           Worker 0:  actual time=128.380..128.396 rows=339 loops=1
+                             Sort Method: quicksort  Memory: 43kB
+                             Buffers: shared hit=5086 read=540
+                           Worker 1:  actual time=128.392..128.404 rows=344 loops=1
+                             Sort Method: quicksort  Memory: 43kB
+                             Buffers: shared hit=5745 read=535
+                           ->  Parallel Seq Scan on public.friends f1_0  (cost=0.00..28817.35 rows=591 width=16) (actual time=118.156..135.828 rows=333 loops=3)
+                                 Output: f1_0.created_at, f1_0.follower_id
+                                 Filter: (f1_0.followee_id = 1050)
+                                 Rows Removed by Filter: 709001
+                                 Buffers: shared hit=16010 read=1724
+                                 Worker 0:  actual time=110.444..128.124 rows=339 loops=1
+                                   Buffers: shared hit=5030 read=540
+                                 Worker 1:  actual time=110.522..128.223 rows=344 loops=1
+                                   Buffers: shared hit=5689 read=535
+               ->  Index Scan using users_pkey on public.users u1_0  (cost=0.29..4.01 rows=1 width=31) (actual time=0.005..0.005 rows=1 loops=11)
+                     Output: u1_0.is_onboarded, u1_0.level, u1_0.profile_img_number, u1_0.xp, u1_0.created_at, u1_0.deleted_at, u1_0.id, u1_0.updated_at, u1_0.email, u1_0.handle, u1_0.nickname, u1_0.provider_id, u1_0.role, u1_0.status, u1_0.last_accessed_at
+                     Index Cond: (u1_0.id = f1_0.follower_id)
+                     Filter: (u1_0.deleted_at IS NULL)
+                     Buffers: shared hit=33
+         ->  Materialize  (cost=4.61..94.53 rows=23 width=16) (actual time=0.080..0.140 rows=274 loops=11)
+               Output: f2_0.id, f2_0.followee_id
+               Buffers: shared hit=255 read=2
+               ->  Bitmap Heap Scan on public.friends f2_0  (cost=4.61..94.41 rows=23 width=16) (actual time=0.876..1.329 rows=300 loops=1)
+                     Output: f2_0.id, f2_0.followee_id
+                     Recheck Cond: (f2_0.follower_id = 1050)
+                     Heap Blocks: exact=250
+                     Buffers: shared hit=255 read=2
+                     ->  Bitmap Index Scan on ix_friends_follower_followee  (cost=0.00..4.60 rows=23 width=0) (actual time=0.837..0.838 rows=300 loops=1)
+                           Index Cond: (f2_0.follower_id = 1050)
+                           Buffers: shared hit=5 read=2
+ Query Identifier: -5414099141944685219
+ Planning:
+   Buffers: shared hit=460 read=1
+ Planning Time: 8.415 ms
+ Execution Time: 156.051 ms
+(58 rows)
+
+ROLLBACK
+=== [B] countByFolloweeId (부수 관측, 재구성, userId=1050)
+BEGIN
+                                                                                                                               QUERY PLAN                                                                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=32189.66..32189.67 rows=1 width=8) (actual time=152.316..160.518 rows=1 loops=1)
+   Output: count(f1_0.id)
+   Buffers: shared hit=19035 read=1701
+   ->  Gather  (cost=32189.45..32189.66 rows=2 width=8) (actual time=152.171..160.510 rows=3 loops=1)
+         Output: (PARTIAL count(f1_0.id))
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=19035 read=1701
+         ->  Partial Aggregate  (cost=31189.45..31189.46 rows=1 width=8) (actual time=134.082..134.084 rows=1 loops=3)
+               Output: PARTIAL count(f1_0.id)
+               Buffers: shared hit=19035 read=1701
+               Worker 0:  actual time=126.306..126.308 rows=1 loops=1
+                 Buffers: shared hit=6443 read=514
+               Worker 1:  actual time=123.993..123.995 rows=1 loops=1
+                 Buffers: shared hit=6263 read=511
+               ->  Nested Loop  (cost=0.29..31187.97 rows=591 width=8) (actual time=113.805..134.056 rows=333 loops=3)
+                     Output: f1_0.id
+                     Inner Unique: true
+                     Buffers: shared hit=19035 read=1701
+                     Worker 0:  actual time=106.047..126.282 rows=323 loops=1
+                       Buffers: shared hit=6443 read=514
+                     Worker 1:  actual time=103.709..123.970 rows=324 loops=1
+                       Buffers: shared hit=6263 read=511
+                     ->  Parallel Seq Scan on public.friends f1_0  (cost=0.00..28817.35 rows=591 width=16) (actual time=113.777..133.621 rows=333 loops=3)
+                           Output: f1_0.created_at, f1_0.followee_id, f1_0.follower_id, f1_0.id, f1_0.updated_at
+                           Filter: (f1_0.followee_id = 1050)
+                           Rows Removed by Filter: 709001
+                           Buffers: shared hit=16033 read=1701
+                           Worker 0:  actual time=106.025..125.859 rows=323 loops=1
+                             Buffers: shared hit=5473 read=514
+                           Worker 1:  actual time=103.677..123.540 rows=324 loops=1
+                             Buffers: shared hit=5290 read=511
+                     ->  Index Scan using users_pkey on public.users u1_0  (cost=0.29..4.01 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=1000)
+                           Output: u1_0.is_onboarded, u1_0.level, u1_0.profile_img_number, u1_0.xp, u1_0.created_at, u1_0.deleted_at, u1_0.id, u1_0.updated_at, u1_0.email, u1_0.handle, u1_0.nickname, u1_0.provider_id, u1_0.role, u1_0.status, u1_0.last_accessed_at
+                           Index Cond: (u1_0.id = f1_0.follower_id)
+                           Filter: (u1_0.deleted_at IS NULL)
+                           Buffers: shared hit=3002
+                           Worker 0:  actual time=0.001..0.001 rows=1 loops=323
+                             Buffers: shared hit=970
+                           Worker 1:  actual time=0.001..0.001 rows=1 loops=324
+                             Buffers: shared hit=973
+ Query Identifier: 334455046134454153
+ Planning:
+   Buffers: shared hit=23 read=1
+ Planning Time: 0.799 ms
+ Execution Time: 160.566 ms
+(46 rows)
+
+ROLLBACK
+=== [C] findFollowerIdsByFolloweeId (부수 관측, 재구성, followeeId=1050)
+BEGIN
+                                                               QUERY PLAN                                                               
+----------------------------------------------------------------------------------------------------------------------------------------
+ Gather  (cost=1000.00..29959.25 rows=1419 width=8) (actual time=121.710..144.395 rows=1000 loops=1)
+   Output: follower_id
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=16053 read=1681
+   ->  Parallel Seq Scan on public.friends f1_0  (cost=0.00..28817.35 rows=591 width=8) (actual time=108.123..126.586 rows=333 loops=3)
+         Output: follower_id
+         Filter: (f1_0.followee_id = 1050)
+         Rows Removed by Filter: 709001
+         Buffers: shared hit=16053 read=1681
+         Worker 0:  actual time=101.046..119.489 rows=317 loops=1
+           Buffers: shared hit=5427 read=505
+         Worker 1:  actual time=101.890..120.354 rows=327 loops=1
+           Buffers: shared hit=5014 read=530
+ Query Identifier: 3444363556817839381
+ Planning Time: 0.066 ms
+ Execution Time: 144.444 ms
+(17 rows)
+
+ROLLBACK

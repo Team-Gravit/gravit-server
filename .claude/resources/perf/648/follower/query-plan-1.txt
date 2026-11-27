@@ -1,0 +1,96 @@
+=== [A] findFollowersByFolloweeId (대상, pg_stat_statements 원문, $1=$2=1050, $3=11)
+BEGIN
+                                                                                                                            QUERY PLAN                                                                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=5.32..55.88 rows=11 width=40) (actual time=0.160..0.877 rows=11 loops=1)
+   Output: u1_0.id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, (CASE WHEN (f2_0.id IS NOT NULL) THEN true ELSE false END), f1_0.created_at
+   Buffers: shared hit=294
+   ->  Nested Loop Left Join  (cost=5.32..5875.64 rows=1277 width=40) (actual time=0.159..0.874 rows=11 loops=1)
+         Output: u1_0.id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, CASE WHEN (f2_0.id IS NOT NULL) THEN true ELSE false END, f1_0.created_at
+         Join Filter: (f2_0.followee_id = u1_0.id)
+         Rows Removed by Join Filter: 3000
+         Buffers: shared hit=294
+         ->  Nested Loop  (cost=0.72..5386.65 rows=1277 width=39) (actual time=0.069..0.087 rows=11 loops=1)
+               Output: f1_0.created_at, u1_0.id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle
+               Inner Unique: true
+               Buffers: shared hit=40
+               ->  Index Only Scan using ix_friends_followee_created on public.friends f1_0  (cost=0.43..50.78 rows=1277 width=16) (actual time=0.060..0.061 rows=11 loops=1)
+                     Output: f1_0.followee_id, f1_0.created_at, f1_0.follower_id
+                     Index Cond: (f1_0.followee_id = 1050)
+                     Heap Fetches: 0
+                     Buffers: shared hit=7
+               ->  Index Scan using users_pkey on public.users u1_0  (cost=0.29..4.18 rows=1 width=31) (actual time=0.002..0.002 rows=1 loops=11)
+                     Output: u1_0.is_onboarded, u1_0.level, u1_0.profile_img_number, u1_0.xp, u1_0.created_at, u1_0.deleted_at, u1_0.id, u1_0.updated_at, u1_0.email, u1_0.handle, u1_0.nickname, u1_0.provider_id, u1_0.role, u1_0.status, u1_0.last_accessed_at
+                     Index Cond: (u1_0.id = f1_0.follower_id)
+                     Filter: (u1_0.deleted_at IS NULL)
+                     Buffers: shared hit=33
+         ->  Materialize  (cost=4.59..86.79 rows=21 width=16) (actual time=0.008..0.055 rows=274 loops=11)
+               Output: f2_0.id, f2_0.followee_id
+               Buffers: shared hit=254
+               ->  Bitmap Heap Scan on public.friends f2_0  (cost=4.59..86.69 rows=21 width=16) (actual time=0.084..0.445 rows=300 loops=1)
+                     Output: f2_0.id, f2_0.followee_id
+                     Recheck Cond: (f2_0.follower_id = 1050)
+                     Heap Blocks: exact=250
+                     Buffers: shared hit=254
+                     ->  Bitmap Index Scan on ix_friends_follower_followee  (cost=0.00..4.59 rows=21 width=0) (actual time=0.050..0.050 rows=300 loops=1)
+                           Index Cond: (f2_0.follower_id = 1050)
+                           Buffers: shared hit=4
+ Query Identifier: -5414099141944685219
+ Planning:
+   Buffers: shared hit=488
+ Planning Time: 25.737 ms
+ Execution Time: 0.993 ms
+(38 rows)
+
+ROLLBACK
+=== [B] countByFolloweeId (부수 관측, 재구성, userId=1050)
+BEGIN
+                                                                      QUERY PLAN                                                                       
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=8192.55..8192.56 rows=1 width=8) (actual time=58.583..58.589 rows=1 loops=1)
+   Output: count(f1_0.id)
+   Buffers: shared hit=2766
+   ->  Hash Join  (cost=4213.39..8189.35 rows=1277 width=8) (actual time=55.882..58.514 rows=1000 loops=1)
+         Output: f1_0.id
+         Inner Unique: true
+         Hash Cond: (f1_0.follower_id = u1_0.id)
+         Buffers: shared hit=2766
+         ->  Bitmap Heap Scan on public.friends f1_0  (cost=38.33..4010.93 rows=1277 width=16) (actual time=0.195..2.201 rows=1000 loops=1)
+               Output: f1_0.created_at, f1_0.followee_id, f1_0.follower_id, f1_0.id, f1_0.updated_at
+               Recheck Cond: (f1_0.followee_id = 1050)
+               Heap Blocks: exact=833
+               Buffers: shared hit=841
+               ->  Bitmap Index Scan on ix_friends_followee_created  (cost=0.00..38.01 rows=1277 width=0) (actual time=0.107..0.108 rows=1000 loops=1)
+                     Index Cond: (f1_0.followee_id = 1050)
+                     Buffers: shared hit=8
+         ->  Hash  (cost=2925.03..2925.03 rows=100003 width=8) (actual time=55.087..55.089 rows=100003 loops=1)
+               Output: u1_0.id
+               Buckets: 131072  Batches: 1  Memory Usage: 4931kB
+               Buffers: shared hit=1925
+               ->  Seq Scan on public.users u1_0  (cost=0.00..2925.03 rows=100003 width=8) (actual time=0.017..21.836 rows=100003 loops=1)
+                     Output: u1_0.id
+                     Filter: (u1_0.deleted_at IS NULL)
+                     Buffers: shared hit=1925
+ Query Identifier: 334455046134454153
+ Planning:
+   Buffers: shared hit=24
+ Planning Time: 0.312 ms
+ Execution Time: 59.074 ms
+(29 rows)
+
+ROLLBACK
+=== [C] findFollowerIdsByFolloweeId (부수 관측, 재구성, followeeId=1050)
+BEGIN
+                                                                         QUERY PLAN                                                                          
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Index Only Scan using ix_friends_followee_created on public.friends f1_0  (cost=0.43..50.78 rows=1277 width=8) (actual time=0.035..0.225 rows=1000 loops=1)
+   Output: follower_id
+   Index Cond: (f1_0.followee_id = 1050)
+   Heap Fetches: 0
+   Buffers: shared hit=9
+ Query Identifier: 3444363556817839381
+ Planning Time: 0.167 ms
+ Execution Time: 0.301 ms
+(8 rows)
+
+ROLLBACK

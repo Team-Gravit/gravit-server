@@ -1,0 +1,50 @@
+{
+  "phase": "measure",
+  "target": "follower",
+  "endpoint": "GET /api/v1/friends/follower?page=0",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "N/A (대상 API가 Redis를 쓰지 않음)",
+    "db_cache": "제어하지 않음 (warmup 30s 후 측정)",
+    "user_id_start": 1001,
+    "user_count": 100
+  },
+  "requests": 1829,
+  "rps": 15.238976961834608,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 1829,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 1829,
+      "fails": 0
+    },
+    {
+      "name": "팔로워 목록이 실려 있다",
+      "passes": 1829,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 2481.5101,
+    "p95": 3859.106279999999,
+    "p99": 4376.4299280000005,
+    "max": 4938.4427
+  },
+  "waiting_ms": {
+    "med": 2481.002,
+    "p95": 3858.0575599999993,
+    "p99": 4375.862784000001,
+    "max": 4936.4076
+  },
+  "bytes_received": 2552352
+}
