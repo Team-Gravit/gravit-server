@@ -1,0 +1,43 @@
+=== [A] findVisibleFeedsByUserId (대상, 사이클 1 적용 후 Hibernate SQL, $1=1050, $2=5, $3=false)
+BEGIN
+                                                                                                                            QUERY PLAN                                                                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1343.91..1343.92 rows=5 width=73) (actual time=4.440..4.442 rows=5 loops=1)
+   Output: sf1_0.id, sf1_0.actor_id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at, uf1_0.feed_id
+   Buffers: shared hit=10285
+   ->  Sort  (cost=1343.91..1344.17 rows=104 width=73) (actual time=4.438..4.440 rows=5 loops=1)
+         Output: sf1_0.id, sf1_0.actor_id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at, uf1_0.feed_id
+         Sort Key: sf1_0.id DESC
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=10285
+         ->  Nested Loop  (cost=1.15..1342.18 rows=104 width=73) (actual time=0.053..3.973 rows=1425 loops=1)
+               Output: sf1_0.id, sf1_0.actor_id, u1_0.nickname, u1_0.profile_img_number, u1_0.handle, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at, uf1_0.feed_id
+               Inner Unique: true
+               Buffers: shared hit=10282
+               ->  Nested Loop  (cost=0.86..1308.11 rows=104 width=50) (actual time=0.039..2.489 rows=1425 loops=1)
+                     Output: uf1_0.feed_id, sf1_0.id, sf1_0.actor_id, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at
+                     Inner Unique: true
+                     Buffers: shared hit=6007
+                     ->  Index Scan using ix_user_feed_user_id on public.user_feed uf1_0  (cost=0.43..446.35 rows=104 width=8) (actual time=0.027..0.792 rows=1425 loops=1)
+                           Output: uf1_0.id, uf1_0.user_id, uf1_0.feed_id, uf1_0.is_hidden, uf1_0.congratulated_at, uf1_0.created_at, uf1_0.updated_at
+                           Index Cond: (uf1_0.user_id = 1050)
+                           Filter: (NOT uf1_0.is_hidden)
+                           Rows Removed by Filter: 75
+                           Buffers: shared hit=307
+                     ->  Index Scan using social_feed_pkey on public.social_feed sf1_0  (cost=0.42..8.29 rows=1 width=42) (actual time=0.001..0.001 rows=1 loops=1425)
+                           Output: sf1_0.id, sf1_0.actor_id, sf1_0.event_type, sf1_0.event_value, sf1_0.created_at, sf1_0.updated_at
+                           Index Cond: (sf1_0.id = uf1_0.feed_id)
+                           Buffers: shared hit=5700
+               ->  Index Scan using users_pkey on public.users u1_0  (cost=0.29..0.33 rows=1 width=31) (actual time=0.001..0.001 rows=1 loops=1425)
+                     Output: u1_0.is_onboarded, u1_0.level, u1_0.profile_img_number, u1_0.xp, u1_0.created_at, u1_0.deleted_at, u1_0.id, u1_0.updated_at, u1_0.email, u1_0.handle, u1_0.nickname, u1_0.provider_id, u1_0.role, u1_0.status, u1_0.last_accessed_at
+                     Index Cond: (u1_0.id = sf1_0.actor_id)
+                     Filter: (u1_0.deleted_at IS NULL)
+                     Buffers: shared hit=4275
+ Query Identifier: -900483650828982939
+ Planning:
+   Buffers: shared hit=444
+ Planning Time: 5.483 ms
+ Execution Time: 4.511 ms
+(36 rows)
+
+ROLLBACK

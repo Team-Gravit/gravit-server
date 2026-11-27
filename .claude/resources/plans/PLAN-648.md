@@ -13,7 +13,7 @@
 | 단계 | 대상 | 진행 도구 | 산출물 |
 |---|---|---|---|
 | A | `GET /api/v1/friends/follower` (팔로워 목록) | `optimize-performance` | `perf/648/follower/`, 인덱스 마이그레이션 |
-| B | `GET /api/v1/social/feed` (소셜 피드 목록) | `optimize-performance` | `perf/648/social-feed/`, 정렬 변경, 부분 인덱스 마이그레이션 |
+| B | `GET /api/v1/social/feed` (소셜 피드 목록) | `optimize-performance` | `perf/648/feed/`, 정렬 변경, 부분 인덱스 마이그레이션 |
 | C | 팔로우 중복 방지 | `implement` | 중복 정리, 유니크 제약 마이그레이션, 충돌 응답, 테스트 |
 | D | 정책, 테스트 마무리 | 직접 | `friend-social.md`, 테스트 |
 
@@ -26,7 +26,7 @@
 - `src/main/resources/db/migration/V56__add_friends_follow_unique.sql` - 중복 팔로우 정리, 유니크 제약, 기존 인덱스 정리
 - `.claude/resources/perf/648/seeds.sql` - 이슈 공용 시드 (스킬 Phase 3-A)
 - `.claude/resources/perf/648/follower/` - 대상 A 측정 기록 (`record.md`, `test-script.js`, 요약, 실행계획)
-- `.claude/resources/perf/648/social-feed/` - 대상 B 측정 기록
+- `.claude/resources/perf/648/feed/` - 대상 B 측정 기록
 
 ### 수정 파일
 - `src/main/java/gravit/code/social/repository/UserFeedRepository.java` - `findVisibleFeedsByUserId`의 정렬을 `uf.feedId DESC`로 변경
@@ -66,7 +66,7 @@
 - 팔로워 목록 실행계획에서 `Seq Scan on friends`와 `Sort`가 사라지는지
 - 부수 관측 두 쿼리의 전후 Buffers, 실행 시간
 
-### 단계 B. 소셜 피드 목록 (`optimize-performance` 대상 `social-feed`)
+### 단계 B. 소셜 피드 목록 (`optimize-performance` 대상 `feed`)
 
 **측정 (스킬 Phase 1~4)**
 - Phase 1에서 매핑할 쿼리
@@ -154,7 +154,7 @@
   - `SocialFeedServiceIntegrationTest.GetFeed`: 피드 여러 건을 차례로 만들면 최신 게시가 먼저 온다, 숨긴 피드는 빠진다
   - `SocialFacadeIntegrationTest`: 피드 배포와 조회 흐름이 그대로 통과
 - 빌드: `./gradlew build` (H2 `flywayValidate`로 마이그레이션 이름, 순서 확인)
-- 성능: `perf/648/follower/record.md`, `perf/648/social-feed/record.md`의 최종 요약 표
+- 성능: `perf/648/follower/record.md`, `perf/648/feed/record.md`의 최종 요약 표
 
 ## Deviation Log
 > implement 스킬이 구현 중 계획을 벗어난 지점을 여기에 기록한다. (작성 시점엔 비워둔다)
@@ -166,3 +166,12 @@
 - 기준선: 친구 조회 mean 2427.5ms, DB 시간 99.97%, 실행계획은 `friends` Parallel Seq Scan으로 약 212.8만 행을 읽고 999행을 내보냄
 - 사이클 1 설계: 계획의 예상 설계(`ix_friends_followee_created (followee_id, created_at DESC) INCLUDE (follower_id)`, 일반 `CREATE INDEX`)와 같게 확정. `V54__add_friends_followee_index.sql` 작성까지 완료, 테스트와 재측정 전
 - 진행 상태와 재개 절차는 `perf/648/follower/record.md`의 진행 상태 표와 사이클 1 적용 내용을 따른다
+
+### 2026-11-27 - 단계 A 완료, 단계 B 시작
+- 단계 A: 사이클 1(V54) 적용 후 테스트 통과(전체 1641건 중 `RetryQueueSweeperIntegrationTest` 1건은 공유 Redis를 다른 컨텍스트의 스케줄러가 스윕해 생긴 간헐 실패로 판단, 단독 실행 통과). 재측정에서 팔로워 목록이 Index Only Scan으로 바뀌어 mean 2427.5 → 0.465 ms. 남은 위험 신호(맞팔 조인 쪽 추정 오차)는 요청당 DB 시간 합이 응답 중앙값의 1% 미만이라 사이클 1에서 종료
+- 단계 B 대상 슬러그: 계획의 `social-feed` 대신 스킬 규칙(경로 마지막 세그먼트)에 따라 `feed`로 했다. 계획서의 경로 표기도 맞췄다
+- QA 픽스처: 단계 B 계획의 "QA 픽스처와 테스트 픽스처는 `created_at`을 직접 넣지 않음을 확인함"은 사실과 다르다. `src/main/resources/sql/seed/qa/04_social.sql`이 `social_feed.created_at`을 직접 넣고 INSERT 순서가 시간 역순이라, `feed_id` 정렬로 바꾸면 페르소나 `social`의 피드 순서가 뒤집힌다. 단계 B 사이클 1에서 INSERT를 시간순으로 고친다
+- 단계 B 사이클 분리: 계획의 "정렬 변경 + 부분 인덱스"를 스킬의 한 사이클 한 기법 규칙에 따라 사이클 1(정렬 변경, 쿼리 구조는 그대로)과 사이클 2 후보(인덱스)로 나눴다
+- 단계 B 종료 (개선 없음): 사이클 1(정렬만 `uf.feedId DESC`로 변경)은 같은 통계에서 원래 쿼리와 실행계획이 같아 효과가 없었다. 정렬은 `user_feed`에 `feed_id` 순서 인덱스가 있어야 조인 아래로 내려간다. 비용이 사용자당 피드 수에 비례하고 로컬 1,500건은 가정값이라, 운영의 사용자당 피드 분포를 보기 전에는 인덱스(쓰기 비용)와 정렬 의미 변경을 감수할 근거가 부족하다고 보고 종료했다. 코드 변경은 되돌렸고 계획의 `V55__add_user_feed_visible_index.sql`과 `UserFeedRepository` 수정은 이번 PR에서 빠진다. 근거와 재검토 조건은 `perf/648/feed/record.md`
+- 이번 PR 범위: 단계 A(팔로워 인덱스)만 담는다. 단계 C(팔로우 유니크 제약), D(정책, 테스트)는 이슈 #648에 남긴다
+- 페이지 크기: 목표 문단은 "20건"이라 적었지만 코드의 `SocialFeedService.PAGE_SIZE`는 4다. 조회는 Slice라 `LIMIT 5`로 나간다. 측정과 설계는 실제 값 4를 기준으로 한다

@@ -1,0 +1,50 @@
+{
+  "phase": "measure",
+  "target": "feed",
+  "endpoint": "GET /api/v1/social/feed?page=0",
+  "condition": {
+    "vus": 50,
+    "steady_state_duration": "1m",
+    "ramp_up": "30s",
+    "ramp_down": "30s",
+    "total_duration": "2m",
+    "redis_cache": "N/A (대상 API가 Redis를 쓰지 않음)",
+    "db_cache": "제어하지 않음 (warmup 30s 후 측정)",
+    "user_id_start": 1001,
+    "user_count": 100
+  },
+  "requests": 6090,
+  "rps": 50.72388248425837,
+  "failed_rate": 0,
+  "checks_rate": 1,
+  "checks": [
+    {
+      "name": "status is 200",
+      "passes": 6090,
+      "fails": 0
+    },
+    {
+      "name": "body is not empty",
+      "passes": 6090,
+      "fails": 0
+    },
+    {
+      "name": "피드 목록이 실려 있다",
+      "passes": 6090,
+      "fails": 0
+    }
+  ],
+  "duration_ms": {
+    "med": 833.7481,
+    "p95": 1292.10753,
+    "p99": 1700.5457579999988,
+    "max": 2447.4927
+  },
+  "waiting_ms": {
+    "med": 833.3423,
+    "p95": 1290.915725,
+    "p99": 1694.9514699999982,
+    "max": 2447.014
+  },
+  "bytes_received": 9094654
+}
