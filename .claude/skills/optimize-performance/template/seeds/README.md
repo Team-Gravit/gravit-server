@@ -53,6 +53,7 @@ psql -h localhost -p 5433 -U postgres -d mydb -f $PERF_DIR/seeds.sql
 | `learning.sql` | `lesson_submission`, `problem_submission`, `daily_learning_record` | `content`, `user` |
 | `league.sql` | `league`, `season`, `user_league`, `user_league_history` | `user` |
 | `review.sql` | `answer`, `option`, `bookmark`, `wrong_answered_note` | `content`, `user` |
+| `friend.sql` | `friends` | `user` |
 
 `\i` 순서가 곧 FK 의존 순서다. 표의 위에서 아래로 부른다.
 
@@ -87,6 +88,12 @@ psql -h localhost -p 5433 -U postgres -d mydb -f $PERF_DIR/seeds.sql
 | `options_per_problem` | review | OBJECTIVE 문제당 선택지 수 |
 | `target_unit_wrong_notes_per_user` | review | 유저당 `target_unit_id`에 넣을 오답노트 수. 타입 균형을 위해 짝수를 쓴다 |
 | `target_unit_resolved_per_user` | review | 그중 극복 처리할 수. **요청당 결과 크기 = `target_unit_wrong_notes_per_user` - 이 값.** 짝수를 쓴다 |
+| `hot_user_count` | friend | 유저 범위 앞쪽에서 팔로워를 몰아줄 측정 사용자 수. 이 모듈을 쓰면 k6의 `USER_ID_START = user_start`, `USER_COUNT = hot_user_count`로 맞춘다 (`user_count`가 아님) |
+| `hot_followers` | friend | 측정 사용자 1명당 팔로워 수 (= 팔로워 목록 쿼리가 거르고 정렬하는 행 수) |
+| `follows_per_user` | friend | 나머지 사용자 1명당 팔로우 수. 전체 행 수는 약 `(user_count - hot_user_count) * follows_per_user` |
+| `follow_stride` | friend | 팔로우 대상을 고르는 간격. `k * stride mod (user_count - hot_user_count)`가 k = 1..follows_per_user에서 서로 다르고 0이 아니어야 한다 |
+| `mutual_pct` | friend | 측정 사용자가 자기 팔로워를 맞팔로우하는 비율(%) |
+| `follow_window_days` | friend | 팔로우 `created_at`이 퍼지는 기간(일) |
 
 ## 모듈을 고칠 때
 
